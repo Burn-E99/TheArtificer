@@ -1,3 +1,6 @@
+// solver.ts custom types
+
+// RollSet is used to preserve all information about a calculated roll
 export type RollSet = {
 	origidx: number,
 	roll: number,
@@ -8,6 +11,7 @@ export type RollSet = {
 	critFail: boolean
 };
 
+// SolvedStep is used to preserve information while math is being performed on the roll
 export type SolvedStep = {
 	total: number,
 	details: string,
@@ -15,6 +19,7 @@ export type SolvedStep = {
 	containsFail: boolean
 };
 
+// SolvedRoll is the complete solved and formatted roll, or the error said roll created
 export type SolvedRoll = {
 	error: boolean,
 	errorMsg: string,

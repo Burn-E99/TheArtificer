@@ -5,6 +5,8 @@ export const config = {
 	"prefix": "[[",
 	"postfix": "]]",
 	"logChannel": "the_log_channel",
+	"reportChannel": "the_report_channel",
+	"devServer": "the_dev_server",
 	"help": [
 		"```fix",
 		"The Artificer Help",
