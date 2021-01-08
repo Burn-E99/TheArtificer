@@ -1,4 +1,6 @@
 # The Artificer - A Dice Rolling Discord Bot
+Version 1.0.0 - 2020/1/8
+
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
 This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit mulitplication (such as `4(12 + 20)`).
