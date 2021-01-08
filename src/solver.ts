@@ -1,3 +1,9 @@
+/* The Artificer was built in memory of Babka
+ * With love, Ean
+ *
+ * December 21, 2020
+ */
+
 import { RollSet, SolvedStep, SolvedRoll } from "./solver.d.ts";
 
 // MAXLOOPS determines how long the bot will attempt a roll
@@ -678,7 +684,7 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 				}
 
 				// Replace the two operands and their operator with our subStepSolve
-				conf.splice((i - 1), (i + 2), subStepSolve);
+				conf.splice((i - 1), 3, subStepSolve);
 				// Because we are messing around with the array we are iterating thru, we need to back up one idx to make sure every operator gets processed
 				i--;
 			}

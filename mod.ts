@@ -71,6 +71,14 @@ startBot({
 				}
 			}
 
+			// [[rip [[memory
+			// Displays a short message I wanted to include
+			else if (command === "rip" || command === "memory") {
+				utils.sendIndirectMessage(message, "The Artificer was built in memory of my Grandmother, Babka\nWith much love, Ean\n\nDecember 21, 2020", sendMessage, sendDirectMessage).catch(err => {
+					console.error("Failed to send message 11", message, err);
+				});
+			}
+
 			// [[help or [[h or [[?
 			// Help command, prints from help file
 			else if (command === "help" || command === "h" || command === "?") {
@@ -172,9 +180,9 @@ startBot({
 								modifiers.gmRoll = true;
 
 								// -gm is a little more complex, as we must get all of the GMs that need to be DMd
-								while (((i + 1) < args.length) && args[i + 1].startsWith("<@!")) {
+								while (((i + 1) < args.length) && args[i + 1].startsWith("<@")) {
 									// Keep looping thru the rest of the args until one does not start with the discord mention code
-									modifiers.gms.push(args[i + 1]);
+									modifiers.gms.push(args[i + 1].replace(/[!]/g, ""));
 									args.splice((i + 1), 1);
 								}
 								if (modifiers.gms.length < 1) {
@@ -229,7 +237,7 @@ startBot({
 							const msgs = utils.split2k(returnText);
 							const failedDMs = <string[]>[];
 							for (let i = 0; ((failedDMs.indexOf(e) === -1) && (i < msgs.length)); i++) {
-								await sendDirectMessage(e.substr(3, (e.length - 4)), msgs[i]).catch(() => {
+								await sendDirectMessage(e.substr(2, (e.length - 3)), msgs[i]).catch(() => {
 									failedDMs.push(e);
 									utils.sendIndirectMessage(message, "WARNING: " + e + " could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.", sendMessage, sendDirectMessage);
 								});

@@ -1,3 +1,9 @@
+/* The Artificer was built in memory of Babka
+ * With love, Ean
+ *
+ * December 21, 2020
+ */
+
 import { Message } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
 
 // split2k(longMessage) returns shortMessage[]
