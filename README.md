@@ -6,7 +6,7 @@ The Artificer is a Discord bot that specializes in rolling dice.  The bot utiliz
 This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit mulitplication (such as `4(12 + 20)`).
 
 ## Using The Artificer
-I am hosting this bot for public use and you may find its invite link below.  If you would like to host this bot yourself, details of how to do so are found in this repository, but I do not recommend this unless you are experienced with running Discord bots.
+I am hosting this bot for public use and you may find its invite link below.  If you would like to host this bot yourself, details of how to do so are found at the end of this README, but I do not recommend this unless you are experienced with running Discord bots.
 
 After inviting the bot, if you would like it to remove the message requesting the popcat emoji, you will need to give the `The Artificer` role the `Manage Messages` permission.  All other permissions needed are handled by the invite link.
 
@@ -66,6 +66,12 @@ The Artificer comes with a few supplemental commands to the main rolling command
 
 ## Problems?  Feature requests?
 If you run into any errors or problems with the bot, or think you have a good idea to add to the bot, please submit a new GitHub issue detailing it.  If you don't have a GitHub account, a report command (detailed above) is provided for use in Discord.
+
+---
+## Running The Artificer
+The Artificer was built on Deno `v1.6.3` using Discodeno `v10.0.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
+
+Starting the bot is simply done with `deno run --allow-net .\mod.ts`.
 
 ---
 

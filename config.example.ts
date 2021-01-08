@@ -40,7 +40,7 @@ export const config = {
 		"popcat": {
 			"name": "popcat",
 			"id": "796340018377523221",
-			animated: true
+			"animated": true
 		}
 	}
 };
