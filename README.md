@@ -64,6 +64,9 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[d20/40]]` will roll a d20 die and divide it by 40.
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
 
+## The Artificer API
+API is currently in development, details on usage and how to gain privilaged access will be added here when the API is feature complete and secured.
+
 ## Problems?  Feature requests?
 If you run into any errors or problems with the bot, or think you have a good idea to add to the bot, please submit a new GitHub issue detailing it.  If you don't have a GitHub account, a report command (detailed above) is provided for use in Discord.
 
@@ -72,6 +75,8 @@ If you run into any errors or problems with the bot, or think you have a good id
 The Artificer was built on Deno `v1.6.3` using Discodeno `v10.0.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
 
 Starting the bot is simply done with `deno run --allow-net .\mod.ts`.
+
+If you choose to run version 1.1.0 or newer, ensure you disable the API in `config.ts` or verify you have properly secured your instance of The Artificer.
 
 ---
 
