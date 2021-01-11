@@ -1,9 +1,14 @@
 export const config = {
 	"name": "The Artificer",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"token": "the_bot_token",
 	"prefix": "[[",
 	"postfix": "]]",
+	"api": {
+		"enable": false,
+		"port": 8080,
+		"supportURL": "your_support_url_for_api_abuse"
+	},
 	"logChannel": "the_log_channel",
 	"reportChannel": "the_report_channel",
 	"devServer": "the_dev_server",

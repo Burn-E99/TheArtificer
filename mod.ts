@@ -15,6 +15,8 @@ import {
 	Message, Guild, sendMessage, sendDirectMessage,
 	cache
 } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
+import { serve } from "https://deno.land/std@0.83.0/http/server.ts";
+import { Status, STATUS_TEXT } from "https://deno.land/std@0.83.0/http/http_status.ts";
 
 import utils from "./src/utils.ts";
 import solver from "./src/solver.ts";
@@ -221,7 +223,7 @@ startBot({
 						returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2;
 
 						if (modifiers.noDetails) {
-								returnText += "\nDetails suppressed by -nd flag.";
+							returnText += "\nDetails suppressed by -nd flag.";
 						} else {
 							returnText += "\nDetails:\n" + modifiers.spoiler + returnmsg.line3 + modifiers.spoiler;
 						}
@@ -244,6 +246,7 @@ startBot({
 							}
 						});
 
+						// Finally send the text
 						m.edit(normalText);
 					} else {
 						// When not a GM roll, make sure the message is not too big
@@ -256,6 +259,7 @@ startBot({
 									failed = true;
 								});
 							}
+
 							// If DM fails to send, alert roller of the failure, else handle normally
 							if (failed) {
 								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  WARNING: <@" + message.author.id + "> could **NOT** be messaged full details for verification purposes.";
@@ -278,4 +282,221 @@ startBot({
 // Start up the command prompt for debug usage
 if (DEBUG) {
 	utils.cmdPrompt(config.logChannel, config.name, sendMessage);
+}
+
+// Start up the API for rolling from third party apps (like excel macros)
+if (config.api.enable) {
+	const server = serve({ hostname: "0.0.0.0", port: config.api.port });
+	console.log(`HTTP webserver running at: http://localhost:${config.api.port}/`);
+
+	// Catching every request made to the server
+	for await (const request of server) {
+
+		// Super secure authentication
+		const authenticated = true;
+
+		if (authenticated) {
+			// Get path and query as a string
+			const [path, tempQ] = request.url.split("?");
+
+			// Turn the query into a map (if it exists)
+			const query = new Map<string, string>();
+			if (tempQ !== undefined) {
+				tempQ.split("&").forEach(e => {
+					const [option, params] = e.split("=");
+					query.set(option.toLowerCase(), params);
+				});
+			}
+
+			// Handle the request
+			switch (request.method) {
+				case "GET":
+					switch (path) {
+						case "/roll":
+						case "/roll/":
+							// Make sure query contains all the needed parts
+							if (query.has("rollstr") && query.has("channel") && query.has("user")) {
+
+								if (query.has("n") && query.has("m")) {
+									// Alert API user that they shouldn't be doing this
+									request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+								}
+
+								// Super secure authorization
+								const authorized = true;
+
+								if (authorized) {
+									// Rest of this command is in a try-catch to protect all sends/edits from erroring out
+									try {
+										// Flag to tell if roll was completely successful
+										let errorOut = false;
+										// Make sure rollCmd is not undefined
+										let rollCmd = query.get("rollstr") || "";
+
+										if (rollCmd.length === 0) {
+											// Alert API user that they messed up
+											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+										}
+
+										// Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
+										rollCmd = rollCmd.substr(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, " ");
+
+										// Parse the roll and get the return text
+										const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, query.has("m"), query.has("n"));
+
+										// Alert users why this message just appeared and how they can report abues pf this feature
+										const apiPrefix = "The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <" + config.api.supportURL + ">\n\n";
+										let returnText = "";
+
+										// Handle sending the error message to whoever called the api
+										if (returnmsg.error) {
+											request.respond({ status: Status.InternalServerError, body: returnmsg.errorMsg });
+											break;
+										} else {
+											returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2;
+											let spoilerTxt = "";
+
+											// Determine if spoiler flag was on
+											if (query.has("s")) {
+												spoilerTxt = "||";
+											}
+
+											// Determine if no details flag was on
+											if (query.has("nd")) {
+												returnText += "\nDetails suppressed by nd query.";
+											} else {
+												returnText += "\nDetails:\n" + spoilerTxt + returnmsg.line3 + spoilerTxt;
+											}
+										}
+
+										// If the roll was a GM roll, send DMs to all the GMs
+										if (query.has("gms")) {
+											// Get all the GM user IDs from the query
+											const gms = (query.get("gms") || "").split(",");
+											if (gms.length === 0) {
+												// Alert API user that they messed up
+												request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+											}
+
+											// Make a new return line to be sent to the roller
+											let normalText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\nResults have been messaged to the following GMs: ";
+											gms.forEach(e => {
+												normalText += "<@" + e + "> ";
+											});
+
+											// Send the return message as a DM or normal message depening on if the channel is set
+											if ((query.get("channel") || "").length > 0) {
+												await sendMessage(query.get("channel") || "", normalText).catch(() => {
+													request.respond({ status: Status.InternalServerError, body: "Message 00 failed to send." });
+													errorOut = true;
+												});
+											} else {
+												await sendDirectMessage(query.get("user") || "", normalText).catch(() => {
+													request.respond({ status: Status.InternalServerError, body: "Message 01 failed to send." });
+													errorOut = true;
+												});
+											}
+
+											// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
+											gms.forEach(async e => {
+												const msgs = utils.split2k(returnText);
+												const failedDMs = <string[]>[];
+												for (let i = 0; ((failedDMs.indexOf(e) === -1) && (i < msgs.length)); i++) {
+													await sendDirectMessage(e, msgs[i]).catch( async () => {
+														failedDMs.push(e);
+														const failedSend = "WARNING: <@" + e + "> could not be messaged.  If this issue persists, make sure direct messages are allowed from this server."
+														// Send the return message as a DM or normal message depening on if the channel is set
+														if ((query.get("channel") || "").length > 0) {
+															await sendMessage(query.get("channel") || "", failedSend).catch(() => {
+																request.respond({ status: Status.InternalServerError, body: "Message 10 failed to send." });
+																errorOut = true;
+															});
+														} else {
+															await sendDirectMessage(query.get("user") || "", failedSend).catch(() => {
+																request.respond({ status: Status.InternalServerError, body: "Message 11 failed to send." });
+																errorOut = true;
+															});
+														}
+													});
+												}
+											});
+
+											// Handle closing the request out
+											if (errorOut) {
+												break;
+											} else {
+												request.respond({ status: Status.OK, body: normalText });
+												break;
+											}
+										} else {
+											// When not a GM roll, make sure the message is not too big
+											if (returnText.length > 2000) {
+												// If its too big, attempt to DM details to the roller
+												const msgs = utils.split2k(returnText);
+												let failed = false;
+												for (let i = 0; (!failed && (i < msgs.length)); i++) {
+													await sendDirectMessage(query.get("user") || "", msgs[i]).catch(() => {
+														failed = true;
+													});
+												}
+
+												// If DM fails to send, alert roller of the failure, else handle normally
+												if (failed) {
+													returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  WARNING: <@" + query.get("user") + "> could **NOT** be messaged full details for verification purposes.";
+												} else {
+													returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been messaged to <@" + query.get("user") + "> for verification purposes.";
+												}
+											}
+
+											// Send the return message as a DM or normal message depening on if the channel is set
+											if ((query.get("channel") || "").length > 0) {
+												await sendMessage(query.get("channel") || "", returnText).catch(() => {
+													request.respond({ status: Status.InternalServerError, body: "Message 20 failed to send." });
+													errorOut = true;
+												});
+											} else {
+												await sendDirectMessage(query.get("user") || "", returnText).catch(() => {
+													request.respond({ status: Status.InternalServerError, body: "Message 21 failed to send." });
+													errorOut = true;
+												});
+											}
+
+											// Handle closing the request out
+											if (errorOut) {
+												break;
+											} else {
+												request.respond({ status: Status.OK, body: returnText });
+												break;
+											}
+										}
+									} catch (err) {
+										// Handle any errors we missed
+										console.log(err)
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+									}
+								} else {
+									// Alert API user that they messed up
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they shouldn't be doing this
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						default:
+							// Alert API user that they messed up
+							request.respond({ status: Status.NotFound, body: STATUS_TEXT.get(Status.NotFound) });
+							break;
+					}
+					break;
+				default:
+					// Alert API user that they messed up
+					request.respond({ status: Status.MethodNotAllowed, body: STATUS_TEXT.get(Status.MethodNotAllowed) });
+					break;
+			}
+		} else {
+			// Alert API user that they shouldn't be doing this
+			request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+		}
+	}
 }
