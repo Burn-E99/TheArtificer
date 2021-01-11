@@ -320,6 +320,7 @@ if (config.api.enable) {
 								if (query.has("n") && query.has("m")) {
 									// Alert API user that they shouldn't be doing this
 									request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+									break;
 								}
 
 								// Super secure authorization
@@ -336,6 +337,7 @@ if (config.api.enable) {
 										if (rollCmd.length === 0) {
 											// Alert API user that they messed up
 											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+											break;
 										}
 
 										// Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
@@ -376,6 +378,7 @@ if (config.api.enable) {
 											if (gms.length === 0) {
 												// Alert API user that they messed up
 												request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+												break;
 											}
 
 											// Make a new return line to be sent to the roller

@@ -1,6 +1,6 @@
 export const config = {
 	"name": "The Artificer",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"token": "the_bot_token",
 	"prefix": "[[",
 	"postfix": "]]",
