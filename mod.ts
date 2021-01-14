@@ -15,14 +15,28 @@ import {
 	Message, Guild, sendMessage, sendDirectMessage,
 	cache
 } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
+
 import { serve } from "https://deno.land/std@0.83.0/http/server.ts";
 import { Status, STATUS_TEXT } from "https://deno.land/std@0.83.0/http/http_status.ts";
+
+import { Client } from "https://deno.land/x/mysql@v2.7.0/mod.ts";
+
+import nanoid from "https://deno.land/x/nanoid@v3.0.0/mod.ts"
 
 import utils from "./src/utils.ts";
 import solver from "./src/solver.ts";
 
 import config from "./config.ts";
 
+const dbClient = await new Client().connect({
+	hostname: config.db.host,
+	port: config.db.port,
+	db: config.db.name,
+	username: config.db.username,
+	password: config.db.password,
+});
+
+// Start up the Discord Bot
 startBot({
 	token: config.token,
 	intents: [Intents.GUILD_MESSAGES, Intents.DIRECT_MESSAGES, Intents.GUILDS],
@@ -140,6 +154,8 @@ startBot({
 
 				// Rest of this command is in a try-catch to protect all sends/edits from erroring out
 				try {
+					const originalCommand = config.prefix + command + " " + args.join(" ");
+
 					const m = await utils.sendIndirectMessage(message, "Rolling...", sendMessage, sendDirectMessage);
 
 					const modifiers = {
@@ -190,6 +206,13 @@ startBot({
 								if (modifiers.gms.length < 1) {
 									// If -gm is on and none were found, throw an error
 									m.edit("Error: Must specifiy at least one GM by mentioning them");
+
+									if (config.logRolls) {
+										// If enabled, log rolls so we can verify the bots math
+										dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, "NoGMsFound", m.id]).catch(e => {
+											console.log("Failed to insert into database 00", e);
+										});
+									}
 									return;
 								}
 
@@ -204,12 +227,19 @@ startBot({
 					// maxRoll and nominalRoll cannot both be on, throw an error
 					if (modifiers.maxRoll && modifiers.nominalRoll) {
 						m.edit("Error: Cannot maximise and nominise the roll at the same time");
+
+						if (config.logRolls) {
+							// If enabled, log rolls so we can verify the bots math
+							dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, "MaxAndNominal", m.id]).catch(e => {
+								console.log("Failed to insert into database 01", e);
+							});
+						}
 						return;
 					}
 
 					// Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituded in
 					const rollCmd = command + " " + args.join(" ");
-					const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, modifiers.maxRoll, modifiers.nominalRoll) || { error: true, errorMsg: "Error: Empty message", line1: "", line2: "", line3: "" };
+					const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, modifiers.maxRoll, modifiers.nominalRoll) || { error: true, errorCode: "EmptyMessage", errorMsg: "Error: Empty message", line1: "", line2: "", line3: "" };
 
 					let returnText = "";
 
@@ -217,6 +247,13 @@ startBot({
 					if (returnmsg.error) {
 						returnText = returnmsg.errorMsg;
 						m.edit(returnText);
+
+						if (config.logRolls) {
+							// If enabled, log rolls so we can verify the bots math
+							dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, returnmsg.errorCode, m.id]).catch(e => {
+								console.log("Failed to insert into database 02", e);
+							});
+						}
 						return;
 					} else {
 						// Else format the output using details from the solver
@@ -248,6 +285,13 @@ startBot({
 
 						// Finally send the text
 						m.edit(normalText);
+
+						if (config.logRolls) {
+							// If enabled, log rolls so we can verify the bots math
+							dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,0)", [originalCommand, returnText, m.id]).catch(e => {
+								console.log("Failed to insert into database 03", e);
+							});
+						}
 					} else {
 						// When not a GM roll, make sure the message is not too big
 						if (returnText.length > 2000) {
@@ -270,6 +314,13 @@ startBot({
 
 						// Finally send the text
 						m.edit(returnText);
+
+						if (config.logRolls) {
+							// If enabled, log rolls so we can verify the bots math
+							dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,0)", [originalCommand, returnText, m.id]).catch(e => {
+								console.log("Failed to insert into database 04", e);
+							});
+						}
 					}
 				} catch (err) {
 					console.error("Something failed 71");
@@ -291,14 +342,26 @@ if (config.api.enable) {
 
 	// Catching every request made to the server
 	for await (const request of server) {
+		// Check if user is authenticated to be using this API
+		let authenticated = false;
+		let apiUserid = 0;
 
-		// Super secure authentication
-		const authenticated = true;
+		// Check the requests API key
+		if (request.headers.has("X-Api-Key")) {
+			// Get the userid and flags for the specific key
+			const dbApiQuery = await dbClient.query("SELECT userid, active, banned FROM all_keys WHERE apiKey = ?", [request.headers.get("X-Api-Key")]);
+
+			// If only one user returned, is not banned, and is currently active, mark as authenticated
+			if (dbApiQuery.length === 1 && dbApiQuery[0].active && !dbApiQuery[0].banned) {
+				apiUserid = dbApiQuery[0].userid;
+				authenticated = true;
+			}
+		}
 
 		if (authenticated) {
 			// Get path and query as a string
 			const [path, tempQ] = request.url.split("?");
-
+	
 			// Turn the query into a map (if it exists)
 			const query = new Map<string, string>();
 			if (tempQ !== undefined) {
@@ -323,8 +386,14 @@ if (config.api.enable) {
 									break;
 								}
 
-								// Super secure authorization
-								const authorized = true;
+								// Check if user is authenticated to use this endpoint
+								let authorized = false;
+
+								// Check if the db has the requested userid/channelid combo, and that the requested userid matches the userid linked with the api key
+								const dbChannelQuery = await dbClient.query("SELECT active, banned FROM allowed_channels WHERE userid = ? AND channelid = ?", [parseInt(query.get("user") || ""), parseInt(query.get("channel") || "")])
+								if (dbChannelQuery.length === 1 && (apiUserid === parseInt(query.get("user") || "")) && dbChannelQuery[0].active && !dbChannelQuery[0].banned) {
+									authorized = true;
+								}
 
 								if (authorized) {
 									// Rest of this command is in a try-catch to protect all sends/edits from erroring out
@@ -337,6 +406,11 @@ if (config.api.enable) {
 										if (rollCmd.length === 0) {
 											// Alert API user that they messed up
 											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+
+											// Always log API rolls for abuse detection
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [rollCmd, "EmptyInput", null]).catch(e => {
+												console.log("Failed to insert into database 10", e);
+											});
 											break;
 										}
 
@@ -348,11 +422,16 @@ if (config.api.enable) {
 
 										// Alert users why this message just appeared and how they can report abues pf this feature
 										const apiPrefix = "The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <" + config.api.supportURL + ">\n\n";
-										let returnText = "";
+										let m, returnText = "";
 
 										// Handle sending the error message to whoever called the api
 										if (returnmsg.error) {
 											request.respond({ status: Status.InternalServerError, body: returnmsg.errorMsg });
+
+											// Always log API rolls for abuse detection
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [rollCmd, returnmsg.errorCode, null]).catch(e => {
+												console.log("Failed to insert into database 11", e);
+											});
 											break;
 										} else {
 											returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2;
@@ -378,6 +457,11 @@ if (config.api.enable) {
 											if (gms.length === 0) {
 												// Alert API user that they messed up
 												request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+
+												// Always log API rolls for abuse detection
+												dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [rollCmd, "NoGMsSent", null]).catch(e => {
+													console.log("Failed to insert into database 12", e);
+												});
 												break;
 											}
 
@@ -389,12 +473,12 @@ if (config.api.enable) {
 
 											// Send the return message as a DM or normal message depening on if the channel is set
 											if ((query.get("channel") || "").length > 0) {
-												await sendMessage(query.get("channel") || "", normalText).catch(() => {
+												m = await sendMessage(query.get("channel") || "", normalText).catch(() => {
 													request.respond({ status: Status.InternalServerError, body: "Message 00 failed to send." });
 													errorOut = true;
 												});
 											} else {
-												await sendDirectMessage(query.get("user") || "", normalText).catch(() => {
+												m = await sendDirectMessage(query.get("user") || "", normalText).catch(() => {
 													request.respond({ status: Status.InternalServerError, body: "Message 01 failed to send." });
 													errorOut = true;
 												});
@@ -405,23 +489,28 @@ if (config.api.enable) {
 												const msgs = utils.split2k(returnText);
 												const failedDMs = <string[]>[];
 												for (let i = 0; ((failedDMs.indexOf(e) === -1) && (i < msgs.length)); i++) {
-													await sendDirectMessage(e, msgs[i]).catch( async () => {
+													await sendDirectMessage(e, msgs[i]).catch(async () => {
 														failedDMs.push(e);
 														const failedSend = "WARNING: <@" + e + "> could not be messaged.  If this issue persists, make sure direct messages are allowed from this server."
 														// Send the return message as a DM or normal message depening on if the channel is set
 														if ((query.get("channel") || "").length > 0) {
-															await sendMessage(query.get("channel") || "", failedSend).catch(() => {
+															m = await sendMessage(query.get("channel") || "", failedSend).catch(() => {
 																request.respond({ status: Status.InternalServerError, body: "Message 10 failed to send." });
 																errorOut = true;
 															});
 														} else {
-															await sendDirectMessage(query.get("user") || "", failedSend).catch(() => {
+															m = await sendDirectMessage(query.get("user") || "", failedSend).catch(() => {
 																request.respond({ status: Status.InternalServerError, body: "Message 11 failed to send." });
 																errorOut = true;
 															});
 														}
 													});
 												}
+											});
+
+											// Always log API rolls for abuse detection
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [rollCmd, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+												console.log("Failed to insert into database 13", e);
 											});
 
 											// Handle closing the request out
@@ -453,16 +542,21 @@ if (config.api.enable) {
 
 											// Send the return message as a DM or normal message depening on if the channel is set
 											if ((query.get("channel") || "").length > 0) {
-												await sendMessage(query.get("channel") || "", returnText).catch(() => {
+												m = await sendMessage(query.get("channel") || "", returnText).catch(() => {
 													request.respond({ status: Status.InternalServerError, body: "Message 20 failed to send." });
 													errorOut = true;
 												});
 											} else {
-												await sendDirectMessage(query.get("user") || "", returnText).catch(() => {
+												m = await sendDirectMessage(query.get("user") || "", returnText).catch(() => {
 													request.respond({ status: Status.InternalServerError, body: "Message 21 failed to send." });
 													errorOut = true;
 												});
 											}
+
+											// If enabled, log rolls so we can verify the bots math
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [rollCmd, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+												console.log("Failed to insert into database 14", e);
+											});
 
 											// Handle closing the request out
 											if (errorOut) {

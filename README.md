@@ -1,9 +1,9 @@
 # The Artificer - A Dice Rolling Discord Bot
-Version 1.1.1 - 2020/01/11
+Version 1.2.0 - 2020/01/14
 
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
-This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit mulitplication (such as `4(12 + 20)`).
+This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit multiplication (such as `4(12 + 20)`).
 
 ## Using The Artificer
 I am hosting this bot for public use and you may find its invite link below.  If you would like to host this bot yourself, details of how to do so are found at the end of this README, but I do not recommend this unless you are experienced with running Discord bots.
@@ -65,13 +65,13 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
 
 ## The Artificer API
-API is currently in development, details on usage and how to gain privilaged access will be added here when the API is feature complete and secured.
+API is currently in development, details on usage and how to gain privileged access will be added here when the API is feature complete and secured.
 
 ## Problems?  Feature requests?
 If you run into any errors or problems with the bot, or think you have a good idea to add to the bot, please submit a new GitHub issue detailing it.  If you don't have a GitHub account, a report command (detailed above) is provided for use in Discord.
 
 ---
-## Running The Artificer
+## Self Hosting The Artificer
 The Artificer was built on Deno `v1.6.3` using Discodeno `v10.0.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
 
 Starting the bot is simply done with `deno run --allow-net .\mod.ts`.

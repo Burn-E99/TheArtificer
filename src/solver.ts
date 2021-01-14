@@ -725,6 +725,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 	const returnmsg = {
 		error: false,
 		errorMsg: "",
+		errorCode: "",
 		line1: "",
 		line2: "",
 		line3: ""
@@ -960,6 +961,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 		// Fill in the return block
 		returnmsg.error = true;
+		returnmsg.errorCode = solverError.message;
 		returnmsg.errorMsg = errorMsg;
 	}
 

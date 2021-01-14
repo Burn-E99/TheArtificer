@@ -23,6 +23,7 @@ export type SolvedStep = {
 export type SolvedRoll = {
 	error: boolean,
 	errorMsg: string,
+	errorCode: string,
 	line1: string,
 	line2: string,
 	line3: string
