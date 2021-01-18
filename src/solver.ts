@@ -862,7 +862,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 			}
 
 			// Populate line2 (the results) and line3 (the details) with their data
-			line2 += preFormat + e.rollTotal + postFormat + escapeCharacters(e.rollPostFormat, "|*_~`");
+			line2 += preFormat + e.rollTotal + postFormat + escapeCharacters(e.rollPostFormat, "|*_~`") + " ";
 
 			line3 += "`" + e.initConfig + "` = " + e.rollDetails + " = " + preFormat + e.rollTotal + postFormat + "\n";
 		});

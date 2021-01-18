@@ -26,8 +26,9 @@ await dbClient.execute(`
 	CREATE TABLE roll_log (
 		id int unsigned NOT NULL AUTO_INCREMENT,
 		input text NOT NULL,
-		resultid bigint,
+		resultid bigint NULL,
 		result longtext NOT NULL,
+		createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		api tinyint(1) NOT NULL,
 		error tinyint(1) NOT NULL,
 		PRIMARY KEY (id),
@@ -42,12 +43,14 @@ await dbClient.execute(`
 	CREATE TABLE all_keys (
 		userid bigint unsigned NOT NULL,
 		apiKey char(25) NOT NULL,
+		email char(255) NULL,
 		createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		active tinyint(1) NOT NULL DEFAULT 1,
 		banned tinyint(1) NOT NULL DEFAULT 0,
 		PRIMARY KEY (userid),
-		UNIQUE KEY api_key_userid_UNIQUE (userid),
-		UNIQUE KEY api_key_apiKey_UNIQUE (apiKey)
+		UNIQUE KEY all_keys_userid_UNIQUE (userid),
+		UNIQUE KEY all_keys_apiKey_UNIQUE (apiKey),
+		UNIQUE KEY all_keys_email_UNIQUE (email)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
 console.log("Table created");

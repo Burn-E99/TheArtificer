@@ -1,5 +1,5 @@
 # The Artificer - A Dice Rolling Discord Bot
-Version 1.2.0 - 2020/01/14
+Version 1.3.0 - 2020/01/18
 
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
@@ -39,6 +39,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * Any math (limited to exponentials, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
   * PI and e are available for use.
   * Paramaters for rolling:
+
 	|  Paramater    |  Required?  |  Repeatable?  | Description                                                                                      |
 	|---------------|-------------|---------------|--------------------------------------------------------------------------------------------------|
 	|  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                   |
@@ -65,18 +66,63 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
 
 ## The Artificer API
-API is currently in development, details on usage and how to gain privileged access will be added here when the API is feature complete and secured.
+The Artificer features an API that allows authenticated users to roll dice into Discord from third party applications (such as Excel macros).  The API has a couple endpoints exposed to all authenticated users allowing management of channels that your API key can send rolls to.  APIs requiring administrative access are not listed below.
+
+Every API request **requires** the header `X-Api-Key` with the value set to the API key granted to you.
+
+* If an API fails, these are the possible responses:
+  * `400` - Bad Request - Query parameters missing or malformed.
+  * `403` - Forbidden - API Key is not authenticated or user does not match the owner of the API Key.
+  * `404` - Not Found - Requested endpoint does not exist.
+  * `429` - Too Many Requests - API rate limit exceeded, please slow down.
+  * `500` - Internal Server Error - Something broke, if this continues to happen, please submit a GitHub issue.
+
+Available Endpoints:
+
+* `/api/roll`
+  * Required query parameters:
+    * `rollstr` - A roll string formatted identically to the roll command detailed in the "Available Commands" section.
+    * `channel` - The Discord Channel ID that the bot is to send the results into.
+    * `user` - Your Discord User ID.
+  * Returns:
+    * `200` - OK - Results of the roll should be found in Discord, but also are returned as a string via the API.
+* `/api/channel`
+  * Required query parameters:
+    * `user` - Your Discord ID.
+  * Returns:
+    * `200` - OK - JSON Array as a string containing allowed channels with their active and banned statuses.
+* `/api/channel/add`
+  * Required query parameters:
+    * `channel` - The Discord Channel ID you wish to whitelist for your user ID/API Key combo.
+    * `user` - Your Discord ID.
+  * Returns:
+    * `200` - OK - Nothing to be returned.
+* `/api/channel/activate`
+  * Required query parameters:
+    * `channel` - The Discord Channel ID you wish to reactivate.
+    * `user` - Your Discord ID.
+  * Returns:
+    * `200` - OK - Nothing to be returned.
+* `/api/channel/deactivate`
+  * Required query parameters:
+    * `channel` - The Discord Channel ID you wish to deactivate.
+    * `user` - Your Discord ID.
+  * Returns:
+    * `200` - OK - Nothing to be returned.
 
 ## Problems?  Feature requests?
 If you run into any errors or problems with the bot, or think you have a good idea to add to the bot, please submit a new GitHub issue detailing it.  If you don't have a GitHub account, a report command (detailed above) is provided for use in Discord.
 
 ---
+
 ## Self Hosting The Artificer
 The Artificer was built on Deno `v1.6.3` using Discodeno `v10.0.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
 
-Starting the bot is simply done with `deno run --allow-net .\mod.ts`.
+You will also need to install and setup a MySQL database with a user for the bot to use to add/modify the database.  This user must have the "DB Manager" admin rights and "REFERENCES" Global Privalages.  Once the DB is installed and a user is setup, run the provided `initDB.ts` to create the schema and tables.
 
-If you choose to run version 1.1.0 or newer, ensure you disable the API in `config.ts` or verify you have properly secured your instance of The Artificer.
+Once everything is set up, starting the bot can simply be done with `deno run --allow-net .\mod.ts`.
+
+If you choose to run version `1.1.0` or newer, ensure you disable the API in `config.ts` or verify you have properly secured your instance of The Artificer.  If you enable the API, you will need to manually add an entry into the `all_keys`.  This entry's `userid` will need to match the `api.admin` in `config.ts` and the `apiKey` will need to be a 25 character `nanoid`.
 
 ---
 

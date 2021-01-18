@@ -21,7 +21,7 @@ import { Status, STATUS_TEXT } from "https://deno.land/std@0.83.0/http/http_stat
 
 import { Client } from "https://deno.land/x/mysql@v2.7.0/mod.ts";
 
-import nanoid from "https://deno.land/x/nanoid@v3.0.0/mod.ts"
+import { nanoid } from "https://deno.land/x/nanoid@v3.0.0/mod.ts";
 
 import utils from "./src/utils.ts";
 import solver from "./src/solver.ts";
@@ -111,17 +111,6 @@ startBot({
 				});
 			}
 
-			// [[popcat or [[pop or [[p
-			// popcat animated emoji
-			else if (command === "popcat" || command === "pop" || command === "p") {
-				utils.sendIndirectMessage(message, `<${config.emojis.popcat.animated ? "a" : ""}:${config.emojis.popcat.name}:${config.emojis.popcat.id}>`, sendMessage, sendDirectMessage).catch(err => {
-					console.error("Failed to send message 40", message, err);
-				});
-				message.delete().catch(err => {
-					console.error("Failed to delete message 41", message, err);
-				});
-			}
-
 			// [[report or [[r (command that failed)
 			// Manually report a failed roll
 			else if (command === "report" || command === "r") {
@@ -141,9 +130,9 @@ startBot({
 				});
 			}
 
-			// [[
+			// [[roll]]
 			// Dice rolling commence!
-			else {
+			else if ((command + args.join("")).indexOf(config.postfix) > -1) {
 				// If DEVMODE is on, only allow this command to be used in the devServer
 				if (DEVMODE && message.guildID !== config.devServer) {
 					utils.sendIndirectMessage(message, "Command is in development, please try again later.", sendMessage, sendDirectMessage).catch(err => {
@@ -326,6 +315,28 @@ startBot({
 					console.error("Something failed 71");
 				}
 			}
+
+			// [[emoji or [[emojialias
+			// Check if the unhandled command is an emoji request
+			else {
+				// Start looping thru the possible emojis
+				config.emojis.some(e => {
+					// If a match gets found
+					if (e.aliases.indexOf(command || "") > -1) {
+						// Send the needed emoji
+						utils.sendIndirectMessage(message, `<${e.animated ? "a" : ""}:${e.name}:${e.id}>`, sendMessage, sendDirectMessage).catch(err => {
+							console.error("Failed to send message 40", message, err);
+						});
+						// And attempt to delete if needed
+						if (e.deleteSender) {
+							message.delete().catch(err => {
+								console.error("Failed to delete message 41", message, err);
+							});
+						}
+						return true;
+					}
+				});
+			}
 		}
 	}
 });
@@ -338,30 +349,59 @@ if (DEBUG) {
 // Start up the API for rolling from third party apps (like excel macros)
 if (config.api.enable) {
 	const server = serve({ hostname: "0.0.0.0", port: config.api.port });
-	console.log(`HTTP webserver running at: http://localhost:${config.api.port}/`);
+	console.log(`HTTP api running at: http://localhost:${config.api.port}/`);
+
+	// rateLimitTime holds all users with the last time they started a rate limit timer
+	const rateLimitTime = new Map<string, number>();
+	// rateLimitCnt holds the number of times the user has called the api in the current rate limit timer
+	const rateLimitCnt = new Map<string, number>();
 
 	// Catching every request made to the server
 	for await (const request of server) {
 		// Check if user is authenticated to be using this API
 		let authenticated = false;
-		let apiUserid = 0;
+		let rateLimited = false;
+		let updateRateLimitTime = false;
+		let apiUserid = 0n;
+		let apiUseridStr = "";
 
 		// Check the requests API key
 		if (request.headers.has("X-Api-Key")) {
 			// Get the userid and flags for the specific key
-			const dbApiQuery = await dbClient.query("SELECT userid, active, banned FROM all_keys WHERE apiKey = ?", [request.headers.get("X-Api-Key")]);
+			const dbApiQuery = await dbClient.query("SELECT userid FROM all_keys WHERE apiKey = ? AND active = 1 AND banned = 0", [request.headers.get("X-Api-Key")]);
 
 			// If only one user returned, is not banned, and is currently active, mark as authenticated
-			if (dbApiQuery.length === 1 && dbApiQuery[0].active && !dbApiQuery[0].banned) {
+			if (dbApiQuery.length === 1) {
 				apiUserid = dbApiQuery[0].userid;
 				authenticated = true;
+
+				// Rate limiting inits
+				apiUseridStr = apiUserid.toString();
+				const apiTimeNow = new Date().getTime();
+
+				// Check if user has sent a request recently
+				if (rateLimitTime.has(apiUseridStr) && (((rateLimitTime.get(apiUseridStr) || 0) + config.api.rateLimitTime) > apiTimeNow)) {
+					// Get current count
+					const currentCnt = rateLimitCnt.get(apiUseridStr) || 0;
+					if (currentCnt < config.api.rateLimitCnt) {
+						// Limit not yet exceeded, update count
+						rateLimitCnt.set(apiUseridStr, (currentCnt + 1));
+					} else {
+						// Limit exceeded, prevent API use
+						rateLimited = true;
+					}
+				} else {
+					// Update the maps
+					updateRateLimitTime = true;
+					rateLimitCnt.set(apiUseridStr, 1);
+				}
 			}
 		}
 
-		if (authenticated) {
+		if (authenticated && !rateLimited) {
 			// Get path and query as a string
 			const [path, tempQ] = request.url.split("?");
-	
+
 			// Turn the query into a map (if it exists)
 			const query = new Map<string, string>();
 			if (tempQ !== undefined) {
@@ -374,12 +414,239 @@ if (config.api.enable) {
 			// Handle the request
 			switch (request.method) {
 				case "GET":
-					switch (path) {
-						case "/roll":
-						case "/roll/":
-							// Make sure query contains all the needed parts
-							if (query.has("rollstr") && query.has("channel") && query.has("user")) {
+					switch (path.toLowerCase()) {
+						case "/api/key":
+						case "/api/key/":
+							if ((query.has("user") && ((query.get("user") || "").length > 0)) && (query.has("a") && ((query.get("a") || "").length > 0))) {
+								if (apiUserid === config.api.admin && apiUserid === BigInt(query.get("a"))) {
+									// Generate new secure key
+									const newKey = await nanoid(25);
 
+									// Flag to see if there is an error inside the catch
+									let erroredOut = false;
+
+									// Insert new key/user pair into the db
+									await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [BigInt(query.get("user")), newKey]).catch(e => {
+										console.log("Failed to insert into database 20");
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+										erroredOut = true;
+									});
+
+									// Exit this case now if catch errored
+									if (erroredOut) {
+										break;
+									} else {
+										// Send API key as response
+										request.respond({ status: Status.OK, body: JSON.stringify({ "key": newKey, "userid": query.get("user") }) });
+										break;
+									}
+								} else {
+									// Only allow the db admin to use this API
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they messed up
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						case "/api/key/ban":
+						case "/api/key/ban/":
+						case "/api/key/unban":
+						case "/api/key/unban/":
+						case "/api/key/activate":
+						case "/api/key/activate/":
+						case "/api/key/deactivate":
+						case "/api/key/deactivate/":
+							if ((query.has("a") && ((query.get("a") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
+								if (apiUserid === config.api.admin && apiUserid === BigInt(query.get("a"))) {
+									// Flag to see if there is an error inside the catch
+									let key,value,erroredOut = false;
+
+									// Determine key to edit
+									if (path.toLowerCase().indexOf("ban") > 0) {
+										key = "banned";
+									} else {
+										key = "active";
+									}
+
+									// Determine value to set
+									if (path.toLowerCase().indexOf("de") > 0 || path.toLowerCase().indexOf("un") > 0) {
+										value = 0;
+									} else {
+										value = 1;
+									}
+
+									// Execute the DB modification
+									await dbClient.execute("UPDATE all_keys SET ?? = ? WHERE userid = ?", [key, value, BigInt(query.get("user"))]).catch(e => {
+										console.log("Failed to update database 28");
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+										erroredOut = true;
+									});
+
+									// Exit this case now if catch errored
+									if (erroredOut) {
+										break;
+									} else {
+										// Send API key as response
+										request.respond({ status: Status.OK, body: STATUS_TEXT.get(Status.OK) });
+										break;
+									}
+								} else {
+									// Alert API user that they shouldn't be doing this
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they messed up
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						case "/api/channel":
+						case "/api/channel/":
+							if (query.has("user") && ((query.get("user") || "").length > 0)) {
+								if (apiUserid === BigInt(query.get("user"))) {
+									// Flag to see if there is an error inside the catch
+									let erroredOut = false;
+
+									// Get all channels userid has authorized
+									const dbAllowedChannelQuery = await dbClient.query("SELECT * FROM allowed_channels WHERE userid = ?", [BigInt(query.get("user"))]).catch(e => {
+										console.log("Failed to query database 22");
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+										erroredOut = true;
+									});
+
+									if (erroredOut) {
+										break;
+									} else {
+										// Customized strinification to handle BigInts correctly
+										const returnChannels = JSON.stringify(dbAllowedChannelQuery, (_key, value) => (typeof value === 'bigint' ? value.toString() : value));
+										// Send API key as response
+										request.respond({ status: Status.OK, body: returnChannels });
+										break;
+									}
+								} else {
+									// Alert API user that they shouldn't be doing this
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they messed up
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						case "/api/channel/add":
+						case "/api/channel/add/":
+							if ((query.has("user") && ((query.get("user") || "").length > 0)) && (query.has("channel") && ((query.get("channel") || "").length > 0))) {
+								if (apiUserid === BigInt(query.get("user"))) {
+									// Flag to see if there is an error inside the catch
+									let erroredOut = false;
+
+									// Insert new user/channel pair into the db
+									await dbClient.execute("INSERT INTO allowed_channels(userid,channelid) values(?,?)", [BigInt(query.get("user")), BigInt(query.get("channel"))]).catch(e => {
+										console.log("Failed to insert into database 21");
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+										erroredOut = true;
+									});
+
+									// Exit this case now if catch errored
+									if (erroredOut) {
+										break;
+									} else {
+										// Send API key as response
+										request.respond({ status: Status.OK, body: STATUS_TEXT.get(Status.OK) });
+										break;
+									}
+								} else {
+									// Alert API user that they shouldn't be doing this
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they messed up
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						case "/api/channel/ban":
+						case "/api/channel/ban/":
+						case "/api/channel/unban":
+						case "/api/channel/unban/":
+							if ((query.has("a") && ((query.get("a") || "").length > 0)) && (query.has("channel") && ((query.get("channel") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
+								if (apiUserid === config.api.admin && apiUserid === BigInt(query.get("a"))) {
+									// Flag to see if there is an error inside the catch
+									let value,erroredOut = false;
+
+									// Determine value to set
+									if (path.toLowerCase().indexOf("un") > 0) {
+										value = 0;
+									} else {
+										value = 1;
+									}
+
+									// Execute the DB modification
+									await dbClient.execute("UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?", [value, BigInt(query.get("user")), BigInt(query.get("channel"))]).catch(e => {
+										console.log("Failed to update database 24");
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+										erroredOut = true;
+									});
+
+									// Exit this case now if catch errored
+									if (erroredOut) {
+										break;
+									} else {
+										// Send API key as response
+										request.respond({ status: Status.OK, body: STATUS_TEXT.get(Status.OK) });
+										break;
+									}
+								} else {
+									// Alert API user that they shouldn't be doing this
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they messed up
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						case "/api/channel/activate":
+						case "/api/channel/activate/":
+						case "/api/channel/deactivate":
+						case "/api/channel/deactivate/":
+							if ((query.has("channel") && ((query.get("channel") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
+								if (apiUserid === BigInt(query.get("user"))) {
+									// Flag to see if there is an error inside the catch
+									let value,erroredOut = false;
+
+									// Determine value to set
+									if (path.toLowerCase().indexOf("de") > 0) {
+										value = 0;
+									} else {
+										value = 1;
+									}
+
+									// Update the requested entry
+									await dbClient.execute("UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?", [value, BigInt(query.get("user")), BigInt(query.get("channel"))]).catch(e => {
+										console.log("Failed to update database 26");
+										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
+										erroredOut = true;
+									});
+
+									// Exit this case now if catch errored
+									if (erroredOut) {
+										break;
+									} else {
+										// Send API key as response
+										request.respond({ status: Status.OK, body: STATUS_TEXT.get(Status.OK) });
+										break;
+									}
+								} else {
+									// Alert API user that they shouldn't be doing this
+									request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
+								}
+							} else {
+								// Alert API user that they messed up
+								request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+							}
+							break;
+						case "/api/roll":
+						case "/api/roll/":
+							// Make sure query contains all the needed parts
+							if ((query.has("rollstr") && ((query.get("rollstr") || "").length > 0)) && (query.has("channel") && ((query.get("channel") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
 								if (query.has("n") && query.has("m")) {
 									// Alert API user that they shouldn't be doing this
 									request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
@@ -390,8 +657,8 @@ if (config.api.enable) {
 								let authorized = false;
 
 								// Check if the db has the requested userid/channelid combo, and that the requested userid matches the userid linked with the api key
-								const dbChannelQuery = await dbClient.query("SELECT active, banned FROM allowed_channels WHERE userid = ? AND channelid = ?", [parseInt(query.get("user") || ""), parseInt(query.get("channel") || "")])
-								if (dbChannelQuery.length === 1 && (apiUserid === parseInt(query.get("user") || "")) && dbChannelQuery[0].active && !dbChannelQuery[0].banned) {
+								const dbChannelQuery = await dbClient.query("SELECT active, banned FROM allowed_channels WHERE userid = ? AND channelid = ?", [BigInt(query.get("user")), BigInt(query.get("channel"))])
+								if (dbChannelQuery.length === 1 && (apiUserid === BigInt(query.get("user"))) && dbChannelQuery[0].active && !dbChannelQuery[0].banned) {
 									authorized = true;
 								}
 
@@ -402,13 +669,14 @@ if (config.api.enable) {
 										let errorOut = false;
 										// Make sure rollCmd is not undefined
 										let rollCmd = query.get("rollstr") || "";
+										const originalCommand = query.get("rollstr");
 
 										if (rollCmd.length === 0) {
 											// Alert API user that they messed up
 											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [rollCmd, "EmptyInput", null]).catch(e => {
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "EmptyInput", null]).catch(e => {
 												console.log("Failed to insert into database 10", e);
 											});
 											break;
@@ -429,7 +697,7 @@ if (config.api.enable) {
 											request.respond({ status: Status.InternalServerError, body: returnmsg.errorMsg });
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [rollCmd, returnmsg.errorCode, null]).catch(e => {
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, returnmsg.errorCode, null]).catch(e => {
 												console.log("Failed to insert into database 11", e);
 											});
 											break;
@@ -459,7 +727,7 @@ if (config.api.enable) {
 												request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
 
 												// Always log API rolls for abuse detection
-												dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [rollCmd, "NoGMsSent", null]).catch(e => {
+												dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "NoGMsSent", null]).catch(e => {
 													console.log("Failed to insert into database 12", e);
 												});
 												break;
@@ -509,7 +777,7 @@ if (config.api.enable) {
 											});
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [rollCmd, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
 												console.log("Failed to insert into database 13", e);
 											});
 
@@ -554,7 +822,7 @@ if (config.api.enable) {
 											}
 
 											// If enabled, log rolls so we can verify the bots math
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [rollCmd, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
 												console.log("Failed to insert into database 14", e);
 											});
 
@@ -591,6 +859,14 @@ if (config.api.enable) {
 					request.respond({ status: Status.MethodNotAllowed, body: STATUS_TEXT.get(Status.MethodNotAllowed) });
 					break;
 			}
+
+			if (updateRateLimitTime) {
+				const apiTimeNow = new Date().getTime();
+				rateLimitTime.set(apiUseridStr, apiTimeNow);
+			}
+		} else if (authenticated && rateLimited) {
+			// Alert API user that they are doing this too often
+			request.respond({ status: Status.TooManyRequests, body: STATUS_TEXT.get(Status.TooManyRequests) });
 		} else {
 			// Alert API user that they shouldn't be doing this
 			request.respond({ status: Status.Forbidden, body: STATUS_TEXT.get(Status.Forbidden) });
