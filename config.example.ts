@@ -1,6 +1,6 @@
 export const config = {
 	"name": "The Artificer", // Name of the bot
-	"version": "1.2.0", // Version of the bot
+	"version": "1.3.1", // Version of the bot
 	"token": "the_bot_token", // Discord API Token for this bot
 	"prefix": "[[", // Prefix for all commands
 	"postfix": "]]", // Postfix for rolling command
