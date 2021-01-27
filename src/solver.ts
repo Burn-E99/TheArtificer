@@ -4,7 +4,7 @@
  * December 21, 2020
  */
 
-import { RollSet, SolvedStep, SolvedRoll } from "./solver.d.ts";
+import { RollSet, SolvedStep, SolvedRoll, ReturnData } from "./solver.d.ts";
 
 // MAXLOOPS determines how long the bot will attempt a roll
 // Default is 5000000 (5 million), which results in at most a 10 second delay before the bot calls the roll infinite or too complex
@@ -25,6 +25,18 @@ const compareRolls = (a: RollSet, b: RollSet): number => {
 		return -1;
 	}
 	if (a.roll > b.roll) {
+		return 1;
+	}
+	return 0;
+};
+
+// compareTotalRolls(a, b) returns -1|0|1
+// compareTotalRolls is used to order an array of RollSets by RollSet.roll
+const compareTotalRolls = (a: ReturnData, b: ReturnData): number => {
+	if (a.rollTotal < b.rollTotal) {
+		return -1;
+	}
+	if (a.rollTotal > b.rollTotal) {
 		return 1;
 	}
 	return 0;
@@ -134,7 +146,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 	}
 
 	// Rejoin all remaining parts
-	let remains = dpts.join("");
+	let remains = dpts.join("d");
 	// Get the die size out of the remains and into the rollConf
 	rollConf.dieSize = parseInt(remains.slice(0, afterDieIdx));
 	remains = remains.slice(afterDieIdx);
@@ -721,7 +733,7 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 
 // parseRoll(fullCmd, localPrefix, localPostfix, maximiseRoll, nominalRoll)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
-const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, maximiseRoll: boolean, nominalRoll: boolean): SolvedRoll => {
+const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, maximiseRoll: boolean, nominalRoll: boolean, order: string): SolvedRoll => {
 	const returnmsg = {
 		error: false,
 		errorMsg: "",
@@ -736,7 +748,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 		// Split the fullCmd by the command prefix to allow every roll/math op to be handled individually
 		const sepRolls = fullCmd.split(localPrefix);
 
-		const tempReturnData = [];
+		const tempReturnData: ReturnData[] = [];
 
 		// Loop thru all roll/math ops
 		for (let i = 0; i < sepRolls.length; i++) {
@@ -841,6 +853,15 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 		} else if (nominalRoll) {
 			line1 = " requested the theoretical nominal of: `[[" + fullCmd + "`";
 			line2 = "Theoretical Nominal Results: ";
+		} else if (order === "a") {
+			line1 = " requested the following rolls to be ordered from least to greatest: `[[" + fullCmd + "`";
+			line2 = "Results: ";
+			tempReturnData.sort(compareTotalRolls);
+		} else if (order === "d") {
+			line1 = " requested the following rolls to be ordered from greatest to least: `[[" + fullCmd + "`";
+			line2 = "Results: ";
+			tempReturnData.sort(compareTotalRolls);
+			tempReturnData.reverse();
 		} else {
 			line1 = " rolled: `[[" + fullCmd + "`";
 			line2 = "Results: ";
@@ -862,10 +883,22 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 			}
 
 			// Populate line2 (the results) and line3 (the details) with their data
-			line2 += preFormat + e.rollTotal + postFormat + escapeCharacters(e.rollPostFormat, "|*_~`") + " ";
+			if (order === "") {
+				line2 += preFormat + e.rollTotal + postFormat + escapeCharacters(e.rollPostFormat, "|*_~`");
+			} else {
+				// If order is on, turn rolls into csv without formatting
+				line2 += preFormat + e.rollTotal + postFormat + ", ";
+			}
+
+			line2 = line2.replace(/\*\*\*\*/g, "** **").replace(/____/g, "__ __").replace(/~~~~/g, "~~ ~~");
 
 			line3 += "`" + e.initConfig + "` = " + e.rollDetails + " = " + preFormat + e.rollTotal + postFormat + "\n";
 		});
+
+		// If order is on, remove trailing ", "
+		if (order !== "") {
+			line2 = line2.substr(0, (line2.length - 2));
+		}
 
 		// Fill in the return block
 		returnmsg.line1 = line1;
@@ -951,7 +984,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 				errorMsg = "Error: One or more operands reached NaN, check input";
 				break;
 			case "UndefinedStep":
-				errorMsg = "Error: Roll became undefined, one ore more operands are not a roll or a number, check input";
+				errorMsg = "Error: Roll became undefined, one or more operands are not a roll or a number, check input";
 				break;
 			default:
 				console.error(errorName, errorDetails);

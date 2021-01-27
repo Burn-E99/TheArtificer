@@ -19,6 +19,16 @@ export type SolvedStep = {
 	containsFail: boolean
 };
 
+// ReturnData is the temporary internal type used before getting turned into SolvedRoll
+export type ReturnData = {
+	rollTotal: number,
+	rollPostFormat: string,
+	rollDetails: string,
+	containsCrit: boolean,
+	containsFail: boolean,
+	initConfig: string
+};
+
 // SolvedRoll is the complete solved and formatted roll, or the error said roll created
 export type SolvedRoll = {
 	error: boolean,

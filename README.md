@@ -38,7 +38,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference), this will no different.
   * Any math (limited to exponentials, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
   * PI and e are available for use.
-  * Paramaters for rolling:
+  * Parameters for rolling:
 
 	|  Paramater    |  Required?  |  Repeatable?  | Description                                                                                      |
 	|---------------|-------------|---------------|--------------------------------------------------------------------------------------------------|
@@ -57,13 +57,20 @@ The Artificer comes with a few supplemental commands to the main rolling command
 	|  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                              |
 	|  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                 |
 
-  * If the paramater is Required, it must be provided at all times.
-  * If the paramater is Repeatable, it may occur multiple times in the roll configuration.
+  * If the parameter is Required, it must be provided at all times.
+  * If the parameter is Repeatable, it may occur multiple times in the roll configuration.
   * Examples:
     * `[[4d20]]` will roll 4 d20 dice and add them together.
     * `[[4d20r1!]]` will roll 4 d20 dice, rerolling any dice that land on 1, and repeatedly rolling a new d20 for any critical success rolled.
     * `[[d20/40]]` will roll a d20 die and divide it by 40.
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
+  * This command also has some useful flags that can used.  These flags simply need to be placed after all rolls in the message:
+    * `-nd` - No Details - Suppresses all details of the requested roll
+    * `-s` - Spoiler - Spoilers all details of the requested roll
+    * `-m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with -n
+    * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with -m
+    * `-gm @user1 @user2 ... @usern` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
+    * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
 
 ## The Artificer API
 The Artificer features an API that allows authenticated users to roll dice into Discord from third party applications (such as Excel macros).  The API has a couple endpoints exposed to all authenticated users allowing management of channels that your API key can send rolls to.  APIs requiring administrative access are not listed below.
@@ -84,6 +91,13 @@ Available Endpoints:
     * `rollstr` - A roll string formatted identically to the roll command detailed in the "Available Commands" section.
     * `channel` - The Discord Channel ID that the bot is to send the results into.
     * `user` - Your Discord User ID.
+  * Optional query parameters (these parameters do not require values unless specified):
+    * `nd` - No Details - Suppresses all details of the requested roll.
+    * `s` - Spoiler - Spoilers all details of the requested roll.
+    * `m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with Nominal roll.
+    * `n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with Maximise roll.
+    * `gm` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs.  Takes a comma separated list of Discord User IDs.
+    * `o` - Order Roll - Rolls the requested roll and orders the results in the requested direction.  Takes a single character: `a` or `d`.
   * Returns:
     * `200` - OK - Results of the roll should be found in Discord, but also are returned as a string via the API.
 * `/api/channel`
@@ -118,7 +132,7 @@ If you run into any errors or problems with the bot, or think you have a good id
 ## Self Hosting The Artificer
 The Artificer was built on Deno `v1.6.3` using Discodeno `v10.0.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
 
-You will also need to install and setup a MySQL database with a user for the bot to use to add/modify the database.  This user must have the "DB Manager" admin rights and "REFERENCES" Global Privalages.  Once the DB is installed and a user is setup, run the provided `initDB.ts` to create the schema and tables.
+You will also need to install and setup a MySQL database with a user for the bot to use to add/modify the database.  This user must have the "DB Manager" admin rights and "REFERENCES" Global Privileges.  Once the DB is installed and a user is setup, run the provided `initDB.ts` to create the schema and tables.
 
 Once everything is set up, starting the bot can simply be done with `deno run --allow-net .\mod.ts`.
 

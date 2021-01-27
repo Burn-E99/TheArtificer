@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="HandheldFriendly" content="true"/> 
+		
+		<meta name="author" content="Ean Milligan (ean@milligan.dev)">
+		<meta name="designer" content="Ean Milligan (ean@milligan.dev)">
+		<meta name="publisher" content="Ean Milligan (ean@milligan.dev)">
+		
+		<title>The Artificer Discord Bot</title>
+		<meta name="description" content="The Artificer Discord Bot is a advanced dice rolling bot utilizing the Roll20 format.  The Artificer is fast and reliable and free to use.">
+		<meta name="keywords" content="The Artificer, Discord bot, dice roller, dice rolling, roll, rolling, dice, roller, bot, artificer">
+		<meta name="robots" content="index, follow">
+		<meta name="revisit-after" content="7 days">
+		<meta name="distribution" content="web">
+		<meta name="robots" content="noodp, noydir">
+
+		<meta name="distribution" content="web">
+		<meta name="web_author" content="Ean Milligan (ean@milligan.dev)">
+
+		<link rel="shortcut icon" href="./favicon.ico">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cinzel|Play"> 
+		
+		<link rel="stylesheet" href="./theme.css">
+		<link rel="stylesheet" href="./main.css">
+
+		<script type="text/javascript" src="./main.js"></script>
+	</head>
+	<body>
+		<div id="page">
+			<div id="header">
+				<div id="header-left">
+					The Artificer
+				</div>
+				<div id="header-right">
+					<a href="https://discord.com/api/oauth2/authorize?client_id=789045930011656223&permissions=2048&scope=bot" target="_blank">Invite Me!</a>
+					<span>|</span>
+					<a href="https://artificer.eanm.dev/" target="_blank">API Tools</a>
+				</div>
+			</div>
+			<div id="page-contents">
+				<div id="slogan">
+					<h1>The One-Stop Discord Bot for Rolling Dice</h1>
+				</div>
+				<div id="logo-desc" class="slug">
+					<div id="logo">
+						<img src="./img/TheArtificer.png" alt="The Artificer Logo" />
+					</div>
+					<div id="description">
+						<p>The Artificer is an open source Discord bot that specializes in rolling dice. The bot utilizes the compact <a href="https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference" target="_blank">Roll20 formatting</a> for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).</p>
+						<p>This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods. This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as <code>"Tarantallegra!"</code>, what is that supposed to mean) and its inability to handle implicit multiplication (such as <code>4(12 + 20)</code>).</p>
+						<p><a href="https://discord.com/api/oauth2/authorize?client_id=789045930011656223&permissions=2048&scope=bot" target="_blank">Invite The Artificer to Your Server</a> | <a href="https://discord.gg/peHASXMZYv" target="_blank">Support Server</a> | <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a></p>
+					</div>
+				</div>
+				<div id="examples">
+					<h2>Example Commands:</h2>
+					<div class="slug">
+						<h3>Rolling Command:</h3>
+						<p>This command is what the bot is all about.  Using the <a href="https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference" target="_blank">Roll20 format</a>, any form of dice roll can be performed, with any needed math calculated into the results.  This command can even be used as a fairly advanced calculator, supporting parenthesis, exponentials, multiplication, division, modulus, addition, and subtraction.</p>
+						<h4 class="example">Examples:</h4>
+						<p class="example"><code>[[d20]]</code> - Rolls a simple d20 without anything fancy</p>
+						<p class="example"><code>[[4d20r1!]]</code> - Rolls 4 d20 dice, rerolling any dice that land on 1, and repeatedly rolling a new d20 for any critical success rolled</p>
+						<p class="example"><code>[[((d20+20) - 10) / 5]]</code> - Rolls a d20 die, adds 20 to that roll, subtracts off 10, and finally divide by 5</p>
+						<p class="example"><code>[[7d67d5]]</code> - Rolls a 7 d67 dice, dropping the lowest 5 dice</p>
+						<p class="example"><code>[[(32 * 12) + 5]]</code> - Multiplies 32 and 12, and adds 5 to that result</p>
+						<p class="example">And infinitely more possibilities.  Any equations and/or rolls can be thrown at the bot and it will compute it quickly.  Run the <code>[[rollhelp</code> command for full details of this command.</p>
+						<br/>
+						<h3>Supporting Commands:</h3>
+						<p>The following commands are just some basic utility commands.</p>
+						<h4 class="example">Examples:</h4>
+						<p class="example"><code>[[stats</code> or <code>[[s</code> - Shows the stats on how many servers and users are using the bot</p>
+						<p class="example"><code>[[help</code> or <code>[[?</code> - Gives the full list of available commands</p>
+						<p class="example"><code>[[rollhelp</code> or <code>[[??</code> - Gives the full details on the roll command, explaining the <a href="https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference" target="_blank">Roll20 format</a></p>
+					</div>
+				</div>
+				<div id="api">
+					<h2>The Artificer API</h2>
+					<div class="slug">
+						<p>Trusted users will be provided with an API key that allows rolling of dice from third party programs.  This API was developed to let DnD groups that use Excel to manage player sheets to roll dice directly from Excel to Discord.  The API is very restricted and has a harsh rate limit to prevent spam.</p>
+						<p>There is a ZERO tolerance for API abuse.  If abuse is detected or reported, the user will be banned with no chance to appeal.  Currently, API keys are only given out to users known personally to the devs of this bot, but plans are in the works to open this up to more users using a form of registration.</p>
+						<p>If you happen to be a trusted user, information on the API endpoints can be found in the <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a>.  Basic administration of your API key can be done using the API Tools linked at the top of this page.</p>
+					</div>
+				</div>
+				<div id="final">$nbsp;</div>
+			</div>
+			<div id="footer">
+				<div id="footer-left">
+					Built by <a href="https://github.com/Burn-E99/" target="_blank">Ean Milligan</a>
+				</div>
+				<div id="footer-right">
+					Version 1.3.2
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -13,7 +13,8 @@ import {
 	startBot, editBotsStatus,
 	Intents, StatusTypes, ActivityType,
 	Message, Guild, sendMessage, sendDirectMessage,
-	cache
+	cache,
+	MessageContent
 } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
 
 import { serve } from "https://deno.land/std@0.83.0/http/server.ts";
@@ -95,6 +96,14 @@ startBot({
 				});
 			}
 
+			// [[rollhelp or [[rh or [[hr
+			// Help command specifically for the roll command
+			else if (command === "rollhelp" || command === "rh" || command === "hr" || command === "??") {
+				utils.sendIndirectMessage(message, config.rollhelp.join("\n"), sendMessage, sendDirectMessage).catch(err => {
+					console.error("Failed to send message 21", message, err);
+				});
+			}
+
 			// [[help or [[h or [[?
 			// Help command, prints from help file
 			else if (command === "help" || command === "h" || command === "?") {
@@ -153,7 +162,8 @@ startBot({
 						maxRoll: false,
 						nominalRoll: false,
 						gmRoll: false,
-						gms: <string[]>[]
+						gms: <string[]>[],
+						order: ""
 					};
 
 					// Check if any of the args are command flags and pull those out into the modifiers object
@@ -208,6 +218,27 @@ startBot({
 								args.splice(i, 1);
 								i--;
 								break;
+							case "-o":
+								args.splice(i, 1);
+
+								if (args[i].toLowerCase() !== "d" && args[i].toLowerCase() !== "a") {
+									// If -o is on and asc or desc was not specified, error out
+									m.edit("Error: Must specifiy a or d to order the rolls ascending or descending");
+
+									if (config.logRolls) {
+										// If enabled, log rolls so we can verify the bots math
+										dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, "NoOrderFound", m.id]).catch(e => {
+											console.log("Failed to insert into database 05", e);
+										});
+									}
+									return;
+								}
+
+								modifiers.order = args[i].toLowerCase();
+
+								args.splice(i, 1);
+								i--;
+								break;
 							default:
 								break;
 						}
@@ -228,7 +259,7 @@ startBot({
 
 					// Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituded in
 					const rollCmd = command + " " + args.join(" ");
-					const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, modifiers.maxRoll, modifiers.nominalRoll) || { error: true, errorCode: "EmptyMessage", errorMsg: "Error: Empty message", line1: "", line2: "", line3: "" };
+					const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, modifiers.maxRoll, modifiers.nominalRoll, modifiers.order) || { error: true, errorCode: "EmptyMessage", errorMsg: "Error: Empty message", line1: "", line2: "", line3: "" };
 
 					let returnText = "";
 
@@ -262,14 +293,16 @@ startBot({
 
 						// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 						modifiers.gms.forEach(async e => {
-							const msgs = utils.split2k(returnText);
-							const failedDMs = <string[]>[];
-							for (let i = 0; ((failedDMs.indexOf(e) === -1) && (i < msgs.length)); i++) {
-								await sendDirectMessage(e.substr(2, (e.length - 3)), msgs[i]).catch(() => {
-									failedDMs.push(e);
-									utils.sendIndirectMessage(message, "WARNING: " + e + " could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.", sendMessage, sendDirectMessage);
-								});
-							}
+							// If its too big, collapse it into a .txt file and send that instead.
+							const b = await new Blob([returnText as BlobPart], {"type": "text"});
+							
+							// Update return text
+							returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details have been attached to this messaged as a `.txt` file for verification purposes.";
+
+							// Attempt to DM the GMs and send a warning if it could not DM a GM
+							await sendDirectMessage(e.substr(2, (e.length - 3)), {"content": returnText, "file": {"blob": b, "name": "rollDetails.txt"}}).catch(() => {
+								utils.sendIndirectMessage(message, "WARNING: " + e + " could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.", sendMessage, sendDirectMessage);
+							});
 						});
 
 						// Finally send the text
@@ -284,25 +317,20 @@ startBot({
 					} else {
 						// When not a GM roll, make sure the message is not too big
 						if (returnText.length > 2000) {
-							// If its too big, attempt to DM details to the roller
-							const msgs = utils.split2k(returnText);
-							let failed = false;
-							for (let i = 0; (!failed && (i < msgs.length)); i++) {
-								await sendDirectMessage(message.author.id, msgs[i]).catch(() => {
-									failed = true;
-								});
-							}
+							// If its too big, collapse it into a .txt file and send that instead.
+							const b = await new Blob([returnText as BlobPart], {"type": "text"});
 
-							// If DM fails to send, alert roller of the failure, else handle normally
-							if (failed) {
-								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  WARNING: <@" + message.author.id + "> could **NOT** be messaged full details for verification purposes.";
-							} else {
-								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been messaged to <@" + message.author.id + "> for verification purposes.";
-							}
+							// Update return text
+							returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a `.txt` file for verification purposes.";
+
+							// Remove the original message to send new one with attachment
+							m.delete();
+
+							await utils.sendIndirectMessage(message, {"content": returnText, "file": {"blob": b, "name": "rollDetails.txt"}}, sendMessage, sendDirectMessage);
+						} else {
+							// Finally send the text
+							m.edit(returnText);
 						}
-
-						// Finally send the text
-						m.edit(returnText);
 
 						if (config.logRolls) {
 							// If enabled, log rolls so we can verify the bots math
@@ -682,11 +710,22 @@ if (config.api.enable) {
 											break;
 										}
 
+										if (query.has("o") && (query.get("o")?.toLowerCase() !== "d" && query.get("o")?.toLowerCase() !== "a")) {
+											// Alert API user that they messed up
+											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
+
+											// Always log API rolls for abuse detection
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "BadOrder", null]).catch(e => {
+												console.log("Failed to insert into database 10", e);
+											});
+											break;
+										}
+
 										// Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
 										rollCmd = rollCmd.substr(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, " ");
 
 										// Parse the roll and get the return text
-										const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, query.has("m"), query.has("n"));
+										const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, query.has("m"), query.has("n"), query.has("o") ? (query.get("o")?.toLowerCase() || "") : "");
 
 										// Alert users why this message just appeared and how they can report abues pf this feature
 										const apiPrefix = "The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <" + config.api.supportURL + ">\n\n";
@@ -754,26 +793,28 @@ if (config.api.enable) {
 
 											// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 											gms.forEach(async e => {
-												const msgs = utils.split2k(returnText);
-												const failedDMs = <string[]>[];
-												for (let i = 0; ((failedDMs.indexOf(e) === -1) && (i < msgs.length)); i++) {
-													await sendDirectMessage(e, msgs[i]).catch(async () => {
-														failedDMs.push(e);
-														const failedSend = "WARNING: <@" + e + "> could not be messaged.  If this issue persists, make sure direct messages are allowed from this server."
-														// Send the return message as a DM or normal message depening on if the channel is set
-														if ((query.get("channel") || "").length > 0) {
-															m = await sendMessage(query.get("channel") || "", failedSend).catch(() => {
-																request.respond({ status: Status.InternalServerError, body: "Message 10 failed to send." });
-																errorOut = true;
-															});
-														} else {
-															m = await sendDirectMessage(query.get("user") || "", failedSend).catch(() => {
-																request.respond({ status: Status.InternalServerError, body: "Message 11 failed to send." });
-																errorOut = true;
-															});
-														}
-													});
-												}
+												// If its too big, collapse it into a .txt file and send that instead.
+												const b = await new Blob([returnText as BlobPart], {"type": "text"});
+												
+												// Update return text
+												returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details have been attached to this messaged as a `.txt` file for verification purposes.";
+
+												// Attempt to DM the GMs and send a warning if it could not DM a GM
+												await sendDirectMessage(e, {"content": returnText, "file": {"blob": b, "name": "rollDetails.txt"}}).catch(async () => {
+													const failedSend = "WARNING: <@" + e + "> could not be messaged.  If this issue persists, make sure direct messages are allowed from this server."
+													// Send the return message as a DM or normal message depening on if the channel is set
+													if ((query.get("channel") || "").length > 0) {
+														m = await sendMessage(query.get("channel") || "", failedSend).catch(() => {
+															request.respond({ status: Status.InternalServerError, body: "Message 10 failed to send." });
+															errorOut = true;
+														});
+													} else {
+														m = await sendDirectMessage(query.get("user") || "", failedSend).catch(() => {
+															request.respond({ status: Status.InternalServerError, body: "Message 11 failed to send." });
+															errorOut = true;
+														});
+													}
+												});
 											});
 
 											// Always log API rolls for abuse detection
@@ -789,33 +830,30 @@ if (config.api.enable) {
 												break;
 											}
 										} else {
+											const newMessage : MessageContent= {};
+											newMessage.content = returnText;
+
 											// When not a GM roll, make sure the message is not too big
 											if (returnText.length > 2000) {
-												// If its too big, attempt to DM details to the roller
-												const msgs = utils.split2k(returnText);
-												let failed = false;
-												for (let i = 0; (!failed && (i < msgs.length)); i++) {
-													await sendDirectMessage(query.get("user") || "", msgs[i]).catch(() => {
-														failed = true;
-													});
-												}
+												// If its too big, collapse it into a .txt file and send that instead.
+												const b = await new Blob([returnText as BlobPart], {"type": "text"});
 
-												// If DM fails to send, alert roller of the failure, else handle normally
-												if (failed) {
-													returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  WARNING: <@" + query.get("user") + "> could **NOT** be messaged full details for verification purposes.";
-												} else {
-													returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been messaged to <@" + query.get("user") + "> for verification purposes.";
-												}
+												// Update return text
+												returnText = "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a `.txt` file for verification purposes.";
+
+												// Set info into the newMessage
+												newMessage.content = returnText;
+												newMessage.file = {"blob": b, "name": "rollDetails.txt"};
 											}
 
 											// Send the return message as a DM or normal message depening on if the channel is set
 											if ((query.get("channel") || "").length > 0) {
-												m = await sendMessage(query.get("channel") || "", returnText).catch(() => {
+												m = await sendMessage(query.get("channel") || "", newMessage).catch(() => {
 													request.respond({ status: Status.InternalServerError, body: "Message 20 failed to send." });
 													errorOut = true;
 												});
 											} else {
-												m = await sendDirectMessage(query.get("user") || "", returnText).catch(() => {
+												m = await sendDirectMessage(query.get("user") || "", newMessage).catch(() => {
 													request.respond({ status: Status.InternalServerError, body: "Message 21 failed to send." });
 													errorOut = true;
 												});

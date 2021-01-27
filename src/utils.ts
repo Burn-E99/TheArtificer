@@ -4,7 +4,7 @@
  * December 21, 2020
  */
 
-import { Message } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
+import { Message, MessageContent } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
 
 // split2k(longMessage) returns shortMessage[]
 // split2k takes a long string in and cuts it into shorter strings to be sent in Discord
@@ -130,7 +130,7 @@ const cmdPrompt = async (logChannel: string, botName: string, sendMessage: (c: s
 
 // sendIndirectMessage(originalMessage, messageContent, sendMessage, sendDirectMessage) returns Message
 // sendIndirectMessage determines if the message needs to be sent as a direct message or as a normal message
-const sendIndirectMessage = async (originalMessage: Message, messageContent: string, sendMessage: (c: string, m: string) => Promise<Message>, sendDirectMessage: (c: string, m: string) => Promise<Message>): Promise<Message> => {
+const sendIndirectMessage = async (originalMessage: Message, messageContent: (string | MessageContent), sendMessage: (c: string, m: (string | MessageContent)) => Promise<Message>, sendDirectMessage: (c: string, m: (string | MessageContent)) => Promise<Message>): Promise<Message> => {
 	if (originalMessage.guildID === "") {
 		// guildID was empty, meaning the original message was sent as a DM
 		return await sendDirectMessage(originalMessage.author.id, messageContent);

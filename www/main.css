@@ -1,0 +1,165 @@
+body {
+	font-family: "Play", sans-serif;
+
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+}
+
+#page {
+	height: 100vh;
+	display: grid;
+	grid-template-columns: auto;
+	grid-template-rows: 3rem calc(100vh - 5rem) 2rem;
+	grid-template-areas: "header" "page-contents" "footer";
+	
+	color: var(--page-font-color);
+	background-color: var(--page-bg-color);
+}
+
+#header {
+	grid-area: header;
+
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto;
+	grid-template-areas: "header-left header-right";
+
+	font-family: "Cinzel", serif;
+	font-size: 2rem;
+	line-height: 3rem;
+	font-weight: 500;
+	padding: 0 10px;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+	user-select: none;
+	
+	background-color: var(--header-bg-color);
+	color: var(--header-font-color);
+	border-bottom: 1px solid var(--header-font-color);
+}
+
+#header-left {
+	grid-area: header-left;
+}
+
+#header-right {
+	grid-area: header-right;
+	justify-self: end;
+
+	font-size: 1.75rem;
+}
+
+#footer {
+	grid-area: footer;
+
+	display: grid;
+	grid-template-columns: 1fr 1.5fr 1.5fr 1fr;
+	grid-template-rows: auto;
+	grid-template-areas: ". footer-left footer-right .";
+
+	line-height: 2rem;
+	height: 2rem;
+
+	background-color: var(--footer-bg-color);
+}
+
+#footer-left {
+	grid-area: footer-left;
+}
+
+#footer-right {
+	grid-area: footer-right;
+	justify-self: end;
+}
+
+#page-contents {
+	grid-area: page-contents;
+	padding: 0 20rem;
+	height: calc(100vh - 5rem);
+
+	display: grid;
+	grid-template-columns: auto;
+	grid-template-rows: fit-content(5rem) fit-content(10rem) fit-content(37rem) auto 1rem;
+	grid-template-areas: "slogan" "logo-desc" "examples" "api" "final";
+
+	overflow-y: auto;
+}
+
+#slogan {
+	grid-area: slogan;
+}
+#slogan h1 {
+	line-height: 2.5rem;
+	font-size: 2.5rem;
+}
+
+#logo-desc {
+	grid-area: logo-desc;
+
+	margin-bottom: 0.5rem;
+
+	display: grid;
+	grid-template-columns: 11rem auto;
+	grid-template-rows: auto;
+	grid-template-areas: "logo description";
+}
+
+#logo {
+	grid-area: logo;
+	margin: auto;
+}
+#logo img {
+	height: 10rem;
+}
+
+#description {
+	grid-area: description;
+}
+
+#examples {
+	grid-area: examples;
+}
+
+h4.example {
+	line-height: 0.25rem;
+}
+
+p.example {
+	margin: 0;
+	margin-bottom: 0.1rem;
+	padding: 0;
+}
+
+.slug h3 {
+	margin-top: 0;
+}
+
+#api {
+	grid-area: api;
+}
+
+#final {
+	grid-area: final;
+}
+
+@media screen and (max-width: 1900px) {
+	#page-contents {
+		padding: 0 10rem;
+	}
+}
+
+@media screen and (max-width: 1400px) {
+	#page-contents {
+		padding: 0 5rem;
+	}
+}
+
+@media screen and (max-width: 1000px) {
+	#page-contents {
+		padding: 0 1rem;
+	}
+}
