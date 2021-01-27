@@ -49,7 +49,7 @@
 						<img src="./img/TheArtificer.png" alt="The Artificer Logo" />
 					</div>
 					<div id="description">
-						<p>The Artificer is an open source Discord bot that specializes in rolling dice. The bot utilizes the compact <a href="https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference" target="_blank">Roll20 formatting</a> for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).</p>
+						<p>The Artificer is an open source Discord bot that specializes in rolling dice. The bot utilizes the compact <a href="https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference" target="_blank">Roll20 formatting</a> for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).  Feel free to join the support server linked below if you would like to try The Artificer out!</p>
 						<p>This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods. This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as <code>"Tarantallegra!"</code>, what is that supposed to mean) and its inability to handle implicit multiplication (such as <code>4(12 + 20)</code>).</p>
 						<p><a href="https://discord.com/api/oauth2/authorize?client_id=789045930011656223&permissions=2048&scope=bot" target="_blank">Invite The Artificer to Your Server</a> | <a href="https://discord.gg/peHASXMZYv" target="_blank">Support Server</a> | <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a></p>
 					</div>
@@ -64,8 +64,10 @@
 						<p class="example"><code>[[4d20r1!]]</code> - Rolls 4 d20 dice, rerolling any dice that land on 1, and repeatedly rolling a new d20 for any critical success rolled</p>
 						<p class="example"><code>[[((d20+20) - 10) / 5]]</code> - Rolls a d20 die, adds 20 to that roll, subtracts off 10, and finally divide by 5</p>
 						<p class="example"><code>[[7d67d5]]</code> - Rolls a 7 d67 dice, dropping the lowest 5 dice</p>
+						<p class="example"><code>[[d20]] formatting [[d6]]</code> - Rolls a d20 die and a d6 die and returns them with the word <code>formatting</code> between them</p>
 						<p class="example"><code>[[(32 * 12) + 5]]</code> - Multiplies 32 and 12, and adds 5 to that result</p>
 						<p class="example">And infinitely more possibilities.  Any equations and/or rolls can be thrown at the bot and it will compute it quickly.  Run the <code>[[rollhelp</code> command for full details of this command.</p>
+						<p class="example">Any number of rolls may be performed in the same requst, as long as they are each closed with <code>]]</code></p>
 						<br/>
 						<h3>Supporting Commands:</h3>
 						<p>The following commands are just some basic utility commands.</p>
