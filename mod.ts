@@ -27,6 +27,8 @@ import { nanoid } from "https://deno.land/x/nanoid@v3.0.0/mod.ts";
 import utils from "./src/utils.ts";
 import solver from "./src/solver.ts";
 
+import { EmojiConf } from "./src/mod.d.ts";
+
 import config from "./config.ts";
 
 const dbClient = await new Client().connect({
@@ -348,7 +350,7 @@ startBot({
 			// Check if the unhandled command is an emoji request
 			else {
 				// Start looping thru the possible emojis
-				config.emojis.some(e => {
+				config.emojis.some((e: EmojiConf) => {
 					// If a match gets found
 					if (e.aliases.indexOf(command || "") > -1) {
 						// Send the needed emoji
