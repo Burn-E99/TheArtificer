@@ -4,7 +4,7 @@
  * December 21, 2020
  */
 
-import { Message, MessageContent } from "https://deno.land/x/discordeno@10.0.0/mod.ts";
+import { Message, MessageContent } from "https://deno.land/x/discordeno@10.3.0/mod.ts";
 
 // split2k(longMessage) returns shortMessage[]
 // split2k takes a long string in and cuts it into shorter strings to be sent in Discord

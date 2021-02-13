@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+		<meta name="HandheldFriendly" content="true"/> 
+		
+		<meta name="author" content="Ean Milligan (ean@milligan.dev)">
+		<meta name="designer" content="Ean Milligan (ean@milligan.dev)">
+		<meta name="publisher" content="Ean Milligan (ean@milligan.dev)">
+		
+		<title>The Artificer Discord Bot API Tools</title>
+		<meta name="description" content="The Artificer Discord Bot is a advanced dice rolling bot utilizing the Roll20 format.  The Artificer is fast and reliable and free to use.">
+		<meta name="keywords" content="The Artificer, Discord bot, dice roller, dice rolling, roll, rolling, dice, roller, bot, artificer, api, tools, api tools">
+		<meta name="robots" content="index, follow">
+		<meta name="revisit-after" content="7 days">
+		<meta name="distribution" content="web">
+		<meta name="robots" content="noodp, noydir">
+
+		<meta name="distribution" content="web">
+		<meta name="web_author" content="Ean Milligan (ean@milligan.dev)">
+
+		<link rel="shortcut icon" href="https://discord.burne99.com/TheArtificer/favicon.ico">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cinzel|Play"> 
+		
+		<link rel="stylesheet" href="https://discord.burne99.com/TheArtificer/theme.css">
+		<link rel="stylesheet" href="./main.css">
+	</head>
+	<body>
+		<div id="page">
+			<div id="header">
+				<div id="header-left">
+					The Artificer API Tools
+				</div>
+				<div id="header-right">
+					<a href="https://discord.com/api/oauth2/authorize?client_id=789045930011656223&permissions=2048&scope=bot" target="_blank">Invite Me!</a>
+					<span>|</span>
+					<a href="https://discord.burne99.com/TheArtificer/" target="_blank">About</a>
+				</div>
+			</div>
+			<div id="page-contents">
+				<div id="slogan">
+					<h1>API Account Management</h1>
+				</div>
+				<div id="api-tools">
+					<div class="slug">
+						<p>This website will help you manage your API Key (or create one if you do not already have one).  To get started, select an option from the dropdown below and enter the requested information.  For more information, check out the <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a>.</p>
+
+						<hr/>
+
+						<p id="nojs">Javascript is required for this website to function.  If you do not want to enable Javascript, you may access all of these endpoints from a third party tool (such as <a href="https://www.postman.com/" target="_blank">Postman</a>).  Endpoints are fully documented on the <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a>.</p>
+
+						<div id="js" class="hidden">
+							<div class="field-group">
+								<label for="endpointDropdown">Select an option to manage:</label>
+								<select id="endpointDropdown" name="endpointDropdown" autocomplete="off">
+									<option value="none" selected disabled hidden>Choose an Option</option> 
+									<optgroup label="Create/Delete API Key">
+										<option value="generate">Generate API Key</option>
+										<option value="delete">Delete API Key</option>
+									</optgroup>
+									<optgroup label="Discord Channel Management">
+										<option value="view">View Allowed Channels</option>
+										<option value="add">Add New Allowed Channel</option>
+										<option value="activate">Activate or Deactivate Channel</option>
+									</optgroup>
+								</select>
+							</div>
+
+							<br/>
+
+							<div id="fields" class="hidden">
+								<div id="api-field-group" class="field-group">
+									<label for="api-field">Your API Key:</label>
+									<input id="api-field" name="api-field" type="text" autocomplete="off" />
+								</div>
+								<div id="user-field-group" class="field-group">
+									<label for="user-field">Your Discord User ID:</label>
+									<input id="user-field" name="user-field" type="number" autocomplete="off" />
+								</div>
+								<div id="channel-field-group" class="field-group">
+									<label for="channel-field">Discord Channel ID:</label>
+									<input id="channel-field" name="channel-field" type="number" autocomplete="off" />
+								</div>
+								<div id="active-field-group" class="field-group">
+									<label for="active-field">Set Channel Status to:</label>
+									<select id="active-field" name="active-field" autocomplete="off">
+										<option value="activate" selected>Active</option>
+										<option value="deactivate">Inactive</option>
+									</select>
+								</div>
+								<div id="email-field-group" class="field-group">
+									<label for="email-field">Your Email Address:</label>
+									<input id="email-field" name="email-field" type="email" autocomplete="off" />
+								</div>
+								<div id="delete-field-group" class="field-group">
+									<label for="delete-field">Your Delete Code:</label>
+									<input id="delete-field" name="delete-field" type="text" placeholder="LEAVE THIS BLANK UNLESS YOU ALREADY HAVE ONE" autocomplete="off" />
+								</div>
+								<div id="submit-field-group" class="field-group">
+									<label for="submit-field"></label>
+									<input id="submit-field" name="submit-field" type="button" value="Submit" disabled />
+								</div>
+							</div>
+
+							<div id="results" class="hidden">
+								<hr />
+								HTTP Status: <span id="status"></span>
+								<br/>
+								HTTP Respose: <span id="body"></span>
+								<hr/>
+								<h3>Response Description</h3>
+								<div id="desc"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="final"></div>
+			</div>
+			<div id="footer">
+				<div id="footer-left">
+					Built by <a href="https://github.com/Burn-E99/" target="_blank">Ean Milligan</a>
+				</div>
+				<div id="footer-right">
+					Version 1.4.0
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="./main.js"></script>
+	</body>
+</html>

@@ -25,8 +25,6 @@
 		
 		<link rel="stylesheet" href="./theme.css">
 		<link rel="stylesheet" href="./main.css">
-
-		<script type="text/javascript" src="./main.js"></script>
 	</head>
 	<body>
 		<div id="page">
@@ -67,7 +65,7 @@
 						<p class="example"><code>[[d20]] formatting [[d6]]</code> - Rolls a d20 die and a d6 die and returns them with the word <code>formatting</code> between them</p>
 						<p class="example"><code>[[(32 * 12) + 5]]</code> - Multiplies 32 and 12, and adds 5 to that result</p>
 						<p class="example">And infinitely more possibilities.  Any equations and/or rolls can be thrown at the bot and it will compute it quickly.  Run the <code>[[rollhelp</code> command for full details of this command.</p>
-						<p class="example">Any number of rolls may be performed in the same requst, as long as they are each closed with <code>]]</code></p>
+						<p class="example">Any number of rolls may be performed in the same request, as long as they are each closed with <code>]]</code></p>
 						<br/>
 						<h3>Supporting Commands:</h3>
 						<p>The following commands are just some basic utility commands.</p>
@@ -75,24 +73,28 @@
 						<p class="example"><code>[[stats</code> or <code>[[s</code> - Shows the stats on how many servers and users are using the bot</p>
 						<p class="example"><code>[[help</code> or <code>[[?</code> - Gives the full list of available commands</p>
 						<p class="example"><code>[[rollhelp</code> or <code>[[??</code> - Gives the full details on the roll command, explaining the <a href="https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference" target="_blank">Roll20 format</a></p>
+						<br/>
+						<h3>Full Documentation:</h3>
+						<p>Full Documentation can be found on the <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a>.</p>
 					</div>
 				</div>
 				<div id="api">
 					<h2>The Artificer API</h2>
 					<div class="slug">
-						<p>Trusted users will be provided with an API key that allows rolling of dice from third party programs.  This API was developed to let DnD groups that use Excel to manage player sheets to roll dice directly from Excel to Discord.  The API is very restricted and has a harsh rate limit to prevent spam.</p>
-						<p>There is a ZERO tolerance for API abuse.  If abuse is detected or reported, the user will be banned with no chance to appeal.  Currently, API keys are only given out to users known personally to the devs of this bot, but plans are in the works to open this up to more users using a form of registration.</p>
-						<p>If you happen to be a trusted user, information on the API endpoints can be found in the <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a>.  Basic administration of your API key can be done using the API Tools linked at the top of this page.</p>
+						<p>This API was developed to let DnD groups that use Excel to manage player sheets to roll dice directly from Excel to Discord.  The API is limited to rolling dice and managing your API Key and has a harsh rate limit to prevent spam.</p>
+						<p>There is a ZERO tolerance for API abuse.  If abuse is detected or reported, the user will be banned with no chance to appeal.</p>
+						<p>If you would like to get an API Key, head on over to the <a href="https://artificer.eanm.dev/" target="_blank">API Tools</a> page linked at the top of this page.  Basic administration of your API key can also be done via the <a href="https://artificer.eanm.dev/" target="_blank">API Tools</a>.</p>
+						<p>Once you have your API Key, detailed information on the API endpoints can be found in the <a href="https://github.com/Burn-E99/TheArtificer" target="_blank">GitHub Repository</a>.</p>
 					</div>
 				</div>
-				<div id="final">$nbsp;</div>
+				<div id="final"></div>
 			</div>
 			<div id="footer">
 				<div id="footer-left">
 					Built by <a href="https://github.com/Burn-E99/" target="_blank">Ean Milligan</a>
 				</div>
 				<div id="footer-right">
-					Version 1.3.3
+					Version 1.4.0
 				</div>
 			</div>
 		</div>
