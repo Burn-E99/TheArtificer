@@ -45,7 +45,12 @@ startBot({
 	eventHandlers: {
 		ready: () => {
 			console.log(`${config.name} Logged in!`);
-			editBotsStatus(StatusTypes.Online, `${config.prefix}help for commands`, ActivityType.Game);
+			let statusIdx = 0;
+			const statusRotation =[`${config.prefix}help for commands`, `Running V${config.version}`, `${config.prefix}info to learn more`, `Rolling dice for ${cache.guilds.size} servers`];
+			setInterval(() => {
+				editBotsStatus(StatusTypes.Online, statusRotation[statusIdx], ActivityType.Game);
+				statusIdx >= statusRotation.length ? statusIdx = 0 : statusIdx++;
+			}, 30000);
 			// setTimeout added to make sure the startup message does not error out
 			setTimeout(() => {
 				sendMessage(config.logChannel, `${config.name} has started, running version ${config.version}.`).catch(() => {
@@ -183,7 +188,7 @@ startBot({
 				sendMessage(config.reportChannel, ("USER REPORT:\n" + args.join(" "))).catch(err => {
 					console.error("Failed to send message 50", message, err);
 				});
-				utils.sendIndirectMessage(message, "Failed command has been reported to my developer.", sendMessage, sendDirectMessage).catch(err => {
+				utils.sendIndirectMessage(message, "Failed command has been reported to my developer.\n\nFor more in depth support, and information about planned maintenance, please join the support server here: https://discord.gg/peHASXMZYv", sendMessage, sendDirectMessage).catch(err => {
 					console.error("Failed to send message 51", message, err);
 				});
 			}
