@@ -122,10 +122,6 @@ function sendPayload() {
 	var method;
 	var path = "/api/";
 
-	if (endpoint !== "generate") {
-		xhr.setRequestHeader("X-Api-Key", apiField.value);
-	}
-
 	switch (endpoint) {
 		case "generate":
 			method = "GET";
@@ -152,6 +148,11 @@ function sendPayload() {
 	}
 
 	xhr.open(method, path);
+
+	if (endpoint !== "generate") {
+		xhr.setRequestHeader("X-Api-Key", apiField.value);
+	}
+
 	xhr.send();
 
 	xhr.onload = function() {
