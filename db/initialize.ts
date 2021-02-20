@@ -1,7 +1,10 @@
 // This file will create all tables for the artificer schema
 // DATA WILL BE LOST IF DB ALREADY EXISTS, RUN AT OWN RISK
 
-import { Client } from "https://deno.land/x/mysql/mod.ts";
+import {
+	// MySQL deps
+	Client
+} from "../deps.ts";
 
 import { LOCALMODE } from "../flags.ts";
 import config from "../config.ts";

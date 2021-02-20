@@ -1,5 +1,5 @@
 # The Artificer - A Dice Rolling Discord Bot
-Version 1.4.1 - 2021/02/13
+Version 1.4.2 - 2021/02/14
 
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
@@ -71,7 +71,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
 	|  csq or cs=q  |  Optional   |      Yes      |  changes crit score to q                                                                         |
 	|  cs<q         |  Optional   |      Yes      |  changes crit score to be less than or equal to q                                                |
 	|  cs>q         |  Optional   |      Yes      |  changes crit score to be greater than or equal to q                                             |
-	|  cfq or cs=q  |  Optional   |      Yes      |  changes crit fail to q                                                                          |
+	|  cfq or cf=q  |  Optional   |      Yes      |  changes crit fail to q                                                                          |
 	|  cf<q         |  Optional   |      Yes      |  changes crit fail to be less than or equal to q                                                 |
 	|  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                              |
 	|  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                 |

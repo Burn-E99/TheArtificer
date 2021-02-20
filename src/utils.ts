@@ -4,7 +4,10 @@
  * December 21, 2020
  */
 
-import { Message, MessageContent } from "https://deno.land/x/discordeno@10.3.0/mod.ts";
+import {
+	// Discordeno deps
+	Message, MessageContent
+} from "../deps.ts";
 
 // split2k(longMessage) returns shortMessage[]
 // split2k takes a long string in and cuts it into shorter strings to be sent in Discord
@@ -139,5 +142,7 @@ const sendIndirectMessage = async (originalMessage: Message, messageContent: (st
 		return await sendMessage(originalMessage.channelID, messageContent);
 	}
 };
+
+// Write logging function with trace and whatnot for errors and necessary messages to log, log bot state in server to determine if user is at fault or if I am at fault (maybe message user if its their fault?)
 
 export default { split2k, cmdPrompt, sendIndirectMessage };

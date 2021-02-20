@@ -34,7 +34,7 @@ export const longStrs = {
 		"* csq or cs=q [OPT] - changes crit score to q",
 		"* cs<q        [OPT] - changes crit score to be less than or equal to q",
 		"* cs>q        [OPT] - changes crit score to be greater than or equal to q	 ",
-		"* cfq or cs=q [OPT] - changes crit fail to q",
+		"* cfq or cf=q [OPT] - changes crit fail to q",
 		"* cf<q        [OPT] - changes crit fail to be less than or equal to q",
 		"* cf>q        [OPT] - changes crit fail to be greater than or equal to q",
 		"* !           [OPT] - exploding, rolls another dy for every crit roll",

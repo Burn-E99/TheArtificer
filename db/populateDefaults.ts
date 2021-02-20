@@ -1,7 +1,9 @@
 // This file will populate the tables with default values
 
-import { Client } from "https://deno.land/x/mysql/mod.ts";
-
+import {
+	// MySQL deps
+	Client
+} from "../deps.ts";
 
 import { LOCALMODE } from "../flags.ts";
 import config from "../config.ts";
