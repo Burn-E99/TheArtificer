@@ -29,11 +29,27 @@ export const config = {
 	"devServer": "the_dev_server", // Discord guild ID where testing of indev features/commands will be handled, used in conjuction with the DEVMODE bool in mod.ts
 	"emojis": [ // Array of objects containing all emojis that the bot can send on your behalf, empty this array if you don't want any of them
 		{ // Emoji object, duplicate for each emoji
-			"name": "popcat", // Name of emoji in discord
-			"aliases": ["popcat", "pop", "p"], // Commands that will activate this emoji
-			"id": "796340018377523221", // Discord emoji ID for this emoji
-			"animated": true, // Tells the bot this emoji is animated so it sends correctly
-			"deleteSender": true // Tells the bot to attempt to delete the sender's message after sending the emoji
+			"name": "emoji_name", // Name of emoji in discord
+			"aliases": ["alias_1", "alias_2", "alias_n"], // Commands that will activate this emoji
+			"id": "the_emoji_id", // Discord emoji ID for this emoji
+			"animated": false, // Tells the bot this emoji is animated so it sends correctly
+			"deleteSender": false // Tells the bot to attempt to delete the sender's message after sending the emoji
+		}
+	],
+	"botLists": [ // Array of objects containing all bot lists that stats should be posted to
+		{ // Bot List object, duplicate for each bot list
+			"name": "Bot List Name", // Name of bot list, not used
+			"enabled": true, // Should statistics be posted to this list?
+			"apiUrl": "https://example.com/api/bots/?{bot_id}/stats", // API URL, use ?{bot_id} in place of the bot id so that it can be dynamically replaced
+			"headers": [ // Array of headers that need to be added to the request
+				{ // Header Object, duplicate for every header needed
+					"header": "header_name", // Name of header needed, usually Authorization is needed
+					"value": "header_value" // Value for the header
+				}
+			],
+			"body": { // Data payload to send to the bot list, will be turned into a string and any ?{} will be replaced with the required value, currently only has ?{server_count}
+				"param_name": "?{param_value}" // Add more params as needed
+			}
 		}
 	]
 };

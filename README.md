@@ -3,7 +3,7 @@ Version 1.4.2 - 2021/02/14
 
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
-This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit multiplication (such as `4(12 + 20)`).
+This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods, and is now dead according to their GitHub.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit multiplication (such as `4(12 + 20)`).
 
 ## Using The Artificer
 I am hosting this bot for public use and you may find its invite link below.  If you would like to host this bot yourself, details of how to do so are found at the end of this README, but I do not recommend this unless you are experienced with running Discord bots.
@@ -11,6 +11,8 @@ I am hosting this bot for public use and you may find its invite link below.  If
 After inviting the bot, if you would like it to remove the message requesting the popcat emoji, you will need to give the `The Artificer` role the `Manage Messages` permission.  All other permissions needed are handled by the invite link.
 
 [Bot Invite Link](https://discord.com/api/oauth2/authorize?client_id=789045930011656223&permissions=2048&scope=bot)
+
+[Support Server Invite Link](https://discord.gg/peHASXMZYv)
 
 ---
 
@@ -28,11 +30,11 @@ The Artificer comes with a few supplemental commands to the main rolling command
       * Provides a message similar to this subcommand description.
     * `[[api status`
       * Shows the current status of the API for this guild.
-		* `[[api allow or [[api enable`
-  		* Allows API Rolls to be sent to this guild.
-		* `[[api block or [[api disable`
-  		* Blocks API Rolls from being sent to this guild.
-		* `[[api delete`
+    * `[[api allow or [[api enable`
+      * Allows API Rolls to be sent to this guild.
+    * `[[api block or [[api disable`
+      * Blocks API Rolls from being sent to this guild.
+    * `[[api delete`
       * Deletes this guild from The Artificer's database.
 * `[[ping`
   * Tests the latency between you, Discord, and the bot.
@@ -59,22 +61,22 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * PI and e are available for use.
   * Parameters for rolling:
 
-	|  Paramater    |  Required?  |  Repeatable?  | Description                                                                                      |
-	|---------------|-------------|---------------|--------------------------------------------------------------------------------------------------|
-	|  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                   |
-	|  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                        |
-	|  dz or dlz    |  Optional   |      No       |  drops the lowest z dice, cannot be used any other drop or keep options                          |
-	|  kz or khz    |  Optional   |      No       |  keeps the highest z dice, cannot be used any other drop or keep options                         |
-	|  dhz          |  Optional   |      No       |  drops the highest z dice, cannot be used any other drop or keep options                         |
-	|  klz          |  Optional   |      No       |  keeps the lowest z dice, cannot be used any other drop or keep options                          |
-	|  ra           |  Optional   |      Yes      |  rerolls any rolls that match a, r3 will reroll any dice that land on 3, throwing out old rolls  |
-	|  csq or cs=q  |  Optional   |      Yes      |  changes crit score to q                                                                         |
-	|  cs<q         |  Optional   |      Yes      |  changes crit score to be less than or equal to q                                                |
-	|  cs>q         |  Optional   |      Yes      |  changes crit score to be greater than or equal to q                                             |
-	|  cfq or cf=q  |  Optional   |      Yes      |  changes crit fail to q                                                                          |
-	|  cf<q         |  Optional   |      Yes      |  changes crit fail to be less than or equal to q                                                 |
-	|  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                              |
-	|  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                 |
+  |  Paramater    |  Required?  |  Repeatable?  | Description                                                                                      |
+  |---------------|-------------|---------------|--------------------------------------------------------------------------------------------------|
+  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                   |
+  |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                        |
+  |  dz or dlz    |  Optional   |      No       |  drops the lowest z dice, cannot be used any other drop or keep options                          |
+  |  kz or khz    |  Optional   |      No       |  keeps the highest z dice, cannot be used any other drop or keep options                         |
+  |  dhz          |  Optional   |      No       |  drops the highest z dice, cannot be used any other drop or keep options                         |
+  |  klz          |  Optional   |      No       |  keeps the lowest z dice, cannot be used any other drop or keep options                          |
+  |  ra           |  Optional   |      Yes      |  rerolls any rolls that match a, r3 will reroll any dice that land on 3, throwing out old rolls  |
+  |  csq or cs=q  |  Optional   |      Yes      |  changes crit score to q                                                                         |
+  |  cs<q         |  Optional   |      Yes      |  changes crit score to be less than or equal to q                                                |
+  |  cs>q         |  Optional   |      Yes      |  changes crit score to be greater than or equal to q                                             |
+  |  cfq or cf=q  |  Optional   |      Yes      |  changes crit fail to q                                                                          |
+  |  cf<q         |  Optional   |      Yes      |  changes crit fail to be less than or equal to q                                                 |
+  |  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                              |
+  |  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                 |
 
   * If the parameter is Required, it must be provided at all times.
   * If the parameter is Repeatable, it may occur multiple times in the roll configuration.
@@ -170,13 +172,18 @@ If you run into any errors or problems with the bot, or think you have a good id
 ---
 
 ## Self Hosting The Artificer
-The Artificer was built on Deno `v1.7.0` using Discodeno `v10.0.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
+The Artificer was built on [Deno](https://deno.land/) `v1.7.0` using [Discordeno](https://discordeno.mod.land/) `v10.3.0`.  If you choose to run this yourself, you will need to rename `config.example.ts` to `config.ts` and edit some values.  You will need to create a new [Discord Application](https://discord.com/developers/applications) and copy the newly generated token into the `"token"` key.  If you want to utilize some of the bots dev features, you will need to fill in the keys `"logChannel"` and `"reportChannel"` with text channel IDs and `"devServer"` with a guild ID.
 
 You will also need to install and setup a MySQL database with a user for the bot to use to add/modify the database.  This user must have the "DB Manager" admin rights and "REFERENCES" Global Privileges.  Once the DB is installed and a user is setup, run the provided `db\initialize.ts` to create the schema and tables.  After this, run `db\populateDefaults.ts` to insert some needed values into the tables.
 
 Once everything is set up, starting the bot can simply be done with `deno run --allow-net .\mod.ts`.
 
 If you choose to run version `1.1.0` or newer, ensure you disable the API in `config.ts` or verify you have properly secured your instance of The Artificer.  If you enable the API, you should manually generate a 25 char nanoid and place it in `config.api.adminKey` and copy your `userid` and place it in `config.api.admin` before running `db\populateDefaults.ts`.
+
+---
+
+## Development Plans
+Current and future plans are listed on [the Milestones page](https://github.com/Burn-E99/TheArtificer/milestones).
 
 ---
 

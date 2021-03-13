@@ -3,7 +3,7 @@ export {
 	startBot, editBotsStatus,
 	Intents, StatusTypes, ActivityType,
 	sendMessage, sendDirectMessage,
-	cache,
+	cache, botID,
 	memberIDHasPermission
 } from "https://deno.land/x/discordeno@10.3.0/mod.ts";
 

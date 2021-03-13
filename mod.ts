@@ -8,9 +8,10 @@ import {
 	// Discordeno deps
 	startBot, editBotsStatus,
 	Intents, StatusTypes, ActivityType,
-	Message, Guild, sendMessage, sendDirectMessage,
-	cache,
+	sendMessage, sendDirectMessage,
+	cache, botID,
 	memberIDHasPermission,
+	Message, Guild,
 
 	// MySQL Driver deps
 	Client
@@ -55,8 +56,12 @@ startBot({
 				}
 			}, 30000);
 
+			// Interval to update bot list stats every 24 hours
+			LOCALMODE ? console.log("updateListStatistics not running") : setInterval(() => intervals.updateListStatistics(botID, cache.guilds.size), 86400000);
+
 			// setTimeout added to make sure the startup message does not error out
 			setTimeout(() => {
+				LOCALMODE ? console.log("updateListStatistics not running") : intervals.updateListStatistics(botID, cache.guilds.size);
 				editBotsStatus(StatusTypes.Online, `Boot Complete`, ActivityType.Game);
 				sendMessage(config.logChannel, `${config.name} has started, running version ${config.version}.`).catch(() => {
 					console.error("Failed to send message 00");
@@ -69,7 +74,7 @@ startBot({
 			});
 		},
 		guildDelete: (guild: Guild) => {
-			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id})`).catch(() => {
+			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch(() => {
 				console.error("Failed to send message 02");
 			});
 		},
