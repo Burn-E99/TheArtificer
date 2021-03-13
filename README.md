@@ -1,7 +1,7 @@
 # The Artificer - A Dice Rolling Discord Bot
 Version 1.4.2 - 2021/02/14
 
-The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
+The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://artificer.eanm.dev/roll20) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
 This bot was developed to replace the Sidekick discord bot after it went offline many times for extended periods, and is now dead according to their GitHub.  This was also developed to fix some annoyances that were found with Sidekick, specifically its vague error messages (such as `"Tarantallegra!"`, what is that supposed to mean) and its inability to handle implicit multiplication (such as `4(12 + 20)`).
 
@@ -56,7 +56,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[report [[2+2]] returned 5 when I expected it to return 4` will send the entire message after `[[report` to the devs via Discord.
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
-  * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://roll20.zendesk.com/hc/en-us/articles/360037773133-Dice-Reference), this will no different.
+  * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will no different.
   * Any math (limited to exponentials, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
   * PI and e are available for use.
   * Parameters for rolling:
