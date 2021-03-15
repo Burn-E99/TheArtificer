@@ -20,6 +20,8 @@ import {
 } from "../deps.ts";
 
 import solver from "./solver.ts";
+import { LogTypes as LT } from "./utils.enums.ts";
+import utils from "./utils.ts";
 
 import config from "../config.ts";
 
@@ -27,7 +29,7 @@ import config from "../config.ts";
 // start initializes and runs the entire API for the bot
 const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string, m: (string | MessageContent)) => Promise<Message>, sendDirectMessage: (c: string, m: (string | MessageContent)) => Promise<Message>): Promise<void> => {
 	const server = serve({ hostname: "0.0.0.0", port: config.api.port });
-	console.log(`HTTP api running at: http://localhost:${config.api.port}/`);
+	utils.log(LT.LOG, `HTTP api running at: http://localhost:${config.api.port}/`);
 
 	// rateLimitTime holds all users with the last time they started a rate limit timer
 	const rateLimitTime = new Map<string, number>();
@@ -108,8 +110,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 									let erroredOut = false;
 
 									// Insert new key/user pair into the db
-									await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [apiUserid, newKey]).catch(() => {
-										console.log("Failed to insert into database 20");
+									await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [apiUserid, newKey]).catch(e => {
+										utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 										erroredOut = true;
 									});
@@ -139,8 +141,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 									let erroredOut = false;
 
 									// Get all channels userid has authorized
-									const dbAllowedChannelQuery = await dbClient.query("SELECT * FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(() => {
-										console.log("Failed to query database 22");
+									const dbAllowedChannelQuery = await dbClient.query("SELECT * FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(e => {
+										utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 										erroredOut = true;
 									});
@@ -206,8 +208,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "EmptyInput", null]).catch(() => {
-												console.log("Failed to insert into database 10");
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "EmptyInput", null]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											});
 											break;
 										}
@@ -217,8 +219,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "BadOrder", null]).catch(() => {
-												console.log("Failed to insert into database 10");
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "BadOrder", null]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											});
 											break;
 										}
@@ -238,8 +240,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											request.respond({ status: Status.InternalServerError, body: returnmsg.errorMsg });
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, returnmsg.errorCode, null]).catch(() => {
-												console.log("Failed to insert into database 11");
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, returnmsg.errorCode, null]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											});
 											break;
 										} else {
@@ -268,8 +270,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 												request.respond({ status: Status.BadRequest, body: STATUS_TEXT.get(Status.BadRequest) });
 
 												// Always log API rolls for abuse detection
-												dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "NoGMsSent", null]).catch(() => {
-													console.log("Failed to insert into database 12");
+												dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "NoGMsSent", null]).catch(e => {
+													utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												});
 												break;
 											}
@@ -307,12 +309,12 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 													// Send the return message as a DM or normal message depening on if the channel is set
 													if ((query.get("channel") || "").length > 0) {
 														m = await sendMessage(query.get("channel") || "", failedSend).catch(() => {
-															request.respond({ status: Status.InternalServerError, body: "Message 10 failed to send." });
+															request.respond({ status: Status.InternalServerError, body: "Message failed to send." });
 															errorOut = true;
 														});
 													} else {
 														m = await sendDirectMessage(query.get("user") || "", failedSend).catch(() => {
-															request.respond({ status: Status.InternalServerError, body: "Message 11 failed to send." });
+															request.respond({ status: Status.InternalServerError, body: "Message failed to send." });
 															errorOut = true;
 														});
 													}
@@ -320,8 +322,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											});
 
 											// Always log API rolls for abuse detection
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(() => {
-												console.log("Failed to insert into database 13");
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											});
 
 											// Handle closing the request out
@@ -362,8 +364,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											}
 
 											// If enabled, log rolls so we can verify the bots math
-											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(() => {
-												console.log("Failed to insert into database 14");
+											dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											});
 
 											// Handle closing the request out
@@ -376,7 +378,7 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 										}
 									} catch (err) {
 										// Handle any errors we missed
-										console.log(err)
+										utils.log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 									}
 								} else {
@@ -404,8 +406,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 									let erroredOut = false;
 
 									// Insert new user/channel pair into the db
-									await dbClient.execute("INSERT INTO allowed_channels(userid,channelid) values(?,?)", [apiUserid, BigInt(query.get("channel"))]).catch(() => {
-										console.log("Failed to insert into database 21");
+									await dbClient.execute("INSERT INTO allowed_channels(userid,channelid) values(?,?)", [apiUserid, BigInt(query.get("channel"))]).catch(e => {
+										utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 										erroredOut = true;
 									});
@@ -463,8 +465,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 									}
 
 									// Execute the DB modification
-									await dbClient.execute("UPDATE all_keys SET ?? = ? WHERE userid = ?", [key, value, apiUserid]).catch(() => {
-										console.log("Failed to update database 28");
+									await dbClient.execute("UPDATE all_keys SET ?? = ? WHERE userid = ?", [key, value, apiUserid]).catch(e => {
+										utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 										erroredOut = true;
 									});
@@ -503,8 +505,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 									}
 
 									// Execute the DB modification
-									await dbClient.execute("UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel"))]).catch(() => {
-										console.log("Failed to update database 24");
+									await dbClient.execute("UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel"))]).catch(e => {
+										utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 										erroredOut = true;
 									});
@@ -543,8 +545,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 									}
 
 									// Update the requested entry
-									await dbClient.execute("UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel"))]).catch(() => {
-										console.log("Failed to update database 26");
+									await dbClient.execute("UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel"))]).catch(e => {
+										utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 										request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 										erroredOut = true;
 									});
@@ -583,8 +585,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											// User has recieved their delete code and we need to delete the account now
 											let erroredOut = false;
 
-											await dbClient.execute("DELETE FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(() => {
-												console.log("Failed to delete from database 2A");
+											await dbClient.execute("DELETE FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 												erroredOut = true;
 											});
@@ -592,8 +594,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 												break;
 											}
 
-											await dbClient.execute("DELETE FROM all_keys WHERE userid = ?", [apiUserid]).catch(() => {
-												console.log("Failed to delete from database 2B");
+											await dbClient.execute("DELETE FROM all_keys WHERE userid = ?", [apiUserid]).catch(e => {
+												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 												erroredOut = true;
 											});
@@ -615,8 +617,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 										let erroredOut = false;
 
 										// Execute the DB modification
-										await dbClient.execute("UPDATE all_keys SET deleteCode = ? WHERE userid = ?", [deleteCode, apiUserid]).catch(() => {
-											console.log("Failed to update database 29");
+										await dbClient.execute("UPDATE all_keys SET deleteCode = ? WHERE userid = ?", [deleteCode, apiUserid]).catch(e => {
+											utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 											erroredOut = true;
 										});
@@ -689,8 +691,8 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 								let erroredOut = false;
 
 								// Insert new key/user pair into the db
-								await dbClient.execute("INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)", [BigInt(query.get("user")), newKey, (query.get("email") || "").toLowerCase()]).catch(() => {
-									console.log("Failed to insert into database 20");
+								await dbClient.execute("INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)", [BigInt(query.get("user")), newKey, (query.get("email") || "").toLowerCase()]).catch(e => {
+									utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 									request.respond({ status: Status.InternalServerError, body: STATUS_TEXT.get(Status.InternalServerError) });
 									erroredOut = true;
 								});

@@ -8,6 +8,8 @@ import {
 	// Discordeno deps
 	CacheData
 } from "../deps.ts";
+import { LogTypes as LT } from "./utils.enums.ts";
+import utils from "./utils.ts";
 
 import config from "../config.ts";
 
@@ -47,7 +49,7 @@ const updateListStatistics = (botID: string, serverCount: number): void => {
 				"headers": tempHeaders,
 				"body": JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()) // ?{server_count} needs the "" removed from around it aswell to make sure its sent as a number
 			});
-			console.log(response);
+			utils.log(LT.LOG, `${JSON.stringify(response)}`);
 		}
 	});
 };

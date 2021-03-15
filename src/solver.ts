@@ -5,6 +5,8 @@
  */
 
 import { RollSet, SolvedStep, SolvedRoll, ReturnData } from "./solver.d.ts";
+import { LogTypes as LT } from "./utils.enums.ts";
+import utils from "./utils.ts";
 
 // MAXLOOPS determines how long the bot will attempt a roll
 // Default is 5000000 (5 million), which results in at most a 10 second delay before the bot calls the roll infinite or too complex
@@ -987,7 +989,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 				errorMsg = "Error: Roll became undefined, one or more operands are not a roll or a number, check input";
 				break;
 			default:
-				console.error(errorName, errorDetails);
+				utils.log(LT.ERROR, `Undangled Error: ${errorName}, ${errorDetails}`);
 				errorMsg = "Unhandled Error: " + solverError.message + "\nCheck input and try again, if issue persists, please use `[[report` to alert the devs of the issue";
 				break;
 		}

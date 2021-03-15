@@ -6,8 +6,18 @@
 
 import {
 	// Discordeno deps
-	Message, MessageContent
+	Message, MessageContent,
+
+	// nanoid deps
+	nanoid
 } from "../deps.ts";
+
+import { LogTypes } from "./utils.enums.ts";
+
+// Constant initialized at runtime for consistent file names
+let startDate: string;
+let logFolder: string;
+let initialized = false;
 
 // split2k(longMessage) returns shortMessage[]
 // split2k takes a long string in and cuts it into shorter strings to be sent in Discord
@@ -143,6 +153,46 @@ const sendIndirectMessage = async (originalMessage: Message, messageContent: (st
 	}
 };
 
-// Write logging function with trace and whatnot for errors and necessary messages to log, log bot state in server to determine if user is at fault or if I am at fault (maybe message user if its their fault?)
+// initLog() returns nothing
+// Handles ensuring the required directory structure is created
+const initLog = (name: string): void => {
+	// Initialize the file name
+	startDate = new Date().toISOString().split("T")[0];
+	logFolder = name;
+	const startupMessage = `
+---------------------------------------------------------------------------------------------------
+---------------------------------------- LOGGING  STARTED -----------------------------------------
+------------------------------------ ${new Date().toISOString()} -------------------------------------
+---------------------------------------------------------------------------------------------------`;
 
-export default { split2k, cmdPrompt, sendIndirectMessage };
+	// Make all required folders if they are missing
+	const folders = ["combined", "traces"];
+	Object.values(LogTypes).forEach(level => {
+		folders.push(level)
+	});
+
+	// Make each folder if its missing and insert the startup message
+	folders.forEach(level => {
+		Deno.mkdirSync(`./${logFolder}/${level}`, { recursive: true });
+		Deno.writeTextFileSync(`./${logFolder}/${level}/${startDate}.log`, `${startupMessage}\n`, {append: true});
+	});
+	initialized = true;
+};
+
+// log(level, message) returns nothing
+// Handles sending messages to console.log and sending a copy of the log to a file for review on crashes
+const log = async (level: LogTypes, message: string, error = new Error()): Promise<void> => {
+	const msgId = await nanoid(10);
+	const formattedMsg = `${new Date().toISOString()} | ${msgId} | ${level} | ${message}`;
+	const traceMsg = `${error.stack}`
+	// Default functionality of logging to console
+	console[level](formattedMsg);
+	// Logging to files for permanent info
+	if (initialized) {
+		await Deno.writeTextFile(`./${logFolder}/${level}/${startDate}.log`, `${formattedMsg}\n`, {append: true});
+		await Deno.writeTextFile(`./${logFolder}/combined/${startDate}.log`, `${formattedMsg}\n`, {append: true});
+		await Deno.writeTextFile(`./${logFolder}/traces/${startDate}.log`, `${formattedMsg}\n${traceMsg}\n\n`, {append: true});
+	}
+};
+
+export default { split2k, cmdPrompt, sendIndirectMessage, initLog, log };
