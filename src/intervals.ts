@@ -39,6 +39,7 @@ const getRandomStatus = (cache: CacheData): string => {
 // Sends the current server count to all bot list sites we are listed on
 const updateListStatistics = (botID: string, serverCount: number): void => {
 	config.botLists.forEach(async e => {
+		utils.log(LT.LOG, `Updating statistics for ${JSON.stringify(e)}`)
 		if (e.enabled) {
 			const tempHeaders = new Headers();
 			tempHeaders.append(e.headers[0].header, e.headers[0].value);
@@ -49,7 +50,7 @@ const updateListStatistics = (botID: string, serverCount: number): void => {
 				"headers": tempHeaders,
 				"body": JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()) // ?{server_count} needs the "" removed from around it aswell to make sure its sent as a number
 			});
-			utils.log(LT.LOG, `${JSON.stringify(response)}`);
+			utils.log(LT.INFO, `Posted server count to ${e.name}.  Results: ${JSON.stringify(response)}`);
 		}
 	});
 };

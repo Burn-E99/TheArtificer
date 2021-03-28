@@ -1,5 +1,5 @@
 # The Artificer - A Dice Rolling Discord Bot
-Version 1.4.2 - 2021/02/14
+Version 1.4.3 - 2021/03/21
 
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://artificer.eanm.dev/roll20) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 

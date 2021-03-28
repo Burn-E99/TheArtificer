@@ -12,42 +12,13 @@ import {
 	nanoid
 } from "../deps.ts";
 
+import { DEBUG } from "../flags.ts";
 import { LogTypes } from "./utils.enums.ts";
 
 // Constant initialized at runtime for consistent file names
 let startDate: string;
 let logFolder: string;
 let initialized = false;
-
-// split2k(longMessage) returns shortMessage[]
-// split2k takes a long string in and cuts it into shorter strings to be sent in Discord
-const split2k = (chunk: string): string[] => {
-	// Replace any malformed newline characters
-	chunk = chunk.replace(/\\n/g, "\n");
-	const bites = [];
-
-	// While there is more characters than allowed to be sent in discord
-	while (chunk.length > 2000) {
-		// Take 2001 chars to see if word magically ends on char 2000
-		let bite = chunk.substr(0, 2001);
-		const lastI = bite.lastIndexOf(" ");
-		if (lastI < 2000) {
-			// If there is a final word before the 2000 split point, split right after that word
-			bite = bite.substr(0, lastI);
-		} else {
-			// Else cut exactly 2000 characters
-			bite = bite.substr(0, 2000);
-		}
-
-		// Push and remove the bite taken out of the chunk
-		bites.push(bite);
-		chunk = chunk.slice(bite.length);
-	}
-	// Push leftovers into bites
-	bites.push(chunk);
-
-	return bites;
-};
 
 // ask(prompt) returns string
 // ask prompts the user at command line for message
@@ -101,13 +72,9 @@ const cmdPrompt = async (logChannel: string, botName: string, sendMessage: (c: s
 				const channelID = args.shift() || "";
 				const message = args.join(" ");
 
-				// Utilize the split2k function to ensure a message over 2000 chars is not sent
-				const messages = split2k(message);
-				for (let i = 0; i < messages.length; i++) {
-					sendMessage(channelID, messages[i]).catch(reason => {
-						console.error(reason);
-					});
-				}
+				sendMessage(channelID, message).catch(reason => {
+					console.error(reason);
+				});
 			}
 			catch (e) {
 				console.error(e);
@@ -119,13 +86,9 @@ const cmdPrompt = async (logChannel: string, botName: string, sendMessage: (c: s
 		else if (command === "ml") {
 			const message = args.join(" ");
 
-			// Utilize the split2k function to ensure a message over 2000 chars is not sent
-			const messages = split2k(message);
-			for (let i = 0; i < messages.length; i++) {
-				sendMessage(logChannel, messages[i]).catch(reason => {
-					console.error(reason);
-				});
-			}
+			sendMessage(logChannel, message).catch(reason => {
+				console.error(reason);
+			});
 		}
 		
 		// help or h
@@ -183,10 +146,13 @@ const initLog = (name: string): void => {
 // Handles sending messages to console.log and sending a copy of the log to a file for review on crashes
 const log = async (level: LogTypes, message: string, error = new Error()): Promise<void> => {
 	const msgId = await nanoid(10);
-	const formattedMsg = `${new Date().toISOString()} | ${msgId} | ${level} | ${message}`;
+	const formattedMsg = `${new Date().toISOString()} | ${msgId} | ${level.padEnd(5)} | ${message}`;
 	const traceMsg = `${error.stack}`
 	// Default functionality of logging to console
-	console[level](formattedMsg);
+	if (level !== LogTypes.LOG || DEBUG) {
+		console[level](formattedMsg);
+	}
+
 	// Logging to files for permanent info
 	if (initialized) {
 		await Deno.writeTextFile(`./${logFolder}/${level}/${startDate}.log`, `${formattedMsg}\n`, {append: true});
@@ -195,4 +161,4 @@ const log = async (level: LogTypes, message: string, error = new Error()): Promi
 	}
 };
 
-export default { split2k, cmdPrompt, sendIndirectMessage, initLog, log };
+export default { cmdPrompt, sendIndirectMessage, initLog, log };

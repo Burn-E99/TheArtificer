@@ -29,7 +29,7 @@ import config from "../config.ts";
 // start initializes and runs the entire API for the bot
 const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string, m: (string | MessageContent)) => Promise<Message>, sendDirectMessage: (c: string, m: (string | MessageContent)) => Promise<Message>): Promise<void> => {
 	const server = serve({ hostname: "0.0.0.0", port: config.api.port });
-	utils.log(LT.LOG, `HTTP api running at: http://localhost:${config.api.port}/`);
+	utils.log(LT.INFO, `HTTP api running at: http://localhost:${config.api.port}/`);
 
 	// rateLimitTime holds all users with the last time they started a rate limit timer
 	const rateLimitTime = new Map<string, number>();
@@ -38,6 +38,7 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 
 	// Catching every request made to the server
 	for await (const request of server) {
+		utils.log(LT.LOG, `Handling request: ${JSON.stringify(request)}`);
 		// Check if user is authenticated to be using this API
 		let authenticated = false;
 		let rateLimited = false;
@@ -90,6 +91,7 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 			const query = new Map<string, string>();
 			if (tempQ !== undefined) {
 				tempQ.split("&").forEach(e => {
+					utils.log(LT.LOG, `Breaking down request query: ${request} ${e}`);
 					const [option, params] = e.split("=");
 					query.set(option.toLowerCase(), params);
 				});
@@ -279,6 +281,7 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 											// Make a new return line to be sent to the roller
 											let normalText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\nResults have been messaged to the following GMs: ";
 											gms.forEach(e => {
+												utils.log(LT.LOG, `Appending GM ${e} to roll text`);
 												normalText += "<@" + e + "> ";
 											});
 
@@ -295,16 +298,24 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 												});
 											}
 
+											const newMessage: MessageContent = {};
+											// If its too big, collapse it into a .txt file and send that instead.
+											const b = await new Blob([returnText as BlobPart], { "type": "text" });
+
+											if (b.size > 8388290) {
+												// Update return text
+												newMessage.content = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a `.txt` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.";
+											} else {
+												// Update return text
+												newMessage.content = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details have been attached to this messaged as a `.txt` file for verification purposes.";
+												newMessage.file = { "blob": b, "name": "rollDetails.txt" };
+											}
+
 											// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 											gms.forEach(async e => {
-												// If its too big, collapse it into a .txt file and send that instead.
-												const b = await new Blob([returnText as BlobPart], { "type": "text" });
-
-												// Update return text
-												returnText = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details have been attached to this messaged as a `.txt` file for verification purposes.";
-
+												utils.log(LT.LOG, `Messaging GM ${e} roll results`);
 												// Attempt to DM the GMs and send a warning if it could not DM a GM
-												await sendDirectMessage(e, { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }).catch(async () => {
+												await sendDirectMessage(e, newMessage).catch(async () => {
 													const failedSend = "WARNING: <@" + e + "> could not be messaged.  If this issue persists, make sure direct messages are allowed from this server."
 													// Send the return message as a DM or normal message depening on if the channel is set
 													if ((query.get("channel") || "").length > 0) {
@@ -342,12 +353,14 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 												// If its too big, collapse it into a .txt file and send that instead.
 												const b = await new Blob([returnText as BlobPart], { "type": "text" });
 
-												// Update return text
-												returnText = "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a `.txt` file for verification purposes.";
-
-												// Set info into the newMessage
-												newMessage.content = returnText;
-												newMessage.file = { "blob": b, "name": "rollDetails.txt" };
+												if (b.size > 8388290) {
+													// Update return text
+													newMessage.content = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a `.txt` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.";
+												} else {
+													// Update return text
+													newMessage.content = apiPrefix + "<@" + query.get("user") + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a `.txt` file for verification purposes.";
+													newMessage.file = { "blob": b, "name": "rollDetails.txt" };
+												}
 											}
 
 											// Send the return message as a DM or normal message depening on if the channel is set
@@ -672,6 +685,7 @@ const start = async (dbClient: Client, cache: CacheData, sendMessage: (c: string
 			const query = new Map<string, string>();
 			if (tempQ !== undefined) {
 				tempQ.split("&").forEach(e => {
+					utils.log(LT.LOG, `Parsing request query #2 ${request} ${e}`);
 					const [option, params] = e.split("=");
 					query.set(option.toLowerCase(), params);
 				});

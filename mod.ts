@@ -52,6 +52,7 @@ startBot({
 
 			// Interval to rotate the status text every 30 seconds to show off more commands
 			setInterval(() => {
+				utils.log(LT.LOG, "Changing bot status");
 				try {
 					// Wrapped in try-catch due to hard crash possible
 					editBotsStatus(StatusTypes.Online, intervals.getRandomStatus(cache), ActivityType.Game);
@@ -61,7 +62,10 @@ startBot({
 			}, 30000);
 
 			// Interval to update bot list stats every 24 hours
-			LOCALMODE ? utils.log(LT.INFO, "updateListStatistics not running") : setInterval(() => intervals.updateListStatistics(botID, cache.guilds.size), 86400000);
+			LOCALMODE ? utils.log(LT.INFO, "updateListStatistics not running") : setInterval(() => {
+				utils.log(LT.LOG, "Updating all bot lists statistics");
+				intervals.updateListStatistics(botID, cache.guilds.size);
+			}, 86400000);
 
 			// setTimeout added to make sure the startup message does not error out
 			setTimeout(() => {
@@ -73,11 +77,13 @@ startBot({
 			}, 1000);
 		},
 		guildCreate: (guild: Guild) => {
+			utils.log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
 			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch(e => {
 				utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 			});
 		},
 		guildDelete: (guild: Guild) => {
+			utils.log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
 			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch(e => {
 				utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 			});
@@ -86,12 +92,14 @@ startBot({
 		messageCreate: async (message: Message) => {
 			// Ignore all other bots
 			if (message.author.bot) return;
-
+			
 			// Ignore all messages that are not commands
 			if (message.content.indexOf(config.prefix) !== 0) return;
+			
+			utils.log(LT.LOG, `Handling message ${JSON.stringify(message)}`);
 
 			// Split into standard command + args format
-			const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+			const args = message.content.slice(config.prefix.length).trim().split(/[ \n]+/g);
 			const command = args.shift()?.toLowerCase();
 
 			// All commands below here
@@ -126,7 +134,7 @@ startBot({
 				});
 			}
 
-			// [[rollhelp or [[rh or [[hr
+			// [[rollhelp or [[rh or [[hr or [[??
 			// Help command specifically for the roll command
 			else if (command === "rollhelp" || command === "rh" || command === "hr" || command === "??" || command?.startsWith("xdy")) {
 				// Light telemetry to see how many times a command is being run
@@ -384,6 +392,7 @@ startBot({
 
 					// Check if any of the args are command flags and pull those out into the modifiers object
 					for (let i = 0; i < args.length; i++) {
+						utils.log(LT.LOG, `Checking ${command + args.join(" ")} for command modifiers ${i}`);
 						switch (args[i].toLowerCase()) {
 							case "-nd":
 								modifiers.noDetails = true;
@@ -414,6 +423,7 @@ startBot({
 
 								// -gm is a little more complex, as we must get all of the GMs that need to be DMd
 								while (((i + 1) < args.length) && args[i + 1].startsWith("<@")) {
+									utils.log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
 									// Keep looping thru the rest of the args until one does not start with the discord mention code
 									modifiers.gms.push(args[i + 1].replace(/[!]/g, ""));
 									args.splice((i + 1), 1);
@@ -437,7 +447,7 @@ startBot({
 							case "-o":
 								args.splice(i, 1);
 
-								if (args[i].toLowerCase() !== "d" && args[i].toLowerCase() !== "a") {
+								if (args[i].toLowerCase()[0] !== "d" && args[i].toLowerCase()[0] !== "a") {
 									// If -o is on and asc or desc was not specified, error out
 									m.edit("Error: Must specifiy a or d to order the rolls ascending or descending");
 
@@ -450,7 +460,7 @@ startBot({
 									return;
 								}
 
-								modifiers.order = args[i].toLowerCase();
+								modifiers.order = args[i].toLowerCase()[0];
 
 								args.splice(i, 1);
 								i--;
@@ -509,16 +519,27 @@ startBot({
 
 						// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 						modifiers.gms.forEach(async e => {
+							utils.log(LT.LOG, `Messaging GM ${e}`);
 							// If its too big, collapse it into a .txt file and send that instead.
 							const b = await new Blob([returnText as BlobPart], { "type": "text" });
 
-							// Update return text
-							returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details have been attached to this messaged as a `.txt` file for verification purposes.";
+							if (b.size > 8388290) {
+								// Update return text
+								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details could not be attached to this messaged as a `.txt` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.";
 
-							// Attempt to DM the GMs and send a warning if it could not DM a GM
-							await sendDirectMessage(e.substr(2, (e.length - 3)), { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }).catch(() => {
-								utils.sendIndirectMessage(message, "WARNING: " + e + " could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.", sendMessage, sendDirectMessage);
-							});
+								// Attempt to DM the GMs and send a warning if it could not DM a GM
+								await sendDirectMessage(e.substr(2, (e.length - 3)), returnText).catch(() => {
+									utils.sendIndirectMessage(message, "WARNING: " + e + " could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.", sendMessage, sendDirectMessage);
+								});
+							} else {
+								// Update return text
+								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nFull details have been attached to this messaged as a `.txt` file for verification purposes.";
+
+								// Attempt to DM the GMs and send a warning if it could not DM a GM
+								await sendDirectMessage(e.substr(2, (e.length - 3)), { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }).catch(() => {
+									utils.sendIndirectMessage(message, "WARNING: " + e + " could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.", sendMessage, sendDirectMessage);
+								});
+							}
 						});
 
 						// Finally send the text
@@ -536,13 +557,21 @@ startBot({
 							// If its too big, collapse it into a .txt file and send that instead.
 							const b = await new Blob([returnText as BlobPart], { "type": "text" });
 
-							// Update return text
-							returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a `.txt` file for verification purposes.";
+							if (b.size > 8388290) {
+								// Update return text
+								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a `.txt` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.";
 
-							// Remove the original message to send new one with attachment
-							m.delete();
-
-							await utils.sendIndirectMessage(message, { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }, sendMessage, sendDirectMessage);
+								// Send the results
+								m.edit(returnText);
+							} else {
+								// Update return text
+								returnText = "<@" + message.author.id + ">" + returnmsg.line1 + "\n" + returnmsg.line2 + "\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a `.txt` file for verification purposes.";
+	
+								// Remove the original message to send new one with attachment
+								m.delete();
+	
+								await utils.sendIndirectMessage(message, { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }, sendMessage, sendDirectMessage);
+							}
 						} else {
 							// Finally send the text
 							m.edit(returnText);
@@ -565,6 +594,7 @@ startBot({
 			else {
 				// Start looping thru the possible emojis
 				config.emojis.some((emoji: EmojiConf) => {
+					utils.log(LT.LOG, `Checking if command was emoji ${emoji}`);
 					// If a match gets found
 					if (emoji.aliases.indexOf(command || "") > -1) {
 						// Light telemetry to see how many times a command is being run
