@@ -35,9 +35,15 @@ When using _The API_'s roll endpoint (herein referred to as _The Roll Endpoint_)
 
 # Deleting Your Data
 ## API Data Deletion
-If you would like to remove all of your submitted data, this can easily be done using the [[BUTTON NAME]] button on _The Bot_'s [API Tools](https://artificer.eanm.dev/).  This will delete all Discord Channel ID/Discord User ID combos that you have submitted.  This will also delete your API key entry, completely removing your email address and Discord User ID from _The Bot_'s database.
+If you would like to remove all of your submitted data, this can easily be done using the Delete API Key option on _The Bot_'s [API Tools](https://artificer.eanm.dev/).  This will delete all Discord Channel ID/Discord User ID combos that you have submitted.  This will also delete your API key entry, completely removing your email address and Discord User ID from _The Bot_'s database.
+
+If you have been banned from using _The API_, your API Key, and registration information (Discord User ID, and Email Address) will not be deleted as this data is considered necessary.
 
 If you would like your Discord Guild ID to be removed from _The Bot_'s database, a Guild Owner or Administrator needs to run `[[api delete`.  This will remove your Discord Guild's ID from _The Bot_'s database, reverting it back to the default setting of blocking _The API_.
+
+If your guild has been banned from using _The API_, the Discord Guild ID will not be deleted as this data is considered necessary.
+
+The data described above is considered necessary to prevent users from abusing the API and ban evading by deleting and recreating their account.
 
 ## Discord Command Data Deletion
 If you would like to ensure that all of your submitted reports are removed from _The Bot_'s private development server, please contact _The Developer_ via Discord (by sending a direct message to Burn_E99#1062) or via email (<ean@milligan.dev>) with a message along the lines of `"Please remove all of my submitted reports from your development server."`.  Submitted reports are deleted from the server as they are processed, which happens roughly once a week, but this can be accelerated if requested.

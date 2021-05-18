@@ -187,6 +187,15 @@ Current and future plans are listed on [the Milestones page](https://github.com/
 
 ---
 
+## Privacy Policy and Terms of Service
+The Artificer has a Privacy Policy and Terms of Service to detail expectations of what user data is stored and how users should use The Artificer.
+
+Privacy Policy TL;DR: Only report command data is stored if you do not use the API, if you use the API, submitted Discord Ids will be stored linked to your email.  For more detailed information, please check out the full [PRIVACY POLICY](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
+
+Terms of Service TL;DR: Don't abuse or attempt to hack/damage The Artificer or its API.  If you do, you may be banned from use.  For more detailed information, please check out the full [TERMS OF SERVICE](https://github.com/Burn-E99/TheArtificer/blob/master/TEMRS.md).
+
+---
+
 ### Built in memory of my Grandmother, Babka
 With much love, Ean
 
