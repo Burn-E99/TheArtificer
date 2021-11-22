@@ -64,7 +64,7 @@ const escapeCharacters = (str: string, esc: string): string => {
 		utils.log(LT.LOG, `Escaping character ${esc[i]} | ${str}, ${esc}`);
 		// Create a new regex to look for that char that needs replaced and escape it
 		const temprgx = new RegExp(`[${esc[i]}]`, "g");
-		str = str.replace(temprgx, ("\\" + esc[i]));
+		str = str.replace(temprgx, `\\${esc[i]}`);
 	}
 	return str;
 };
@@ -158,7 +158,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 	if (remains.length > 0) {
 		// Determine if the first item is a drop, and if it is, add the d back in
 		if (remains.search(/\D/) !== 0 || remains.indexOf("l") === 0 || remains.indexOf("h") === 0) {
-			remains = "d" + remains;
+			remains = `d${remains}`;
 		}
 
 		// Loop until all remaining args are parsed
@@ -260,7 +260,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 					break;
 				default:
 					// Throw error immediately if unknown op is encountered
-					throw new Error("UnknownOperation_" + tSep);
+					throw new Error(`UnknownOperation_${tSep}`);
 			}
 			// Finally slice off everything else parsed this loop
 			remains = remains.slice(afterNumIdx);
@@ -538,22 +538,22 @@ const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll: boolea
 		// If the roll was a crit hit or fail, or dropped/rerolled, add the formatting needed
 		if (e.critHit) {
 			// Bold for crit success
-			preFormat = "**" + preFormat;
-			postFormat = postFormat + "**";
+			preFormat = `**${preFormat}`;
+			postFormat = `${postFormat}**`;
 		}
 		if (e.critFail) {
 			// Underline for crit fail
-			preFormat = "__" + preFormat;
-			postFormat = postFormat + "__";
+			preFormat = `__${preFormat}`;
+			postFormat = `${postFormat}__`;
 		}
 		if (e.dropped || e.rerolled) {
 			// Strikethrough for dropped/rerolled rolls
-			preFormat = "~~" + preFormat;
-			postFormat = postFormat + "~~";
+			preFormat = `~~${preFormat}`;
+			postFormat = `${postFormat}~~`;
 		}
 
 		// Finally add this to the roll's details
-		tempDetails += preFormat + e.roll + postFormat + " + ";
+		tempDetails += `${preFormat}${e.roll}${postFormat} + `;
 	});
 	// After the looping is done, remove the extra " + " from the details and cap it with the closing ]
 	tempDetails = tempDetails.substr(0, (tempDetails.length - 3));
@@ -660,13 +660,13 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 				// If operand1 is a SolvedStep, populate our subStepSolve with its details and crit/fail flags
 				if (typeof operand1 === "object") {
 					oper1 = operand1.total;
-					subStepSolve.details = operand1.details + "\\" + conf[i];
+					subStepSolve.details = `${operand1.details}\\${conf[i]}`;
 					subStepSolve.containsCrit = operand1.containsCrit;
 					subStepSolve.containsFail = operand1.containsFail;
 				} else {
 					// else parse it as a number and add it to the subStep details
 					oper1 = parseFloat(operand1.toString());
-					subStepSolve.details = oper1.toString() + "\\" + conf[i];
+					subStepSolve.details = `${oper1.toString()}\\${conf[i]}`;
 				}
 
 				// If operand2 is a SolvedStep, populate our subStepSolve with its details without overriding what operand1 filled in
@@ -740,7 +740,7 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 
 	// If this was a nested call, add on parens around the details to show what math we've done
 	if (wrapDetails) {
-		stepSolve.details = "(" + stepSolve.details + ")";
+		stepSolve.details = `(${stepSolve.details})`;
 	}
 
 	// If our total has reached undefined for some reason, error out now
@@ -899,25 +899,25 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 			// If the roll containted a crit success or fail, set the formatting around it
 			if (e.containsCrit) {
-				preFormat = "**" + preFormat;
-				postFormat = postFormat + "**";
+				preFormat = `**${preFormat}`;
+				postFormat = `${postFormat}**`;
 			}
 			if (e.containsFail) {
-				preFormat = "__" + preFormat;
-				postFormat = postFormat + "__";
+				preFormat = `__${preFormat}`;
+				postFormat = `${postFormat}__`;
 			}
 
 			// Populate line2 (the results) and line3 (the details) with their data
 			if (order === "") {
-				line2 += preFormat + e.rollTotal + postFormat + escapeCharacters(e.rollPostFormat, "|*_~`");
+				line2 += `${preFormat}${e.rollTotal}${postFormat}${escapeCharacters(e.rollPostFormat, "|*_~`")}`;
 			} else {
 				// If order is on, turn rolls into csv without formatting
-				line2 += preFormat + e.rollTotal + postFormat + ", ";
+				line2 += `${preFormat}${e.rollTotal}${postFormat}, `;
 			}
 
 			line2 = line2.replace(/\*\*\*\*/g, "** **").replace(/____/g, "__ __").replace(/~~~~/g, "~~ ~~");
 
-			line3 += "`" + e.initConfig + "` = " + e.rollDetails + " = " + preFormat + e.rollTotal + postFormat + "\n";
+			line3 += `\`${e.initConfig}\` = ${e.rollDetails} = ${preFormat}${e.rollTotal}${postFormat}\n`;
 		});
 
 		// If order is on, remove trailing ", "
@@ -950,11 +950,11 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 				errorMsg = "Formatting Error: CritScore range specified without a maximum, remove - or add maximum to correct";
 				break;
 			case "UnknownOperation":
-				errorMsg = "Error: Unknown Operation " + errorDetails;
+				errorMsg = `Error: Unknown Operation ${errorDetails}`;
 				if (errorDetails === "-") {
 					errorMsg += "\nNote: Negative numbers are not supported";
 				} else if (errorDetails === " ") {
-					errorMsg += "\nNote: Every roll must be closed by " + localPostfix;
+					errorMsg += `\nNote: Every roll must be closed by ${localPostfix}`;
 				}
 				break;
 			case "NoZerosAllowed":
@@ -982,7 +982,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 						errorMsg += "Crit Score (cs)";
 						break;
 					default:
-						errorMsg += "Unhandled - " + errorDetails;
+						errorMsg += `Unhandled - ${errorDetails}`;
 						break;
 				}
 				errorMsg += " cannot be zero";
@@ -1013,7 +1013,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 				break;
 			default:
 				utils.log(LT.ERROR, `Undangled Error: ${errorName}, ${errorDetails}`);
-				errorMsg = "Unhandled Error: " + solverError.message + "\nCheck input and try again, if issue persists, please use `[[report` to alert the devs of the issue";
+				errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`[[report\` to alert the devs of the issue`;
 				break;
 		}
 

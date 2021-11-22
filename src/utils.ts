@@ -6,7 +6,7 @@
 
 import {
 	// Discordeno deps
-	Message, MessageContent,
+	sendMessage,
 
 	// nanoid deps
 	nanoid
@@ -35,9 +35,9 @@ const ask = async (question: string, stdin = Deno.stdin, stdout = Deno.stdout): 
 	return answer.trim();
 };
 
-// cmdPrompt(logChannel, botName, sendMessage) returns nothing
+// cmdPrompt(logChannel, botName) returns nothing
 // cmdPrompt creates an interactive CLI for the bot, commands can vary
-const cmdPrompt = async (logChannel: string, botName: string, sendMessage: (c: string, m: string) => Promise<Message>): Promise<void> => {
+const cmdPrompt = async (logChannel: bigint, botName: string): Promise<void> => {
 	let done = false;
 
 	while (!done) {
@@ -69,10 +69,10 @@ const cmdPrompt = async (logChannel: string, botName: string, sendMessage: (c: s
 		// Sends [message] to specified [channel]
 		else if (command === "m") {
 			try {
-				const channelID = args.shift() || "";
+				const channelId = args.shift() || "";
 				const message = args.join(" ");
 
-				sendMessage(channelID, message).catch(reason => {
+				sendMessage(BigInt(channelId), message).catch(reason => {
 					console.error(reason);
 				});
 			}
@@ -101,18 +101,6 @@ const cmdPrompt = async (logChannel: string, botName: string, sendMessage: (c: s
 		else {
 			console.log("undefined command");
 		}
-	}
-};
-
-// sendIndirectMessage(originalMessage, messageContent, sendMessage, sendDirectMessage) returns Message
-// sendIndirectMessage determines if the message needs to be sent as a direct message or as a normal message
-const sendIndirectMessage = async (originalMessage: Message, messageContent: (string | MessageContent), sendMessage: (c: string, m: (string | MessageContent)) => Promise<Message>, sendDirectMessage: (c: string, m: (string | MessageContent)) => Promise<Message>): Promise<Message> => {
-	if (originalMessage.guildID === "") {
-		// guildID was empty, meaning the original message was sent as a DM
-		return await sendDirectMessage(originalMessage.author.id, messageContent);
-	} else {
-		// guildID was not empty, meaning the original message was sent in a server
-		return await sendMessage(originalMessage.channelID, messageContent);
 	}
 };
 
@@ -161,4 +149,4 @@ const log = async (level: LogTypes, message: string, error = new Error()): Promi
 	}
 };
 
-export default { cmdPrompt, sendIndirectMessage, initLog, log };
+export default { cmdPrompt, initLog, log };
