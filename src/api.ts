@@ -22,10 +22,13 @@ import {
 import solver from "./solver.ts";
 import { LogTypes as LT } from "./utils.enums.ts";
 import utils from "./utils.ts";
+import {
+	generateApiKeyEmail, generateApiDeleteEmail, generateDMFailed
+} from "./constantCmds.ts";
 
 import config from "../config.ts";
 
-// start(databaseClient, botCache, sendMessage, sendDirectMessage) returns nothing
+// start(databaseClient) returns nothing
 // start initializes and runs the entire API for the bot
 const start = async (dbClient: Client): Promise<void> => {
 	const server = Deno.listen({ port: config.api.port });
@@ -291,11 +294,13 @@ const start = async (dbClient: Client): Promise<void> => {
 
 													// Send the return message as a DM or normal message depening on if the channel is set
 													if ((query.get("channel") || "").length > 0) {
+														// todo: embedify
 														m = await sendMessage(BigInt(query.get("channel") || ""), normalText).catch(() => {
 															requestEvent.respondWith(new Response("Message 00 failed to send.", { status: Status.InternalServerError }));
 															errorOut = true;
 														});
 													} else {
+														// todo: embedify
 														m = await sendDirectMessage(BigInt(query.get("user") || ""), normalText).catch(() => {
 															requestEvent.respondWith(new Response("Message 01 failed to send.", { status: Status.InternalServerError }));
 															errorOut = true;
@@ -320,7 +325,7 @@ const start = async (dbClient: Client): Promise<void> => {
 														utils.log(LT.LOG, `Messaging GM ${e} roll results`);
 														// Attempt to DM the GMs and send a warning if it could not DM a GM
 														await sendDirectMessage(BigInt(e), newMessage).catch(async () => {
-															const failedSend = `WARNING: <@${e}> could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.`
+															const failedSend = generateDMFailed(e);
 															// Send the return message as a DM or normal message depening on if the channel is set
 															if ((query.get("channel") || "").length > 0) {
 																m = await sendMessage(BigInt(query.get("channel") || ""), failedSend).catch(() => {
@@ -349,6 +354,7 @@ const start = async (dbClient: Client): Promise<void> => {
 														break;
 													}
 												} else {
+													// todo: embedify
 													const newMessage: CreateMessage = {};
 													newMessage.content = returnText;
 
@@ -644,7 +650,7 @@ const start = async (dbClient: Client): Promise<void> => {
 												}
 
 												// "Send" the email
-												await sendMessage(config.api.email, `<@${config.api.admin}> A USER HAS REQUESTED A DELETE CODE\n\nEmail Address: ${apiUserEmail}\n\nSubject: \`Artificer API Delete Code\`\n\n\`\`\`Hello Artificer API User,\n\nI am sorry to see you go.  If you would like, please respond to this email detailing what I could have done better.\n\nAs requested, here is your delete code: ${deleteCode}\n\nSorry to see you go,\nThe Artificer Developer - Ean Milligan\`\`\``).catch(() => {
+												await sendMessage(config.api.email, generateApiDeleteEmail(apiUserEmail, deleteCode)).catch(() => {
 													requestEvent.respondWith(new Response("Message 30 failed to send.", { status: Status.InternalServerError }));
 													erroredOut = true;
 												});
@@ -721,7 +727,7 @@ const start = async (dbClient: Client): Promise<void> => {
 										}
 										
 										// "Send" the email
-										await sendMessage(config.api.email, `<@${config.api.admin}> A USER HAS REQUESTED AN API KEY\n\nEmail Address: ${query.get("email")}\n\nSubject: \`Artificer API Key\`\n\n\`\`\`Hello Artificer API User,\n\nWelcome aboard The Artificer's API.  You can find full details about the API on the GitHub: https://github.com/Burn-E99/TheArtificer\n\nYour API Key is: ${newKey}\n\nGuard this well, as there is zero tolerance for API abuse.\n\nWelcome aboard,\nThe Artificer Developer - Ean Milligan\`\`\``).catch(() => {
+										await sendMessage(config.api.email, generateApiKeyEmail(query.get("email") || "no email", newKey)).catch(() => {
 											requestEvent.respondWith(new Response("Message 31 failed to send.", { status: Status.InternalServerError }));
 											erroredOut = true;
 										});

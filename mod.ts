@@ -9,7 +9,7 @@ import {
 	startBot, editBotStatus, editBotNickname,
 	Intents,
 	sendMessage, sendDirectMessage,
-	cache, botId,
+	cache, cacheHandlers, botId,
 	hasGuildPermissions,
 	DiscordActivityTypes, DiscordenoGuild, DiscordenoMessage,
 
@@ -21,13 +21,16 @@ import api from "./src/api.ts";
 import intervals from "./src/intervals.ts";
 import utils from "./src/utils.ts";
 import solver from "./src/solver.ts";
+import {
+	constantCmds,
+	generatePing, generateReport, generateStats, generateApiFailed, generateApiStatus, generateApiSuccess, generateDMFailed
+} from "./src/constantCmds.ts";
 
 import { EmojiConf } from "./src/mod.d.ts";
 import { LogTypes as LT } from "./src/utils.enums.ts";
 
 import { DEVMODE, DEBUG, LOCALMODE } from "./flags.ts";
 import config from "./config.ts";
-import longStrs from "./longStrings.ts";
 
 // Initialize DB client
 const dbClient = await new Client().connect({
@@ -136,8 +139,8 @@ startBot({
 
 				// Calculates ping between sending a message and editing it, giving a nice round-trip latency.
 				try {
-					const m = await message.send("Ping?");
-					m.edit(`Pong! Latency is ${m.timestamp - message.timestamp}ms.`);
+					const m = await message.send(generatePing(-1));
+					m.edit(generatePing(m.timestamp - message.timestamp));
 				} catch (e) {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				}
@@ -151,7 +154,7 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				message.send("The Artificer was built in memory of my Grandmother, Babka\nWith much love, Ean\n\nDecember 21, 2020").catch(e => {
+				message.send(constantCmds.rip).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -164,7 +167,7 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				message.send(longStrs.rollhelp.join("\n")).catch(e => {
+				message.send(constantCmds.rollHelp).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -177,7 +180,7 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				message.send(longStrs.help.join("\n")).catch(e => {
+				message.send(constantCmds.help).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -190,7 +193,7 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				message.send(longStrs.info.join("\n")).catch(e => {
+				message.send(constantCmds.info).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -203,7 +206,7 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				message.send(longStrs.privacy.join("\n")).catch(e => {
+				message.send(constantCmds.privacy).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -216,7 +219,7 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				message.send(`My current version is ${config.version}.`).catch(e => {
+				message.send(constantCmds.version).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -229,10 +232,10 @@ startBot({
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
-				sendMessage(config.reportChannel, (`USER REPORT:\n${args.join(" ")}`)).catch(e => {
+				sendMessage(config.reportChannel, generateReport(args.join(" "))).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
-				message.send("Failed command has been reported to my developer.\n\nFor more in depth support, and information about planned maintenance, please join the support server here: https://discord.gg/peHASXMZYv").catch(e => {
+				message.send(constantCmds.report).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
@@ -255,25 +258,28 @@ startBot({
 				const rolls = BigInt(rollQuery[0].count);
 				const total = BigInt(totalQuery[0].count);
 
-				message.send(`${config.name} is rolling dice for ${cache.members.size} active users, in ${cache.channels.size} channels of ${cache.guilds.size} servers.\n\nSo far, ${rolls} dice have been rolled and ${total - rolls} utility commands have been run.`).catch(e => {
+				const cachedGuilds = await cacheHandlers.size("guilds");
+				const cachedChannels = await cacheHandlers.size("channels");
+				const cachedMembers = await cacheHandlers.size("members");
+				message.send(generateStats(cachedGuilds + cache.dispatchedGuildIds.size, cachedChannels + cache.dispatchedChannelIds.size, cachedMembers, rolls, total - rolls)).catch(e => {
 					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 				});
 			}
 
 			// [[api arg
 			// API sub commands
-			else if (command === "api" && args.length > 0) {
+			else if (command === "api") {
 				// Light telemetry to see how many times a command is being run
 				dbClient.execute(`CALL INC_CNT("api");`).catch(e => {
 					utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 				});
 
 				// Local apiArg in lowercase
-				const apiArg = args[0].toLowerCase();
+				const apiArg = (args[0] || "help").toLowerCase();
 
 				// Alert users who DM the bot that this command is for guilds only
 				if (message.guildId === 0n) {
-					message.send(`API commands are only available in guilds.`).catch(e => {
+					message.send(constantCmds.apiGuildOnly).catch(e => {
 						utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 					});
 					return;
@@ -284,7 +290,7 @@ startBot({
 					// [[api help
 					// Shows API help details
 					if (apiArg === "help") {
-						message.send(longStrs.apihelp.join("\n")).catch(e => {
+						message.send(constantCmds.apiHelp).catch(e => {
 							utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 						});
 					}
@@ -294,7 +300,7 @@ startBot({
 					else if (apiArg === "allow" || apiArg === "block" || apiArg === "enable" || apiArg === "disable") {
 						const guildQuery = await dbClient.query(`SELECT guildid FROM allowed_guilds WHERE guildid = ?`, [message.guildId]).catch(e0 => {
 							utils.log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
-							message.send(`Failed to ${apiArg} API rolls for this guild.  If this issue persists, please report this to the developers.`).catch(e1 => {
+							message.send(generateApiFailed(apiArg)).catch(e1 => {
 								utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 							});
 							return;
@@ -304,7 +310,7 @@ startBot({
 							// Since guild is not in our DB, add it in
 							await dbClient.execute(`INSERT INTO allowed_guilds(guildid,active) values(?,?)`, [BigInt(message.guildId), ((apiArg === "allow" || apiArg === "enable") ? 1 : 0)]).catch(e0 => {
 								utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e0)}`);
-								message.send(`Failed to ${apiArg} API rolls for this guild.  If this issue persists, please report this to the developers.`).catch(e1 => {
+								message.send(generateApiFailed(apiArg)).catch(e1 => {
 									utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 								});
 								return;
@@ -313,14 +319,14 @@ startBot({
 							// Since guild is in our DB, update it
 							await dbClient.execute(`UPDATE allowed_guilds SET active = ? WHERE guildid = ?`, [((apiArg === "allow" || apiArg === "enable") ? 1 : 0), BigInt(message.guildId)]).catch(e0 => {
 								utils.log(LT.ERROR, `Failed to update DB: ${JSON.stringify(e0)}`);
-								message.send(`Failed to ${apiArg} API rolls for this guild.  If this issue persists, please report this to the developers.`).catch(e1 => {
+								message.send(generateApiFailed(apiArg)).catch(e1 => {
 									utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 								});
 								return;
 							});
 						}
 						// We won't get here if there's any errors, so we know it has bee successful, so report as such
-						message.send(`API rolls have successfully been ${apiArg}ed for this guild.`).catch(e => {
+						message.send(generateApiSuccess(apiArg)).catch(e => {
 							utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 						});
 					}
@@ -330,14 +336,14 @@ startBot({
 					else if (apiArg === "delete") {
 						await dbClient.execute(`DELETE FROM allowed_guilds WHERE guildid = ?`, [message.guildId]).catch(e0 => {
 							utils.log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
-							message.send(`Failed to delete this guild from the database.  If this issue persists, please report this to the developers.`).catch(e1 => {
+							message.send(constantCmds.apiDeleteFail).catch(e1 => {
 								utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 							});
 							return;
 						});
 
 						// We won't get here if there's any errors, so we know it has bee successful, so report as such
-						message.send(`This guild's API setting has been removed from The Artifier's Database.`).catch(e => {
+						message.send(constantCmds.apiRemoveGuild).catch(e => {
 							utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 						});
 					}
@@ -348,7 +354,7 @@ startBot({
 						// Get status of guild from the db
 						const guildQuery = await dbClient.query(`SELECT active, banned FROM allowed_guilds WHERE guildid = ?`, [message.guildId]).catch(e0 => {
 							utils.log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
-							message.send(`Failed to check API rolls status for this guild.  If this issue persists, please report this to the developers.`).catch(e1 => {
+							message.send(constantCmds.apiStatusFail).catch(e1 => {
 								utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 							});
 							return;
@@ -358,23 +364,23 @@ startBot({
 						if (guildQuery.length > 0) {
 							// Check if guild is banned from using API and return appropriate message
 							if (guildQuery[0].banned) {
-								message.send(`The Artificer's API is ${config.api.enable ? "currently enabled" : "currently disabled"}.\n\nAPI rolls are banned from being used in this guild.  This will not be reversed.`).catch(e => {
+								message.send(generateApiStatus(true, false)).catch(e => {
 									utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 								});
 							} else {
-								message.send(`The Artificer's API is ${config.api.enable ? "currently enabled" : "currently disabled"}.\n\nAPI rolls are ${guildQuery[0].active ? "allowed" : "blocked from being used"} in this guild.`).catch(e => {
+								message.send(generateApiStatus(false, guildQuery[0].active)).catch(e => {
 									utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 								});
 							}
 						} else {
 							// Guild is not in DB, therefore they are blocked
-							message.send(`The Artificer's API is ${config.api.enable ? "currently enabled" : "currently disabled"}.\n\nAPI rolls are blocked from being used in this guild.`).catch(e => {
+							message.send(generateApiStatus(false, false)).catch(e => {
 								utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 							});
 						}
 					}
 				} else {
-					message.send(`API commands are powerful and can only be used by guild Owners and Admins.\n\nFor information on how to use the API, please check the GitHub README for more information: <https://github.com/Burn-E99/TheArtificer>`).catch(e => {
+					message.send(constantCmds.apiPermError).catch(e => {
 						utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 					});
 				}
@@ -390,7 +396,7 @@ startBot({
 
 				// If DEVMODE is on, only allow this command to be used in the devServer
 				if (DEVMODE && message.guildId !== config.devServer) {
-					message.send("Command is in development, please try again later.").catch(e => {
+					message.send(constantCmds.indev).catch(e => {
 						utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 					});
 					return;
@@ -400,7 +406,7 @@ startBot({
 				try {
 					const originalCommand = `${config.prefix}${command} ${args.join(" ")}`;
 
-					const m = await message.send("Rolling...");
+					const m = await message.send(constantCmds.rolling);
 
 					const modifiers = {
 						noDetails: false,
@@ -547,19 +553,21 @@ startBot({
 
 							if (b.size > 8388290) {
 								// Update return text
+								// todo: embedify
 								returnText = `<@${message.authorId}>${returnmsg.line1}\n${returnmsg.line2}\nFull details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
 
 								// Attempt to DM the GMs and send a warning if it could not DM a GM
 								await sendDirectMessage(BigInt(e.substr(2, (e.length - 3))), returnText).catch(() => {
-									message.send(`WARNING: ${e} could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.`);
+									message.send(generateDMFailed(e));
 								});
 							} else {
-								// Update return text
+								// Update return 
+								// todo: embedify
 								returnText = `<@${message.authorId}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
 
 								// Attempt to DM the GMs and send a warning if it could not DM a GM
 								await sendDirectMessage(BigInt(e.substr(2, (e.length - 3))), { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }).catch(() => {
-									message.send(`WARNING: ${e} could not be messaged.  If this issue persists, make sure direct messages are allowed from this server.`);
+									message.send(generateDMFailed(e));
 								});
 							}
 						});
@@ -592,6 +600,7 @@ startBot({
 								// Remove the original message to send new one with attachment
 								m.delete();
 	
+								// todo: embedify
 								await message.send({ "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } });
 							}
 						} else {
