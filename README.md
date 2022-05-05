@@ -19,9 +19,9 @@ After inviting the bot, if you would like it to remove the message requesting th
 ## Available Commands
 The Artificer comes with a few supplemental commands to the main rolling command.
 
-* `[[help or [[h or [[?`
+* `[[help` or `[[h` or `[[?`
   * Provides a message similar to this available commands block.
-* `[[rollhelp or [[??`
+* `[[rollhelp` or `[[??`
   * Details on how to use the roll command, listed as `[[xdy...]]` below.
 * `[[api [subcommand]`
   * Administrative tools for the bots's API.  These commands may only be used by the Owner or Admins of your guild.
@@ -30,26 +30,26 @@ The Artificer comes with a few supplemental commands to the main rolling command
       * Provides a message similar to this subcommand description.
     * `[[api status`
       * Shows the current status of the API for this guild.
-    * `[[api allow or [[api enable`
+    * `[[api allow` or `[[api enable`
       * Allows API Rolls to be sent to this guild.
-    * `[[api block or [[api disable`
+    * `[[api block` or `[[api disable`
       * Blocks API Rolls from being sent to this guild.
     * `[[api delete`
       * Deletes this guild from The Artificer's database.
 * `[[ping`
   * Tests the latency between you, Discord, and the bot.
-* `[[info or [[i`
+* `[[info` or `[[i`
   * Outputs some information and links relating to the bot.
 * `[[privacy`
   * Prints some information about the Privacy Policy, found in `PRIVACY.md`.
-* `[[version or [[v`
+* `[[version` or `[[v`
   * Prints out the current version of the bot.
-* `[[popcat or [[pop or [[p`
+* `[[popcat` or `[[pop` or `[[p`
   * Sends the animated popcat emote for those who do not have Discord Nitro.
   * If bot is given the permission `Manage Messages`, the bot will remove the message requesting the emote.
-* `[[stats or [[s`
+* `[[stats` or `[[s`
   * Prints out how many users, channels, and servers the bot is currently serving.
-* `[[report or [[r [command that failed]`
+* `[[report` or `[[r [command that failed]`
   * People aren't perfect, but this bot is trying to be.
   * If you encounter a command that errors out or returns something unexpected, please use this command to alert the developers of the problem.
   * Example:
