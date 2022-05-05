@@ -1,6 +1,6 @@
 import config from "../../config.ts";
 import { DEVMODE } from "../../flags.ts";
-import { dbClient } from "../db.ts";
+import { dbClient, queries } from "../db.ts";
 import { DiscordenoMessage, sendDirectMessage } from "../../deps.ts";
 import utils from "../utils.ts";
 import solver from "../solver.ts";
@@ -49,7 +49,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can verify the bots math
-				dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, returnmsg.errorCode, m.id]).catch(e => {
+				dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, returnmsg.errorCode, m.id]).catch(e => {
 					utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 				});
 			}
@@ -102,7 +102,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can verify the bots math
-				dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,0)", [originalCommand, returnText, m.id]).catch(e => {
+				dbClient.execute(queries.insertRollLogCmd(0, 0), [originalCommand, returnText, m.id]).catch(e => {
 					utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 				});
 			}
@@ -135,7 +135,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can verify the bots math
-				dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,0)", [originalCommand, returnText, m.id]).catch(e => {
+				dbClient.execute(queries.insertRollLogCmd(0, 0), [originalCommand, returnText, m.id]).catch(e => {
 					utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 				});
 			}

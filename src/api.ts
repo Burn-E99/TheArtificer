@@ -16,7 +16,7 @@ import {
 	nanoid
 } from "../deps.ts";
 
-import { dbClient } from "./db.ts";
+import { dbClient, queries } from "./db.ts";
 import solver from "./solver.ts";
 import { LogTypes as LT } from "./utils.enums.ts";
 import utils from "./utils.ts";
@@ -215,7 +215,7 @@ const start = async (): Promise<void> => {
 													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 
 													// Always log API rolls for abuse detection
-													dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "EmptyInput", null]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "EmptyInput", null]).catch(e => {
 														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
@@ -226,7 +226,7 @@ const start = async (): Promise<void> => {
 													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 
 													// Always log API rolls for abuse detection
-													dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "BadOrder", null]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "BadOrder", null]).catch(e => {
 														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
@@ -247,7 +247,7 @@ const start = async (): Promise<void> => {
 													requestEvent.respondWith(new Response(returnmsg.errorMsg, { status: Status.InternalServerError }));
 
 													// Always log API rolls for abuse detection
-													dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, returnmsg.errorCode, null]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, returnmsg.errorCode, null]).catch(e => {
 														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
@@ -277,7 +277,7 @@ const start = async (): Promise<void> => {
 														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 
 														// Always log API rolls for abuse detection
-														dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,1)", [originalCommand, "NoGMsSent", null]).catch(e => {
+														dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "NoGMsSent", null]).catch(e => {
 															utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														});
 														break;
@@ -340,7 +340,7 @@ const start = async (): Promise<void> => {
 													});
 
 													// Always log API rolls for abuse detection
-													dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
 														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 
@@ -385,7 +385,7 @@ const start = async (): Promise<void> => {
 													}
 
 													// If enabled, log rolls so we can verify the bots math
-													dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,1,0)", [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
 														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 

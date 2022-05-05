@@ -9,3 +9,7 @@ export const dbClient = await new Client().connect({
 	username: config.db.username,
 	password: config.db.password
 });
+
+export const queries = {
+	insertRollLogCmd: (api: number, error: number) => `INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,${api},${error})`
+};

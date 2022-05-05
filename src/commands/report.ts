@@ -11,10 +11,16 @@ export const report = (message: DiscordenoMessage, args: string[]) => {
 		utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 	});
 
-	sendMessage(config.reportChannel, generateReport(args.join(" "))).catch(e => {
-		utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
-	message.send(constantCmds.report).catch(e => {
-		utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	if (args.join(" ")) {
+		sendMessage(config.reportChannel, generateReport(args.join(" "))).catch(e => {
+			utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+		});
+		message.send(constantCmds.report).catch(e => {
+			utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+		});
+	} else {
+		message.send(constantCmds.reportFail).catch(e => {
+			utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+		});
+	}
 };

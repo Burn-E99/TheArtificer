@@ -167,6 +167,14 @@ export const constantCmds = {
 			}]
 		}]
 	},
+	reportFail: {
+		embeds: [{
+			fields: [{
+				name: "Please provide a short description of what failed",
+				value: "Providing a short description helps my developer quickly diagnose what went wrong."
+			}]
+		}]
+	},
 	rip: {
 		embeds: [{
 			fields: [{
@@ -424,5 +432,15 @@ export const generateApiDeleteEmail = (email: string, deleteCode: string) => ({
 				The Artificer Developer - Ean Milligan`
 			}
 		]
+	}]
+});
+
+export const generateRollError = (errorType: string, errorMsg: string) => ({
+	embeds: [{
+		title: "Roll command encountered the following error:",
+		fields: [{
+			name: errorType,
+			value: `${errorMsg}\n\nPlease try again.  If the error is repeated, please report the issue using the \`[[report\` command.`
+		}]
 	}]
 });
