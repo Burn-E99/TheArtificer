@@ -556,7 +556,7 @@ const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll: boolea
 		tempDetails += `${preFormat}${e.roll}${postFormat} + `;
 	});
 	// After the looping is done, remove the extra " + " from the details and cap it with the closing ]
-	tempDetails = tempDetails.substr(0, (tempDetails.length - 3));
+	tempDetails = tempDetails.substring(0, (tempDetails.length - 1));
 	tempDetails += "]";
 
 	return {
@@ -859,7 +859,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 		// Remove any floating spaces from fullCmd
 		if (fullCmd[fullCmd.length - 1] === " ") {
-			fullCmd = fullCmd.substr(0, (fullCmd.length - 1));
+			fullCmd = fullCmd.substring(0, (fullCmd.length - 1));
 		}
 
 		// Escape any | and ` chars in fullCmd to prevent spoilers and code blocks from acting up
@@ -922,7 +922,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 		// If order is on, remove trailing ", "
 		if (order !== "") {
-			line2 = line2.substr(0, (line2.length - 2));
+			line2 = line2.substring(0, (line2.length - 2));
 		}
 
 		// Fill in the return block

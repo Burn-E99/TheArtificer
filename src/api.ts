@@ -233,7 +233,7 @@ const start = async (): Promise<void> => {
 												}
 
 												// Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
-												rollCmd = rollCmd.substr(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, " ");
+												rollCmd = rollCmd.substring(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, " ");
 
 												// Parse the roll and get the return text
 												const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, query.has("m"), query.has("n"), query.has("o") ? (query.get("o")?.toLowerCase() || "") : "");

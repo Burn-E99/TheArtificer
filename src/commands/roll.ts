@@ -82,7 +82,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 					returnText = `<@${message.authorId}>${returnmsg.line1}\n${returnmsg.line2}\nFull details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
 
 					// Attempt to DM the GMs and send a warning if it could not DM a GM
-					await sendDirectMessage(BigInt(e.substr(2, (e.length - 3))), returnText).catch(() => {
+					await sendDirectMessage(BigInt(e.substring(2, (e.length - 1))), returnText).catch(() => {
 						message.send(generateDMFailed(e));
 					});
 				} else {
@@ -91,7 +91,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 					returnText = `<@${message.authorId}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
 
 					// Attempt to DM the GMs and send a warning if it could not DM a GM
-					await sendDirectMessage(BigInt(e.substr(2, (e.length - 3))), { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }).catch(() => {
+					await sendDirectMessage(BigInt(e.substring(2, (e.length - 1))), { "content": returnText, "file": { "blob": b, "name": "rollDetails.txt" } }).catch(() => {
 						message.send(generateDMFailed(e));
 					});
 				}
