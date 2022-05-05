@@ -560,7 +560,7 @@ const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll: boolea
 		tempDetails += `${preFormat}${e.roll}${postFormat} + `;
 	});
 	// After the looping is done, remove the extra " + " from the details and cap it with the closing ]
-	tempDetails = tempDetails.substring(0, (tempDetails.length - 1));
+	tempDetails = tempDetails.substring(0, (tempDetails.length - 3));
 	tempDetails += "]";
 
 	return {
@@ -660,6 +660,8 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 					containsCrit: false,
 					containsFail: false
 				};
+				// Flag to prevent infinte loop when dealing with negative numbers (such as [[-1+20]])
+				let shouldDecrement = true;
 
 				// If operand1 is a SolvedStep, populate our subStepSolve with its details and crit/fail flags
 				if (typeof operand1 === "object") {
@@ -669,8 +671,14 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 					subStepSolve.containsFail = operand1.containsFail;
 				} else {
 					// else parse it as a number and add it to the subStep details
-					oper1 = parseFloat(operand1.toString());
-					subStepSolve.details = `${oper1.toString()}\\${conf[i]}`;
+					if (operand1) {
+						oper1 = parseFloat(operand1.toString());
+						subStepSolve.details = `${oper1.toString()}\\${conf[i]}`;
+					} else if (conf[i] === '-') {
+						oper1 = 0;
+						subStepSolve.details = `\\${conf[i]}`;
+						shouldDecrement = false;
+					}
 				}
 
 				// If operand2 is a SolvedStep, populate our subStepSolve with its details without overriding what operand1 filled in
@@ -719,16 +727,23 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 					throw new Error("EMDASNotNumber");
 				}
 
-				// Replace the two operands and their operator with our subStepSolve
-				conf.splice((i - 1), 3, subStepSolve);
-				// Because we are messing around with the array we are iterating thru, we need to back up one idx to make sure every operator gets processed
-				i--;
+				// Determine if we actually did math or just smashed a - sign onto a number
+				if (shouldDecrement) {
+					// Replace the two operands and their operator with our subStepSolve
+					conf.splice((i - 1), 3, subStepSolve);
+					// Because we are messing around with the array we are iterating thru, we need to back up one idx to make sure every operator gets processed
+					i--;
+				} else {
+					// Replace the one operand and its operator (-) with our subStepSolve
+					conf.splice(i, 2, subStepSolve);
+				}
 			}
 		}
 	});
 
 	// If we somehow have more than one item left in conf at this point, something broke, throw an error
 	if (conf.length > 1) {
+		log(LT.LOG, `ConfWHAT? ${JSON.stringify(conf)}`);
 		throw new Error("ConfWhat");
 	} else if (singleNum && (typeof (conf[0]) === "number")) {
 		// If we are only left with a number, populate the stepSolve with it
