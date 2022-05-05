@@ -258,11 +258,11 @@ export const constantCmds = {
 					}
 				]
 			}, {
-				title: "Roll Command Flags:",
+				title: "Roll Command Decorators:",
 				fields: [
 					{
 						name: "Details",
-						value: `This command also has some useful flags that can used.  These flags simply need to be placed after all rolls in the message.
+						value: `This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message.
 						
 						Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${config.postfix} -nd -s\``
 					}, {

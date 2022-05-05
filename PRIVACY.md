@@ -1,7 +1,7 @@
 # The Artificer's Privacy Policy
 ## Information relating to Discord Interactions
 ### Public Bot Information
-Publicly available versions of `The Artificer#8166` (herein referred to as _The Bot_ or _Bot_) do not track or collect user information via Discord.
+Publicly available versions of `The Artificer#8166` (Discord ID: `789045930011656223`) (herein referred to as _The Bot_ or _Bot_) do not track or collect user information via Discord.
 
 Upon inviting _The Bot_ to a user's guild, _The Bot_ sends the guild name, Discord Guild ID, and current count of guild members to Burn_E99#1062 (herein referred to as _The Developer_) via a private Discord Guild.  The guild name, Discord Guild ID, and current count of guild members are only used to roughly gage how popular _The Bot_ is and to determine if _The Bot_'s hosting solution needs to be improved.  These pieces of information will never be sold or shared with anyone.
 

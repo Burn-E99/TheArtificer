@@ -85,7 +85,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[4d20r1!]]` will roll 4 d20 dice, rerolling any dice that land on 1, and repeatedly rolling a new d20 for any critical success rolled.
     * `[[d20/40]]` will roll a d20 die and divide it by 40.
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
-  * This command also has some useful flags that can used.  These flags simply need to be placed after all rolls in the message:
+  * This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message:
     * `-nd` - No Details - Suppresses all details of the requested roll
     * `-s` - Spoiler - Spoilers all details of the requested roll
     * `-m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with -n
@@ -188,7 +188,7 @@ Current and future plans are listed on [the Milestones page](https://github.com/
 ---
 
 ## Privacy Policy and Terms of Service
-The Artificer has a Privacy Policy and Terms of Service to detail expectations of what user data is stored and how users should use The Artificer.
+The Artificer has a Privacy Policy and Terms of Service to detail expectations of what user data is stored and how users should use The Artificer.  The following Privacy Policy and Terms of Service only apply to the officially hosted version of The Artificer (`The Artificer#8166`, Discord ID: `789045930011656223`).
 
 Privacy Policy TL;DR: Only report command data is stored if you do not use the API, if you use the API, submitted Discord Ids will be stored linked to your email.  For more detailed information, please check out the full [PRIVACY POLICY](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
 
