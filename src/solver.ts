@@ -820,7 +820,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 						containsCrit: false,
 						containsFail: false
 					};
-				} else if (mathConf[i].toString().toLowerCase() === "pi") {
+				} else if (mathConf[i].toString().toLowerCase() === "pi" || mathConf[i].toString().toLowerCase() == "𝜋") {
 					// If the operand is the constant pi, create a SolvedStep for it
 					mathConf[i] = {
 						total: Math.PI,

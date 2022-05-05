@@ -5,7 +5,7 @@
  */
 
 import config from "./config.ts";
-import { DEBUG, LOCALMODE } from "./flags.ts";
+import { DEBUG, DEVMODE, LOCALMODE } from "./flags.ts";
 import {
 	// Discordeno deps
 	startBot, editBotStatus, editBotNickname,
@@ -94,7 +94,7 @@ startBot({
 				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 			});
 		},
-		debug: dmsg => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`),
+		debug: DEVMODE ? dmsg => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : () => {},
 		messageCreate: (message: DiscordenoMessage) => {
 			// Ignore all other bots
 			if (message.isBot) return;
