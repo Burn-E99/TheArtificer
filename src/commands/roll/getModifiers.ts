@@ -1,10 +1,14 @@
 import config from "../../../config.ts";
 import { DEVMODE } from "../../../flags.ts";
 import { dbClient, queries } from "../../db.ts";
-import { DiscordenoMessage } from "../../../deps.ts";
+import {
+	// Discordeno deps
+	DiscordenoMessage,
+
+	// Log4Deno deps
+	LT, log
+} from "../../../deps.ts";
 import { generateRollError } from "../../constantCmds.ts";
-import utils from "../../utils.ts";
-import { LogTypes as LT } from "../../utils.enums.ts";
 import { RollModifiers } from "../../mod.d.ts";
 
 export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {
@@ -22,7 +26,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
 	// Check if any of the args are command flags and pull those out into the modifiers object
 	for (let i = 0; i < args.length; i++) {
-		utils.log(LT.LOG, `Checking ${command}${args.join(" ")} for command modifiers ${i}`);
+		log(LT.LOG, `Checking ${command}${args.join(" ")} for command modifiers ${i}`);
 		switch (args[i].toLowerCase()) {
 			case "-nd":
 				modifiers.noDetails = true;
@@ -53,7 +57,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
 				// -gm is a little more complex, as we must get all of the GMs that need to be DMd
 				while (((i + 1) < args.length) && args[i + 1].startsWith("<@")) {
-					utils.log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
+					log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
 					// Keep looping thru the rest of the args until one does not start with the discord mention code
 					modifiers.gms.push(args[i + 1].replace(/[!]/g, ""));
 					args.splice((i + 1), 1);
@@ -65,7 +69,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 					if (DEVMODE && config.logRolls) {
 						// If enabled, log rolls so we can verify the bots math
 						dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, "NoGMsFound", m.id]).catch(e => {
-							utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+							log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 						});
 					}
 					return modifiers;
@@ -86,7 +90,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 					if (DEVMODE && config.logRolls) {
 						// If enabled, log rolls so we can verify the bots math
 						dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, "NoOrderFound", m.id]).catch(e => {
-							utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+							log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 						});
 					}
 					return modifiers;
@@ -109,7 +113,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 		if (DEVMODE && config.logRolls) {
 			// If enabled, log rolls so we can verify the bots math
 			dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, "MaxAndNominal", m.id]).catch(e => {
-				utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+				log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 			});
 		}
 		return modifiers;

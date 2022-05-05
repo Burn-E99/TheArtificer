@@ -13,15 +13,17 @@ import {
 	sendMessage,
 	cache, botId,
 	DiscordActivityTypes, DiscordenoGuild, DiscordenoMessage,
+
+	// Log4Deno deps
+	LT, initLog, log
 } from "./deps.ts";
 import api from "./src/api.ts";
 import commands from "./src/commands/_index.ts";
 import intervals from "./src/intervals.ts";
 import utils from "./src/utils.ts";
-import { LogTypes as LT } from "./src/utils.enums.ts";
 
 // Initialize logging client with folder to use for logs, needs --allow-write set on Deno startup
-utils.initLog("logs");
+initLog("logs", DEBUG);
 
 // Start up the Discord Bot
 startBot({
@@ -29,7 +31,7 @@ startBot({
 	intents: [Intents.GuildMessages, Intents.DirectMessages, Intents.Guilds],
 	eventHandlers: {
 		ready: () => {
-			utils.log(LT.INFO, `${config.name} Logged in!`);
+			log(LT.INFO, `${config.name} Logged in!`);
 			editBotStatus({
 				activities: [{
 					name: "Booting up . . .",
@@ -41,7 +43,7 @@ startBot({
 
 			// Interval to rotate the status text every 30 seconds to show off more commands
 			setInterval(async () => {
-				utils.log(LT.LOG, "Changing bot status");
+				log(LT.LOG, "Changing bot status");
 				try {
 					// Wrapped in try-catch due to hard crash possible
 					editBotStatus({
@@ -53,20 +55,20 @@ startBot({
 						status: "online"
 					});
 				} catch (e) {
-					utils.log(LT.ERROR, `Failed to update status: ${JSON.stringify(e)}`);
+					log(LT.ERROR, `Failed to update status: ${JSON.stringify(e)}`);
 				}
 			}, 30000);
 
 			// Interval to update bot list stats every 24 hours
-			LOCALMODE ? utils.log(LT.INFO, "updateListStatistics not running") : setInterval(() => {
-				utils.log(LT.LOG, "Updating all bot lists statistics");
+			LOCALMODE ? log(LT.INFO, "updateListStatistics not running") : setInterval(() => {
+				log(LT.LOG, "Updating all bot lists statistics");
 				intervals.updateListStatistics(botId, cache.guilds.size);
 			}, 86400000);
 
 			// setTimeout added to make sure the startup message does not error out
 			setTimeout(() => {
 				LOCALMODE && editBotNickname(config.devServer, `LOCAL - ${config.name}`);
-				LOCALMODE ? utils.log(LT.INFO, "updateListStatistics not running") : intervals.updateListStatistics(botId, cache.guilds.size);
+				LOCALMODE ? log(LT.INFO, "updateListStatistics not running") : intervals.updateListStatistics(botId, cache.guilds.size);
 				editBotStatus({
 					activities: [{
 						name: "Booting Complete",
@@ -76,23 +78,23 @@ startBot({
 					status: "online"
 				});
 				sendMessage(config.logChannel, `${config.name} has started, running version ${config.version}.`).catch(e => {
-					utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
+					log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 				});
 			}, 1000);
 		},
 		guildCreate: (guild: DiscordenoGuild) => {
-			utils.log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
+			log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
 			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch(e => {
-				utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
+				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 			});
 		},
 		guildDelete: (guild: DiscordenoGuild) => {
-			utils.log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
+			log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
 			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch(e => {
-				utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
+				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 			});
 		},
-		debug: dmsg => utils.log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`),
+		debug: dmsg => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`),
 		messageCreate: (message: DiscordenoMessage) => {
 			// Ignore all other bots
 			if (message.isBot) return;
@@ -100,7 +102,7 @@ startBot({
 			// Ignore all messages that are not commands
 			if (message.content.indexOf(config.prefix) !== 0) return;
 			
-			utils.log(LT.LOG, `Handling message ${JSON.stringify(message)}`);
+			log(LT.LOG, `Handling message ${JSON.stringify(message)}`);
 
 			// Split into standard command + args format
 			const args = message.content.slice(config.prefix.length).trim().split(/[ \n]+/g);

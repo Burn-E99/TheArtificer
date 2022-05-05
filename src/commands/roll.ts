@@ -1,23 +1,27 @@
 import config from "../../config.ts";
 import { DEVMODE } from "../../flags.ts";
 import { dbClient, queries } from "../db.ts";
-import { DiscordenoMessage, sendDirectMessage } from "../../deps.ts";
-import utils from "../utils.ts";
+import {
+	// Discordeno deps
+	DiscordenoMessage, sendDirectMessage,
+
+	// Log4Deno deps
+	LT, log
+} from "../../deps.ts";
 import solver from "../solver.ts";
 import { constantCmds, generateDMFailed } from "../constantCmds.ts";
-import { LogTypes as LT } from "../utils.enums.ts";
 import rollFuncs from "./roll/_rollIndex.ts";
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run
 	dbClient.execute(`CALL INC_CNT("roll");`).catch(e => {
-		utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
+		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 	});
 
 	// If DEVMODE is on, only allow this command to be used in the devServer
 	if (DEVMODE && message.guildId !== config.devServer) {
 		message.send(constantCmds.indev).catch(e => {
-			utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 		});
 		return;
 	}
@@ -50,7 +54,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can verify the bots math
 				dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, returnmsg.errorCode, m.id]).catch(e => {
-					utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+					log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 				});
 			}
 			return;
@@ -72,7 +76,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 			// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 			modifiers.gms.forEach(async e => {
-				utils.log(LT.LOG, `Messaging GM ${e}`);
+				log(LT.LOG, `Messaging GM ${e}`);
 				// If its too big, collapse it into a .txt file and send that instead.
 				const b = await new Blob([returnText as BlobPart], { "type": "text" });
 
@@ -103,7 +107,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can verify the bots math
 				dbClient.execute(queries.insertRollLogCmd(0, 0), [originalCommand, returnText, m.id]).catch(e => {
-					utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+					log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 				});
 			}
 		} else {
@@ -136,11 +140,11 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can verify the bots math
 				dbClient.execute(queries.insertRollLogCmd(0, 0), [originalCommand, returnText, m.id]).catch(e => {
-					utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+					log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 				});
 			}
 		}
 	} catch (e) {
-		utils.log(LT.ERROR, `Undandled Error: ${JSON.stringify(e)}`);
+		log(LT.ERROR, `Undandled Error: ${JSON.stringify(e)}`);
 	}
 };

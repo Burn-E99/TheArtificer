@@ -1,14 +1,18 @@
 import { dbClient } from "../db.ts";
-import { DiscordenoMessage, hasGuildPermissions } from "../../deps.ts";
+import {
+	// Discordeno deps
+	DiscordenoMessage, hasGuildPermissions,
+
+	// Log4Deno deps
+	LT, log
+} from "../../deps.ts";
 import apiCommands from "./apiCmd/_apiIndex.ts";
-import utils from "../utils.ts";
 import { constantCmds } from "../constantCmds.ts";
-import { LogTypes as LT } from "../utils.enums.ts";
 
 export const api = async (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
 	dbClient.execute(`CALL INC_CNT("api");`).catch(e => {
-		utils.log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
+		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 	});
 
 	// Local apiArg in lowercase
@@ -17,7 +21,7 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 	// Alert users who DM the bot that this command is for guilds only
 	if (message.guildId === 0n) {
 		message.send(constantCmds.apiGuildOnly).catch(e => {
-			utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 		});
 		return;
 	}
@@ -49,7 +53,7 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 		}
 	} else {
 		message.send(constantCmds.apiPermError).catch(e => {
-			utils.log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 		});
 	}
 };

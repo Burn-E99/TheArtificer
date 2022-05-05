@@ -13,13 +13,14 @@ import {
 	Status, STATUS_TEXT,
 
 	// nanoid deps
-	nanoid
+	nanoid,
+
+	// Log4Deno deps
+	LT, log
 } from "../deps.ts";
 
 import { dbClient, queries } from "./db.ts";
 import solver from "./solver.ts";
-import { LogTypes as LT } from "./utils.enums.ts";
-import utils from "./utils.ts";
 import {
 	generateApiKeyEmail, generateApiDeleteEmail, generateDMFailed
 } from "./constantCmds.ts";
@@ -30,7 +31,7 @@ import config from "../config.ts";
 // start initializes and runs the entire API for the bot
 const start = async (): Promise<void> => {
 	const server = Deno.listen({ port: config.api.port });
-	utils.log(LT.INFO, `HTTP api running at: http://localhost:${config.api.port}/`);
+	log(LT.INFO, `HTTP api running at: http://localhost:${config.api.port}/`);
 
 	// rateLimitTime holds all users with the last time they started a rate limit timer
 	const rateLimitTime = new Map<string, number>();
@@ -43,7 +44,7 @@ const start = async (): Promise<void> => {
 			const httpConn = Deno.serveHttp(conn);
 			for await (const requestEvent of httpConn) {
 				const request = requestEvent.request;
-				utils.log(LT.LOG, `Handling request: ${JSON.stringify(request)}`);
+				log(LT.LOG, `Handling request: ${JSON.stringify(request)}`);
 				// Check if user is authenticated to be using this API
 				let authenticated = false;
 				let rateLimited = false;
@@ -96,7 +97,7 @@ const start = async (): Promise<void> => {
 					const query = new Map<string, string>();
 					if (tempQ !== undefined) {
 						tempQ.split("&").forEach((e: string) => {
-							utils.log(LT.LOG, `Breaking down request query: ${request} ${e}`);
+							log(LT.LOG, `Breaking down request query: ${request} ${e}`);
 							const [option, params] = e.split("=");
 							query.set(option.toLowerCase(), params);
 						});
@@ -118,7 +119,7 @@ const start = async (): Promise<void> => {
 
 											// Insert new key/user pair into the db
 											await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [apiUserid, newKey]).catch(e => {
-												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
@@ -149,7 +150,7 @@ const start = async (): Promise<void> => {
 
 											// Get all channels userid has authorized
 											const dbAllowedChannelQuery = await dbClient.query("SELECT * FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(e => {
-												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
@@ -216,7 +217,7 @@ const start = async (): Promise<void> => {
 
 													// Always log API rolls for abuse detection
 													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "EmptyInput", null]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
 												}
@@ -227,7 +228,7 @@ const start = async (): Promise<void> => {
 
 													// Always log API rolls for abuse detection
 													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "BadOrder", null]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
 												}
@@ -248,7 +249,7 @@ const start = async (): Promise<void> => {
 
 													// Always log API rolls for abuse detection
 													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, returnmsg.errorCode, null]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
 												} else {
@@ -278,7 +279,7 @@ const start = async (): Promise<void> => {
 
 														// Always log API rolls for abuse detection
 														dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "NoGMsSent", null]).catch(e => {
-															utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+															log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														});
 														break;
 													}
@@ -286,7 +287,7 @@ const start = async (): Promise<void> => {
 													// Make a new return line to be sent to the roller
 													let normalText = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\nResults have been messaged to the following GMs: `;
 													gms.forEach(e => {
-														utils.log(LT.LOG, `Appending GM ${e} to roll text`);
+														log(LT.LOG, `Appending GM ${e} to roll text`);
 														normalText += `<@${e}> `;
 													});
 
@@ -320,7 +321,7 @@ const start = async (): Promise<void> => {
 
 													// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 													gms.forEach(async e => {
-														utils.log(LT.LOG, `Messaging GM ${e} roll results`);
+														log(LT.LOG, `Messaging GM ${e} roll results`);
 														// Attempt to DM the GMs and send a warning if it could not DM a GM
 														await sendDirectMessage(BigInt(e), newMessage).catch(async () => {
 															const failedSend = generateDMFailed(e);
@@ -341,7 +342,7 @@ const start = async (): Promise<void> => {
 
 													// Always log API rolls for abuse detection
 													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 
 													// Handle closing the request out
@@ -386,7 +387,7 @@ const start = async (): Promise<void> => {
 
 													// If enabled, log rolls so we can verify the bots math
 													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 
 													// Handle closing the request out
@@ -399,7 +400,7 @@ const start = async (): Promise<void> => {
 												}
 											} catch (err) {
 												// Handle any errors we missed
-												utils.log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
+												log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 											}
 										} else {
@@ -428,7 +429,7 @@ const start = async (): Promise<void> => {
 
 											// Insert new user/channel pair into the db
 											await dbClient.execute("INSERT INTO allowed_channels(userid,channelid) values(?,?)", [apiUserid, BigInt(query.get("channel") || "0")]).catch(e => {
-												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
@@ -487,7 +488,7 @@ const start = async (): Promise<void> => {
 
 											// Execute the DB modification
 											await dbClient.execute("UPDATE all_keys SET ?? = ? WHERE userid = ?", [key, value, apiUserid]).catch(e => {
-												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
@@ -527,7 +528,7 @@ const start = async (): Promise<void> => {
 
 											// Execute the DB modification
 											await dbClient.execute("UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel") || "0")]).catch(e => {
-												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
@@ -567,7 +568,7 @@ const start = async (): Promise<void> => {
 
 											// Update the requested entry
 											await dbClient.execute("UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel") || "0")]).catch(e => {
-												utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
@@ -607,7 +608,7 @@ const start = async (): Promise<void> => {
 													let erroredOut = false;
 
 													await dbClient.execute("DELETE FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 														erroredOut = true;
 													});
@@ -616,7 +617,7 @@ const start = async (): Promise<void> => {
 													}
 
 													await dbClient.execute("DELETE FROM all_keys WHERE userid = ?", [apiUserid]).catch(e => {
-														utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 														erroredOut = true;
 													});
@@ -639,7 +640,7 @@ const start = async (): Promise<void> => {
 
 												// Execute the DB modification
 												await dbClient.execute("UPDATE all_keys SET deleteCode = ? WHERE userid = ?", [deleteCode, apiUserid]).catch(e => {
-													utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+													log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 													erroredOut = true;
 												});
@@ -693,7 +694,7 @@ const start = async (): Promise<void> => {
 					const query = new Map<string, string>();
 					if (tempQ !== undefined) {
 						tempQ.split("&").forEach((e: string) => {
-							utils.log(LT.LOG, `Parsing request query #2 ${request} ${e}`);
+							log(LT.LOG, `Parsing request query #2 ${request} ${e}`);
 							const [option, params] = e.split("=");
 							query.set(option.toLowerCase(), params);
 						});
@@ -714,7 +715,7 @@ const start = async (): Promise<void> => {
 
 										// Insert new key/user pair into the db
 										await dbClient.execute("INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)", [BigInt(query.get("user") || "0"), newKey, (query.get("email") || "").toLowerCase()]).catch(e => {
-											utils.log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+											log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 											requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 											erroredOut = true;
 										});

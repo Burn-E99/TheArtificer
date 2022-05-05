@@ -4,10 +4,13 @@
  * December 21, 2020
  */
 
+import {
+	// Log4Deno deps
+	LT, log
+} from "../deps.ts";
+
 import config from "../config.ts";
 import { RollSet, SolvedStep, SolvedRoll, ReturnData } from "./solver.d.ts";
-import { LogTypes as LT } from "./utils.enums.ts";
-import utils from "./utils.ts";
 
 // MAXLOOPS determines how long the bot will attempt a roll
 // Default is 5000000 (5 million), which results in at most a 10 second delay before the bot calls the roll infinite or too complex
@@ -62,7 +65,7 @@ const compareOrigidx = (a: RollSet, b: RollSet): number => {
 const escapeCharacters = (str: string, esc: string): string => {
 	// Loop thru each esc char one at a time
 	for (let i = 0; i < esc.length; i++) {
-		utils.log(LT.LOG, `Escaping character ${esc[i]} | ${str}, ${esc}`);
+		log(LT.LOG, `Escaping character ${esc[i]} | ${str}, ${esc}`);
 		// Create a new regex to look for that char that needs replaced and escape it
 		const temprgx = new RegExp(`[${esc[i]}]`, "g");
 		str = str.replace(temprgx, `\\${esc[i]}`);
@@ -164,7 +167,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 
 		// Loop until all remaining args are parsed
 		while (remains.length > 0) {
-			utils.log(LT.LOG, `Handling roll ${rollStr} | Parsing remains ${remains}`);
+			log(LT.LOG, `Handling roll ${rollStr} | Parsing remains ${remains}`);
 			// Find the next number in the remains to be able to cut out the rule name
 			let afterSepIdx = remains.search(/\d/);
 			if (afterSepIdx < 0) {
@@ -220,7 +223,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 					// Configure CritScore for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critScore.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
-						utils.log(LT.LOG, `Handling roll ${rollStr} | Parsing cs> ${i}`);
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing cs> ${i}`);
 						rollConf.critScore.range.push(i);
 					}
 					break;
@@ -228,7 +231,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 					// Configure CritScore for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critScore.on = true;
 					for (let i = 0; i <= tNum; i++) {
-						utils.log(LT.LOG, `Handling roll ${rollStr} | Parsing cs< ${i}`);
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing cs< ${i}`);
 						rollConf.critScore.range.push(i);
 					}
 					break;
@@ -242,7 +245,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 					// Configure CritFail for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critFail.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
-						utils.log(LT.LOG, `Handling roll ${rollStr} | Parsing cf> ${i}`);
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing cf> ${i}`);
 						rollConf.critFail.range.push(i);
 					}
 					break;
@@ -250,7 +253,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 					// Configure CritFail for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critFail.on = true;
 					for (let i = 0; i <= tNum; i++) {
-						utils.log(LT.LOG, `Handling roll ${rollStr} | Parsing cf< ${i}`);
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing cf< ${i}`);
 						rollConf.critFail.range.push(i);
 					}
 					break;
@@ -278,7 +281,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 	// Since only one drop or keep option can be active, count how many are active to throw the right error
 	let dkdkCnt = 0;
 	[rollConf.drop.on, rollConf.keep.on, rollConf.dropHigh.on, rollConf.keepLow.on].forEach(e => {
-		utils.log(LT.LOG, `Handling roll ${rollStr} | Checking if drop/keep is on ${e}`);
+		log(LT.LOG, `Handling roll ${rollStr} | Checking if drop/keep is on ${e}`);
 		if (e) {
 			dkdkCnt++;
 		}
@@ -343,7 +346,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 
 	// Initial rolling, not handling reroll or exploding here
 	for (let i = 0; i < rollConf.dieCount; i++) {
-		utils.log(LT.LOG, `Handling roll ${rollStr} | Initial rolling ${i} of ${JSON.stringify(rollConf)}`);
+		log(LT.LOG, `Handling roll ${rollStr} | Initial rolling ${i} of ${JSON.stringify(rollConf)}`);
 		// If loopCount gets too high, stop trying to calculate infinity
 		if (loopCount > MAXLOOPS) {
 			throw new Error("MaxLoopsExceeded");
@@ -377,7 +380,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 	// If needed, handle rerolling and exploding dice now
 	if (rollConf.reroll.on || rollConf.exploding) {
 		for (let i = 0; i < rollSet.length; i++) {
-			utils.log(LT.LOG, `Handling roll ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
+			log(LT.LOG, `Handling roll ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
 			// If loopCount gets too high, stop trying to calculate infinity
 			if (loopCount > MAXLOOPS) {
 				throw new Error("MaxLoopsExceeded");
@@ -444,7 +447,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 		let rerollCount = 0;
 		if (rollConf.reroll.on) {
 			for (let i = 0; i < rollSet.length; i++) {
-				utils.log(LT.LOG, `Handling roll ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[i])}`);
+				log(LT.LOG, `Handling roll ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[i])}`);
 				rollSet[i].origidx = i;
 
 				if (rollSet[i].rerolled) {
@@ -493,7 +496,7 @@ const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): Rol
 		// Now its time to drop all dice needed
 		let i = 0;
 		while (dropCount > 0 && i < rollSet.length) {
-			utils.log(LT.LOG, `Handling roll ${rollStr} | Dropping dice ${dropCount} ${JSON.stringify(rollSet[i])}`);
+			log(LT.LOG, `Handling roll ${rollStr} | Dropping dice ${dropCount} ${JSON.stringify(rollSet[i])}`);
 			// Skip all rolls that were rerolled
 			if (!rollSet[i].rerolled) {
 				rollSet[i].dropped = true;
@@ -522,7 +525,7 @@ const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll: boolea
 	
 	// Loop thru all parts of the roll to document everything that was done to create the total roll
 	tempRollSet.forEach(e => {
-		utils.log(LT.LOG, `Formatting roll ${rollConf} | ${JSON.stringify(e)}`);
+		log(LT.LOG, `Formatting roll ${rollConf} | ${JSON.stringify(e)}`);
 		let preFormat = "";
 		let postFormat = "";
 
@@ -588,7 +591,7 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 
 	// Evaluate all parenthesis
 	while (conf.indexOf("(") > -1) {
-		utils.log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
+		log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
 		// Get first open parenthesis
 		const openParen = conf.indexOf("(");
 		let closeParen = -1;
@@ -596,7 +599,7 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 
 		// Using nextParen to count the opening/closing parens, find the matching paren to openParen above
 		for (let i = openParen; i < conf.length; i++) {
-			utils.log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParen} checking: ${i}`);
+			log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParen} checking: ${i}`);
 			// If we hit an open, add one (this includes the openParen we start with), if we hit a close, subtract one
 			if (conf[i] === "(") {
 				nextParen++;
@@ -639,10 +642,10 @@ const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean
 	// Evaluate all EMMDAS by looping thru each teir of operators (exponential is the higehest teir, addition/subtraction the lowest)
 	const allCurOps = [["^"], ["*", "/", "%"], ["+", "-"]];
 	allCurOps.forEach(curOps => {
-		utils.log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
+		log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
 		// Iterate thru all operators/operands in the conf
 		for (let i = 0; i < conf.length; i++) {
-			utils.log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
+			log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
 			// Check if the current index is in the active teir of operators
 			if (curOps.indexOf(conf[i].toString()) > -1) {
 				// Grab the operands from before and after the operator
@@ -773,7 +776,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 		// Loop thru all roll/math ops
 		for (let i = 0; i < sepRolls.length; i++) {
-			utils.log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRolls[i]}`);
+			log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRolls[i]}`);
 			// Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the opertaion
 			const [tempConf, tempFormat] = sepRolls[i].split(localPostfix);
 
@@ -783,7 +786,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 			// Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
 			let parenCnt = 0;
 			mathConf.forEach(e => {
-				utils.log(LT.LOG, `Parsing roll ${fullCmd} | Checking parenthesis balance ${e}`);
+				log(LT.LOG, `Parsing roll ${fullCmd} | Checking parenthesis balance ${e}`);
 				if (e === "(") {
 					parenCnt++;
 				} else if (e === ")") {
@@ -798,7 +801,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 			// Evaluate all rolls into stepSolve format and all numbers into floats
 			for (let i = 0; i < mathConf.length; i++) {
-				utils.log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into mathable items ${JSON.stringify(mathConf[i])}`);
+				log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into mathable items ${JSON.stringify(mathConf[i])}`);
 				if (mathConf[i].toString().length === 0) {
 					// If its an empty string, get it out of here
 					mathConf.splice(i, 1);
@@ -894,7 +897,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 
 		// Fill out all of the details and results now
 		tempReturnData.forEach(e => {
-			utils.log(LT.LOG, `Parsing roll ${fullCmd} | Making return text ${JSON.stringify(e)}`);
+			log(LT.LOG, `Parsing roll ${fullCmd} | Making return text ${JSON.stringify(e)}`);
 			let preFormat = "";
 			let postFormat = "";
 
@@ -1013,7 +1016,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 				errorMsg = "Error: Roll became undefined, one or more operands are not a roll or a number, check input";
 				break;
 			default:
-				utils.log(LT.ERROR, `Undangled Error: ${errorName}, ${errorDetails}`);
+				log(LT.ERROR, `Undangled Error: ${errorName}, ${errorDetails}`);
 				errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`${config.prefix}report\` to alert the devs of the issue`;
 				break;
 		}

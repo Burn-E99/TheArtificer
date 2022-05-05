@@ -6,10 +6,11 @@
 
 import {
 	// Discordeno deps
-	cache, cacheHandlers
+	cache, cacheHandlers,
+
+	// Log4Deno deps
+	LT, log
 } from "../deps.ts";
-import { LogTypes as LT } from "./utils.enums.ts";
-import utils from "./utils.ts";
 
 import config from "../config.ts";
 
@@ -41,7 +42,7 @@ const getRandomStatus = async (): Promise<string> => {
 // Sends the current server count to all bot list sites we are listed on
 const updateListStatistics = (botID: bigint, serverCount: number): void => {
 	config.botLists.forEach(async e => {
-		utils.log(LT.LOG, `Updating statistics for ${JSON.stringify(e)}`)
+		log(LT.LOG, `Updating statistics for ${JSON.stringify(e)}`)
 		if (e.enabled) {
 			const tempHeaders = new Headers();
 			tempHeaders.append(e.headers[0].header, e.headers[0].value);
@@ -52,7 +53,7 @@ const updateListStatistics = (botID: bigint, serverCount: number): void => {
 				"headers": tempHeaders,
 				"body": JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()) // ?{server_count} needs the "" removed from around it aswell to make sure its sent as a number
 			});
-			utils.log(LT.INFO, `Posted server count to ${e.name}.  Results: ${JSON.stringify(response)}`);
+			log(LT.INFO, `Posted server count to ${e.name}.  Results: ${JSON.stringify(response)}`);
 		}
 	});
 };
