@@ -1,21 +1,7 @@
 // This file will populate the tables with default values
 
-import {
-	// MySQL deps
-	Client
-} from "../deps.ts";
-
-import { LOCALMODE } from "../flags.ts";
 import config from "../config.ts";
-
-// Log into the MySQL DB
-const dbClient = await new Client().connect({
-	hostname: LOCALMODE ? config.db.localhost : config.db.host,
-	port: config.db.port,
-	db: config.db.name,
-	username: config.db.username,
-	password: config.db.password,
-});
+import { dbClient } from "../src/db.ts";
 
 console.log("Attempting to populate DB Admin API key");
 await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [config.api.admin, config.api.adminKey]).catch(e => {

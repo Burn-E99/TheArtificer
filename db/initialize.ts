@@ -1,21 +1,8 @@
 // This file will create all tables for the artificer schema
 // DATA WILL BE LOST IF DB ALREADY EXISTS, RUN AT OWN RISK
 
-import {
-	// MySQL deps
-	Client
-} from "../deps.ts";
-
-import { LOCALMODE } from "../flags.ts";
 import config from "../config.ts";
-
-// Log into the MySQL DB
-const dbClient = await new Client().connect({
-	hostname: LOCALMODE ? config.db.localhost : config.db.host,
-	port: config.db.port,
-	username: config.db.username,
-	password: config.db.password,
-});
+import { dbClient } from "../src/db.ts";
 
 console.log("Attempting to create DB");
 await dbClient.execute(`CREATE SCHEMA IF NOT EXISTS ${config.db.name};`);
