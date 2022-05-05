@@ -33,23 +33,23 @@ export const constantCmds = {
 				title: "Available API Commands:",
 				fields: [
 					{
-						name: "[[api help",
+						name: `\`${config.prefix}api help\``,
 						value: "This command",
 						inline: true
 					}, {
-						name: "[[api status",
+						name: `\`${config.prefix}api status\``,
 						value: "Shows the current status of the API for this guild",
 						inline: true
 					}, {
-						name: "[[api allow/enable",
+						name: `\`${config.prefix}api allow/enable\``,
 						value: "Allows API Rolls to be sent to this guild",
 						inline: true
 					}, {
-						name: "[[api block/disable",
+						name: `\`${config.prefix}api block/disable\``,
 						value: "Blocks API Rolls from being sent to this guild",
 						inline: true
 					}, {
-						name: "[[api delete",
+						name: `\`${config.prefix}api delete\``,
 						value: "Deletes this guild from The Artificer's database",
 						inline: true
 					}
@@ -83,48 +83,48 @@ export const constantCmds = {
 			title: "The Artificer's Available Commands:",
 			fields: [
 				{
-					name: "[[?",
+					name: `\`${config.prefix}?\``,
 					value: "This command",
 					inline: true
 				}, {
-					name: "[[rollhelp or [[??",
-					value: "Details on how to use the roll command, listed as `[[xdy...]]` below",
+					name: `\`${config.prefix}rollhelp\` or \`${config.prefix}??\``,
+					value: `Details on how to use the roll command, listed as \`${config.prefix}xdy...${config.postfix}\` below`,
 					inline: true
 				}, {
-					name: "[[api [subcommand]",
-					value: "Administrative tools for the bots's API, run [[api help for more details",
+					name: `\`${config.prefix}api [subcommand]\``,
+					value: `Administrative tools for the bots's API, run \`${config.prefix}api help\` for more details`,
 					inline: true
 				}, {
-					name: "[[ping",
+					name: `\`${config.prefix}ping\``,
 					value: "Pings the bot to check connectivity",
 					inline: true
 				}, {
-					name: "[[info",
+					name: `\`${config.prefix}info\``,
 					value: "Prints some information and links relating to the bot",
 					inline: true
 				}, {
-					name: "[[privacy",
+					name: `\`${config.prefix}privacy\``,
 					value: "Prints some information about the Privacy Policy",
 					inline: true
 				}, {
-					name: "[[version",
+					name: `\`${config.prefix}version\``,
 					value: "Prints the bots version",
 					inline: true
 				}, {
-					name: "[[popcat",
+					name: `\`${config.prefix}popcat\``,
 					value: "Popcat",
 					inline: true
 				}, {
-					name: "[[report [text]",
+					name: `\`${config.prefix}report [text]\``,
 					value: "Report a command that failed to run",
 					inline: true
 				}, {
-					name: "[[stats",
+					name: `\`${config.prefix}stats\``,
 					value: "Statistics on the bot",
 					inline: true
 				}, {
-					name: "[[xdydzracsq!]] ...",
-					value: "Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with ]]), run [[?? for more details",
+					name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
+					value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
 					inline: true
 				}
 			]
@@ -151,7 +151,7 @@ export const constantCmds = {
 			title: "Privacy Policy",
 			fields: [{
 				name: "The Artificer does not track or collect user information via Discord.",
-				value: `The only user submitted information that is stored is submitted via the \`[[report\` command.  This information is only stored for a short period of time in a location that only the Developer of The Artificer can see.
+				value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of The Artificer can see.
 
 				For more details, please check out the Privacy Policy on the GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
 				
@@ -196,63 +196,63 @@ export const constantCmds = {
 
 						This command also can fully solve math equations with parenthesis.`
 					}, {
-						name: "[[xdydzracsq!]] ...",
-						value: "Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with ]])",
+						name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
+						value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`)`,
 						inline: true
 					}, {
-						name: "x [Optional]",
+						name: "`x` [Optional]",
 						value: "Number of dice to roll, if omitted, 1 is used",
 						inline: true
 					}, {
-						name: "dy [Required]",
-						value: "Size of dice to roll, d20 = 20 sided die",
+						name: "`dy` [Required]",
+						value: "Size of dice to roll, `d20` = 20 sided die",
 						inline: true
 					}, {
-						name: "dz or dlz [Optional]",
-						value: "Drops the lowest `z` dice, cannot be used with kz",
+						name: "`dz` or `dlz` [Optional]",
+						value: "Drops the lowest `z` dice, cannot be used with `kz`",
 						inline: true
 					}, {
-						name: "kz or khz [Optional]",
-						value: "Keeps the highest `z` dice, cannot be used with dz",
+						name: "`kz` or `khz` [Optional]",
+						value: "Keeps the highest `z` dice, cannot be used with `dz`",
 						inline: true
 					}, {
-						name: "dhz [Optional]",
-						value: "Drops the highest `z` dice, cannot be used with kz",
+						name: "`dhz` [Optional]",
+						value: "Drops the highest `z` dice, cannot be used with `kz`",
 						inline: true
 					}, {
-						name: "klz [Optional]",
-						value: "Keeps the lowest `z` dice, cannot be used with dz",
+						name: "`klz` [Optional]",
+						value: "Keeps the lowest `z` dice, cannot be used with `dz`",
 						inline: true
 					}, {
-						name: "ra [Optional]",
-						value: "Rerolls any rolls that match `a`, r3 will reroll any dice that land on 3, throwing out old rolls",
+						name: "`ra` [Optional]",
+						value: "Rerolls any rolls that match `a`, `r3` will reroll any dice that land on 3, throwing out old rolls",
 						inline: true
 					}, {
-						name: "csq or cs=q [Optional]",
+						name: "`csq` or `cs=q` [Optional]",
 						value: "Changes crit score to `q`",
 						inline: true
 					}, {
-						name: "cs<q [Optional]",
+						name: "`cs<q` [Optional]",
 						value: "Changes crit score to be less than or equal to `q`",
 						inline: true
 					}, {
-						name: "cs>q [Optional]",
+						name: "`cs>q` [Optional]",
 						value: "Changes crit score to be greater than or equal to `q`",
 						inline: true
 					}, {
-						name: "cfq or cf=q [Optional]",
+						name: "`cfq` or `cf=q` [Optional]",
 						value: "Changes crit fail to `q`",
 						inline: true
 					}, {
-						name: "cf<q [Optional]",
+						name: "`cf<q` [Optional]",
 						value: "Changes crit fail to be less than or equal to `q`",
 						inline: true
 					}, {
-						name: "cf>q [Optional]",
+						name: "`cf>q` [Optional]",
 						value: "Changes crit fail to be greater than or equal to `q`",
 						inline: true
 					}, {
-						name: "! [Optional]",
+						name: "`!` [Optional]",
 						value: "Exploding, rolls another dy for every crit roll",
 						inline: true
 					}
@@ -264,29 +264,29 @@ export const constantCmds = {
 						name: "Details",
 						value: `This command also has some useful flags that can used.  These flags simply need to be placed after all rolls in the message.
 						
-						Examples: \`[[d20]] -nd\`, \`[[d20]] -nd -s\``
+						Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${config.postfix} -nd -s\``
 					}, {
-						name: "-nd",
+						name: "`-nd`",
 						value: "No Details - Suppresses all details of the requested roll",
 						inline: true
 					}, {
-						name: "-s",
+						name: "`-s`",
 						value: "Spoiler - Spoilers all details of the requested roll",
 						inline: true
 					}, {
-						name: "-m",
+						name: "`-m`",
 						value: "Maximize Roll - Rolls the theoretical maximum roll, cannot be used with -n",
 						inline: true
 					}, {
-						name: "-n",
+						name: "`-n`",
 						value: "Nominal Roll - Rolls the theoretical nominal roll, cannot be used with -m",
 						inline: true
 					}, {
-						name: "-gm @user1 @user2 @usern",
+						name: "`-gm @user1 @user2 @usern`",
 						value: "GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs",
 						inline: true
 					}, {
-						name: "-o a or -o d",
+						name: "`-o a` or `-o d`",
 						value: "Order Roll - Rolls the requested roll and orders the results in the requested direction",
 						inline: true
 					}
@@ -440,7 +440,7 @@ export const generateRollError = (errorType: string, errorMsg: string) => ({
 		title: "Roll command encountered the following error:",
 		fields: [{
 			name: errorType,
-			value: `${errorMsg}\n\nPlease try again.  If the error is repeated, please report the issue using the \`[[report\` command.`
+			value: `${errorMsg}\n\nPlease try again.  If the error is repeated, please report the issue using the \`${config.prefix}report\` command.`
 		}]
 	}]
 });

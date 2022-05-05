@@ -4,6 +4,7 @@
  * December 21, 2020
  */
 
+import config from "../config.ts";
 import { RollSet, SolvedStep, SolvedRoll, ReturnData } from "./solver.d.ts";
 import { LogTypes as LT } from "./utils.enums.ts";
 import utils from "./utils.ts";
@@ -1013,7 +1014,7 @@ const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, m
 				break;
 			default:
 				utils.log(LT.ERROR, `Undangled Error: ${errorName}, ${errorDetails}`);
-				errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`[[report\` to alert the devs of the issue`;
+				errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`${config.prefix}report\` to alert the devs of the issue`;
 				break;
 		}
 
