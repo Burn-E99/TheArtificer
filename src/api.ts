@@ -9,9 +9,6 @@ import {
 	cache, CreateMessage,
 	sendMessage, sendDirectMessage,
 
-	// MySQL Driver deps
-	Client,
-
 	// httpd deps
 	Status, STATUS_TEXT,
 
@@ -19,6 +16,7 @@ import {
 	nanoid
 } from "../deps.ts";
 
+import { dbClient } from "./db.ts";
 import solver from "./solver.ts";
 import { LogTypes as LT } from "./utils.enums.ts";
 import utils from "./utils.ts";
@@ -30,7 +28,7 @@ import config from "../config.ts";
 
 // start(databaseClient) returns nothing
 // start initializes and runs the entire API for the bot
-const start = async (dbClient: Client): Promise<void> => {
+const start = async (): Promise<void> => {
 	const server = Deno.listen({ port: config.api.port });
 	utils.log(LT.INFO, `HTTP api running at: http://localhost:${config.api.port}/`);
 

@@ -8,3 +8,14 @@ export type EmojiConf = {
 	animated: boolean,
 	deleteSender: boolean
 };
+
+export type RollModifiers = {
+	noDetails: boolean,
+	spoiler: string,
+	maxRoll: boolean,
+	nominalRoll: boolean,
+	gmRoll: boolean,
+	gms: string[],
+	order: string,
+	valid: boolean
+}

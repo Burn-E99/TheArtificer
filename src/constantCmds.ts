@@ -201,47 +201,47 @@ export const constantCmds = {
 						inline: true
 					}, {
 						name: "dz or dlz [Optional]",
-						value: "Drops the lowest z dice, cannot be used with kz",
+						value: "Drops the lowest `z` dice, cannot be used with kz",
 						inline: true
 					}, {
 						name: "kz or khz [Optional]",
-						value: "Keeps the highest z dice, cannot be used with dz",
+						value: "Keeps the highest `z` dice, cannot be used with dz",
 						inline: true
 					}, {
 						name: "dhz [Optional]",
-						value: "Drops the highest z dice, cannot be used with kz",
+						value: "Drops the highest `z` dice, cannot be used with kz",
 						inline: true
 					}, {
 						name: "klz [Optional]",
-						value: "Keeps the lowest z dice, cannot be used with dz",
+						value: "Keeps the lowest `z` dice, cannot be used with dz",
 						inline: true
 					}, {
 						name: "ra [Optional]",
-						value: "Rerolls any rolls that match a, r3 will reroll any dice that land on 3, throwing out old rolls",
+						value: "Rerolls any rolls that match `a`, r3 will reroll any dice that land on 3, throwing out old rolls",
 						inline: true
 					}, {
 						name: "csq or cs=q [Optional]",
-						value: "Changes crit score to q",
+						value: "Changes crit score to `q`",
 						inline: true
 					}, {
 						name: "cs<q [Optional]",
-						value: "Changes crit score to be less than or equal to q",
+						value: "Changes crit score to be less than or equal to `q`",
 						inline: true
 					}, {
 						name: "cs>q [Optional]",
-						value: "Changes crit score to be greater than or equal to q",
+						value: "Changes crit score to be greater than or equal to `q`",
 						inline: true
 					}, {
 						name: "cfq or cf=q [Optional]",
-						value: "Changes crit fail to q",
+						value: "Changes crit fail to `q`",
 						inline: true
 					}, {
 						name: "cf<q [Optional]",
-						value: "Changes crit fail to be less than or equal to q",
+						value: "Changes crit fail to be less than or equal to `q`",
 						inline: true
 					}, {
 						name: "cf>q [Optional]",
-						value: "Changes crit fail to be greater than or equal to q",
+						value: "Changes crit fail to be greater than or equal to `q`",
 						inline: true
 					}, {
 						name: "! [Optional]",
@@ -288,7 +288,7 @@ export const constantCmds = {
 	},
 	rolling: {
 		embeds: [{
-			title: "Rolling. . ."
+			title: "Rolling . . ."
 		}]
 	},
 	version: {

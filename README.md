@@ -164,7 +164,7 @@ Available Endpoints and Methods Required:
     * `424` - Failed dependancy - You will be emailed a delete code to rerun this endpoint with.
     * `200` - OK - Everything relating to your API key was successfully removed.
 
-API Key management via a basic GUI is availble on [API Tools](https://artificer.eanm.dev/).
+API Key management via a basic GUI is availble on the [API Tools](https://artificer.eanm.dev/) website.
 
 ## Problems?  Feature requests?
 If you run into any errors or problems with the bot, or think you have a good idea to add to the bot, please submit a new GitHub issue detailing it.  If you don't have a GitHub account, a report command (detailed above) is provided for use in Discord.

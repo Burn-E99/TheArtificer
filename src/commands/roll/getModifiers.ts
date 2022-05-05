@@ -1,0 +1,116 @@
+import config from "../../../config.ts";
+import { DEVMODE } from "../../../flags.ts";
+import { dbClient } from "../../db.ts";
+import { DiscordenoMessage } from "../../../deps.ts";
+import utils from "../../utils.ts";
+import { LogTypes as LT } from "../../utils.enums.ts";
+import { RollModifiers } from "../../mod.d.ts";
+
+export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {
+	const modifiers: RollModifiers = {
+		noDetails: false,
+		spoiler: "",
+		maxRoll: false,
+		nominalRoll: false,
+		gmRoll: false,
+		gms: [],
+		order: "",
+		valid: false
+	};
+
+	// Check if any of the args are command flags and pull those out into the modifiers object
+	for (let i = 0; i < args.length; i++) {
+		utils.log(LT.LOG, `Checking ${command}${args.join(" ")} for command modifiers ${i}`);
+		switch (args[i].toLowerCase()) {
+			case "-nd":
+				modifiers.noDetails = true;
+
+				args.splice(i, 1);
+				i--;
+				break;
+			case "-s":
+				modifiers.spoiler = "||";
+
+				args.splice(i, 1);
+				i--;
+				break;
+			case "-m":
+				modifiers.maxRoll = true;
+
+				args.splice(i, 1);
+				i--;
+				break;
+			case "-n":
+				modifiers.nominalRoll = true;
+
+				args.splice(i, 1);
+				i--;
+				break;
+			case "-gm":
+				modifiers.gmRoll = true;
+
+				// -gm is a little more complex, as we must get all of the GMs that need to be DMd
+				while (((i + 1) < args.length) && args[i + 1].startsWith("<@")) {
+					utils.log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
+					// Keep looping thru the rest of the args until one does not start with the discord mention code
+					modifiers.gms.push(args[i + 1].replace(/[!]/g, ""));
+					args.splice((i + 1), 1);
+				}
+				if (modifiers.gms.length < 1) {
+					// If -gm is on and none were found, throw an error
+					m.edit("Error: Must specifiy at least one GM by mentioning them");
+
+					if (DEVMODE && config.logRolls) {
+						// If enabled, log rolls so we can verify the bots math
+						dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, "NoGMsFound", m.id]).catch(e => {
+							utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+						});
+					}
+					return modifiers;
+				}
+
+				args.splice(i, 1);
+				i--;
+				break;
+			case "-o":
+				args.splice(i, 1);
+
+				if (args[i].toLowerCase()[0] !== "d" && args[i].toLowerCase()[0] !== "a") {
+					// If -o is on and asc or desc was not specified, error out
+					m.edit("Error: Must specifiy a or d to order the rolls ascending or descending");
+
+					if (DEVMODE && config.logRolls) {
+						// If enabled, log rolls so we can verify the bots math
+						dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, "NoOrderFound", m.id]).catch(e => {
+							utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+						});
+					}
+					return modifiers;
+				}
+
+				modifiers.order = args[i].toLowerCase()[0];
+
+				args.splice(i, 1);
+				i--;
+				break;
+			default:
+				break;
+		}
+	}
+
+	// maxRoll and nominalRoll cannot both be on, throw an error
+	if (modifiers.maxRoll && modifiers.nominalRoll) {
+		m.edit("Error: Cannot maximise and nominise the roll at the same time");
+
+		if (DEVMODE && config.logRolls) {
+			// If enabled, log rolls so we can verify the bots math
+			dbClient.execute("INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,0,1)", [originalCommand, "MaxAndNominal", m.id]).catch(e => {
+				utils.log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+			});
+		}
+		return modifiers;
+	}
+
+	modifiers.valid = true;
+	return modifiers;
+};
