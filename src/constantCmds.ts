@@ -146,6 +146,11 @@ export const constantCmds = {
 			}]
 		}]
 	},
+	loadingStats: {
+		embeds: [{
+			title: "Compiling latest statistics . . ."
+		}]
+	},
 	privacy: {
 		embeds: [{
 			title: "Privacy Policy",
