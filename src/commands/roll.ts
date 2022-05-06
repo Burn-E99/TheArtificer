@@ -62,10 +62,12 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 			// Else format the output using details from the solver
 			returnText = `<@${message.authorId}>${returnmsg.line1}\n${returnmsg.line2}`;
 
-			if (modifiers.noDetails) {
-				returnText += "\nDetails suppressed by -nd flag.";
-			} else {
-				returnText += `\nDetails:\n${modifiers.spoiler}${returnmsg.line3}${modifiers.spoiler}`;
+			if (!modifiers.superNoDetails) {
+				if (modifiers.noDetails) {
+					returnText += "\nDetails suppressed by -nd flag.";
+				} else {
+					returnText += `\nDetails:\n${modifiers.spoiler}${returnmsg.line3}${modifiers.spoiler}`;
+				}
 			}
 		}
 

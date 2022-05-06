@@ -11,6 +11,7 @@ export type EmojiConf = {
 
 export type RollModifiers = {
 	noDetails: boolean,
+	superNoDetails: boolean,
 	spoiler: string,
 	maxRoll: boolean,
 	nominalRoll: boolean,

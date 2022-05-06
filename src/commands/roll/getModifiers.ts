@@ -15,6 +15,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 	const errorType = "Modifiers invalid:";
 	const modifiers: RollModifiers = {
 		noDetails: false,
+		superNoDetails: false,
 		spoiler: "",
 		maxRoll: false,
 		nominalRoll: false,
@@ -30,6 +31,12 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 		switch (args[i].toLowerCase()) {
 			case "-nd":
 				modifiers.noDetails = true;
+
+				args.splice(i, 1);
+				i--;
+				break;
+			case "-snd":
+				modifiers.superNoDetails = true;
 
 				args.splice(i, 1);
 				i--;

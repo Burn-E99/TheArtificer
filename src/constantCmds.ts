@@ -275,6 +275,10 @@ export const constantCmds = {
 						value: "No Details - Suppresses all details of the requested roll",
 						inline: true
 					}, {
+						name: "`-snd`",
+						value: "Super No Details - Suppresses all details of the requested roll and hides no details message",
+						inline: true
+					}, {
 						name: "`-s`",
 						value: "Spoiler - Spoilers all details of the requested roll",
 						inline: true

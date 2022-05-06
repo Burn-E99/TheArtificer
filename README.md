@@ -87,6 +87,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
   * This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message:
     * `-nd` - No Details - Suppresses all details of the requested roll
+    * `-snd` - Super No Details - Suppresses all details of the requested roll and hides no details message
     * `-s` - Spoiler - Spoilers all details of the requested roll
     * `-m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with -n
     * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with -m
