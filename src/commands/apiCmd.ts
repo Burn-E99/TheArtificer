@@ -6,7 +6,7 @@ import {
 	// Log4Deno deps
 	LT, log
 } from "../../deps.ts";
-import apiCommands from "./apiCmd/_apiIndex.ts";
+import apiCommands from "./apiCmd/_index.ts";
 import { constantCmds } from "../constantCmds.ts";
 
 export const api = async (message: DiscordenoMessage, args: string[]) => {

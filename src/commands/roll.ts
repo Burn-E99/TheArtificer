@@ -8,9 +8,9 @@ import {
 	// Log4Deno deps
 	LT, log
 } from "../../deps.ts";
-import solver from "../solver.ts";
+import solver from "../solver/_index.ts";
 import { constantCmds, generateDMFailed } from "../constantCmds.ts";
-import rollFuncs from "./roll/_rollIndex.ts";
+import rollFuncs from "./roll/_index.ts";
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run

@@ -20,7 +20,7 @@ import {
 } from "../deps.ts";
 
 import { dbClient, queries } from "./db.ts";
-import solver from "./solver.ts";
+import solver from "./solver/_index.ts";
 import {
 	generateApiKeyEmail, generateApiDeleteEmail, generateDMFailed
 } from "./constantCmds.ts";
