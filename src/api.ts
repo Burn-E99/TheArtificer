@@ -185,6 +185,7 @@ const start = async (): Promise<void> => {
 
 										// Check if user is authenticated to use this endpoint
 										let authorized = false;
+										let hideWarn = false;
 
 										// Check if the db has the requested userid/channelid combo, and that the requested userid matches the userid linked with the api key
 										const dbChannelQuery = await dbClient.query("SELECT active, banned FROM allowed_channels WHERE userid = ? AND channelid = ?", [apiUserid, BigInt(query.get("channel") || "0")]);
@@ -193,11 +194,12 @@ const start = async (): Promise<void> => {
 											// Get the guild from the channel and make sure user is in said guild
 											const guild = cache.channels.get(BigInt(query.get("channel") || ""))?.guild;
 											if (guild && guild.members.get(BigInt(query.get("user") || ""))?.id) {
-												const dbGuildQuery = await dbClient.query("SELECT active, banned FROM allowed_guilds WHERE guildid = ? AND channelid = ?", [guild.id, BigInt(query.get("channel") || "0")]);
+												const dbGuildQuery = await dbClient.query("SELECT active, banned, hidewarn FROM allowed_guilds WHERE guildid = ? AND channelid = ?", [guild.id, BigInt(query.get("channel") || "0")]);
 
 												// Make sure guild allows API rolls
 												if (dbGuildQuery.length === 1 && dbGuildQuery[0].active && !dbGuildQuery[0].banned) {
 													authorized = true;
+													hideWarn = dbGuildQuery[0].hidewarn;
 												}
 											}
 										}
@@ -240,7 +242,7 @@ const start = async (): Promise<void> => {
 												const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, query.has("m"), query.has("n"), query.has("o") ? (query.get("o")?.toLowerCase() || "") : "");
 
 												// Alert users why this message just appeared and how they can report abues pf this feature
-												const apiPrefix = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>\n\n`;
+												const apiPrefix = hideWarn ? '' : `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>\n\n`;
 												let m, returnText = "";
 
 												// Handle sending the error message to whoever called the api

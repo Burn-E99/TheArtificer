@@ -38,7 +38,7 @@ export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => 
 	}
 
 	// We won't get here if there's any errors, so we know it has bee successful, so report as such
-	message.send(generateApiSuccess(apiArg)).catch(e => {
+	message.send(generateApiSuccess(`${apiArg}ed`)).catch(e => {
 		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 	});
 };

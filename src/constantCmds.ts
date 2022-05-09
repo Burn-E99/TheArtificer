@@ -21,7 +21,7 @@ export const constantCmds = {
 					{
 						name: "The Artificer's API Details:",
 						value: `The Artificer has a built in API that allows user to roll dice into Discord using third party programs.
-						By default, API rolls are blocked from being sent in your guild.
+						By default, API rolls are blocked from being sent in your guild.  The API warning is also enabled by default.
 						These commands may only be used by the Owner or Admins of your guild.
 
 						For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).
@@ -38,19 +38,27 @@ export const constantCmds = {
 						inline: true
 					}, {
 						name: `\`${config.prefix}api status\``,
-						value: "Shows the current status of the API for this guild",
+						value: "Shows the current status of the API for the channel this was run in",
 						inline: true
 					}, {
 						name: `\`${config.prefix}api allow/enable\``,
-						value: "Allows API Rolls to be sent to this guild",
+						value: "Allows API Rolls to be sent to the channel this was run in",
 						inline: true
 					}, {
 						name: `\`${config.prefix}api block/disable\``,
-						value: "Blocks API Rolls from being sent to this guild",
+						value: "Blocks API Rolls from being sent to the channel this was run in",
 						inline: true
 					}, {
 						name: `\`${config.prefix}api delete\``,
-						value: "Deletes this guild from The Artificer's database",
+						value: "Deletes this channel's settings from The Artificer's database",
+						inline: true
+					}, {
+						name: `\`${config.prefix}api show-warn\``,
+						value: "Shows the API warning on all rolls sent to the channel this was run in",
+						inline: true
+					}, {
+						name: `\`${config.prefix}api hide-warn\``,
+						value: "Hides the API warning on all rolls sent to the channel this was run in",
 						inline: true
 					}
 				]
@@ -379,7 +387,7 @@ export const generateApiStatus = (banned: boolean, active: boolean) => ({
 
 export const generateApiSuccess = (args: string) => ({
 	embeds: [{
-		title: `API rolls have successfully been ${args}ed for this guild.`
+		title: `API rolls have successfully been ${args} for this guild.`
 	}]
 });
 
