@@ -9,7 +9,7 @@ import {
 import { constantCmds } from "../../constantCmds.ts";
 
 export const deleteGuild = async (message: DiscordenoMessage) => {
-	await dbClient.execute(`DELETE FROM allowed_guilds WHERE guildid = ?`, [message.guildId]).catch(e0 => {
+	await dbClient.execute(`DELETE FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch(e0 => {
 		log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
 		message.send(constantCmds.apiDeleteFail).catch(e1 => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);

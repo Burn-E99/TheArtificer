@@ -193,7 +193,7 @@ const start = async (): Promise<void> => {
 											// Get the guild from the channel and make sure user is in said guild
 											const guild = cache.channels.get(BigInt(query.get("channel") || ""))?.guild;
 											if (guild && guild.members.get(BigInt(query.get("user") || ""))?.id) {
-												const dbGuildQuery = await dbClient.query("SELECT active, banned FROM allowed_guilds WHERE guildid = ?", [BigInt(guild.id)]);
+												const dbGuildQuery = await dbClient.query("SELECT active, banned FROM allowed_guilds WHERE guildid = ? AND channelid = ?", [guild.id, BigInt(query.get("channel") || "0")]);
 
 												// Make sure guild allows API rolls
 												if (dbGuildQuery.length === 1 && dbGuildQuery[0].active && !dbGuildQuery[0].banned) {

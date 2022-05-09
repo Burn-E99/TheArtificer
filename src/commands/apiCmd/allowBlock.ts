@@ -9,7 +9,7 @@ import {
 import { generateApiFailed, generateApiSuccess } from "../../constantCmds.ts";
 
 export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => {
-	const guildQuery = await dbClient.query(`SELECT guildid FROM allowed_guilds WHERE guildid = ?`, [message.guildId]).catch(e0 => {
+	const guildQuery = await dbClient.query(`SELECT guildid, channelid FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch(e0 => {
 		log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
 		message.send(generateApiFailed(apiArg)).catch(e1 => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
@@ -19,7 +19,7 @@ export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => 
 
 	if (guildQuery.length === 0) {
 		// Since guild is not in our DB, add it in
-		await dbClient.execute(`INSERT INTO allowed_guilds(guildid,active) values(?,?)`, [BigInt(message.guildId), ((apiArg === "allow" || apiArg === "enable") ? 1 : 0)]).catch(e0 => {
+		await dbClient.execute(`INSERT INTO allowed_guilds(guildid,channelid,active) values(?,?)`, [message.guildId, message.channelId, ((apiArg === "allow" || apiArg === "enable") ? 1 : 0)]).catch(e0 => {
 			log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e0)}`);
 			message.send(generateApiFailed(apiArg)).catch(e1 => {
 				log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
@@ -28,7 +28,7 @@ export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => 
 		});
 	} else {
 		// Since guild is in our DB, update it
-		await dbClient.execute(`UPDATE allowed_guilds SET active = ? WHERE guildid = ?`, [((apiArg === "allow" || apiArg === "enable") ? 1 : 0), BigInt(message.guildId)]).catch(e0 => {
+		await dbClient.execute(`UPDATE allowed_guilds SET active = ? WHERE guildid = ? AND channelid = ?`, [((apiArg === "allow" || apiArg === "enable") ? 1 : 0), message.guildId, message.channelId]).catch(e0 => {
 			log(LT.ERROR, `Failed to update DB: ${JSON.stringify(e0)}`);
 			message.send(generateApiFailed(apiArg)).catch(e1 => {
 				log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
