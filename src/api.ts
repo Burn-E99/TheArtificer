@@ -264,10 +264,12 @@ const start = async (): Promise<void> => {
 													}
 
 													// Determine if no details flag was on
-													if (query.has("nd")) {
-														returnText += "\nDetails suppressed by nd query.";
-													} else {
-														returnText += `\nDetails:\n${spoilerTxt}${returnmsg.line3}${spoilerTxt}`;
+													if (!query.has("snd")) {
+														if (query.has("nd")) {
+															returnText += "\nDetails suppressed by nd query.";
+														} else {
+															returnText += `\nDetails:\n${spoilerTxt}${returnmsg.line3}${spoilerTxt}`;
+														}
 													}
 												}
 
