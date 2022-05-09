@@ -18,6 +18,7 @@ await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_CNT;`);
 await dbClient.execute(`DROP TABLE IF EXISTS command_cnt;`);
 console.log("Tables dropped");
 
+// Light telemetry on how many commands have been run
 console.log("Attempting to create table command_cnt");
 await dbClient.execute(`
 	CREATE TABLE command_cnt (
@@ -42,6 +43,7 @@ await dbClient.execute(`
 `);
 console.log("Stored Procedure created");
 
+// Roll log, holds rolls when requests
 console.log("Attempting to create table roll_log");
 await dbClient.execute(`
 	CREATE TABLE roll_log (
@@ -59,19 +61,22 @@ await dbClient.execute(`
 `);
 console.log("Table created");
 
+// Api guild settings
 console.log("Attempting to create table allowed_guilds");
 await dbClient.execute(`
 	CREATE TABLE allowed_guilds (
 		guildid bigint unsigned NOT NULL,
+		channelid bigint unsigned NOT NULL,
 		createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		active tinyint(1) NOT NULL DEFAULT 0,
 		banned tinyint(1) NOT NULL DEFAULT 0,
-		PRIMARY KEY (guildid),
-		UNIQUE KEY allowed_guilds_guildid_UNIQUE (guildid)
+		hidewarn tinyint(1) NOT NULL DEFAULT 0,
+		PRIMARY KEY (guildid, channelid)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
 console.log("Table created");
 
+// Api keys
 console.log("Attempting to create table all_keys");
 await dbClient.execute(`
 	CREATE TABLE all_keys (
@@ -90,6 +95,7 @@ await dbClient.execute(`
 `);
 console.log("Table created");
 
+// Api user settings
 console.log("Attempting to create table allowed_channels");
 await dbClient.execute(`
 	CREATE TABLE allowed_channels (
