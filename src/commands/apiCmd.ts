@@ -51,6 +51,13 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 		else if (apiArg === "status") {
 			apiCommands.status(message);
 		}
+
+		// [[api show-warn/hide-warn
+		// Lets a guild admin decide if the API warning should be shown on messages from the API
+		else if (apiArg === "show-warn" || apiArg === "hide-warn") {
+			apiCommands.showHideWarn(message, apiArg);
+		}
+
 	} else {
 		message.send(constantCmds.apiPermError).catch(e => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
