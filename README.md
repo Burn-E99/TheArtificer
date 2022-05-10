@@ -118,6 +118,7 @@ Available Endpoints and Methods Required:
     * `channel` - The Discord Channel ID that the bot is to send the results into.
     * `rollstr` - A roll string formatted identically to the roll command detailed in the "Available Commands" section.
   * Optional query parameters (these parameters do not require values unless specified):
+    * `snd` - Super No Details - Suppresses all details of the requested roll and hides no details message.
     * `nd` - No Details - Suppresses all details of the requested roll.
     * `s` - Spoiler - Spoilers all details of the requested roll.
     * `m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with Nominal roll.
