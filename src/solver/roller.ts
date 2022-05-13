@@ -145,9 +145,26 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					rollConf.keepLow.count = tNum;
 					break;
 				case "r":
+				case "r=":
 					// Configure Reroll (this can happen multiple times)
 					rollConf.reroll.on = true;
 					rollConf.reroll.nums.push(tNum);
+					break;
+				case "r>":
+					// Configure reroll for all numbers greater than or equal to tNum (this could happen multiple times, but why)
+					rollConf.reroll.on = true;
+					for (let i = tNum; i <= rollConf.dieSize; i++) {
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing r> ${i}`);
+						rollConf.reroll.nums.push(i);
+					}
+					break;
+				case "r<":
+					// Configure CritScore for all numbers less than or equal to tNum (this could happen multiple times, but why)
+					rollConf.reroll.on = true;
+					for (let i = 1; i <= tNum; i++) {
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing r< ${i}`);
+						rollConf.reroll.nums.push(i);
+					}
 					break;
 				case "cs":
 				case "cs=":
