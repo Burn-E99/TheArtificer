@@ -10,6 +10,7 @@ import { stats } from "./stats.ts";
 import { api } from "./apiCmd.ts";
 import { emoji } from "./emoji.ts";
 import { roll } from "./roll.ts";
+import { handleMentions } from "./handleMentions.ts";
 
 export default {
 	ping,
@@ -23,5 +24,6 @@ export default {
 	stats,
 	api,
 	emoji,
-	roll
+	roll,
+	handleMentions
 };

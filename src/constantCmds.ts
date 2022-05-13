@@ -159,6 +159,15 @@ export const constantCmds = {
 			title: "Compiling latest statistics . . ."
 		}]
 	},
+	mention: {
+		embeds: [{
+			title: `Hello!  I am ${config.name}!`,
+			fields: [{
+				name: "I am a bot that specializes in rolling dice and doing basic algebra",
+				value: `To learn about my available commands, please run \`${config.prefix}help\``
+			}]
+		}]
+	},
 	privacy: {
 		embeds: [{
 			title: "Privacy Policy",

@@ -10,7 +10,7 @@ await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [confi
 console.log("Inesrtion done");
 
 console.log("Attempting to insert default commands into command_cnt");
-const commands = ["ping", "rip", "rollhelp", "help", "info", "version", "report", "stats", "roll", "emojis", "api", "privacy"];
+const commands = ["ping", "rip", "rollhelp", "help", "info", "version", "report", "stats", "roll", "emojis", "api", "privacy", "mention"];
 for (let i = 0; i < commands.length; i++) {
 	await dbClient.execute("INSERT INTO command_cnt(command) values(?)", [commands[i]]).catch(e => {
 		console.log(`Failed to insert into database`, e);

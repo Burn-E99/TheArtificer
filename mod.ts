@@ -100,9 +100,17 @@ startBot({
 			if (message.isBot) return;
 			
 			// Ignore all messages that are not commands
-			if (message.content.indexOf(config.prefix) !== 0) return;
+			if (message.content.indexOf(config.prefix) !== 0) {
+				// Handle @bot messages
+				if (message.mentionedUserIds[0] === botId && (message.content.trim().startsWith(`<@${botId}>`) || message.content.trim().startsWith(`<@!${botId}>`))) {
+					commands.handleMentions(message);
+				}
+
+				// return as we are done handling this command
+				return;
+			}
 			
-			log(LT.LOG, `Handling message ${JSON.stringify(message)}`);
+			log(LT.LOG, `Handling [[command message: ${JSON.stringify(message)}`);
 
 			// Split into standard command + args format
 			const args = message.content.slice(config.prefix.length).trim().split(/[ \n]+/g);
