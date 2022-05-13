@@ -246,8 +246,16 @@ export const constantCmds = {
 						value: "Keeps the lowest `z` dice, cannot be used with `dz`",
 						inline: true
 					}, {
-						name: "`ra` [Optional]",
+						name: "`ra` or `r=q` [Optional]",
 						value: "Rerolls any rolls that match `a`, `r3` will reroll any dice that land on 3, throwing out old rolls",
+						inline: true
+					}, {
+						name: "`r<q` [Optional]",
+						value: "Rerolls any rolls that are less than or equal to  `a`, `r3` will reroll any dice that land on 3, 2, or 1, throwing out old rolls",
+						inline: true
+					}, {
+						name: "`r>q` [Optional]",
+						value: "Rerolls any rolls that are greater than or equal to `a`, `r3` will reroll any dice that land on 3 or greater, throwing out old rolls",
 						inline: true
 					}, {
 						name: "`csq` or `cs=q` [Optional]",

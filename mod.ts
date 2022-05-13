@@ -110,7 +110,7 @@ startBot({
 				return;
 			}
 			
-			log(LT.LOG, `Handling [[command message: ${JSON.stringify(message)}`);
+			log(LT.LOG, `Handling ${config.prefix}command message: ${JSON.stringify(message)}`);
 
 			// Split into standard command + args format
 			const args = message.content.slice(config.prefix.length).trim().split(/[ \n]+/g);
