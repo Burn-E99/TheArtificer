@@ -216,7 +216,9 @@ export const constantCmds = {
 						name: "Details:",
 						value: `You can chain as many of these options as you want, as long as the option does not disallow it.
 
-						This command also can fully solve math equations with parenthesis.`
+						This command also can fully solve math equations with parenthesis.
+						
+						The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).`
 					}, {
 						name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
 						value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`)`,
@@ -291,7 +293,7 @@ export const constantCmds = {
 				title: "Roll Command Decorators:",
 				fields: [
 					{
-						name: "Details",
+						name: "Details:",
 						value: `This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message.
 						
 						Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${config.postfix} -nd -s\``
@@ -322,6 +324,26 @@ export const constantCmds = {
 					}, {
 						name: "`-o a` or `-o d`",
 						value: "Order Roll - Rolls the requested roll and orders the results in the requested direction",
+						inline: true
+					}
+				]
+			}, {
+				title: "Results Formatting:",
+				fields: [
+					{
+						name: "Details:",
+						value: "The results have some formatting applied on them to provide details on what happened during this roll."
+					}, {
+						name: "Bold",
+						value: "Critical successes will be **bolded**.",
+						inline: true
+					}, {
+						name: "Underline",
+						value: "Critical fails will be __underlined__.",
+						inline: true
+					}, {
+						name: "Strikethrough",
+						value: "Rolls that were dropped or rerolled ~~crossed out~~.",
 						inline: true
 					}
 				]
