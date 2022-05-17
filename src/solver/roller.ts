@@ -54,7 +54,11 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 			on: false,
 			range: <number[]>[]
 		},
-		exploding: false
+		exploding: {
+			on: false,
+			once: false,
+			nums: <number[]>[]
+		}
 	};
 
 	// If the dpts is not long enough, throw error
@@ -209,7 +213,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					break;
 				case "!":
 					// Configure Exploding
-					rollConf.exploding = true;
+					rollConf.exploding.on = true;
 					afterNumIdx = 1;
 					break;
 				default:
@@ -328,7 +332,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	}
 
 	// If needed, handle rerolling and exploding dice now
-	if (rollConf.reroll.on || rollConf.exploding) {
+	if (rollConf.reroll.on || rollConf.exploding.on) {
 		for (let i = 0; i < rollSet.length; i++) {
 			log(LT.LOG, `Handling roll ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
 			// If loopCount gets too high, stop trying to calculate infinity
@@ -361,7 +365,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 				// Slot this new roll in after the current iteration so it can be processed in the next loop
 				rollSet.splice(i + 1, 0, newRoll);
-			} else if (rollConf.exploding && !rollSet[i].rerolled && rollSet[i].critHit) {
+			} else if (rollConf.exploding.on && !rollSet[i].rerolled && rollSet[i].critHit) {
 				//If it exploded, we keep both, so no flags need to be set
 				
 				// Copy the template to fill out for this iteration
@@ -398,12 +402,19 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		let rerollCount = 0;
 		if (rollConf.reroll.on) {
 			for (let i = 0; i < rollSet.length; i++) {
+				// If loopCount gets too high, stop trying to calculate infinity
+				if (loopCount > MAXLOOPS) {
+					throw new Error("MaxLoopsExceeded");
+				}
+
 				log(LT.LOG, `Handling roll ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[i])}`);
 				rollSet[i].origidx = i;
 
 				if (rollSet[i].rerolled) {
 					rerollCount++;
 				}
+
+				loopCount++;
 			}
 		}
 
@@ -447,6 +458,11 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		// Now its time to drop all dice needed
 		let i = 0;
 		while (dropCount > 0 && i < rollSet.length) {
+			// If loopCount gets too high, stop trying to calculate infinity
+			if (loopCount > MAXLOOPS) {
+				throw new Error("MaxLoopsExceeded");
+			}
+
 			log(LT.LOG, `Handling roll ${rollStr} | Dropping dice ${dropCount} ${JSON.stringify(rollSet[i])}`);
 			// Skip all rolls that were rerolled
 			if (!rollSet[i].rerolled) {
@@ -454,6 +470,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				dropCount--;
 			}
 			i++;
+			loopCount++;
 		}
 
 		// Finally, return the rollSet to its original order

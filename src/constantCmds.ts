@@ -221,8 +221,7 @@ export const constantCmds = {
 						The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).`
 					}, {
 						name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
-						value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`)`,
-						inline: true
+						value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`)`
 					}, {
 						name: "`x` [Optional]",
 						value: "Number of dice to roll, if omitted, 1 is used",
