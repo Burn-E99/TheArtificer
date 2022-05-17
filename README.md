@@ -70,8 +70,8 @@ The Artificer comes with a few supplemental commands to the main rolling command
   |  dhz          |  Optional   |      No       |  drops the highest z dice, cannot be used any other drop or keep options                                                           |
   |  klz          |  Optional   |      No       |  keeps the lowest z dice, cannot be used any other drop or keep options                                                            |
   |  ra           |  Optional   |      Yes      |  rerolls any rolls that match a, r3 will reroll any dice that land on 3, throwing out old rolls                                    |
-  | r<a           |  Optional   |      Yes      |  rerolls any rolls that are less than or equal to a, r3 will reroll any dice that land on 3, 2, or 1, throwing out old rolls       |
-  | r>a           |  Optional   |      Yes      |  rerolls any rolls that are greater than or equal to a, r3 will reroll any dice that land on 3 or greater, throwing out old rolls  |
+  |  r<a          |  Optional   |      Yes      |  rerolls any rolls that are less than or equal to a, r3 will reroll any dice that land on 3, 2, or 1, throwing out old rolls       |
+  |  r>a          |  Optional   |      Yes      |  rerolls any rolls that are greater than or equal to a, r3 will reroll any dice that land on 3 or greater, throwing out old rolls  |
   |  csq or cs=q  |  Optional   |      Yes      |  changes crit score to q                                                                                                           |
   |  cs<q         |  Optional   |      Yes      |  changes crit score to be less than or equal to q                                                                                  |
   |  cs>q         |  Optional   |      Yes      |  changes crit score to be greater than or equal to q                                                                               |
