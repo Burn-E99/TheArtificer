@@ -59,6 +59,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		},
 		reroll: {
 			on: false,
+			once: false,
 			nums: <number[]>[]
 		},
 		critScore: {
@@ -146,12 +147,19 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					rollConf.keepLow.on = true;
 					rollConf.keepLow.count = tNum;
 					break;
+				case "ro":
+				case "ro=":
+					rollConf.reroll.once = true;
+					// falls through as ro/ro= functions the same as r
 				case "r":
 				case "r=":
 					// Configure Reroll (this can happen multiple times)
 					rollConf.reroll.on = true;
 					rollConf.reroll.nums.push(tNum);
 					break;
+				case "ro>":
+					rollConf.reroll.once = true;
+					// falls through as ro> functions the same as r
 				case "r>":
 					// Configure reroll for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.reroll.on = true;
@@ -160,8 +168,11 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 						rollConf.reroll.nums.push(i);
 					}
 					break;
+				case "ro<":
+					rollConf.reroll.once = true;
+					// falls through as ro< functions the same as r
 				case "r<":
-					// Configure CritScore for all numbers less than or equal to tNum (this could happen multiple times, but why)
+					// Configure reroll for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.reroll.on = true;
 					for (let i = 1; i <= tNum; i++) {
 						log(LT.LOG, `Handling roll ${rollStr} | Parsing r< ${i}`);
@@ -342,7 +353,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 			}
 
 			// If we need to reroll this roll, flag its been replaced and...
-			if (rollConf.reroll.on && rollConf.reroll.nums.indexOf(rollSet[i].roll) >= 0) {
+			// This big boolean statement first checks if reroll is on, if the roll is within the reroll range, and finally if ro is ON, make sure we haven't already rerolled the roll
+			if (rollConf.reroll.on && rollConf.reroll.nums.indexOf(rollSet[i].roll) >= 0 && (!rollConf.reroll.once || rollConf.reroll.once && !rollSet[i ? (i - 1) : i].rerolled)) {
 				rollSet[i].rerolled = true;
 
 				// Copy the template to fill out for this iteration

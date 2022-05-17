@@ -61,24 +61,27 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * PI and e are available for use.
   * Parameters for rolling:
 
-  |  Paramater    |  Required?  |  Repeatable?  |  Description                                                                                                                       |
-  |---------------|-------------|---------------|------------------------------------------------------------------------------------------------------------------------------------|
-  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                                                     |
-  |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                                                          |
-  |  dz or dlz    |  Optional   |      No       |  drops the lowest z dice, cannot be used any other drop or keep options                                                            |
-  |  kz or khz    |  Optional   |      No       |  keeps the highest z dice, cannot be used any other drop or keep options                                                           |
-  |  dhz          |  Optional   |      No       |  drops the highest z dice, cannot be used any other drop or keep options                                                           |
-  |  klz          |  Optional   |      No       |  keeps the lowest z dice, cannot be used any other drop or keep options                                                            |
-  |  ra           |  Optional   |      Yes      |  rerolls any rolls that match a, r3 will reroll any dice that land on 3, throwing out old rolls                                    |
-  |  r<a          |  Optional   |      Yes      |  rerolls any rolls that are less than or equal to a, r3 will reroll any dice that land on 3, 2, or 1, throwing out old rolls       |
-  |  r>a          |  Optional   |      Yes      |  rerolls any rolls that are greater than or equal to a, r3 will reroll any dice that land on 3 or greater, throwing out old rolls  |
-  |  csq or cs=q  |  Optional   |      Yes      |  changes crit score to q                                                                                                           |
-  |  cs<q         |  Optional   |      Yes      |  changes crit score to be less than or equal to q                                                                                  |
-  |  cs>q         |  Optional   |      Yes      |  changes crit score to be greater than or equal to q                                                                               |
-  |  cfq or cf=q  |  Optional   |      Yes      |  changes crit fail to q                                                                                                            |
-  |  cf<q         |  Optional   |      Yes      |  changes crit fail to be less than or equal to q                                                                                   |
-  |  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                                                                |
-  |  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                                                   |
+  |  Paramater    |  Required?  |  Repeatable?  |  Description                                                                                                                                                             |
+  |---------------|-------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                                                                                           |
+  |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                                                                                                |
+  |  dz or dlz    |  Optional   |      No       |  drops the lowest z dice, cannot be used with any other drop or keep options                                                                                             |
+  |  kz or khz    |  Optional   |      No       |  keeps the highest z dice, cannot be used with any other drop or keep options                                                                                            |
+  |  dhz          |  Optional   |      No       |  drops the highest z dice, cannot be used with any other drop or keep options                                                                                            |
+  |  klz          |  Optional   |      No       |  keeps the lowest z dice, cannot be used with any other drop or keep options                                                                                             |
+  |  ra or r=a    |  Optional   |      Yes      |  rerolls any rolls that match a, r3 will reroll every die that land on 3, throwing out old rolls, cannot be used with ro                                                 |
+  |  r<a          |  Optional   |      Yes      |  rerolls any rolls that are less than or equal to a, r3 will reroll every die that land on 3, 2, or 1, throwing out old rolls, cannot be used with ro                    |
+  |  r>a          |  Optional   |      Yes      |  rerolls any rolls that are greater than or equal to a, r3 will reroll every die that land on 3 or greater, throwing out old rolls, cannot be used with ro               |
+  |  roa or ro=a  |  Optional   |      Yes      |  rerolls any rolls that match a, r3 will reroll each die that lands on 3 ONLY ONE TIME, throwing out old rolls, cannot be used with r                                    |
+  |  ro<a         |  Optional   |      Yes      |  rerolls any rolls that are less than or equal to a, r3 will reroll each die that lands on 3, 2, or 1 ONLY ONE TIME, throwing out old rolls, cannot be used with r       |
+  |  ro>a         |  Optional   |      Yes      |  rerolls any rolls that are greater than or equal to a, r3 will reroll each die that lands on 3 or greater ONLY ONE TIME, throwing out old rolls, cannot be used with r  |
+  |  csq or cs=q  |  Optional   |      Yes      |  changes crit score to q                                                                                                                                                 |
+  |  cs<q         |  Optional   |      Yes      |  changes crit score to be less than or equal to q                                                                                                                        |
+  |  cs>q         |  Optional   |      Yes      |  changes crit score to be greater than or equal to q                                                                                                                     |
+  |  cfq or cf=q  |  Optional   |      Yes      |  changes crit fail to q                                                                                                                                                  |
+  |  cf<q         |  Optional   |      Yes      |  changes crit fail to be less than or equal to q                                                                                                                         |
+  |  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                                                                                                      |
+  |  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                                                                                         |
 
   * If the parameter is Required, it must be provided at all times.
   * If the parameter is Repeatable, it may occur multiple times in the roll configuration.
