@@ -11,24 +11,8 @@ import { MAXLOOPS, genRoll, compareRolls, compareOrigidx } from "./rollUtils.ts"
 export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): RollSet[] => {
 	/* Roll Capabilities
 	 * Deciphers and rolls a single dice roll set
-	 * xdydzracsq!
 	 *
-	 * x            [OPT] - number of dice to roll, if omitted, 1 is used
-	 * dy           [REQ] - size of dice to roll, d20 = 20 sided die
-	 * dz || dlz    [OPT] - drops the lowest z dice, cannot be used with kz
-	 * kz || khz    [OPT] - keeps the highest z dice, cannot be used with dz
-	 * dhz          [OPT] - drops the highest z dice, cannot be used with kz
-	 * klz          [OPT] - keeps the lowest z dice, cannot be used with dz
-	 * ra || r=a    [OPT] - rerolls any rolls that match a, r3 will reroll any dice that land on 3, throwing out old rolls
-	 * r<a          [OPT] - rerolls any rolls that are less than or equal to a, r3 will reroll any dice that land on 3, 2, or 1, throwing out old rolls
-	 * r>a          [OPT] - rerolls any rolls that are greater than or equal to a, r3 will reroll any dice that land on 3 or greater, throwing out old rolls
-	 * csq || cs=q  [OPT] - changes crit score to q
-	 * cs<q         [OPT] - changes crit score to be less than or equal to q
-	 * cs>q         [OPT] - changes crit score to be greater than or equal to q	 
-	 * cfq || cs=q  [OPT] - changes crit fail to q
-	 * cf<q         [OPT] - changes crit fail to be less than or equal to q
-	 * cf>q         [OPT] - changes crit fail to be greater than or equal to q
-	 * !            [OPT] - exploding, rolls another dy for every crit roll
+	 * Check the README.md of this project for details on the roll options.  I gave up trying to keep three places updated at once.
 	 */
 
 	// Make entire roll lowercase for ease of parsing
