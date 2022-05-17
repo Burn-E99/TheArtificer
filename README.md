@@ -95,6 +95,10 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with -m
     * `-gm @user1 @user2 ... @usern` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
+  * The results have some formatting applied on them to provide details on what happened during this roll.
+    * Critical successes will be **bolded**
+    * Critical fails will be <ins>underlined</ins>
+    * Rolls that were dropped or rerolled ~~crossed out~~
 
 ## The Artificer API
 The Artificer features an API that allows authenticated users to roll dice into Discord from third party applications (such as Excel macros).  The API has a couple endpoints exposed to all authenticated users allowing management of channels that your API key can send rolls to.  APIs requiring administrative access are not listed below.
