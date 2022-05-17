@@ -61,7 +61,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * PI and e are available for use.
   * Parameters for rolling:
 
-  |  Paramater    |  Required?  |  Repeatable?  |  Description                                                                                                                        |
+  |  Paramater    |  Required?  |  Repeatable?  |  Description                                                                                                                       |
   |---------------|-------------|---------------|------------------------------------------------------------------------------------------------------------------------------------|
   |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                                                     |
   |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                                                          |
