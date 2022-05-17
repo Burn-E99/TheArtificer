@@ -253,7 +253,7 @@ export const constantCmds = {
 						inline: true
 					}, {
 						name: "`r<q` [Optional]",
-						value: "Rerolls any rolls that are less than or equal to  `a`, `r3` will reroll any dice that land on 3, 2, or 1, throwing out old rolls",
+						value: "Rerolls any rolls that are less than or equal to `a`, `r3` will reroll any dice that land on 3, 2, or 1, throwing out old rolls",
 						inline: true
 					}, {
 						name: "`r>q` [Optional]",
