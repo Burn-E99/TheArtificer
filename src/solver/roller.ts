@@ -138,7 +138,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				case "ro":
 				case "ro=":
 					rollConf.reroll.once = true;
-					// falls through as ro/ro= functions the same as r
+					// falls through as ro/ro= functions the same as r/r= in this context
 				case "r":
 				case "r=":
 					// Configure Reroll (this can happen multiple times)
@@ -147,7 +147,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					break;
 				case "ro>":
 					rollConf.reroll.once = true;
-					// falls through as ro> functions the same as r
+					// falls through as ro> functions the same as r> in this context
 				case "r>":
 					// Configure reroll for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.reroll.on = true;
@@ -158,7 +158,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					break;
 				case "ro<":
 					rollConf.reroll.once = true;
-					// falls through as ro< functions the same as r
+					// falls through as ro< functions the same as r< in this context
 				case "r<":
 					// Configure reroll for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.reroll.on = true;
@@ -211,10 +211,49 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 						rollConf.critFail.range.push(i);
 					}
 					break;
+				case "!o":
+					rollConf.exploding.once = true;
+					// falls through as !o functions the same as ! in this context
 				case "!":
 					// Configure Exploding
 					rollConf.exploding.on = true;
-					afterNumIdx = 1;
+					if (afterNumIdx > 0) {
+						// User gave a number to explode on, save it
+						rollConf.exploding.nums.push(tNum);
+					} else {
+						// User did not give number, use cs
+						afterNumIdx = 1;
+					}
+					break;
+				case "!o=":
+					rollConf.exploding.once = true;
+					// falls through as !o= functions the same as != in this context
+				case "!=":
+					// Configure Exploding (this can happen multiple times)
+					rollConf.exploding.on = true;
+					rollConf.exploding.nums.push(tNum);
+					break;
+				case "!o>":
+					rollConf.exploding.once = true;
+					// falls through as !o> functions the same as !> in this context
+				case "!>":
+					// Configure Exploding for all numbers greater than or equal to tNum (this could happen multiple times, but why)
+					rollConf.exploding.on = true;
+					for (let i = tNum; i <= rollConf.dieSize; i++) {
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing !> ${i}`);
+						rollConf.exploding.nums.push(i);
+					}
+					break;
+				case "!o<":
+					rollConf.exploding.once = true;
+					// falls through as !o< functions the same as !< in this context
+				case "!<":
+					// Configure Exploding for all numbers less than or equal to tNum (this could happen multiple times, but why)
+					rollConf.exploding.on = true;
+					for (let i = 1; i <= tNum; i++) {
+						log(LT.LOG, `Handling roll ${rollStr} | Parsing !< ${i}`);
+						rollConf.exploding.nums.push(i);
+					}
 					break;
 				default:
 					// Throw error immediately if unknown op is encountered
@@ -342,7 +381,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 			// If we need to reroll this roll, flag its been replaced and...
 			// This big boolean statement first checks if reroll is on, if the roll is within the reroll range, and finally if ro is ON, make sure we haven't already rerolled the roll
-			if (rollConf.reroll.on && rollConf.reroll.nums.indexOf(rollSet[i].roll) >= 0 && (!rollConf.reroll.once || rollConf.reroll.once && !rollSet[i ? (i - 1) : i].rerolled)) {
+			if (rollConf.reroll.on && rollConf.reroll.nums.indexOf(rollSet[i].roll) >= 0 && (!rollConf.reroll.once || !rollSet[i ? (i - 1) : i].rerolled)) {
 				rollSet[i].rerolled = true;
 
 				// Copy the template to fill out for this iteration
@@ -365,8 +404,9 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 				// Slot this new roll in after the current iteration so it can be processed in the next loop
 				rollSet.splice(i + 1, 0, newRoll);
-			} else if (rollConf.exploding.on && !rollSet[i].rerolled && rollSet[i].critHit) {
-				//If it exploded, we keep both, so no flags need to be set
+			} else if (rollConf.exploding.on && !rollSet[i].rerolled && (rollConf.exploding.nums.length ? rollConf.exploding.nums.indexOf(rollSet[i].roll) >= 0 : rollSet[i].critHit) && (!rollConf.exploding.once || !rollSet[i].exploding)) {
+				// If we have exploding.nums set, use those to determine the exploding range, and make sure if !o is on, make sure we don't repeatedly explode
+				// If it exploded, we keep both, so no flags need to be set
 				
 				// Copy the template to fill out for this iteration
 				const newRoll = JSON.parse(JSON.stringify(templateRoll));

@@ -86,9 +86,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 				i--;
 				break;
 			case "-o":
-				console.log(args)
 				args.splice(i, 1);
-				console.log(args)
 				
 				if (!args[i] || args[i].toLowerCase()[0] !== "d" && args[i].toLowerCase()[0] !== "a") {
 					// If -o is on and asc or desc was not specified, error out

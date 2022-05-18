@@ -81,7 +81,14 @@ The Artificer comes with a few supplemental commands to the main rolling command
   |  cfq or cf=q  |  Optional   |      Yes      |  changes crit fail to q                                                                                                                                                  |
   |  cf<q         |  Optional   |      Yes      |  changes crit fail to be less than or equal to q                                                                                                                         |
   |  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                                                                                                      |
-  |  !            |  Optional   |      No       |  exploding, rolls another dy for every crit roll                                                                                                                         |
+  |  !            |  Optional   |      No       |  exploding, rolls another dy for every crit success                                                                                                                      |
+  |  !o           |  Optional   |      No       |  exploding once, rolls another dy for each original crit success                                                                                                         |
+  |  !=u          |  Optional   |      Yes      |  exploding, rolls another dy for every die that lands on u                                                                                                               |
+  |  !>u          |  Optional   |      Yes      |  exploding, rolls another dy for every die that lands on u or greater                                                                                                    |
+  |  !<u>         |  Optional   |      Yes      |  exploding, rolls another dy for every die that lands on u or less                                                                                                       |
+  |  !o=u         |  Optional   |      Yes      |  exploding once, rolls another dy for each original die that landed on u                                                                                                 |
+  |  !o>u         |  Optional   |      Yes      |  exploding once, rolls another dy for each original die that landed on u or greater                                                                                      |
+  |  !o<u         |  Optional   |      Yes      |  exploding once, rolls another dy for each original die that landed on u or less                                                                                         |
 
   * If the parameter is Required, it must be provided at all times.
   * If the parameter is Repeatable, it may occur multiple times in the roll configuration.
