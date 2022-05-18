@@ -28,36 +28,22 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 	// Check if any of the args are command flags and pull those out into the modifiers object
 	for (let i = 0; i < args.length; i++) {
 		log(LT.LOG, `Checking ${command}${args.join(" ")} for command modifiers ${i}`);
+		let defaultCase = false;
 		switch (args[i].toLowerCase()) {
 			case "-nd":
 				modifiers.noDetails = true;
-
-				args.splice(i, 1);
-				i--;
 				break;
 			case "-snd":
 				modifiers.superNoDetails = true;
-
-				args.splice(i, 1);
-				i--;
 				break;
 			case "-s":
 				modifiers.spoiler = "||";
-
-				args.splice(i, 1);
-				i--;
 				break;
 			case "-m":
 				modifiers.maxRoll = true;
-
-				args.splice(i, 1);
-				i--;
 				break;
 			case "-n":
 				modifiers.nominalRoll = true;
-
-				args.splice(i, 1);
-				i--;
 				break;
 			case "-gm":
 				modifiers.gmRoll = true;
@@ -81,9 +67,6 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 					}
 					return modifiers;
 				}
-
-				args.splice(i, 1);
-				i--;
 				break;
 			case "-o":
 				args.splice(i, 1);
@@ -102,12 +85,16 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 				}
 
 				modifiers.order = args[i].toLowerCase()[0];
-
-				args.splice(i, 1);
-				i--;
 				break;
 			default:
+				// Default case should not mess with the array
+				defaultCase = true;
 				break;
+		}
+
+		if (!defaultCase) {
+			args.splice(i, 1);
+			i--;
 		}
 	}
 
