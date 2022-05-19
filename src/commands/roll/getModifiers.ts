@@ -22,7 +22,8 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 		gmRoll: false,
 		gms: [],
 		order: "",
-		valid: false
+		valid: false,
+		count: false
 	};
 
 	// Check if any of the args are command flags and pull those out into the modifiers object
@@ -30,6 +31,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 		log(LT.LOG, `Checking ${command}${args.join(" ")} for command modifiers ${i}`);
 		let defaultCase = false;
 		switch (args[i].toLowerCase()) {
+			case "-c":
+				modifiers.count = true;
+				break;
 			case "-nd":
 				modifiers.noDetails = true;
 				break;
@@ -69,6 +73,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 				}
 				break;
 			case "-o":
+				// Shift the -o out of the array so the next item is the direction
 				args.splice(i, 1);
 				
 				if (!args[i] || args[i].toLowerCase()[0] !== "d" && args[i].toLowerCase()[0] !== "a") {

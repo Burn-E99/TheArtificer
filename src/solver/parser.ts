@@ -5,14 +5,15 @@ import {
 
 import config from "../../config.ts";
 
+import { RollModifiers } from "../mod.d.ts";
 import { SolvedStep, SolvedRoll, ReturnData } from "./solver.d.ts";
 import { compareTotalRolls, escapeCharacters } from "./rollUtils.ts";
 import { formatRoll } from "./rollFormatter.ts";
 import { fullSolver } from "./solver.ts";
 
-// parseRoll(fullCmd, localPrefix, localPostfix, maximiseRoll, nominalRoll)
+// parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
-export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: string, maximiseRoll: boolean, nominalRoll: boolean, order: string): SolvedRoll => {
+export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
 	const returnmsg = {
 		error: false,
 		errorMsg: "",
@@ -25,7 +26,7 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 	// Whole function lives in a try-catch to allow safe throwing of errors on purpose
 	try {
 		// Split the fullCmd by the command prefix to allow every roll/math op to be handled individually
-		const sepRolls = fullCmd.split(localPrefix);
+		const sepRolls = fullCmd.split(config.prefix);
 
 		const tempReturnData: ReturnData[] = [];
 
@@ -33,7 +34,7 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 		for (let i = 0; i < sepRolls.length; i++) {
 			log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRolls[i]}`);
 			// Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the opertaion
-			const [tempConf, tempFormat] = sepRolls[i].split(localPostfix);
+			const [tempConf, tempFormat] = sepRolls[i].split(config.postfix);
 
 			// Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
 			const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]>tempConf.replace(/ /g, "").split(/([-+()*/%^])/g);
@@ -66,7 +67,7 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 					mathConf[i] = parseFloat(mathConf[i].toString());
 				} else if (/([0123456789])/g.test(mathConf[i].toString())) {
 					// If there is a number somewhere in mathconf[i] but there are also other characters preventing it from parsing correctly as a number, it should be a dice roll, parse it as such (if it for some reason is not a dice roll, formatRoll/roll will handle it)
-					mathConf[i] = formatRoll(mathConf[i].toString(), maximiseRoll, nominalRoll);
+					mathConf[i] = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
 				} else if (mathConf[i].toString().toLowerCase() === "e") {
 					// If the operand is the constant e, create a SolvedStep for it
 					mathConf[i] = {
@@ -130,23 +131,23 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 		let line3 = "";
 
 		// If maximiseRoll or nominalRoll are on, mark the output as such, else use default formatting
-		if (maximiseRoll) {
-			line1 = ` requested the theoretical maximum of: \`${localPrefix}${fullCmd}\``;
+		if (modifiers.maxRoll) {
+			line1 = ` requested the theoretical maximum of: \`${config.prefix}${fullCmd}\``;
 			line2 = "Theoretical Maximum Results: ";
-		} else if (nominalRoll) {
-			line1 = ` requested the theoretical nominal of: \`${localPrefix}${fullCmd}\``;
+		} else if (modifiers.nominalRoll) {
+			line1 = ` requested the theoretical nominal of: \`${config.prefix}${fullCmd}\``;
 			line2 = "Theoretical Nominal Results: ";
-		} else if (order === "a") {
-			line1 = ` requested the following rolls to be ordered from least to greatest: \`${localPrefix}${fullCmd}\``;
+		} else if (modifiers.order === "a") {
+			line1 = ` requested the following rolls to be ordered from least to greatest: \`${config.prefix}${fullCmd}\``;
 			line2 = "Results: ";
 			tempReturnData.sort(compareTotalRolls);
-		} else if (order === "d") {
-			line1 = ` requested the following rolls to be ordered from greatest to least: \`${localPrefix}${fullCmd}\``;
+		} else if (modifiers.order === "d") {
+			line1 = ` requested the following rolls to be ordered from greatest to least: \`${config.prefix}${fullCmd}\``;
 			line2 = "Results: ";
 			tempReturnData.sort(compareTotalRolls);
 			tempReturnData.reverse();
 		} else {
-			line1 = ` rolled: \`${localPrefix}${fullCmd}\``;
+			line1 = ` rolled: \`${config.prefix}${fullCmd}\``;
 			line2 = "Results: ";
 		}
 
@@ -167,7 +168,7 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 			}
 
 			// Populate line2 (the results) and line3 (the details) with their data
-			if (order === "") {
+			if (modifiers.order === "") {
 				line2 += `${preFormat}${e.rollTotal}${postFormat}${escapeCharacters(e.rollPostFormat, "|*_~`")}`;
 			} else {
 				// If order is on, turn rolls into csv without formatting
@@ -180,7 +181,7 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 		});
 
 		// If order is on, remove trailing ", "
-		if (order !== "") {
+		if (modifiers.order !== "") {
 			line2 = line2.substring(0, (line2.length - 2));
 		}
 
@@ -213,7 +214,7 @@ export const parseRoll = (fullCmd: string, localPrefix: string, localPostfix: st
 				if (errorDetails === "-") {
 					errorMsg += "\nNote: Negative numbers are not supported";
 				} else if (errorDetails === " ") {
-					errorMsg += `\nNote: Every roll must be closed by ${localPostfix}`;
+					errorMsg += `\nNote: Every roll must be closed by ${config.postfix}`;
 				}
 				break;
 			case "NoZerosAllowed":

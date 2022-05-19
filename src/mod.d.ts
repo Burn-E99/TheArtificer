@@ -9,6 +9,7 @@ export type EmojiConf = {
 	deleteSender: boolean
 };
 
+// RollModifiers is the structure to keep track of the decorators applied to a roll command
 export type RollModifiers = {
 	noDetails: boolean,
 	superNoDetails: boolean,
@@ -18,5 +19,6 @@ export type RollModifiers = {
 	gmRoll: boolean,
 	gms: string[],
 	order: string,
-	valid: boolean
+	valid: boolean,
+	count: boolean
 }

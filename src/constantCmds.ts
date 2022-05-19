@@ -366,6 +366,10 @@ export const constantCmds = {
 						value: "Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs",
 						inline: true
 					}, {
+						name: "`-c` - Count Rolls",
+						value: "Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions",
+						inline: true
+					}, {
 						name: "`-o [direction]` - Order Roll",
 						value: `Rolls the requested roll and orders the results in the requested direction
 						

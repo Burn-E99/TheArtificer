@@ -98,6 +98,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[d20/40]]` will roll a d20 die and divide it by 40.
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
   * This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message:
+    * `-c` - Count - Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions
     * `-nd` - No Details - Suppresses all details of the requested roll
     * `-snd` - Super No Details - Suppresses all details of the requested roll and hides no details message
     * `-s` - Spoiler - Spoilers all details of the requested roll
@@ -134,8 +135,9 @@ Available Endpoints and Methods Required:
     * `channel` - The Discord Channel ID that the bot is to send the results into.
     * `rollstr` - A roll string formatted identically to the roll command detailed in the "Available Commands" section.
   * Optional query parameters (these parameters do not require values unless specified):
-    * `snd` - Super No Details - Suppresses all details of the requested roll and hides no details message.
+    * `c` - Count - Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions
     * `nd` - No Details - Suppresses all details of the requested roll.
+    * `snd` - Super No Details - Suppresses all details of the requested roll and hides no details message.
     * `s` - Spoiler - Spoilers all details of the requested roll.
     * `m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with Nominal roll.
     * `n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with Maximise roll.
@@ -197,11 +199,6 @@ You will also need to install and setup a MySQL database with a user for the bot
 Once everything is set up, starting the bot can simply be done with `deno run --allow-net .\mod.ts`.
 
 If you choose to run version `1.1.0` or newer, ensure you disable the API in `config.ts` or verify you have properly secured your instance of The Artificer.  If you enable the API, you should manually generate a 25 char nanoid and place it in `config.api.adminKey` and copy your `userid` and place it in `config.api.admin` before running `db\populateDefaults.ts`.
-
----
-
-## Development Plans
-Current and future plans are listed on [the Milestones page](https://github.com/Burn-E99/TheArtificer/milestones).
 
 ---
 

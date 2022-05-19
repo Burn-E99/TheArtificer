@@ -42,7 +42,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 		// Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituded in
 		const rollCmd = `${command} ${args.join(" ")}`;
-		const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, modifiers.maxRoll, modifiers.nominalRoll, modifiers.order) || { error: true, errorCode: "EmptyMessage", errorMsg: "Error: Empty message", line1: "", line2: "", line3: "" };
+		const returnmsg = solver.parseRoll(rollCmd, modifiers) || { error: true, errorCode: "EmptyMessage", errorMsg: "Error: Empty message", line1: "", line2: "", line3: "" };
 
 		let returnText = "";
 

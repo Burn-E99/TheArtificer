@@ -19,6 +19,7 @@ import {
 	LT, log
 } from "../deps.ts";
 
+import { RollModifiers } from "./mod.d.ts";
 import { dbClient, queries } from "./db.ts";
 import solver from "./solver/_index.ts";
 import {
@@ -238,8 +239,21 @@ const start = async (): Promise<void> => {
 												// Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
 												rollCmd = rollCmd.substring(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, " ");
 
+												const modifiers: RollModifiers = {
+													noDetails: false,
+													superNoDetails: false,
+													spoiler: "",
+													maxRoll: query.has("m"),
+													nominalRoll: query.has("n"),
+													gmRoll: false,
+													gms: [],
+													order: query.has("o") ? (query.get("o")?.toLowerCase() || "") : "",
+													valid: true,
+													count: query.has("c")
+												};
+
 												// Parse the roll and get the return text
-												const returnmsg = solver.parseRoll(rollCmd, config.prefix, config.postfix, query.has("m"), query.has("n"), query.has("o") ? (query.get("o")?.toLowerCase() || "") : "");
+												const returnmsg = solver.parseRoll(rollCmd, modifiers);
 
 												// Alert users why this message just appeared and how they can report abues pf this feature
 												const apiPrefix = hideWarn ? '' : `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>\n\n`;
