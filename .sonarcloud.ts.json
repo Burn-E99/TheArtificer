@@ -1,0 +1,15 @@
+{
+  "files": [
+    "mod.ts",
+    "src/**/*.ts",
+		"www/**/*.html",
+		"www/**/*.js",
+		"www/**/*.css"
+  ],
+  "include": [
+    "mod.ts",
+    "src/**",
+		"www/**"
+  ],
+  "exclude": [ ]
+}
