@@ -38,3 +38,13 @@ export type SolvedRoll = {
 	line2: string,
 	line3: string
 };
+
+// CountDetails is the object holding the count data for creating the Count Embed
+export type CountDetails = {
+	total: number,
+	successful: number,
+	failed: number,
+	rerolled: number,
+	dropped: number,
+	exploded: number
+};

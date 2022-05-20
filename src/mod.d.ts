@@ -21,4 +21,4 @@ export type RollModifiers = {
 	order: string,
 	valid: boolean,
 	count: boolean
-}
+};

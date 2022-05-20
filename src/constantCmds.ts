@@ -1,4 +1,5 @@
 import config from "../config.ts";
+import { CountDetails } from "./solver/solver.d.ts";
 
 const failColor = 0xe71212;
 const warnColor = 0xe38f28;
@@ -553,5 +554,39 @@ export const generateRollError = (errorType: string, errorMsg: string) => ({
 			name: errorType,
 			value: `${errorMsg}\n\nPlease try again.  If the error is repeated, please report the issue using the \`${config.prefix}report\` command.`
 		}]
+	}]
+});
+
+export const generateCountDetails = (counts: CountDetails) => ({
+	embeds: [{
+		color: infoColor1,
+		title: "Roll Count Details:",
+		fields: [
+			{
+				name: "Total Rolls:",
+				details: `${counts.total}`,
+				inline: true
+			}, {
+				name: "Successful Rolls:",
+				details: `${counts.successful}`,
+				inline: true
+			}, {
+				name: "Failed Rolls:",
+				details: `${counts.failed}`,
+				inline: true
+			}, {
+				name: "Rerolled Dice:",
+				details: `${counts.rerolled}`,
+				inline: true
+			}, {
+				name: "Dropped Dice:",
+				details: `${counts.dropped}`,
+				inline: true
+			}, {
+				name: "Exploded Dice:",
+				details: `${counts.exploded}`,
+				inline: true
+			}
+		]
 	}]
 });
