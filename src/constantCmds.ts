@@ -27,9 +27,9 @@ export const constantCmds = {
 				title: "The Artificer's API Details:",
 				description: `The Artificer has a built in API that allows user to roll dice into Discord using third party programs.  By default, API rolls are blocked from being sent in your guild.  The API warning is also enabled by default.  These commands may only be used by the Owner or Admins of your guild.
 
-				For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).
+For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).
 
-				You may enable and disable the API rolls for your guild as needed.`
+You may enable and disable the API rolls for your guild as needed.`
 			}, {
 				color: infoColor1,
 				title: "Available API Commands:",
@@ -151,9 +151,9 @@ export const constantCmds = {
 			color: infoColor2,
 			title: "The Artificer, a Discord bot that specializing in rolling dice and calculating math",
 			description: `The Artificer is developed by Ean AKA Burn_E99.
-			Additional information can be found on my website [here](https://discord.burne99.com/TheArtificer/).
-			Want to check out my source code?  Check it out [here](https://github.com/Burn-E99/TheArtificer).
-			Need help with this bot?  Join my support server [here](https://discord.gg/peHASXMZYv).`
+Additional information can be found on my website [here](https://discord.burne99.com/TheArtificer/).
+Want to check out my source code?  Check it out [here](https://github.com/Burn-E99/TheArtificer).
+Need help with this bot?  Join my support server [here](https://discord.gg/peHASXMZYv).`
 		}]
 	},
 	loadingStats: {
@@ -180,9 +180,9 @@ export const constantCmds = {
 				name: "The Artificer does not track or collect user information via Discord.",
 				value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of The Artificer can see.
 
-				For more details, please check out the Privacy Policy on the GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
-				
-				Terms of Service can also be found on GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).`
+For more details, please check out the Privacy Policy on the GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
+
+Terms of Service can also be found on GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).`
 			}]
 		}]
 	},
@@ -338,8 +338,8 @@ export const constantCmds = {
 				color: infoColor1,
 				title: "Roll Command Decorators:",
 				description: `This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message.
-						
-				Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${config.postfix} -nd -s\`, \`${config.prefix}d20${config.postfix} ${config.prefix}d20${config.postfix} ${config.prefix}d20${config.postfix} -o a\``,
+
+Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${config.postfix} -nd -s\`, \`${config.prefix}d20${config.postfix} ${config.prefix}d20${config.postfix} ${config.prefix}d20${config.postfix} -o a\``,
 				fields: [
 					{
 						name: "`-nd` - No Details",
@@ -372,10 +372,10 @@ export const constantCmds = {
 					}, {
 						name: "`-o [direction]` - Order Roll",
 						value: `Rolls the requested roll and orders the results in the requested direction
-						
-						Available directions:
-						\`a\` - Ascending (least to greatest)
-						\`d\` - Descending (greatest to least)`,
+
+Available directions:
+\`a\` - Ascending (least to greatest)
+\`d\` - Descending (greatest to least)`,
 						inline: true
 					}
 				]
@@ -506,14 +506,14 @@ export const generateApiKeyEmail = (email: string, key: string) => ({
 				name: "Body:",
 				value: `Hello Artificer API User,
 
-				Welcome aboard The Artificer's API.  You can find full details about the API on the GitHub: https://github.com/Burn-E99/TheArtificer
+Welcome aboard The Artificer's API.  You can find full details about the API on the GitHub: https://github.com/Burn-E99/TheArtificer
 
-				Your API Key is: ${key}
+Your API Key is: ${key}
 
-				Guard this well, as there is zero tolerance for API abuse.
+Guard this well, as there is zero tolerance for API abuse.
 
-				Welcome aboard,
-				The Artificer Developer - Ean Milligan`
+Welcome aboard,
+The Artificer Developer - Ean Milligan`
 			}
 		]
 	}]
@@ -534,12 +534,12 @@ export const generateApiDeleteEmail = (email: string, deleteCode: string) => ({
 				name: "Body:",
 				value: `Hello Artificer API User,
 
-				I am sorry to see you go.  If you would like, please respond to this email detailing what I could have done better.
+I am sorry to see you go.  If you would like, please respond to this email detailing what I could have done better.
 
-				As requested, here is your delete code: ${deleteCode}
+As requested, here is your delete code: ${deleteCode}
 
-				Sorry to see you go,
-				The Artificer Developer - Ean Milligan`
+Sorry to see you go,
+The Artificer Developer - Ean Milligan`
 			}
 		]
 	}]
