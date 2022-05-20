@@ -6,27 +6,26 @@
 
 import {
 	// Discordeno deps
-	cache, CreateMessage,
-	sendMessage, sendDirectMessage,
-
-	// httpd deps
-	Status, STATUS_TEXT,
-
+	cache,
+	CreateMessage,
+	log,
+	// Log4Deno deps
+	LT,
 	// nanoid deps
 	nanoid,
+	sendDirectMessage,
+	sendMessage,
+	// httpd deps
+	Status,
+	STATUS_TEXT,
+} from '../deps.ts';
 
-	// Log4Deno deps
-	LT, log
-} from "../deps.ts";
+import { RollModifiers } from './mod.d.ts';
+import { dbClient, queries } from './db.ts';
+import solver from './solver/_index.ts';
+import { generateApiDeleteEmail, generateApiKeyEmail, generateDMFailed } from './constantCmds.ts';
 
-import { RollModifiers } from "./mod.d.ts";
-import { dbClient, queries } from "./db.ts";
-import solver from "./solver/_index.ts";
-import {
-	generateApiKeyEmail, generateApiDeleteEmail, generateDMFailed
-} from "./constantCmds.ts";
-
-import config from "../config.ts";
+import config from '../config.ts';
 
 // start(databaseClient) returns nothing
 // start initializes and runs the entire API for the bot
@@ -51,14 +50,14 @@ const start = async (): Promise<void> => {
 				let rateLimited = false;
 				let updateRateLimitTime = false;
 				let apiUserid = 0n;
-				let apiUseridStr = "";
-				let apiUserEmail = "";
-				let apiUserDelCode = "";
+				let apiUseridStr = '';
+				let apiUserEmail = '';
+				let apiUserDelCode = '';
 
 				// Check the requests API key
-				if (request.headers.has("X-Api-Key")) {
+				if (request.headers.has('X-Api-Key')) {
 					// Get the userid and flags for the specific key
-					const dbApiQuery = await dbClient.query("SELECT userid, email, deleteCode FROM all_keys WHERE apiKey = ? AND active = 1 AND banned = 0", [request.headers.get("X-Api-Key")]);
+					const dbApiQuery = await dbClient.query('SELECT userid, email, deleteCode FROM all_keys WHERE apiKey = ? AND active = 1 AND banned = 0', [request.headers.get('X-Api-Key')]);
 
 					// If only one user returned, is not banned, and is currently active, mark as authenticated
 					if (dbApiQuery.length === 1) {
@@ -77,7 +76,7 @@ const start = async (): Promise<void> => {
 							const currentCnt = rateLimitCnt.get(apiUseridStr) || 0;
 							if (currentCnt < config.api.rateLimitCnt) {
 								// Limit not yet exceeded, update count
-								rateLimitCnt.set(apiUseridStr, (currentCnt + 1));
+								rateLimitCnt.set(apiUseridStr, currentCnt + 1);
 							} else {
 								// Limit exceeded, prevent API use
 								rateLimited = true;
@@ -92,26 +91,26 @@ const start = async (): Promise<void> => {
 
 				if (authenticated && !rateLimited) {
 					// Get path and query as a string
-					const [path, tempQ] = request.url.split("?");
+					const [path, tempQ] = request.url.split('?');
 
 					// Turn the query into a map (if it exists)
 					const query = new Map<string, string>();
 					if (tempQ !== undefined) {
-						tempQ.split("&").forEach((e: string) => {
+						tempQ.split('&').forEach((e: string) => {
 							log(LT.LOG, `Breaking down request query: ${request} ${e}`);
-							const [option, params] = e.split("=");
+							const [option, params] = e.split('=');
 							query.set(option.toLowerCase(), params);
 						});
 					}
 
 					// Handle the request
 					switch (request.method) {
-						case "GET":
+						case 'GET':
 							switch (path.toLowerCase()) {
-								case "/api/key":
-								case "/api/key/":
-									if ((query.has("user") && ((query.get("user") || "").length > 0)) && (query.has("a") && ((query.get("a") || "").length > 0))) {
-										if (apiUserid === config.api.admin && apiUserid === BigInt(query.get("a") || "0")) {
+								case '/api/key':
+								case '/api/key/':
+									if ((query.has('user') && ((query.get('user') || '').length > 0)) && (query.has('a') && ((query.get('a') || '').length > 0))) {
+										if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
 											// Generate new secure key
 											const newKey = await nanoid(25);
 
@@ -119,7 +118,7 @@ const start = async (): Promise<void> => {
 											let erroredOut = false;
 
 											// Insert new key/user pair into the db
-											await dbClient.execute("INSERT INTO all_keys(userid,apiKey) values(?,?)", [apiUserid, newKey]).catch(e => {
+											await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [apiUserid, newKey]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
@@ -130,7 +129,7 @@ const start = async (): Promise<void> => {
 												break;
 											} else {
 												// Send API key as response
-												requestEvent.respondWith(new Response(JSON.stringify({ "key": newKey, "userid": query.get("user") }), { status: Status.OK }));
+												requestEvent.respondWith(new Response(JSON.stringify({ 'key': newKey, 'userid': query.get('user') }), { status: Status.OK }));
 												break;
 											}
 										} else {
@@ -142,15 +141,15 @@ const start = async (): Promise<void> => {
 										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 									}
 									break;
-								case "/api/channel":
-								case "/api/channel/":
-									if (query.has("user") && ((query.get("user") || "").length > 0)) {
-										if (apiUserid === BigInt(query.get("user") || "0")) {
+								case '/api/channel':
+								case '/api/channel/':
+									if (query.has('user') && ((query.get('user') || '').length > 0)) {
+										if (apiUserid === BigInt(query.get('user') || '0')) {
 											// Flag to see if there is an error inside the catch
 											let erroredOut = false;
 
 											// Get all channels userid has authorized
-											const dbAllowedChannelQuery = await dbClient.query("SELECT * FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(e => {
+											const dbAllowedChannelQuery = await dbClient.query('SELECT * FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
@@ -174,11 +173,14 @@ const start = async (): Promise<void> => {
 										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 									}
 									break;
-								case "/api/roll":
-								case "/api/roll/":
+								case '/api/roll':
+								case '/api/roll/':
 									// Make sure query contains all the needed parts
-									if ((query.has("rollstr") && ((query.get("rollstr") || "").length > 0)) && (query.has("channel") && ((query.get("channel") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
-										if (query.has("n") && query.has("m")) {
+									if (
+										(query.has('rollstr') && ((query.get('rollstr') || '').length > 0)) && (query.has('channel') && ((query.get('channel') || '').length > 0)) &&
+										(query.has('user') && ((query.get('user') || '').length > 0))
+									) {
+										if (query.has('n') && query.has('m')) {
 											// Alert API user that they shouldn't be doing this
 											requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 											break;
@@ -189,13 +191,15 @@ const start = async (): Promise<void> => {
 										let hideWarn = false;
 
 										// Check if the db has the requested userid/channelid combo, and that the requested userid matches the userid linked with the api key
-										const dbChannelQuery = await dbClient.query("SELECT active, banned FROM allowed_channels WHERE userid = ? AND channelid = ?", [apiUserid, BigInt(query.get("channel") || "0")]);
-										if (dbChannelQuery.length === 1 && (apiUserid === BigInt(query.get("user") || "0")) && dbChannelQuery[0].active && !dbChannelQuery[0].banned) {
-
+										const dbChannelQuery = await dbClient.query('SELECT active, banned FROM allowed_channels WHERE userid = ? AND channelid = ?', [apiUserid, BigInt(query.get('channel') || '0')]);
+										if (dbChannelQuery.length === 1 && (apiUserid === BigInt(query.get('user') || '0')) && dbChannelQuery[0].active && !dbChannelQuery[0].banned) {
 											// Get the guild from the channel and make sure user is in said guild
-											const guild = cache.channels.get(BigInt(query.get("channel") || ""))?.guild;
-											if (guild && guild.members.get(BigInt(query.get("user") || ""))?.id) {
-												const dbGuildQuery = await dbClient.query("SELECT active, banned, hidewarn FROM allowed_guilds WHERE guildid = ? AND channelid = ?", [guild.id, BigInt(query.get("channel") || "0")]);
+											const guild = cache.channels.get(BigInt(query.get('channel') || ''))?.guild;
+											if (guild && guild.members.get(BigInt(query.get('user') || ''))?.id) {
+												const dbGuildQuery = await dbClient.query('SELECT active, banned, hidewarn FROM allowed_guilds WHERE guildid = ? AND channelid = ?', [
+													guild.id,
+													BigInt(query.get('channel') || '0'),
+												]);
 
 												// Make sure guild allows API rolls
 												if (dbGuildQuery.length === 1 && dbGuildQuery[0].active && !dbGuildQuery[0].banned) {
@@ -211,76 +215,78 @@ const start = async (): Promise<void> => {
 												// Flag to tell if roll was completely successful
 												let errorOut = false;
 												// Make sure rollCmd is not undefined
-												let rollCmd = query.get("rollstr") || "";
-												const originalCommand = query.get("rollstr");
+												let rollCmd = query.get('rollstr') || '';
+												const originalCommand = query.get('rollstr');
 
 												if (rollCmd.length === 0) {
 													// Alert API user that they messed up
 													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 
 													// Always log API rolls for abuse detection
-													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "EmptyInput", null]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'EmptyInput', null]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
 												}
 
-												if (query.has("o") && (query.get("o")?.toLowerCase() !== "d" && query.get("o")?.toLowerCase() !== "a")) {
+												if (query.has('o') && (query.get('o')?.toLowerCase() !== 'd' && query.get('o')?.toLowerCase() !== 'a')) {
 													// Alert API user that they messed up
 													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 
 													// Always log API rolls for abuse detection
-													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "BadOrder", null]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'BadOrder', null]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
 												}
 
 												// Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
-												rollCmd = rollCmd.substring(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, " ");
+												rollCmd = rollCmd.substring(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, ' ');
 
 												const modifiers: RollModifiers = {
 													noDetails: false,
 													superNoDetails: false,
-													spoiler: "",
-													maxRoll: query.has("m"),
-													nominalRoll: query.has("n"),
+													spoiler: '',
+													maxRoll: query.has('m'),
+													nominalRoll: query.has('n'),
 													gmRoll: false,
 													gms: [],
-													order: query.has("o") ? (query.get("o")?.toLowerCase() || "") : "",
+													order: query.has('o') ? (query.get('o')?.toLowerCase() || '') : '',
 													valid: true,
-													count: query.has("c")
+													count: query.has('c'),
 												};
 
 												// Parse the roll and get the return text
 												const returnmsg = solver.parseRoll(rollCmd, modifiers);
 
 												// Alert users why this message just appeared and how they can report abues pf this feature
-												const apiPrefix = hideWarn ? '' : `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>\n\n`;
-												let m, returnText = "";
+												const apiPrefix = hideWarn
+													? ''
+													: `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>\n\n`;
+												let m, returnText = '';
 
 												// Handle sending the error message to whoever called the api
 												if (returnmsg.error) {
 													requestEvent.respondWith(new Response(returnmsg.errorMsg, { status: Status.InternalServerError }));
 
 													// Always log API rolls for abuse detection
-													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, returnmsg.errorCode, null]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, returnmsg.errorCode, null]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 													break;
 												} else {
-													returnText = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\n${returnmsg.line2}`;
-													let spoilerTxt = "";
+													returnText = `${apiPrefix}<@${query.get('user')}>${returnmsg.line1}\n${returnmsg.line2}`;
+													let spoilerTxt = '';
 
 													// Determine if spoiler flag was on
-													if (query.has("s")) {
-														spoilerTxt = "||";
+													if (query.has('s')) {
+														spoilerTxt = '||';
 													}
 
 													// Determine if no details flag was on
-													if (!query.has("snd")) {
-														if (query.has("nd")) {
-															returnText += "\nDetails suppressed by nd query.";
+													if (!query.has('snd')) {
+														if (query.has('nd')) {
+															returnText += '\nDetails suppressed by nd query.';
 														} else {
 															returnText += `\nDetails:\n${spoilerTxt}${returnmsg.line3}${spoilerTxt}`;
 														}
@@ -288,70 +294,74 @@ const start = async (): Promise<void> => {
 												}
 
 												// If the roll was a GM roll, send DMs to all the GMs
-												if (query.has("gms")) {
+												if (query.has('gms')) {
 													// Get all the GM user IDs from the query
-													const gms = (query.get("gms") || "").split(",");
+													const gms = (query.get('gms') || '').split(',');
 													if (gms.length === 0) {
 														// Alert API user that they messed up
 														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 
 														// Always log API rolls for abuse detection
-														dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, "NoGMsSent", null]).catch(e => {
+														dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'NoGMsSent', null]).catch((e) => {
 															log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														});
 														break;
 													}
 
 													// Make a new return line to be sent to the roller
-													let normalText = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\nResults have been messaged to the following GMs: `;
-													gms.forEach(e => {
+													let normalText = `${apiPrefix}<@${query.get('user')}>${returnmsg.line1}\nResults have been messaged to the following GMs: `;
+													gms.forEach((e) => {
 														log(LT.LOG, `Appending GM ${e} to roll text`);
 														normalText += `<@${e}> `;
 													});
 
 													// Send the return message as a DM or normal message depening on if the channel is set
-													if ((query.get("channel") || "").length > 0) {
+													if ((query.get('channel') || '').length > 0) {
 														// todo: embedify
-														m = await sendMessage(BigInt(query.get("channel") || ""), normalText).catch(() => {
-															requestEvent.respondWith(new Response("Message 00 failed to send.", { status: Status.InternalServerError }));
+														m = await sendMessage(BigInt(query.get('channel') || ''), normalText).catch(() => {
+															requestEvent.respondWith(new Response('Message 00 failed to send.', { status: Status.InternalServerError }));
 															errorOut = true;
 														});
 													} else {
 														// todo: embedify
-														m = await sendDirectMessage(BigInt(query.get("user") || ""), normalText).catch(() => {
-															requestEvent.respondWith(new Response("Message 01 failed to send.", { status: Status.InternalServerError }));
+														m = await sendDirectMessage(BigInt(query.get('user') || ''), normalText).catch(() => {
+															requestEvent.respondWith(new Response('Message 01 failed to send.', { status: Status.InternalServerError }));
 															errorOut = true;
 														});
 													}
 
 													const newMessage: CreateMessage = {};
 													// If its too big, collapse it into a .txt file and send that instead.
-													const b = await new Blob([returnText as BlobPart], { "type": "text" });
+													const b = await new Blob([returnText as BlobPart], { 'type': 'text' });
 
 													if (b.size > 8388290) {
 														// Update return text
-														newMessage.content = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
+														newMessage.content = `${apiPrefix}<@${
+															query.get('user')
+														}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
 													} else {
 														// Update return text
-														newMessage.content = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
-														newMessage.file = { "blob": b, "name": "rollDetails.txt" };
+														newMessage.content = `${apiPrefix}<@${
+															query.get('user')
+														}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
+														newMessage.file = { 'blob': b, 'name': 'rollDetails.txt' };
 													}
 
 													// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
-													gms.forEach(async e => {
+													gms.forEach(async (e) => {
 														log(LT.LOG, `Messaging GM ${e} roll results`);
 														// Attempt to DM the GMs and send a warning if it could not DM a GM
 														await sendDirectMessage(BigInt(e), newMessage).catch(async () => {
 															const failedSend = generateDMFailed(e);
 															// Send the return message as a DM or normal message depening on if the channel is set
-															if ((query.get("channel") || "").length > 0) {
-																m = await sendMessage(BigInt(query.get("channel") || ""), failedSend).catch(() => {
-																	requestEvent.respondWith(new Response("Message failed to send.", { status: Status.InternalServerError }));
+															if ((query.get('channel') || '').length > 0) {
+																m = await sendMessage(BigInt(query.get('channel') || ''), failedSend).catch(() => {
+																	requestEvent.respondWith(new Response('Message failed to send.', { status: Status.InternalServerError }));
 																	errorOut = true;
 																});
 															} else {
-																m = await sendDirectMessage(BigInt(query.get("user") || ""), failedSend).catch(() => {
-																	requestEvent.respondWith(new Response("Message failed to send.", { status: Status.InternalServerError }));
+																m = await sendDirectMessage(BigInt(query.get('user') || ''), failedSend).catch(() => {
+																	requestEvent.respondWith(new Response('Message failed to send.', { status: Status.InternalServerError }));
 																	errorOut = true;
 																});
 															}
@@ -359,7 +369,7 @@ const start = async (): Promise<void> => {
 													});
 
 													// Always log API rolls for abuse detection
-													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, (typeof m === 'object') ? m.id : null]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 
@@ -378,33 +388,37 @@ const start = async (): Promise<void> => {
 													// When not a GM roll, make sure the message is not too big
 													if (returnText.length > 2000) {
 														// If its too big, collapse it into a .txt file and send that instead.
-														const b = await new Blob([returnText as BlobPart], { "type": "text" });
+														const b = await new Blob([returnText as BlobPart], { 'type': 'text' });
 
 														if (b.size > 8388290) {
 															// Update return text
-															newMessage.content = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
+															newMessage.content = `${apiPrefix}<@${
+																query.get('user')
+															}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
 														} else {
 															// Update return text
-															newMessage.content = `${apiPrefix}<@${query.get("user")}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
-															newMessage.file = { "blob": b, "name": "rollDetails.txt" };
+															newMessage.content = `${apiPrefix}<@${
+																query.get('user')
+															}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
+															newMessage.file = { 'blob': b, 'name': 'rollDetails.txt' };
 														}
 													}
 
 													// Send the return message as a DM or normal message depening on if the channel is set
-													if ((query.get("channel") || "").length > 0) {
-														m = await sendMessage(BigInt(query.get("channel") || ""), newMessage).catch(() => {
-															requestEvent.respondWith(new Response("Message 20 failed to send.", { status: Status.InternalServerError }));
+													if ((query.get('channel') || '').length > 0) {
+														m = await sendMessage(BigInt(query.get('channel') || ''), newMessage).catch(() => {
+															requestEvent.respondWith(new Response('Message 20 failed to send.', { status: Status.InternalServerError }));
 															errorOut = true;
 														});
 													} else {
-														m = await sendDirectMessage(BigInt(query.get("user") || ""), newMessage).catch(() => {
-															requestEvent.respondWith(new Response("Message 21 failed to send.", { status: Status.InternalServerError }));
+														m = await sendDirectMessage(BigInt(query.get('user') || ''), newMessage).catch(() => {
+															requestEvent.respondWith(new Response('Message 21 failed to send.', { status: Status.InternalServerError }));
 															errorOut = true;
 														});
 													}
 
 													// If enabled, log rolls so we can verify the bots math
-													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, ((typeof m === "object") ? m.id : null)]).catch(e => {
+													dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, (typeof m === 'object') ? m.id : null]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													});
 
@@ -436,17 +450,17 @@ const start = async (): Promise<void> => {
 									break;
 							}
 							break;
-						case "POST":
+						case 'POST':
 							switch (path.toLowerCase()) {
-								case "/api/channel/add":
-								case "/api/channel/add/":
-									if ((query.has("user") && ((query.get("user") || "").length > 0)) && (query.has("channel") && ((query.get("channel") || "").length > 0))) {
-										if (apiUserid === BigInt(query.get("user") || "0")) {
+								case '/api/channel/add':
+								case '/api/channel/add/':
+									if ((query.has('user') && ((query.get('user') || '').length > 0)) && (query.has('channel') && ((query.get('channel') || '').length > 0))) {
+										if (apiUserid === BigInt(query.get('user') || '0')) {
 											// Flag to see if there is an error inside the catch
 											let erroredOut = false;
 
 											// Insert new user/channel pair into the db
-											await dbClient.execute("INSERT INTO allowed_channels(userid,channelid) values(?,?)", [apiUserid, BigInt(query.get("channel") || "0")]).catch(e => {
+											await dbClient.execute('INSERT INTO allowed_channels(userid,channelid) values(?,?)', [apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
@@ -475,37 +489,37 @@ const start = async (): Promise<void> => {
 									break;
 							}
 							break;
-						case "PUT":
+						case 'PUT':
 							switch (path.toLowerCase()) {
-								case "/api/key/ban":
-								case "/api/key/ban/":
-								case "/api/key/unban":
-								case "/api/key/unban/":
-								case "/api/key/activate":
-								case "/api/key/activate/":
-								case "/api/key/deactivate":
-								case "/api/key/deactivate/":
-									if ((query.has("a") && ((query.get("a") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
-										if (apiUserid === config.api.admin && apiUserid === BigInt(query.get("a") || "0")) {
+								case '/api/key/ban':
+								case '/api/key/ban/':
+								case '/api/key/unban':
+								case '/api/key/unban/':
+								case '/api/key/activate':
+								case '/api/key/activate/':
+								case '/api/key/deactivate':
+								case '/api/key/deactivate/':
+									if ((query.has('a') && ((query.get('a') || '').length > 0)) && (query.has('user') && ((query.get('user') || '').length > 0))) {
+										if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
 											// Flag to see if there is an error inside the catch
 											let key, value, erroredOut = false;
 
 											// Determine key to edit
-											if (path.toLowerCase().indexOf("ban") > 0) {
-												key = "banned";
+											if (path.toLowerCase().indexOf('ban') > 0) {
+												key = 'banned';
 											} else {
-												key = "active";
+												key = 'active';
 											}
 
 											// Determine value to set
-											if (path.toLowerCase().indexOf("de") > 0 || path.toLowerCase().indexOf("un") > 0) {
+											if (path.toLowerCase().indexOf('de') > 0 || path.toLowerCase().indexOf('un') > 0) {
 												value = 0;
 											} else {
 												value = 1;
 											}
 
 											// Execute the DB modification
-											await dbClient.execute("UPDATE all_keys SET ?? = ? WHERE userid = ?", [key, value, apiUserid]).catch(e => {
+											await dbClient.execute('UPDATE all_keys SET ?? = ? WHERE userid = ?', [key, value, apiUserid]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
@@ -528,24 +542,27 @@ const start = async (): Promise<void> => {
 										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 									}
 									break;
-								case "/api/channel/ban":
-								case "/api/channel/ban/":
-								case "/api/channel/unban":
-								case "/api/channel/unban/":
-									if ((query.has("a") && ((query.get("a") || "").length > 0)) && (query.has("channel") && ((query.get("channel") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
-										if (apiUserid === config.api.admin && apiUserid === BigInt(query.get("a") || "0")) {
+								case '/api/channel/ban':
+								case '/api/channel/ban/':
+								case '/api/channel/unban':
+								case '/api/channel/unban/':
+									if (
+										(query.has('a') && ((query.get('a') || '').length > 0)) && (query.has('channel') && ((query.get('channel') || '').length > 0)) &&
+										(query.has('user') && ((query.get('user') || '').length > 0))
+									) {
+										if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
 											// Flag to see if there is an error inside the catch
 											let value, erroredOut = false;
 
 											// Determine value to set
-											if (path.toLowerCase().indexOf("un") > 0) {
+											if (path.toLowerCase().indexOf('un') > 0) {
 												value = 0;
 											} else {
 												value = 1;
 											}
 
 											// Execute the DB modification
-											await dbClient.execute("UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel") || "0")]).catch(e => {
+											await dbClient.execute('UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
@@ -568,24 +585,24 @@ const start = async (): Promise<void> => {
 										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 									}
 									break;
-								case "/api/channel/activate":
-								case "/api/channel/activate/":
-								case "/api/channel/deactivate":
-								case "/api/channel/deactivate/":
-									if ((query.has("channel") && ((query.get("channel") || "").length > 0)) && (query.has("user") && ((query.get("user") || "").length > 0))) {
-										if (apiUserid === BigInt(query.get("user") || "0")) {
+								case '/api/channel/activate':
+								case '/api/channel/activate/':
+								case '/api/channel/deactivate':
+								case '/api/channel/deactivate/':
+									if ((query.has('channel') && ((query.get('channel') || '').length > 0)) && (query.has('user') && ((query.get('user') || '').length > 0))) {
+										if (apiUserid === BigInt(query.get('user') || '0')) {
 											// Flag to see if there is an error inside the catch
 											let value, erroredOut = false;
 
 											// Determine value to set
-											if (path.toLowerCase().indexOf("de") > 0) {
+											if (path.toLowerCase().indexOf('de') > 0) {
 												value = 0;
 											} else {
 												value = 1;
 											}
 
 											// Update the requested entry
-											await dbClient.execute("UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?", [value, apiUserid, BigInt(query.get("channel") || "0")]).catch(e => {
+											await dbClient.execute('UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 												erroredOut = true;
@@ -601,7 +618,7 @@ const start = async (): Promise<void> => {
 											}
 										} else {
 											// Alert API user that they shouldn't be doing this
-											requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden  }));
+											requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
 										}
 									} else {
 										// Alert API user that they messed up
@@ -614,18 +631,18 @@ const start = async (): Promise<void> => {
 									break;
 							}
 							break;
-						case "DELETE":
+						case 'DELETE':
 							switch (path.toLowerCase()) {
-								case "/api/key/delete":
-								case "/api/key/delete/":
-									if (query.has("user") && ((query.get("user") || "").length > 0) && query.has("email") && ((query.get("email") || "").length > 0)) {
-										if (apiUserid === BigInt(query.get("user") || "0") && apiUserEmail === query.get("email")) {
-											if (query.has("code") && ((query.get("code") || "").length > 0)) {
-												if ((query.get("code") || "") === apiUserDelCode) {
+								case '/api/key/delete':
+								case '/api/key/delete/':
+									if (query.has('user') && ((query.get('user') || '').length > 0) && query.has('email') && ((query.get('email') || '').length > 0)) {
+										if (apiUserid === BigInt(query.get('user') || '0') && apiUserEmail === query.get('email')) {
+											if (query.has('code') && ((query.get('code') || '').length > 0)) {
+												if ((query.get('code') || '') === apiUserDelCode) {
 													// User has recieved their delete code and we need to delete the account now
 													let erroredOut = false;
 
-													await dbClient.execute("DELETE FROM allowed_channels WHERE userid = ?", [apiUserid]).catch(e => {
+													await dbClient.execute('DELETE FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 														erroredOut = true;
@@ -634,7 +651,7 @@ const start = async (): Promise<void> => {
 														break;
 													}
 
-													await dbClient.execute("DELETE FROM all_keys WHERE userid = ?", [apiUserid]).catch(e => {
+													await dbClient.execute('DELETE FROM all_keys WHERE userid = ?', [apiUserid]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 														erroredOut = true;
@@ -657,7 +674,7 @@ const start = async (): Promise<void> => {
 												let erroredOut = false;
 
 												// Execute the DB modification
-												await dbClient.execute("UPDATE all_keys SET deleteCode = ? WHERE userid = ?", [deleteCode, apiUserid]).catch(e => {
+												await dbClient.execute('UPDATE all_keys SET deleteCode = ? WHERE userid = ?', [deleteCode, apiUserid]).catch((e) => {
 													log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
 													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
 													erroredOut = true;
@@ -668,7 +685,7 @@ const start = async (): Promise<void> => {
 
 												// "Send" the email
 												await sendMessage(config.api.email, generateApiDeleteEmail(apiUserEmail, deleteCode)).catch(() => {
-													requestEvent.respondWith(new Response("Message 30 failed to send.", { status: Status.InternalServerError }));
+													requestEvent.respondWith(new Response('Message 30 failed to send.', { status: Status.InternalServerError }));
 													erroredOut = true;
 												});
 												if (erroredOut) {
@@ -685,7 +702,7 @@ const start = async (): Promise<void> => {
 										}
 									} else {
 										// Alert API user that they messed up
-										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest  }));
+										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
 									}
 									break;
 								default:
@@ -706,25 +723,25 @@ const start = async (): Promise<void> => {
 					}
 				} else if (!authenticated && !rateLimited) {
 					// Get path and query as a string
-					const [path, tempQ] = request.url.split("?");
+					const [path, tempQ] = request.url.split('?');
 
 					// Turn the query into a map (if it exists)
 					const query = new Map<string, string>();
 					if (tempQ !== undefined) {
-						tempQ.split("&").forEach((e: string) => {
+						tempQ.split('&').forEach((e: string) => {
 							log(LT.LOG, `Parsing request query #2 ${request} ${e}`);
-							const [option, params] = e.split("=");
+							const [option, params] = e.split('=');
 							query.set(option.toLowerCase(), params);
 						});
 					}
 
 					// Handle the request
 					switch (request.method) {
-						case "GET":
+						case 'GET':
 							switch (path.toLowerCase()) {
-								case "/api/key":
-								case "/api/key/":
-									if ((query.has("user") && ((query.get("user") || "").length > 0)) && (query.has("email") && ((query.get("email") || "").length > 0))) {
+								case '/api/key':
+								case '/api/key/':
+									if ((query.has('user') && ((query.get('user') || '').length > 0)) && (query.has('email') && ((query.get('email') || '').length > 0))) {
 										// Generate new secure key
 										const newKey = await nanoid(25);
 
@@ -732,20 +749,22 @@ const start = async (): Promise<void> => {
 										let erroredOut = false;
 
 										// Insert new key/user pair into the db
-										await dbClient.execute("INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)", [BigInt(query.get("user") || "0"), newKey, (query.get("email") || "").toLowerCase()]).catch(e => {
-											log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-											requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
-											erroredOut = true;
-										});
+										await dbClient.execute('INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)', [BigInt(query.get('user') || '0'), newKey, (query.get('email') || '').toLowerCase()]).catch(
+											(e) => {
+												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												erroredOut = true;
+											},
+										);
 
 										// Exit this case now if catch errored
 										if (erroredOut) {
 											break;
 										}
-										
+
 										// "Send" the email
-										await sendMessage(config.api.email, generateApiKeyEmail(query.get("email") || "no email", newKey)).catch(() => {
-											requestEvent.respondWith(new Response("Message 31 failed to send.", { status: Status.InternalServerError }));
+										await sendMessage(config.api.email, generateApiKeyEmail(query.get('email') || 'no email', newKey)).catch(() => {
+											requestEvent.respondWith(new Response('Message 31 failed to send.', { status: Status.InternalServerError }));
 											erroredOut = true;
 										});
 

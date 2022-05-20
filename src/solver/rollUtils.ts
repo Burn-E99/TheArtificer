@@ -1,9 +1,10 @@
 import {
+	log,
 	// Log4Deno deps
-	LT, log
-} from "../../deps.ts";
+	LT,
+} from '../../deps.ts';
 
-import { RollSet, ReturnData } from "./solver.d.ts";
+import { ReturnData, RollSet } from './solver.d.ts';
 
 // MAXLOOPS determines how long the bot will attempt a roll
 // Default is 5000000 (5 million), which results in at most a 10 second delay before the bot calls the roll infinite or too complex
@@ -60,7 +61,7 @@ export const escapeCharacters = (str: string, esc: string): string => {
 	for (let i = 0; i < esc.length; i++) {
 		log(LT.LOG, `Escaping character ${esc[i]} | ${str}, ${esc}`);
 		// Create a new regex to look for that char that needs replaced and escape it
-		const temprgx = new RegExp(`[${esc[i]}]`, "g");
+		const temprgx = new RegExp(`[${esc[i]}]`, 'g');
 		str = str.replace(temprgx, `\\${esc[i]}`);
 	}
 	return str;

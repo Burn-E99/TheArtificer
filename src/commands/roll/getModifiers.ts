@@ -1,88 +1,88 @@
-import config from "../../../config.ts";
-import { DEVMODE } from "../../../flags.ts";
-import { dbClient, queries } from "../../db.ts";
+import config from '../../../config.ts';
+import { DEVMODE } from '../../../flags.ts';
+import { dbClient, queries } from '../../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-
+	log,
 	// Log4Deno deps
-	LT, log
-} from "../../../deps.ts";
-import { generateRollError } from "../../constantCmds.ts";
-import { RollModifiers } from "../../mod.d.ts";
+	LT,
+} from '../../../deps.ts';
+import { generateRollError } from '../../constantCmds.ts';
+import { RollModifiers } from '../../mod.d.ts';
 
 export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {
-	const errorType = "Modifiers invalid:";
+	const errorType = 'Modifiers invalid:';
 	const modifiers: RollModifiers = {
 		noDetails: false,
 		superNoDetails: false,
-		spoiler: "",
+		spoiler: '',
 		maxRoll: false,
 		nominalRoll: false,
 		gmRoll: false,
 		gms: [],
-		order: "",
+		order: '',
 		valid: false,
-		count: false
+		count: false,
 	};
 
 	// Check if any of the args are command flags and pull those out into the modifiers object
 	for (let i = 0; i < args.length; i++) {
-		log(LT.LOG, `Checking ${command}${args.join(" ")} for command modifiers ${i}`);
+		log(LT.LOG, `Checking ${command}${args.join(' ')} for command modifiers ${i}`);
 		let defaultCase = false;
 		switch (args[i].toLowerCase()) {
-			case "-c":
+			case '-c':
 				modifiers.count = true;
 				break;
-			case "-nd":
+			case '-nd':
 				modifiers.noDetails = true;
 				break;
-			case "-snd":
+			case '-snd':
 				modifiers.superNoDetails = true;
 				break;
-			case "-s":
-				modifiers.spoiler = "||";
+			case '-s':
+				modifiers.spoiler = '||';
 				break;
-			case "-m":
+			case '-m':
 				modifiers.maxRoll = true;
 				break;
-			case "-n":
+			case '-n':
 				modifiers.nominalRoll = true;
 				break;
-			case "-gm":
+			case '-gm':
 				modifiers.gmRoll = true;
 
 				// -gm is a little more complex, as we must get all of the GMs that need to be DMd
-				while (((i + 1) < args.length) && args[i + 1].startsWith("<@")) {
+				while (((i + 1) < args.length) && args[i + 1].startsWith('<@')) {
 					log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
 					// Keep looping thru the rest of the args until one does not start with the discord mention code
-					modifiers.gms.push(args[i + 1].replace(/[!]/g, ""));
-					args.splice((i + 1), 1);
+					modifiers.gms.push(args[i + 1].replace(/[!]/g, ''));
+					args.splice(i + 1, 1);
 				}
 				if (modifiers.gms.length < 1) {
 					// If -gm is on and none were found, throw an error
-					m.edit(generateRollError(errorType, "Must specifiy at least one GM by @mentioning them"));
+					m.edit(generateRollError(errorType, 'Must specifiy at least one GM by @mentioning them'));
 
 					if (DEVMODE && config.logRolls) {
 						// If enabled, log rolls so we can verify the bots math
-						dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, "NoGMsFound", m.id]).catch(e => {
+						dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, 'NoGMsFound', m.id]).catch((e) => {
 							log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 						});
 					}
 					return modifiers;
 				}
 				break;
-			case "-o":
+			case '-o':
 				// Shift the -o out of the array so the next item is the direction
 				args.splice(i, 1);
-				
-				if (!args[i] || args[i].toLowerCase()[0] !== "d" && args[i].toLowerCase()[0] !== "a") {
+
+				if (!args[i] || args[i].toLowerCase()[0] !== 'd' && args[i].toLowerCase()[0] !== 'a') {
 					// If -o is on and asc or desc was not specified, error out
-					m.edit(generateRollError(errorType, "Must specifiy `a` or `d` to order the rolls ascending or descending"));
+					m.edit(generateRollError(errorType, 'Must specifiy `a` or `d` to order the rolls ascending or descending'));
 
 					if (DEVMODE && config.logRolls) {
 						// If enabled, log rolls so we can verify the bots math
-						dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, "NoOrderFound", m.id]).catch(e => {
+						dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, 'NoOrderFound', m.id]).catch((e) => {
 							log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 						});
 					}
@@ -105,11 +105,11 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
 	// maxRoll and nominalRoll cannot both be on, throw an error
 	if (modifiers.maxRoll && modifiers.nominalRoll) {
-		m.edit(generateRollError(errorType, "Cannot maximise and nominise the roll at the same time"));
+		m.edit(generateRollError(errorType, 'Cannot maximise and nominise the roll at the same time'));
 
 		if (DEVMODE && config.logRolls) {
 			// If enabled, log rolls so we can verify the bots math
-			dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, "MaxAndNominal", m.id]).catch(e => {
+			dbClient.execute(queries.insertRollLogCmd(0, 1), [originalCommand, 'MaxAndNominal', m.id]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 			});
 		}

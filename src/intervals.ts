@@ -6,18 +6,19 @@
 
 import {
 	// Discordeno deps
-	cache, cacheHandlers,
-
+	cache,
+	cacheHandlers,
+	log,
 	// Log4Deno deps
-	LT, log
-} from "../deps.ts";
+	LT,
+} from '../deps.ts';
 
-import config from "../config.ts";
+import config from '../config.ts';
 
 // getRandomStatus() returns status as string
 // Gets a new random status for the bot
 const getRandomStatus = async (): Promise<string> => {
-	let status = "";
+	let status = '';
 	switch (Math.floor((Math.random() * 4) + 1)) {
 		case 1:
 			status = `${config.prefix}help for commands`;
@@ -29,29 +30,29 @@ const getRandomStatus = async (): Promise<string> => {
 			status = `${config.prefix}info to learn more`;
 			break;
 		default: {
-			const cachedCount = await cacheHandlers.size("guilds")
+			const cachedCount = await cacheHandlers.size('guilds');
 			status = `Rolling dice for ${cachedCount + cache.dispatchedGuildIds.size} servers`;
 			break;
 		}
 	}
-	
+
 	return status;
 };
 
 // updateListStatistics(bot ID, current guild count) returns nothing
 // Sends the current server count to all bot list sites we are listed on
 const updateListStatistics = (botID: bigint, serverCount: number): void => {
-	config.botLists.forEach(async e => {
-		log(LT.LOG, `Updating statistics for ${JSON.stringify(e)}`)
+	config.botLists.forEach(async (e) => {
+		log(LT.LOG, `Updating statistics for ${JSON.stringify(e)}`);
 		if (e.enabled) {
 			const tempHeaders = new Headers();
 			tempHeaders.append(e.headers[0].header, e.headers[0].value);
-			tempHeaders.append("Content-Type", "application/json");
+			tempHeaders.append('Content-Type', 'application/json');
 			// ?{} is a template used in config, just need to replace it with the real value
-			const response = await fetch(e.apiUrl.replace("?{bot_id}", botID.toString()), {
-				"method": 'POST',
-				"headers": tempHeaders,
-				"body": JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()) // ?{server_count} needs the "" removed from around it aswell to make sure its sent as a number
+			const response = await fetch(e.apiUrl.replace('?{bot_id}', botID.toString()), {
+				'method': 'POST',
+				'headers': tempHeaders,
+				'body': JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()), // ?{server_count} needs the "" removed from around it aswell to make sure its sent as a number
 			});
 			log(LT.INFO, `Posted server count to ${e.name}.  Results: ${JSON.stringify(response)}`);
 		}

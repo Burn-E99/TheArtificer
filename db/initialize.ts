@@ -1,25 +1,25 @@
 // This file will create all tables for the artificer schema
 // DATA WILL BE LOST IF DB ALREADY EXISTS, RUN AT OWN RISK
 
-import config from "../config.ts";
-import { dbClient } from "../src/db.ts";
+import config from '../config.ts';
+import { dbClient } from '../src/db.ts';
 
-console.log("Attempting to create DB");
+console.log('Attempting to create DB');
 await dbClient.execute(`CREATE SCHEMA IF NOT EXISTS ${config.db.name};`);
 await dbClient.execute(`USE ${config.db.name}`);
-console.log("DB created");
+console.log('DB created');
 
-console.log("Attempt to drop all tables");
+console.log('Attempt to drop all tables');
 await dbClient.execute(`DROP TABLE IF EXISTS allowed_channels;`);
 await dbClient.execute(`DROP TABLE IF EXISTS all_keys;`);
 await dbClient.execute(`DROP TABLE IF EXISTS allowed_guilds;`);
 await dbClient.execute(`DROP TABLE IF EXISTS roll_log;`);
 await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_CNT;`);
 await dbClient.execute(`DROP TABLE IF EXISTS command_cnt;`);
-console.log("Tables dropped");
+console.log('Tables dropped');
 
 // Light telemetry on how many commands have been run
-console.log("Attempting to create table command_cnt");
+console.log('Attempting to create table command_cnt');
 await dbClient.execute(`
 	CREATE TABLE command_cnt (
 		command char(20) NOT NULL,
@@ -28,9 +28,9 @@ await dbClient.execute(`
 		UNIQUE KEY command_cnt_command_UNIQUE (command)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
-console.log("Table created");
+console.log('Table created');
 
-console.log("Attempt creating increment Stored Procedure");
+console.log('Attempt creating increment Stored Procedure');
 await dbClient.execute(`
 	CREATE PROCEDURE INC_CNT(
 		IN cmd CHAR(20)
@@ -41,10 +41,10 @@ await dbClient.execute(`
 		UPDATE command_cnt SET count = oldcnt + 1 WHERE command = cmd;
 	END
 `);
-console.log("Stored Procedure created");
+console.log('Stored Procedure created');
 
 // Roll log, holds rolls when requests
-console.log("Attempting to create table roll_log");
+console.log('Attempting to create table roll_log');
 await dbClient.execute(`
 	CREATE TABLE roll_log (
 		id int unsigned NOT NULL AUTO_INCREMENT,
@@ -59,10 +59,10 @@ await dbClient.execute(`
 		UNIQUE KEY roll_log_resultid_UNIQUE (resultid)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
-console.log("Table created");
+console.log('Table created');
 
 // Api guild settings
-console.log("Attempting to create table allowed_guilds");
+console.log('Attempting to create table allowed_guilds');
 await dbClient.execute(`
 	CREATE TABLE allowed_guilds (
 		guildid bigint unsigned NOT NULL,
@@ -74,10 +74,10 @@ await dbClient.execute(`
 		PRIMARY KEY (guildid, channelid)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
-console.log("Table created");
+console.log('Table created');
 
 // Api keys
-console.log("Attempting to create table all_keys");
+console.log('Attempting to create table all_keys');
 await dbClient.execute(`
 	CREATE TABLE all_keys (
 		userid bigint unsigned NOT NULL,
@@ -93,10 +93,10 @@ await dbClient.execute(`
 		UNIQUE KEY all_keys_email_UNIQUE (email)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
-console.log("Table created");
+console.log('Table created');
 
 // Api user settings
-console.log("Attempting to create table allowed_channels");
+console.log('Attempting to create table allowed_channels');
 await dbClient.execute(`
 	CREATE TABLE allowed_channels (
 		userid bigint unsigned NOT NULL,
@@ -108,7 +108,7 @@ await dbClient.execute(`
 		CONSTRAINT allowed_channels_userid_FK FOREIGN KEY (userid) REFERENCES all_keys (userid) ON DELETE RESTRICT ON UPDATE RESTRICT
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
-console.log("Table created");
+console.log('Table created');
 
 await dbClient.close();
-console.log("Done!");
+console.log('Done!');

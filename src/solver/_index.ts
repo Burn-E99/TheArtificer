@@ -1,5 +1,5 @@
-import { parseRoll } from "./parser.ts";
+import { parseRoll } from './parser.ts';
 
 export default {
-	parseRoll
+	parseRoll,
 };
