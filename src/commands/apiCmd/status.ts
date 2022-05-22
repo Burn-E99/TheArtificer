@@ -10,13 +10,15 @@ import { constantCmds, generateApiStatus } from '../../constantCmds.ts';
 
 export const status = async (message: DiscordenoMessage) => {
 	// Get status of guild from the db
+	let errorOut = false;
 	const guildQuery = await dbClient.query(`SELECT active, banned FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch((e0) => {
 		log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
 		message.send(constantCmds.apiStatusFail).catch((e1) => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 		});
-		return;
+		errorOut = true;
 	});
+	if (errorOut) return;
 
 	// Check if we got an item back or not
 	if (guildQuery.length > 0) {
