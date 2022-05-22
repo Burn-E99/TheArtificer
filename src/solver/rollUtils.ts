@@ -62,7 +62,7 @@ export const compareOrigidx = (a: RollSet, b: RollSet): number => {
 // escapeCharacters escapes all characters listed in esc
 export const escapeCharacters = (str: string, esc: string): string => {
 	// Loop thru each esc char one at a time
-	for (const e of  esc) {
+	for (const e of esc) {
 		log(LT.LOG, `Escaping character ${e} | ${str}, ${esc}`);
 		// Create a new regex to look for that char that needs replaced and escape it
 		const temprgx = new RegExp(`[${e}]`, 'g');

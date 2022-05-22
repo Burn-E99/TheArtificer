@@ -124,54 +124,83 @@ startBot({
 
 			// All commands below here
 
-			// [[ping
-			// Its a ping test, what else do you want.
-			if (command === 'ping') {
-				commands.ping(message);
-			} // [[rip [[memory
-			// Displays a short message I wanted to include
-			else if (command === 'rip' || command === 'memory') {
-				commands.rip(message);
-			} // [[rollhelp or [[rh or [[hr or [[??
-			// Help command specifically for the roll command
-			else if (command === 'rollhelp' || command === 'rh' || command === 'hr' || command === '??' || command?.startsWith('xdy')) {
-				commands.rollHelp(message);
-			} // [[help or [[h or [[?
-			// Help command, prints from help file
-			else if (command === 'help' || command === 'h' || command === '?') {
-				commands.help(message);
-			} // [[info or [[i
-			// Info command, prints short desc on bot and some links
-			else if (command === 'info' || command === 'i') {
-				commands.info(message);
-			} // [[privacy
-			// Privacy command, prints short desc on bot's privacy policy
-			else if (command === 'privacy') {
-				commands.privacy(message);
-			} // [[version or [[v
-			// Returns version of the bot
-			else if (command === 'version' || command === 'v') {
-				commands.version(message);
-			} // [[report or [[r (command that failed)
-			// Manually report a failed roll
-			else if (command === 'report' || command === 'r') {
-				commands.report(message, args);
-			} // [[stats or [[s
-			// Displays stats on the bot
-			else if (command === 'stats' || command === 's') {
-				commands.stats(message);
-			} // [[api arg
-			// API sub commands
-			else if (command === 'api') {
-				commands.api(message, args);
-			} // [[roll]]
-			// Dice rolling commence!
-			else if (command && (`${command}${args.join('')}`).indexOf(config.postfix) > -1) {
-				commands.roll(message, args, command);
-			} // [[emoji or [[emojialias
-			// Check if the unhandled command is an emoji request
-			else if (command) {
-				commands.emoji(message, command);
+			switch (command) {
+				case 'ping':
+					// [[ping
+					// Its a ping test, what else do you want.
+					commands.ping(message);
+					break;
+				case 'rip':
+				case 'memory':
+					// [[rip [[memory
+					// Displays a short message I wanted to include
+					commands.rip(message);
+					break;
+				case 'rollhelp':
+				case 'rh':
+				case 'hr':
+				case '??':
+					// [[rollhelp or [[rh or [[hr or [[??
+					// Help command specifically for the roll command
+					commands.rollHelp(message);
+					break;
+				case 'help':
+				case 'h':
+				case '?':
+					// [[help or [[h or [[?
+					// Help command, prints from help file
+					commands.help(message);
+					break;
+				case 'info':
+				case 'i':
+					// [[info or [[i
+					// Info command, prints short desc on bot and some links
+					commands.info(message);
+					break;
+				case 'privacy':
+					// [[privacy
+					// Privacy command, prints short desc on bot's privacy policy
+					commands.privacy(message);
+					break;
+				case 'version':
+				case 'v':
+					// [[version or [[v
+					// Returns version of the bot
+					commands.version(message);
+					break;
+				case 'report':
+				case 'r':
+					// [[report or [[r (command that failed)
+					// Manually report a failed roll
+					commands.report(message, args);
+					break;
+				case 'stats':
+				case 's':
+					// [[stats or [[s
+					// Displays stats on the bot
+					commands.stats(message);
+					break;
+				case 'api':
+					// [[api arg
+					// API sub commands
+					commands.api(message, args);
+					break;
+				default:
+					// Non-standard commands
+					if (command?.startsWith('xdy')) {
+						// [[xdydz (aka someone copy pasted the template as a roll)
+						// Help command specifically for the roll command
+						commands.rollHelp(message);
+					} else if (command && (`${command}${args.join('')}`).indexOf(config.postfix) > -1) {
+						// [[roll]]
+						// Dice rolling commence!
+						commands.roll(message, args, command);
+					} else if (command) {
+						// [[emoji or [[emojialias
+						// Check if the unhandled command is an emoji request
+						commands.emoji(message, command);
+					}
+					break;
 			}
 		},
 	},

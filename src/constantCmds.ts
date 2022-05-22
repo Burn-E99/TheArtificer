@@ -537,7 +537,7 @@ export const generateApiStatus = (banned: boolean, active: boolean) => {
 			color: infoColor1,
 			title: `The Artificer's API is ${config.api.enable ? 'currently enabled' : 'currently disabled'}.`,
 			description: banned ? 'API rolls are banned from being used in this guild.\n\nThis will not be reversed.' : `API rolls are ${apiStatus} in this guild.`,
-		}]
+		}],
 	};
 };
 
