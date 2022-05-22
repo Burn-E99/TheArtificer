@@ -100,7 +100,7 @@ startBot({
 				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
 			});
 		},
-		debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : () => {},
+		debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
 		messageCreate: (message: DiscordenoMessage) => {
 			// Ignore all other bots
 			if (message.isBot) return;

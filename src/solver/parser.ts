@@ -32,10 +32,10 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 		const tempReturnData: ReturnData[] = [];
 
 		// Loop thru all roll/math ops
-		for (let i = 0; i < sepRolls.length; i++) {
-			log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRolls[i]}`);
+		for (const sepRoll of sepRolls) {
+			log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRoll}`);
 			// Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the opertaion
-			const [tempConf, tempFormat] = sepRolls[i].split(config.postfix);
+			const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
 			// Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
 			const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);

@@ -13,9 +13,13 @@ export const MAXLOOPS = 5000000;
 
 // genRoll(size) returns number
 // genRoll rolls a die of size size and returns the result
-export const genRoll = (size: number): number => {
-	// Math.random * size will return a decimal number between 0 and size (excluding size), so add 1 and floor the result to not get 0 as a result
-	return Math.floor((Math.random() * size) + 1);
+export const genRoll = (size: number, maximiseRoll: boolean, nominalRoll: boolean): number => {
+	if (maximiseRoll) {
+		return size;
+	} else {
+		// Math.random * size will return a decimal number between 0 and size (excluding size), so add 1 and floor the result to not get 0 as a result
+		return nominalRoll ? ((size / 2) + 0.5) : Math.floor((Math.random() * size) + 1);
+	}
 };
 
 // compareRolls(a, b) returns -1|0|1
@@ -58,11 +62,11 @@ export const compareOrigidx = (a: RollSet, b: RollSet): number => {
 // escapeCharacters escapes all characters listed in esc
 export const escapeCharacters = (str: string, esc: string): string => {
 	// Loop thru each esc char one at a time
-	for (let i = 0; i < esc.length; i++) {
-		log(LT.LOG, `Escaping character ${esc[i]} | ${str}, ${esc}`);
+	for (const e of  esc) {
+		log(LT.LOG, `Escaping character ${e} | ${str}, ${esc}`);
 		// Create a new regex to look for that char that needs replaced and escape it
-		const temprgx = new RegExp(`[${esc[i]}]`, 'g');
-		str = str.replace(temprgx, `\\${esc[i]}`);
+		const temprgx = new RegExp(`[${e}]`, 'g');
+		str = str.replace(temprgx, `\\${e}`);
 	}
 	return str;
 };

@@ -530,13 +530,16 @@ export const generateApiFailed = (args: string) => ({
 	}],
 });
 
-export const generateApiStatus = (banned: boolean, active: boolean) => ({
-	embeds: [{
-		color: infoColor1,
-		title: `The Artificer's API is ${config.api.enable ? 'currently enabled' : 'currently disabled'}.`,
-		description: banned ? 'API rolls are banned from being used in this guild.\n\nThis will not be reversed.' : `API rolls are ${active ? 'allowed' : 'blocked from being used'} in this guild.`,
-	}],
-});
+export const generateApiStatus = (banned: boolean, active: boolean) => {
+	const apiStatus = active ? 'allowed' : 'blocked from being used';
+	return {
+		embeds: [{
+			color: infoColor1,
+			title: `The Artificer's API is ${config.api.enable ? 'currently enabled' : 'currently disabled'}.`,
+			description: banned ? 'API rolls are banned from being used in this guild.\n\nThis will not be reversed.' : `API rolls are ${apiStatus} in this guild.`,
+		}]
+	};
+};
 
 export const generateApiSuccess = (args: string) => ({
 	embeds: [{

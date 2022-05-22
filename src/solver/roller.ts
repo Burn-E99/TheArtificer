@@ -349,7 +349,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		// Copy the template to fill out for this iteration
 		const rolling = JSON.parse(JSON.stringify(templateRoll));
 		// If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-		rolling.roll = maximiseRoll ? rollConf.dieSize : (nominalRoll ? ((rollConf.dieSize / 2) + 0.5) : genRoll(rollConf.dieSize));
+		rolling.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
 		// Set origidx of roll
 		rolling.origidx = i;
 
@@ -388,7 +388,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				// Copy the template to fill out for this iteration
 				const newRoll = JSON.parse(JSON.stringify(templateRoll));
 				// If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-				newRoll.roll = maximiseRoll ? rollConf.dieSize : (nominalRoll ? ((rollConf.dieSize / 2) + 0.5) : genRoll(rollConf.dieSize));
+				newRoll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
 
 				// If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
 				if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newRoll.roll) >= 0) {
@@ -415,7 +415,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				// Copy the template to fill out for this iteration
 				const newRoll = JSON.parse(JSON.stringify(templateRoll));
 				// If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-				newRoll.roll = maximiseRoll ? rollConf.dieSize : (nominalRoll ? ((rollConf.dieSize / 2) + 0.5) : genRoll(rollConf.dieSize));
+				newRoll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
 				// Always mark this roll as exploding
 				newRoll.exploding = true;
 

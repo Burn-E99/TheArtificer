@@ -11,7 +11,7 @@ var deleteField = document.getElementById("delete-field");
 var submitField = document.getElementById("submit-field");
 
 var endpoint = "none";
-var status = "activate";
+var apiStatus = "activate";
 
 // Checks if all fields needed for the selected endpoint are valid
 function validateFields() {
@@ -111,7 +111,7 @@ function showFields() {
 
 // Sets the status for channel activation/deactivation
 function setStatus() {
-	status = this.value;
+	apiStatus = this.value;
 }
 
 // Sends the request
@@ -141,7 +141,7 @@ function sendPayload() {
 			break;
 		case "activate":
 			method = "PUT";
-			path += "channel/" + status + "?user=" + userField.value + "&channel=" + channelField.value;
+			path += "channel/" + apiStatus + "?user=" + userField.value + "&channel=" + channelField.value;
 			break;
 		default:
 			return;
