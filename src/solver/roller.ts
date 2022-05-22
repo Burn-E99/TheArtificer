@@ -386,25 +386,25 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				rollSet[i].rerolled = true;
 
 				// Copy the template to fill out for this iteration
-				const newRoll = JSON.parse(JSON.stringify(templateRoll));
+				const newReroll = JSON.parse(JSON.stringify(templateRoll));
 				// If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-				newRoll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
+				newReroll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
 
 				// If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-				if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newRoll.roll) >= 0) {
-					newRoll.critHit = true;
+				if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newReroll.roll) >= 0) {
+					newReroll.critHit = true;
 				} else if (!rollConf.critScore.on) {
-					newRoll.critHit = newRoll.roll === rollConf.dieSize;
+					newReroll.critHit = newReroll.roll === rollConf.dieSize;
 				}
 				// If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-				if (rollConf.critFail.on && rollConf.critFail.range.indexOf(newRoll.roll) >= 0) {
-					newRoll.critFail = true;
+				if (rollConf.critFail.on && rollConf.critFail.range.indexOf(newReroll.roll) >= 0) {
+					newReroll.critFail = true;
 				} else if (!rollConf.critFail.on) {
-					newRoll.critFail = newRoll.roll === 1;
+					newReroll.critFail = newReroll.roll === 1;
 				}
 
 				// Slot this new roll in after the current iteration so it can be processed in the next loop
-				rollSet.splice(i + 1, 0, newRoll);
+				rollSet.splice(i + 1, 0, newReroll);
 			} else if (
 				rollConf.exploding.on && !rollSet[i].rerolled && (rollConf.exploding.nums.length ? rollConf.exploding.nums.indexOf(rollSet[i].roll) >= 0 : rollSet[i].critHit) &&
 				(!rollConf.exploding.once || !rollSet[i].exploding)
@@ -413,27 +413,27 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				// If it exploded, we keep both, so no flags need to be set
 
 				// Copy the template to fill out for this iteration
-				const newRoll = JSON.parse(JSON.stringify(templateRoll));
+				const newExplodingRoll = JSON.parse(JSON.stringify(templateRoll));
 				// If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-				newRoll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
+				newExplodingRoll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
 				// Always mark this roll as exploding
-				newRoll.exploding = true;
+				newExplodingRoll.exploding = true;
 
 				// If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-				if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newRoll.roll) >= 0) {
-					newRoll.critHit = true;
+				if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newExplodingRoll.roll) >= 0) {
+					newExplodingRoll.critHit = true;
 				} else if (!rollConf.critScore.on) {
-					newRoll.critHit = newRoll.roll === rollConf.dieSize;
+					newExplodingRoll.critHit = newExplodingRoll.roll === rollConf.dieSize;
 				}
 				// If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-				if (rollConf.critFail.on && rollConf.critFail.range.indexOf(newRoll.roll) >= 0) {
-					newRoll.critFail = true;
+				if (rollConf.critFail.on && rollConf.critFail.range.indexOf(newExplodingRoll.roll) >= 0) {
+					newExplodingRoll.critFail = true;
 				} else if (!rollConf.critFail.on) {
-					newRoll.critFail = newRoll.roll === 1;
+					newExplodingRoll.critFail = newExplodingRoll.roll === 1;
 				}
 
 				// Slot this new roll in after the current iteration so it can be processed in the next loop
-				rollSet.splice(i + 1, 0, newRoll);
+				rollSet.splice(i + 1, 0, newExplodingRoll);
 			}
 
 			loopCount++;

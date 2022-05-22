@@ -60,6 +60,14 @@ function validateFields() {
 	submitField.disabled = false;
 }
 
+function setFieldClasses(showApi, showChannel, showActive, showEmail, showDelete) {
+	document.getElementById("api-field-group").className = showApi ? "field-group" : "hidden";
+	document.getElementById("channel-field-group").className = showChannel ? "field-group" : "hidden";
+	document.getElementById("active-field-group").className = showActive ? "field-group" : "hidden";
+	document.getElementById("email-field-group").className = showEmail ? "field-group" : "hidden";
+	document.getElementById("delete-field-group").className = showDelete ? "field-group" : "hidden";
+}
+
 // Shows appropriate fields for selected endpoint
 function showFields() {
 	document.getElementById("fields").className = "";
@@ -68,39 +76,19 @@ function showFields() {
 
 	switch (endpoint) {
 		case "generate":
-			document.getElementById("api-field-group").className = "hidden";
-			document.getElementById("channel-field-group").className = "hidden";
-			document.getElementById("active-field-group").className = "hidden";
-			document.getElementById("email-field-group").className = "field-group";
-			document.getElementById("delete-field-group").className = "hidden";
+			setFieldClasses(false, false, false, true, false);
 			break;
 		case "delete":
-			document.getElementById("api-field-group").className = "field-group";
-			document.getElementById("channel-field-group").className = "hidden";
-			document.getElementById("active-field-group").className = "hidden";
-			document.getElementById("email-field-group").className = "field-group";
-			document.getElementById("delete-field-group").className = "field-group";
+			setFieldClasses(true, false, false, true, true);
 			break;
 		case "view":
-			document.getElementById("api-field-group").className = "field-group";
-			document.getElementById("channel-field-group").className = "hidden";
-			document.getElementById("active-field-group").className = "hidden";
-			document.getElementById("email-field-group").className = "hidden";
-			document.getElementById("delete-field-group").className = "hidden";
+			setFieldClasses(true, false, false, false, false);
 			break;
 		case "add":
-			document.getElementById("api-field-group").className = "field-group";
-			document.getElementById("channel-field-group").className = "field-group";
-			document.getElementById("active-field-group").className = "hidden";
-			document.getElementById("email-field-group").className = "hidden";
-			document.getElementById("delete-field-group").className = "hidden";
+			setFieldClasses(true, true, false, false, false);
 			break;
 		case "activate":
-			document.getElementById("api-field-group").className = "field-group";
-			document.getElementById("channel-field-group").className = "field-group";
-			document.getElementById("active-field-group").className = "field-group";
-			document.getElementById("email-field-group").className = "hidden";
-			document.getElementById("delete-field-group").className = "hidden";
+			setFieldClasses(true, true, true, false, false);
 			break;
 		default:
 			break;
