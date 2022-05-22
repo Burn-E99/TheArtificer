@@ -445,16 +445,16 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		// Count how many rerolled dice there are if the reroll flag was on
 		let rerollCount = 0;
 		if (rollConf.reroll.on) {
-			for (let i = 0; i < rollSet.length; i++) {
+			for (let j = 0; j < rollSet.length; j++) {
 				// If loopCount gets too high, stop trying to calculate infinity
 				if (loopCount > MAXLOOPS) {
 					throw new Error('MaxLoopsExceeded');
 				}
 
-				log(LT.LOG, `Handling roll ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[i])}`);
-				rollSet[i].origidx = i;
+				log(LT.LOG, `Handling roll ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[j])}`);
+				rollSet[j].origidx = j;
 
-				if (rollSet[i].rerolled) {
+				if (rollSet[j].rerolled) {
 					rerollCount++;
 				}
 
