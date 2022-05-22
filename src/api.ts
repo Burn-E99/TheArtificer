@@ -120,7 +120,7 @@ const start = async (): Promise<void> => {
 											// Insert new key/user pair into the db
 											await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [apiUserid, newKey]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-0`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
 
@@ -151,7 +151,7 @@ const start = async (): Promise<void> => {
 											// Get all channels userid has authorized
 											const dbAllowedChannelQuery = await dbClient.query('SELECT * FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-1`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
 
@@ -462,7 +462,7 @@ const start = async (): Promise<void> => {
 											// Insert new user/channel pair into the db
 											await dbClient.execute('INSERT INTO allowed_channels(userid,channelid) values(?,?)', [apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-2`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
 
@@ -521,7 +521,7 @@ const start = async (): Promise<void> => {
 											// Execute the DB modification
 											await dbClient.execute('UPDATE all_keys SET ?? = ? WHERE userid = ?', [key, value, apiUserid]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-3`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
 
@@ -564,7 +564,7 @@ const start = async (): Promise<void> => {
 											// Execute the DB modification
 											await dbClient.execute('UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-4`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
 
@@ -604,7 +604,7 @@ const start = async (): Promise<void> => {
 											// Update the requested entry
 											await dbClient.execute('UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-5`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											});
 
@@ -644,7 +644,7 @@ const start = async (): Promise<void> => {
 
 													await dbClient.execute('DELETE FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+														requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-6`, { status: Status.InternalServerError }));
 														erroredOut = true;
 													});
 													if (erroredOut) {
@@ -653,7 +653,7 @@ const start = async (): Promise<void> => {
 
 													await dbClient.execute('DELETE FROM all_keys WHERE userid = ?', [apiUserid]).catch((e) => {
 														log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-														requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+														requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-7`, { status: Status.InternalServerError }));
 														erroredOut = true;
 													});
 													if (erroredOut) {
@@ -676,7 +676,7 @@ const start = async (): Promise<void> => {
 												// Execute the DB modification
 												await dbClient.execute('UPDATE all_keys SET deleteCode = ? WHERE userid = ?', [deleteCode, apiUserid]).catch((e) => {
 													log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-													requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+													requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-8`, { status: Status.InternalServerError }));
 													erroredOut = true;
 												});
 												if (erroredOut) {
@@ -752,7 +752,7 @@ const start = async (): Promise<void> => {
 										await dbClient.execute('INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)', [BigInt(query.get('user') || '0'), newKey, (query.get('email') || '').toLowerCase()]).catch(
 											(e) => {
 												log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-												requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+												requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-9`, { status: Status.InternalServerError }));
 												erroredOut = true;
 											},
 										);
