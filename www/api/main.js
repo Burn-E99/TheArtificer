@@ -13,42 +13,58 @@ var submitField = document.getElementById("submit-field");
 var endpoint = "none";
 var apiStatus = "activate";
 
+function validateUserField() {
+	return !(userField.value > 0 && userField.checkValidity());
+}
+
+function validateEmailField() {
+	return !(emailField.value.length > 0 && emailField.checkValidity());
+}
+
+function validateApiField() {
+	return !(apiField.value.length > 0 && apiField.checkValidity());
+}
+
+function validateChannelField() {
+	return !(channelField.value > 0 && channelField.checkValidity());
+}
+
 // Checks if all fields needed for the selected endpoint are valid
 function validateFields() {
-	if (!(userField.value > 0 && userField.checkValidity())) {
+	if (validateUserField()) {
 		submitField.disabled = true;
 		return;
 	}
 	switch (endpoint) {
 		case "generate":
-			if (!(emailField.value.length > 0 && emailField.checkValidity())) {
+			if (validateEmailField()) {
 				submitField.disabled = true;
 				return;
 			}
 			break;
 		case "delete":
-			if (!(apiField.value.length > 0 && apiField.checkValidity())) {
+			if (validateApiField()) {
 				submitField.disabled = true;
 				return;
 			}
-			if (!(emailField.value.length > 0 && emailField.checkValidity())) {
+			if (validateEmailField()) {
 				submitField.disabled = true;
 				return;
 			}
 			break;
 		case "view":
-			if (!(apiField.value.length > 0 && apiField.checkValidity())) {
+			if (validateApiField()) {
 				submitField.disabled = true;
 				return;
 			}
 			break;
 		case "add":
 		case "activate":
-			if (!(apiField.value.length > 0 && apiField.checkValidity())) {
+			if (validateApiField()) {
 				submitField.disabled = true;
 				return;
 			}
-			if (!(channelField.value > 0 && channelField.checkValidity())) {
+			if (validateChannelField()) {
 				submitField.disabled = true;
 				return;
 			}
