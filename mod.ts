@@ -24,6 +24,7 @@ import {
 	startBot,
 } from './deps.ts';
 import api from './src/api.ts';
+import { dbClient } from './src/db.ts';
 import commands from './src/commands/_index.ts';
 import intervals from './src/intervals.ts';
 import utils from './src/utils.ts';
@@ -98,6 +99,9 @@ startBot({
 			log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
 			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch((e) => {
 				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
+			});
+			dbClient.execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id]).catch((e) => {
+				log(LT.ERROR, `Failed to DELETE guild from DB: ${JSON.stringify(e)}`);
 			});
 		},
 		debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
