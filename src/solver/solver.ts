@@ -101,8 +101,6 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 					containsCrit: false,
 					containsFail: false,
 				};
-				// Flag to prevent infinte loop when dealing with negative numbers (such as [[-1+20]])
-				let shouldDecrement = true;
 
 				// If operand1 is a SolvedStep, populate our subStepSolve with its details and crit/fail flags
 				if (typeof operand1 === 'object') {
@@ -115,10 +113,6 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 					if (operand1) {
 						oper1 = parseFloat(operand1.toString());
 						subStepSolve.details = `${oper1.toString()}\\${conf[i]}`;
-					} else if (conf[i] === '-') {
-						oper1 = 0;
-						subStepSolve.details = `\\${conf[i]}`;
-						shouldDecrement = false;
 					}
 				}
 
@@ -168,16 +162,10 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 					throw new Error('EMDASNotNumber');
 				}
 
-				// Determine if we actually did math or just smashed a - sign onto a number
-				if (shouldDecrement) {
-					// Replace the two operands and their operator with our subStepSolve
-					conf.splice(i - 1, 3, subStepSolve);
-					// Because we are messing around with the array we are iterating thru, we need to back up one idx to make sure every operator gets processed
-					i--;
-				} else {
-					// Replace the one operand and its operator (-) with our subStepSolve
-					conf.splice(i, 2, subStepSolve);
-				}
+				// Replace the two operands and their operator with our subStepSolve
+				conf.splice(i - 1, 3, subStepSolve);
+				// Because we are messing around with the array we are iterating thru, we need to back up one idx to make sure every operator gets processed
+				i--;
 			}
 		}
 	});

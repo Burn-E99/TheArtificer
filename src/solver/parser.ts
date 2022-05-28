@@ -133,6 +133,17 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 						containsFail: false,
 					}]);
 				}
+
+				if (mathConf[i - 1] === '-' && (!mathConf[i - 2] || mathConf[i - 2] === '(')) {
+					if (typeof mathConf[i] === 'number') {
+						mathConf[i] = <number> mathConf[i] * -1;
+					} else {
+						(<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
+						(<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
+					}
+					mathConf.splice(i - 1, 1);
+					i--;
+				}
 			}
 
 			// Now that mathConf is parsed, send it into the solver
