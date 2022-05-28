@@ -8,7 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import apiCommands from './apiCmd/_index.ts';
-import { constantCmds } from '../constantCmds.ts';
+import { failColor } from '../commandUtils.ts';
 
 export const api = async (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
@@ -21,7 +21,12 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 
 	// Alert users who DM the bot that this command is for guilds only
 	if (message.guildId === 0n) {
-		message.send(constantCmds.apiGuildOnly).catch((e) => {
+		message.send({
+			embeds: [{
+				color: failColor,
+				title: 'API commands are only available in guilds.',
+			}],
+		}).catch((e) => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 		});
 		return;
@@ -51,7 +56,13 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 			apiCommands.showHideWarn(message, apiArg);
 		}
 	} else {
-		message.send(constantCmds.apiPermError).catch((e) => {
+		message.send({
+			embeds: [{
+				color: failColor,
+				title: 'API commands are powerful and can only be used by guild Owners and Admins.',
+				description: 'For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).',
+			}],
+		}).catch((e) => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 		});
 	}

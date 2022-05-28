@@ -11,7 +11,7 @@ import {
 } from '../../deps.ts';
 import solver from '../solver/_index.ts';
 import { SolvedRoll } from '../solver/solver.d.ts';
-import { constantCmds, generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from '../constantCmds.ts';
+import { warnColor, infoColor1, generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from '../commandUtils.ts';
 import rollFuncs from './roll/_index.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
@@ -22,7 +22,12 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 	// If DEVMODE is on, only allow this command to be used in the devServer
 	if (DEVMODE && message.guildId !== config.devServer) {
-		message.send(constantCmds.indev).catch((e) => {
+		message.send({
+			embeds: [{
+				color: warnColor,
+				title: 'Command is in development, please try again later.',
+			}],
+		}).catch((e) => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 		});
 		return;
@@ -32,7 +37,12 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 	try {
 		const originalCommand = `${config.prefix}${command} ${args.join(' ')}`;
 
-		const m = await message.reply(constantCmds.rolling);
+		const m = await message.reply({
+			embeds: [{
+				color: infoColor1,
+				title: 'Rolling . . .',
+			}],
+		});
 
 		// Get modifiers from command
 		const modifiers = rollFuncs.getModifiers(m, args, command, originalCommand);

@@ -23,7 +23,7 @@ import {
 import { RollModifiers } from './mod.d.ts';
 import { dbClient, queries } from './db.ts';
 import solver from './solver/_index.ts';
-import { generateApiDeleteEmail, generateApiKeyEmail, generateDMFailed } from './constantCmds.ts';
+import { generateApiDeleteEmail, generateApiKeyEmail, generateDMFailed } from './commandUtils.ts';
 
 import config from '../config.ts';
 

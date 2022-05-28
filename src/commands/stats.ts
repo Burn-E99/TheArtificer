@@ -8,7 +8,7 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../deps.ts';
-import { constantCmds, generateStats } from '../constantCmds.ts';
+import { warnColor, generateStats } from '../commandUtils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -17,7 +17,12 @@ export const stats = async (message: DiscordenoMessage) => {
 	});
 
 	try {
-		const m = await message.send(constantCmds.loadingStats);
+		const m = await message.send({
+			embeds: [{
+				color: warnColor,
+				title: 'Compiling latest statistics . . .',
+			}],
+		});
 
 		// Calculate how many times commands have been run
 		const rollQuery = await dbClient.query(`SELECT count FROM command_cnt WHERE command = "roll";`).catch((e) => {

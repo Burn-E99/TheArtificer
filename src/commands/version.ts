@@ -1,3 +1,4 @@
+import config from '../../config.ts';
 import { dbClient } from '../db.ts';
 import {
 	// Discordeno deps
@@ -6,7 +7,7 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../deps.ts';
-import { constantCmds } from '../constantCmds.ts';
+import { infoColor1 } from '../commandUtils.ts';
 
 export const version = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -14,7 +15,12 @@ export const version = (message: DiscordenoMessage) => {
 		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
 	});
 
-	message.send(constantCmds.version).catch((e) => {
+	message.send({
+		embeds: [{
+			color: infoColor1,
+			title: `My current version is ${config.version}`,
+		}],
+	}).catch((e) => {
 		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
 	});
 };

@@ -6,14 +6,20 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../../deps.ts';
-import { constantCmds, generateApiStatus } from '../../constantCmds.ts';
+import { failColor, generateApiStatus } from '../../commandUtils.ts';
 
 export const status = async (message: DiscordenoMessage) => {
 	// Get status of guild from the db
 	let errorOut = false;
 	const guildQuery = await dbClient.query(`SELECT active, banned FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch((e0) => {
 		log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
-		message.send(constantCmds.apiStatusFail).catch((e1) => {
+		message.send({
+			embeds: [{
+				color: failColor,
+				title: 'Failed to check API rolls status for this guild.',
+				description: 'If this issue persists, please report this to the developers.',
+			}],
+		}).catch((e1) => {
 			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
 		});
 		errorOut = true;

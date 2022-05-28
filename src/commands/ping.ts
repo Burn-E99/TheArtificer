@@ -6,7 +6,7 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../deps.ts';
-import { generatePing } from '../constantCmds.ts';
+import { generatePing } from '../commandUtils.ts';
 
 export const ping = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run

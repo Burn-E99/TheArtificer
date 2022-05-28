@@ -8,7 +8,7 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../../deps.ts';
-import { generateRollError } from '../../constantCmds.ts';
+import { generateRollError } from '../../commandUtils.ts';
 import { RollModifiers } from '../../mod.d.ts';
 
 export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {

@@ -6,7 +6,7 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../../deps.ts';
-import { generateApiFailed, generateApiSuccess } from '../../constantCmds.ts';
+import { generateApiFailed, generateApiSuccess } from '../../commandUtils.ts';
 
 export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => {
 	let errorOutInitial = false;
