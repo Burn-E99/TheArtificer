@@ -29,16 +29,6 @@ export type ReturnData = {
 	initConfig: string;
 };
 
-// SolvedRoll is the complete solved and formatted roll, or the error said roll created
-export type SolvedRoll = {
-	error: boolean;
-	errorMsg: string;
-	errorCode: string;
-	line1: string;
-	line2: string;
-	line3: string;
-};
-
 // CountDetails is the object holding the count data for creating the Count Embed
 export type CountDetails = {
 	total: number;
@@ -47,4 +37,21 @@ export type CountDetails = {
 	rerolled: number;
 	dropped: number;
 	exploded: number;
+};
+
+// RollFormat is the return structure for the rollFormatter
+export type RollFormat = {
+	solvedStep: SolvedStep;
+	countDetails: CountDetails;
+};
+
+// SolvedRoll is the complete solved and formatted roll, or the error said roll created
+export type SolvedRoll = {
+	error: boolean;
+	errorMsg: string;
+	errorCode: string;
+	line1: string;
+	line2: string;
+	line3: string;
+	counts: CountDetails;
 };

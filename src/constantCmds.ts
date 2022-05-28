@@ -1,5 +1,7 @@
 import config from '../config.ts';
-import { CountDetails } from './solver/solver.d.ts';
+import { DiscordenoMessage } from '../deps.ts';
+import { CountDetails, SolvedRoll } from './solver/solver.d.ts';
+import { RollModifiers } from './mod.d.ts';
 
 const failColor = 0xe71212;
 const warnColor = 0xe38f28;
@@ -625,41 +627,144 @@ export const generateRollError = (errorType: string, errorMsg: string) => ({
 	}],
 });
 
-export const generateCountDetails = (counts: CountDetails) => ({
-	embeds: [{
-		color: infoColor1,
-		title: 'Roll Count Details:',
-		fields: [
-			{
-				name: 'Total Rolls:',
-				details: `${counts.total}`,
-				inline: true,
-			},
-			{
-				name: 'Successful Rolls:',
-				details: `${counts.successful}`,
-				inline: true,
-			},
-			{
-				name: 'Failed Rolls:',
-				details: `${counts.failed}`,
-				inline: true,
-			},
-			{
-				name: 'Rerolled Dice:',
-				details: `${counts.rerolled}`,
-				inline: true,
-			},
-			{
-				name: 'Dropped Dice:',
-				details: `${counts.dropped}`,
-				inline: true,
-			},
-			{
-				name: 'Exploded Dice:',
-				details: `${counts.exploded}`,
-				inline: true,
-			},
-		],
-	}],
+export const generateCountDetailsEmbed = (counts: CountDetails) => ({
+	color: infoColor1,
+	title: 'Roll Count Details:',
+	fields: [
+		{
+			name: 'Total Rolls:',
+			value: `${counts.total}`,
+			inline: true,
+		},
+		{
+			name: 'Successful Rolls:',
+			value: `${counts.successful}`,
+			inline: true,
+		},
+		{
+			name: 'Failed Rolls:',
+			value: `${counts.failed}`,
+			inline: true,
+		},
+		{
+			name: 'Rerolled Dice:',
+			value: `${counts.rerolled}`,
+			inline: true,
+		},
+		{
+			name: 'Dropped Dice:',
+			value: `${counts.dropped}`,
+			inline: true,
+		},
+		{
+			name: 'Exploded Dice:',
+			value: `${counts.exploded}`,
+			inline: true,
+		},
+	],
 });
+
+export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedRoll, modifiers: RollModifiers) => {
+	if (returnDetails.error) {
+		// Roll had an error, send error embed
+		return {
+			embed: {
+				color: failColor,
+				title: 'Roll failed:',
+				description: `${returnDetails.errorMsg}`,
+			},
+			hasAttachment: false,
+			attachment: {
+				'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+				'name': 'rollDetails.txt',
+			},
+		};
+	} else {
+		if (modifiers.gmRoll) {
+			// Roll is a GM Roll, send this in the pub channel (this funciton will be ran again to get details for the GMs)
+			return {
+				embed: {
+					color: infoColor2,
+					description: `<@${authorId}>${returnDetails.line1}
+
+Results have been messaged to the following GMs: ${modifiers.gms.join(' ')}`,
+				},
+				hasAttachment: false,
+				attachment: {
+					'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+					'name': 'rollDetails.txt',
+				},
+			};
+		} else {
+			// Roll is normal, make normal embed
+			const line2Details = returnDetails.line2.split(': ');
+			let details = '';
+
+			if (!modifiers.superNoDetails) {
+				if (modifiers.noDetails) {
+					details = `**Details:**
+Suppressed by -nd flag`;
+				} else {
+					details = `**Details:**
+${modifiers.spoiler}${returnDetails.line3}${modifiers.spoiler}`;
+				}
+			}
+
+			const baseDesc = `<@${authorId}>${returnDetails.line1}
+**${line2Details.shift()}:**
+${line2Details.join(': ')}`;
+
+			if (baseDesc.length + details.length < 4090) {
+				return {
+					embed: {
+						color: infoColor2,
+						description: `${baseDesc}
+
+${details}`,
+					},
+					hasAttachment: false,
+					attachment: {
+						'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+						'name': 'rollDetails.txt',
+					},
+				};
+			} else {
+				// If its too big, collapse it into a .txt file and send that instead.
+				const b = await new Blob([`${baseDesc}\n\n${details}` as BlobPart], { 'type': 'text' });
+				details = 'Details have been ommitted from this message for being over 2000 characters.';
+				if (b.size > 8388290) {
+					details +=
+						'Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.';
+					return {
+						embed: {
+							color: infoColor2,
+							description: `${baseDesc}
+	
+	${details}`,
+						},
+						hasAttachment: false,
+						attachment: {
+							'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+							'name': 'rollDetails.txt',
+						},
+					};
+				} else {
+					details += 'Full details have been attached to this messaged as a \`.txt\` file for verification purposes.';
+					return {
+						embed: {
+							color: infoColor2,
+							description: `${baseDesc}
+
+${details}`,
+						},
+						hasAttachment: true,
+						attachment: {
+							'blob': b,
+							'name': 'rollDetails.txt',
+						},
+					};
+				}
+			}
+		}
+	}
+};

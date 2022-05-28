@@ -7,7 +7,7 @@ import {
 import config from '../../config.ts';
 
 import { RollModifiers } from '../mod.d.ts';
-import { ReturnData, SolvedRoll, SolvedStep } from './solver.d.ts';
+import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from './solver.d.ts';
 import { compareTotalRolls, escapeCharacters } from './rollUtils.ts';
 import { formatRoll } from './rollFormatter.ts';
 import { fullSolver } from './solver.ts';
@@ -15,13 +15,8 @@ import { fullSolver } from './solver.ts';
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
-	const returnmsg = {
+	const returnmsg = <SolvedRoll> {
 		error: false,
-		errorMsg: '',
-		errorCode: '',
-		line1: '',
-		line2: '',
-		line3: '',
 	};
 
 	// Whole function lives in a try-catch to allow safe throwing of errors on purpose
@@ -30,6 +25,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 		const sepRolls = fullCmd.split(config.prefix);
 
 		const tempReturnData: ReturnData[] = [];
+		const tempCountDetails: CountDetails[] = [];
 
 		// Loop thru all roll/math ops
 		for (const sepRoll of sepRolls) {
@@ -68,7 +64,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 					mathConf[i] = parseFloat(mathConf[i].toString());
 				} else if (/([0123456789])/g.test(mathConf[i].toString())) {
 					// If there is a number somewhere in mathconf[i] but there are also other characters preventing it from parsing correctly as a number, it should be a dice roll, parse it as such (if it for some reason is not a dice roll, formatRoll/roll will handle it)
-					mathConf[i] = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
+					const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
+					mathConf[i] = formattedRoll.solvedStep;
+					tempCountDetails.push(formattedRoll.countDetails);
 				} else if (mathConf[i].toString().toLowerCase() === 'e') {
 					// If the operand is the constant e, create a SolvedStep for it
 					mathConf[i] = {
@@ -77,7 +75,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 						containsCrit: false,
 						containsFail: false,
 					};
-				} else if (mathConf[i].toString().toLowerCase() === 'pi' || mathConf[i].toString().toLowerCase() == '𝜋') {
+				} else if (mathConf[i].toString().toLowerCase() === 'pi' || mathConf[i].toString().toLowerCase() === '𝜋') {
 					// If the operand is the constant pi, create a SolvedStep for it
 					mathConf[i] = {
 						total: Math.PI,
@@ -190,6 +188,16 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 		returnmsg.line1 = line1;
 		returnmsg.line2 = line2;
 		returnmsg.line3 = line3;
+
+		// Reduce counts to a single object
+		returnmsg.counts = tempCountDetails.reduce((acc, cnt) => ({
+			total: acc.total + cnt.total,
+			successful: acc.successful + cnt.successful,
+			failed: acc.failed + cnt.failed,
+			rerolled: acc.rerolled + cnt.rerolled,
+			dropped: acc.dropped + cnt.dropped,
+			exploded: acc.exploded + cnt.exploded,
+		}));
 	} catch (solverError) {
 		// Welp, the unthinkable happened, we hit an error
 

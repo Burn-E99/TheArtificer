@@ -31,7 +31,7 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 	if (await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR'])) {
 		// [[api help
 		// Shows API help details
-		if (apiArg === 'help') {
+		if (apiArg === 'help' || apiArg === 'h') {
 			apiCommands.help(message);
 		} // [[api allow/block
 		// Lets a guild admin allow or ban API rolls from happening in said guild
