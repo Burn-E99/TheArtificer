@@ -70,12 +70,12 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 				embeds: [
 					(await generateRollEmbed(
 						message.authorId,
-						<SolvedRoll>{
+						<SolvedRoll> {
 							error: true,
 							errorCode: 'TooComplex',
 							errorMsg: 'Error: Roll Too Complex, try breaking roll down into simpler parts',
 						},
-						<RollModifiers>{},
+						<RollModifiers> {},
 					)).embed,
 				],
 			});
