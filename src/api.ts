@@ -8,11 +8,12 @@ import {
 	// Discordeno deps
 	cache,
 	CreateMessage,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 	// nanoid deps
 	nanoid,
+	// Discordeno deps
 	sendDirectMessage,
 	sendMessage,
 	// httpd deps

@@ -3,8 +3,8 @@ import { dbClient } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../../deps.ts';
 import { infoColor1 } from '../commandUtils.ts';

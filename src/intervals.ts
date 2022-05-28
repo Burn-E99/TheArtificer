@@ -8,8 +8,8 @@ import {
 	// Discordeno deps
 	cache,
 	cacheHandlers,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../deps.ts';
 

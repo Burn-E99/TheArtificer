@@ -4,8 +4,8 @@ import {
 	cache,
 	cacheHandlers,
 	DiscordenoMessage,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../../deps.ts';
 import { generateStats, warnColor } from '../commandUtils.ts';

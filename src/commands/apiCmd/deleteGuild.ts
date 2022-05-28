@@ -2,8 +2,8 @@ import { dbClient } from '../../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../../../deps.ts';
 import { failColor, successColor } from '../../commandUtils.ts';

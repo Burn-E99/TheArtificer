@@ -4,8 +4,8 @@ import { dbClient, queries } from '../../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../../../deps.ts';
 import { generateRollError } from '../../commandUtils.ts';

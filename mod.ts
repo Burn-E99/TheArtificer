@@ -7,6 +7,7 @@
 import config from './config.ts';
 import { DEBUG, DEVMODE, LOCALMODE } from './flags.ts';
 import {
+	// Discordeno deps
 	botId,
 	cache,
 	DiscordActivityTypes,
@@ -16,11 +17,11 @@ import {
 	editBotStatus,
 	initLog,
 	Intents,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
-	sendMessage,
 	// Discordeno deps
+	sendMessage,
 	startBot,
 } from './deps.ts';
 import api from './src/api.ts';

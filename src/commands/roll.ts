@@ -4,9 +4,10 @@ import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
+	// Discordeno deps
 	sendDirectMessage,
 } from '../../deps.ts';
 import solver from '../solver/_index.ts';
