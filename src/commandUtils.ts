@@ -208,7 +208,7 @@ export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedR
 			},
 			hasAttachment: false,
 			attachment: {
-				'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+				'blob': await new Blob(['' as BlobPart], { 'type': 'text' }),
 				'name': 'rollDetails.txt',
 			},
 		};
@@ -224,7 +224,7 @@ Results have been messaged to the following GMs: ${modifiers.gms.join(' ')}`,
 				},
 				hasAttachment: false,
 				attachment: {
-					'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+					'blob': await new Blob(['' as BlobPart], { 'type': 'text' }),
 					'name': 'rollDetails.txt',
 				},
 			};
@@ -257,7 +257,7 @@ ${details}`,
 					},
 					hasAttachment: false,
 					attachment: {
-						'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+						'blob': await new Blob(['' as BlobPart], { 'type': 'text' }),
 						'name': 'rollDetails.txt',
 					},
 				};
@@ -277,7 +277,7 @@ ${details}`,
 						},
 						hasAttachment: false,
 						attachment: {
-							'blob': await new Blob(['' as BlobPart], { 'type': 'text'}),
+							'blob': await new Blob(['' as BlobPart], { 'type': 'text' }),
 							'name': 'rollDetails.txt',
 						},
 					};

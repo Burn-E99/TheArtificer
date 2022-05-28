@@ -3,8 +3,8 @@ import {
 	// Discordeno deps
 	DiscordenoMessage,
 	hasGuildPermissions,
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../../deps.ts';
 import apiCommands from './apiCmd/_index.ts';
@@ -34,26 +34,39 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
 
 	// Makes sure the user is authenticated to run the API command
 	if (await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR'])) {
-		// [[api help
-		// Shows API help details
-		if (apiArg === 'help' || apiArg === 'h') {
-			apiCommands.help(message);
-		} // [[api allow/block
-		// Lets a guild admin allow or ban API rolls from happening in said guild
-		else if (apiArg === 'allow' || apiArg === 'block' || apiArg === 'enable' || apiArg === 'disable') {
-			apiCommands.allowBlock(message, apiArg);
-		} // [[api delete
-		// Lets a guild admin delete their server from the database
-		else if (apiArg === 'delete') {
-			apiCommands.deleteGuild(message);
-		} // [[api status
-		// Lets a guild admin check the status of API rolling in said guild
-		else if (apiArg === 'status') {
-			apiCommands.status(message);
-		} // [[api show-warn/hide-warn
-		// Lets a guild admin decide if the API warning should be shown on messages from the API
-		else if (apiArg === 'show-warn' || apiArg === 'hide-warn') {
-			apiCommands.showHideWarn(message, apiArg);
+		switch (apiArg) {
+			case 'help':
+			case 'h':
+				// [[api help
+				// Shows API help details
+				apiCommands.help(message);
+				break;
+			case 'allow':
+			case 'block':
+			case 'enable':
+			case 'disable':
+				// [[api allow/block
+				// Lets a guild admin allow or ban API rolls from happening in said guild
+				apiCommands.allowBlock(message, apiArg);
+				break;
+			case 'delete':
+				// [[api delete
+				// Lets a guild admin delete their server from the database
+				apiCommands.deleteGuild(message);
+				break;
+			case 'status':
+				// [[api status
+				// Lets a guild admin check the status of API rolling in said guild
+				apiCommands.status(message);
+				break;
+			case 'show-warn':
+			case 'hide-warn':
+				// [[api show-warn/hide-warn
+				// Lets a guild admin decide if the API warning should be shown on messages from the API
+				apiCommands.showHideWarn(message, apiArg);
+				break;
+			default:
+				break;
 		}
 	} else {
 		message.send({

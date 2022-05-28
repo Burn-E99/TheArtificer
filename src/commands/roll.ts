@@ -11,7 +11,7 @@ import {
 } from '../../deps.ts';
 import solver from '../solver/_index.ts';
 import { SolvedRoll } from '../solver/solver.d.ts';
-import { warnColor, infoColor1, generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from '../commandUtils.ts';
+import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor1, warnColor } from '../commandUtils.ts';
 import rollFuncs from './roll/_index.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
@@ -66,7 +66,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
 		// If there was an error, report it to the user in hopes that they can determine what they did wrong
 		if (returnmsg.error) {
-			m.edit({embeds: [pubEmbedDetails.embed]});
+			m.edit({ embeds: [pubEmbedDetails.embed] });
 
 			if (DEVMODE && config.logRolls) {
 				// If enabled, log rolls so we can see what went wrong
@@ -78,7 +78,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 			// Determine if we are to send a GM roll or a normal roll
 			if (modifiers.gmRoll) {
 				// Send the public embed to correct channel
-				m.edit({embeds: [pubEmbedDetails.embed]});
+				m.edit({ embeds: [pubEmbedDetails.embed] });
 
 				// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
 				modifiers.gms.forEach(async (gm) => {

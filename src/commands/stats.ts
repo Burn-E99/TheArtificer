@@ -8,7 +8,7 @@ import {
 	// Log4Deno deps
 	LT,
 } from '../../deps.ts';
-import { warnColor, generateStats } from '../commandUtils.ts';
+import { generateStats, warnColor } from '../commandUtils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run

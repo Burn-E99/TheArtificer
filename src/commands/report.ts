@@ -8,7 +8,7 @@ import {
 	LT,
 	sendMessage,
 } from '../../deps.ts';
-import { successColor, failColor, generateReport } from '../commandUtils.ts';
+import { failColor, generateReport, successColor } from '../commandUtils.ts';
 
 export const report = (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
