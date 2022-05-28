@@ -10,7 +10,6 @@ import {
 	// Discordeno deps
 	sendDirectMessage,
 } from '../../deps.ts';
-import solver from '../solver/_index.ts';
 import { SolvedRoll } from '../solver/solver.d.ts';
 import { RollModifiers } from '../mod.d.ts';
 import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor1, warnColor } from '../commandUtils.ts';
@@ -86,10 +85,10 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 			modifiers,
 		});
 
-		rollWorker.addEventListener('message', async (e) => {
+		rollWorker.addEventListener('message', async (workerMessage) => {
 			try {
 				clearTimeout(workerTimeout);
-				const returnmsg = e.data;
+				const returnmsg = workerMessage.data;
 				const pubEmbedDetails = await generateRollEmbed(message.authorId, returnmsg, modifiers);
 				const gmEmbedDetails = await generateRollEmbed(message.authorId, returnmsg, gmModifiers);
 				const countEmbed = generateCountDetailsEmbed(returnmsg.counts);
