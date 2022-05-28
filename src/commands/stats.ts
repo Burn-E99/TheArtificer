@@ -8,7 +8,8 @@ import {
 	log,
 	LT,
 } from '../../deps.ts';
-import { generateStats, warnColor } from '../commandUtils.ts';
+import { generateStats } from '../commandUtils.ts';
+import { compilingStats } from '../commonEmbeds.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -17,12 +18,7 @@ export const stats = async (message: DiscordenoMessage) => {
 	});
 
 	try {
-		const m = await message.send({
-			embeds: [{
-				color: warnColor,
-				title: 'Compiling latest statistics . . .',
-			}],
-		});
+		const m = await message.send(compilingStats);
 
 		// Calculate how many times commands have been run
 		const rollQuery = await dbClient.query(`SELECT count FROM command_cnt WHERE command = "roll";`).catch((e) => {

@@ -10,6 +10,7 @@ await dbClient.execute(`USE ${config.db.name}`);
 console.log('DB created');
 
 console.log('Attempt to drop all tables');
+await dbClient.execute(`DROP VIEW IF EXISTS db_size;`);
 await dbClient.execute(`DROP TABLE IF EXISTS allowed_channels;`);
 await dbClient.execute(`DROP TABLE IF EXISTS all_keys;`);
 await dbClient.execute(`DROP TABLE IF EXISTS allowed_guilds;`);
@@ -109,6 +110,21 @@ await dbClient.execute(`
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
 console.log('Table created');
+
+// Database sizes view
+console.log('Attempting to create view db_size');
+await dbClient.execute(`
+	CREATE VIEW db_size AS
+		SELECT
+			table_name AS "table",
+			ROUND(((data_length + index_length) / 1024 / 1024), 3) AS "size",
+			table_rows AS "rows"
+		FROM information_schema.TABLES
+		WHERE
+			table_schema = "${config.db.name}"
+			AND table_name <> "db_size";
+`);
+console.log('View Created');
 
 await dbClient.close();
 console.log('Done!');

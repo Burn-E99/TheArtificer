@@ -190,6 +190,11 @@ startBot({
 					// API sub commands
 					commands.api(message, args);
 					break;
+				case 'audit':
+					// [[audit arg
+					// Audit sub commands
+					commands.audit(message, args);
+					break;
 				default:
 					// Non-standard commands
 					if (command?.startsWith('xdy')) {

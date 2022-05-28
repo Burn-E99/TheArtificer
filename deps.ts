@@ -8,7 +8,7 @@ export {
 } from "https://deno.land/x/discordeno@12.0.1/mod.ts";
 
 export type {
-	DiscordenoMessage, DiscordenoGuild, CreateMessage 
+	DiscordenoMessage, DiscordenoGuild, CreateMessage, EmbedField
 } from "https://deno.land/x/discordeno@12.0.1/mod.ts";
 
 export { Client } from "https://deno.land/x/mysql@v2.10.2/mod.ts";

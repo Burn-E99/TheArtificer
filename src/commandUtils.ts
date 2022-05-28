@@ -27,6 +27,7 @@ export const generateStats = (guildCount: number, channelCount: number, memberCo
 	embeds: [{
 		color: infoColor2,
 		title: 'The Artificer\'s Statistics:',
+		timestamp: new Date().toISOString(),
 		fields: [
 			{
 				name: 'Guilds:',
