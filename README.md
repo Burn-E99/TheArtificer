@@ -1,5 +1,6 @@
 # The Artificer - A Dice Rolling Discord Bot
-Version 1.4.3 - 2021/03/21
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=TheArtificer)  
+V1.4.3 | 2021/03/21
 
 The Artificer is a Discord bot that specializes in rolling dice.  The bot utilizes the compact [Roll20 formatting](https://artificer.eanm.dev/roll20) for ease of use and will correctly perform any needed math on the roll (limited to basic algebra).
 
