@@ -1,5 +1,4 @@
 import config from '../config.ts';
-import { DiscordenoMessage } from '../deps.ts';
 import { CountDetails, SolvedRoll } from './solver/solver.d.ts';
 import { RollModifiers } from './mod.d.ts';
 
