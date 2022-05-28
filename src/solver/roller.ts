@@ -83,6 +83,10 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	rollConf.dieSize = parseInt(remains.slice(0, afterDieIdx));
 	remains = remains.slice(afterDieIdx);
 
+	if (!rollConf.dieCount || !rollConf.dieSize) {
+		throw new Error('YouNeedAD');
+	}
+
 	log(LT.LOG, `Handling roll ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);
 	log(LT.LOG, `Handling roll ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
 

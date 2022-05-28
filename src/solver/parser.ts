@@ -17,6 +17,19 @@ import { fullSolver } from './solver.ts';
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
 	const returnmsg = <SolvedRoll> {
 		error: false,
+		errorCode: '',
+		errorMsg: '',
+		line1: '',
+		line2: '',
+		line3: '',
+		counts: {
+			total: 0,
+			successful: 0,
+			failed: 0,
+			rerolled: 0,
+			dropped: 0,
+			exploded: 0,
+		},
 	};
 
 	// Whole function lives in a try-catch to allow safe throwing of errors on purpose
@@ -25,7 +38,14 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 		const sepRolls = fullCmd.split(config.prefix);
 
 		const tempReturnData: ReturnData[] = [];
-		const tempCountDetails: CountDetails[] = [];
+		const tempCountDetails: CountDetails[] = [{
+			total: 0,
+			successful: 0,
+			failed: 0,
+			rerolled: 0,
+			dropped: 0,
+			exploded: 0,
+		}];
 
 		// Loop thru all roll/math ops
 		for (const sepRoll of sepRolls) {
@@ -72,6 +92,21 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 					mathConf[i] = {
 						total: Math.E,
 						details: '*e*',
+						containsCrit: false,
+						containsFail: false,
+					};
+				} else if (mathConf[i].toString().toLowerCase() === 'fart' || mathConf[i].toString().toLowerCase() === '💩') {
+					mathConf[i] = {
+						total: 7,
+						details: '💩',
+						containsCrit: false,
+						containsFail: false,
+					};
+				} else if (mathConf[i].toString().toLowerCase() === 'inf' || mathConf[i].toString().toLowerCase() === 'infinity' || mathConf[i].toString().toLowerCase() === '∞') {
+					// If the operand is the constant Infinity, create a SolvedStep for it
+					mathConf[i] = {
+						total: Infinity,
+						details: '∞',
 						containsCrit: false,
 						containsFail: false,
 					};
