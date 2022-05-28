@@ -143,3 +143,33 @@ body {
 		padding: 0 1rem;
 	}
 }
+
+@media screen and (max-width: 807px) {
+	#page {
+		grid-template-rows: 6rem calc(100vh - 8rem) 2rem;
+	}
+
+	#page-contents {
+		height: calc(100vh - 8rem);
+	}
+}
+
+@media screen and (max-width: 474px) {
+	#page {
+		grid-template-rows: 9rem calc(100vh - 11rem) 2rem;
+	}
+
+	#page-contents {
+		height: calc(100vh - 11rem);
+	}
+}
+
+@media screen and (max-width: 337px) {
+	#page {
+		grid-template-rows: 12rem calc(100vh - 14rem) 2rem;
+	}
+
+	#page-contents {
+		height: calc(100vh - 14rem);
+	}
+}

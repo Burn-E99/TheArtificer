@@ -163,3 +163,33 @@ p.example {
 		padding: 0 1rem;
 	}
 }
+
+@media screen and (max-width: 630px) {
+	#page {
+		grid-template-rows: 6rem calc(100vh - 8rem) 2rem;
+	}
+
+	#page-contents {
+		height: calc(100vh - 8rem);
+	}
+}
+
+@media screen and (max-width: 330px) {
+	#page {
+		grid-template-rows: 9rem calc(100vh - 11rem) 2rem;
+	}
+
+	#page-contents {
+		height: calc(100vh - 11rem);
+	}
+}
+
+@media screen and (max-width: 292px) {
+	#page {
+		grid-template-rows: 12rem calc(100vh - 14rem) 2rem;
+	}
+
+	#page-contents {
+		height: calc(100vh - 14rem);
+	}
+}
