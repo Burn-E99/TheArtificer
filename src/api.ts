@@ -16,7 +16,7 @@ import {
 import { dbClient } from './db.ts';
 import endpoints from './endpoints/_index.ts';
 
-// start(databaseClient) returns nothing
+// start() returns nothing
 // start initializes and runs the entire API for the bot
 const start = async (): Promise<void> => {
 	const server = Deno.listen({ port: config.api.port });
