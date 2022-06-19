@@ -1,0 +1,55 @@
+import config from '../../../config.ts';
+import { dbClient } from '../../db.ts';
+import {
+	// Log4Deno deps
+	log,
+	LT,
+	// httpd deps
+	Status,
+	STATUS_TEXT,
+} from '../../../deps.ts';
+
+export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, path: string) => {
+	if ((query.has('a') && ((query.get('a') || '').length > 0)) && (query.has('user') && ((query.get('user') || '').length > 0))) {
+		if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
+			// Flag to see if there is an error inside the catch
+			let key, value, erroredOut = false;
+
+			// Determine key to edit
+			if (path.toLowerCase().indexOf('ban') > 0) {
+				key = 'banned';
+			} else {
+				key = 'active';
+			}
+
+			// Determine value to set
+			if (path.toLowerCase().indexOf('de') > 0 || path.toLowerCase().indexOf('un') > 0) {
+				value = 0;
+			} else {
+				value = 1;
+			}
+
+			// Execute the DB modification
+			await dbClient.execute('UPDATE all_keys SET ?? = ? WHERE userid = ?', [key, value, apiUserid]).catch((e) => {
+				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+				requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-3`, { status: Status.InternalServerError }));
+				erroredOut = true;
+			});
+
+			// Exit this case now if catch errored
+			if (erroredOut) {
+				return;
+			} else {
+				// Send API key as response
+				requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.OK), { status: Status.OK }));
+				return;
+			}
+		} else {
+			// Alert API user that they shouldn't be doing this
+			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+		}
+	} else {
+		// Alert API user that they messed up
+		requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+	}
+};
