@@ -10,8 +10,8 @@ const emailField = document.getElementById("email-field");
 const deleteField = document.getElementById("delete-field");
 const submitField = document.getElementById("submit-field");
 
-const endpoint = "none";
-const apiStatus = "activate";
+let endpoint = "none";
+let apiStatus = "activate";
 
 function validateUserField() {
 	return !(userField.value > 0 && userField.checkValidity());

@@ -26,7 +26,7 @@ const rollingEmbed = {
 };
 
 // Handle setting up and calling the rollWorker
-const handleRollWorker = async (m: DiscordenoMessage, message: DiscordenoMessage, originalCommand: String, rollCmd: String, modifiers: RollModifiers) => {
+const handleRollWorker = async (m: DiscordenoMessage, message: DiscordenoMessage, originalCommand: string, rollCmd: string, modifiers: RollModifiers) => {
 	currentWorkers++;
 
 	// gmModifiers used to create gmEmbed (basically just turn off the gmRoll)
@@ -122,7 +122,7 @@ const handleRollWorker = async (m: DiscordenoMessage, message: DiscordenoMessage
 };
 
 // Runs the roll or queues it depending on how many workers are currently running
-const queueRoll = async (m: DiscordenoMessage, message: DiscordenoMessage, originalCommand: String, rollCmd: String, modifiers: RollModifiers) => {
+const queueRoll = async (m: DiscordenoMessage, message: DiscordenoMessage, originalCommand: string, rollCmd: string, modifiers: RollModifiers) => {
 	if (!rollQueue.length && currentWorkers < config.limits.maxWorkers) {
 		handleRollWorker(m, message, originalCommand, rollCmd, modifiers);
 	} else {

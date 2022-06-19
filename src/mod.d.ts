@@ -28,7 +28,7 @@ export type RollModifiers = {
 export type QueuedRoll = {
 	m: DiscordenoMessage;
 	message: DiscordenoMessage;
-	originalCommand: String;
-	rollCmd: String;
+	originalCommand: string;
+	rollCmd: string;
 	modifiers: RollModifiers;
 };
