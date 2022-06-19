@@ -6,10 +6,7 @@ import {
 
 import { ReturnData, RollSet } from './solver.d.ts';
 
-// MAXLOOPS determines how long the bot will attempt a roll
-// Default is 5000000 (5 million), which results in at most a 10 second delay before the bot calls the roll infinite or too complex
-// Increase at your own risk
-export const MAXLOOPS = 5000000;
+export const loggingEnabled = false;
 
 // genRoll(size) returns number
 // genRoll rolls a die of size size and returns the result
@@ -63,7 +60,7 @@ export const compareOrigidx = (a: RollSet, b: RollSet): number => {
 export const escapeCharacters = (str: string, esc: string): string => {
 	// Loop thru each esc char one at a time
 	for (const e of esc) {
-		log(LT.LOG, `Escaping character ${e} | ${str}, ${esc}`);
+		loggingEnabled && log(LT.LOG, `Escaping character ${e} | ${str}, ${esc}`);
 		// Create a new regex to look for that char that needs replaced and escape it
 		const temprgx = new RegExp(`[${e}]`, 'g');
 		str = str.replace(temprgx, `\\${e}`);

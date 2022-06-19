@@ -268,7 +268,7 @@ ${details}`,
 				details = 'Details have been ommitted from this message for being over 2000 characters.';
 				if (b.size > 8388290) {
 					details +=
-						'Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.';
+						'\n\nFull details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.';
 					return {
 						embed: {
 							color: infoColor2,
@@ -283,7 +283,7 @@ ${details}`,
 						},
 					};
 				} else {
-					details += 'Full details have been attached to this messaged as a \`.txt\` file for verification purposes.';
+					details += '\n\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.';
 					return {
 						embed: {
 							color: infoColor2,

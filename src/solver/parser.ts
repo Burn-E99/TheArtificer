@@ -8,7 +8,7 @@ import config from '../../config.ts';
 
 import { RollModifiers } from '../mod.d.ts';
 import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from './solver.d.ts';
-import { compareTotalRolls, escapeCharacters } from './rollUtils.ts';
+import { compareTotalRolls, escapeCharacters, loggingEnabled } from './rollUtils.ts';
 import { formatRoll } from './rollFormatter.ts';
 import { fullSolver } from './solver.ts';
 
@@ -49,7 +49,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
 		// Loop thru all roll/math ops
 		for (const sepRoll of sepRolls) {
-			log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRoll}`);
+			loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRoll}`);
 			// Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the opertaion
 			const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
@@ -59,7 +59,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 			// Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
 			let parenCnt = 0;
 			mathConf.forEach((e) => {
-				log(LT.LOG, `Parsing roll ${fullCmd} | Checking parenthesis balance ${e}`);
+				loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Checking parenthesis balance ${e}`);
 				if (e === '(') {
 					parenCnt++;
 				} else if (e === ')') {
@@ -74,7 +74,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
 			// Evaluate all rolls into stepSolve format and all numbers into floats
 			for (let i = 0; i < mathConf.length; i++) {
-				log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into mathable items ${JSON.stringify(mathConf[i])}`);
+				loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into mathable items ${JSON.stringify(mathConf[i])}`);
 				if (mathConf[i].toString().length === 0) {
 					// If its an empty string, get it out of here
 					mathConf.splice(i, 1);
@@ -198,7 +198,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
 		// Fill out all of the details and results now
 		tempReturnData.forEach((e) => {
-			log(LT.LOG, `Parsing roll ${fullCmd} | Making return text ${JSON.stringify(e)}`);
+			loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Making return text ${JSON.stringify(e)}`);
 			let preFormat = '';
 			let postFormat = '';
 

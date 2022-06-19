@@ -5,6 +5,11 @@ export const config = {
 	"localtoken": "local_testing_token", // Discord API Token for a secondary OPTIONAL testing bot, THIS MUST BE DIFFERENT FROM "token"
 	"prefix": "[[", // Prefix for all commands
 	"postfix": "]]", // Postfix for rolling command
+	"limits": { // Limits for the bot functions
+		"maxLoops": 5000000, // Determines how long the bot will attempt a roll, number of loops before it kills a roll.  Increase this at your own risk
+		"maxWorkers": 16, // Maximum number of worker threads to spawn at once (Set this to less than the number of threads your CPU has, Artificer will eat it all if too many rolls happen at once) 
+		"workerTimeout": 300000 // Maximum time before the bot kills a worker thread in ms
+	},
 	"api": { // Setting for the built-in API
 		"enable": false, // Leave this off if you have no intention of using this/supporting it
 		"port": 8080, // Port for the API to listen on

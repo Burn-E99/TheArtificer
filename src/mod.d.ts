@@ -1,4 +1,5 @@
 // mod.d.ts custom types
+import { DiscordenoMessage } from '../deps.ts';
 
 // EmojiConf is used as a structure for the emojis stored in config.ts
 export type EmojiConf = {
@@ -21,4 +22,13 @@ export type RollModifiers = {
 	order: string;
 	valid: boolean;
 	count: boolean;
+};
+
+// QueuedRoll is the structure to track rolls we could not immediately handle
+export type QueuedRoll = {
+	m: DiscordenoMessage;
+	message: DiscordenoMessage;
+	originalCommand: String;
+	rollCmd: String;
+	modifiers: RollModifiers;
 };

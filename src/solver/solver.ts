@@ -11,6 +11,7 @@ import {
 } from '../../deps.ts';
 
 import { SolvedStep } from './solver.d.ts';
+import { loggingEnabled } from './rollUtils.ts';
 
 // fullSolver(conf, wrapDetails) returns one condensed SolvedStep
 // fullSolver is a function that recursively solves the full roll and math
@@ -32,7 +33,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 
 	// Evaluate all parenthesis
 	while (conf.indexOf('(') > -1) {
-		log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
+		loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
 		// Get first open parenthesis
 		const openParen = conf.indexOf('(');
 		let closeParen = -1;
@@ -40,7 +41,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 
 		// Using nextParen to count the opening/closing parens, find the matching paren to openParen above
 		for (let i = openParen; i < conf.length; i++) {
-			log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParen} checking: ${i}`);
+			loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParen} checking: ${i}`);
 			// If we hit an open, add one (this includes the openParen we start with), if we hit a close, subtract one
 			if (conf[i] === '(') {
 				nextParen++;
@@ -83,10 +84,10 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 	// Evaluate all EMMDAS by looping thru each teir of operators (exponential is the higehest teir, addition/subtraction the lowest)
 	const allCurOps = [['^'], ['*', '/', '%'], ['+', '-']];
 	allCurOps.forEach((curOps) => {
-		log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
+		loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
 		// Iterate thru all operators/operands in the conf
 		for (let i = 0; i < conf.length; i++) {
-			log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
+			loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
 			// Check if the current index is in the active teir of operators
 			if (curOps.indexOf(conf[i].toString()) > -1) {
 				// Grab the operands from before and after the operator
@@ -172,7 +173,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 
 	// If we somehow have more than one item left in conf at this point, something broke, throw an error
 	if (conf.length > 1) {
-		log(LT.LOG, `ConfWHAT? ${JSON.stringify(conf)}`);
+		loggingEnabled && log(LT.LOG, `ConfWHAT? ${JSON.stringify(conf)}`);
 		throw new Error('ConfWhat');
 	} else if (singleNum && (typeof (conf[0]) === 'number')) {
 		// If we are only left with a number, populate the stepSolve with it
