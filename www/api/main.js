@@ -3,15 +3,15 @@
 document.getElementById("nojs").className = "hidden";
 document.getElementById("js").className = "";
 
-var apiField = document.getElementById("api-field");
-var userField = document.getElementById("user-field");
-var channelField = document.getElementById("channel-field");
-var emailField = document.getElementById("email-field");
-var deleteField = document.getElementById("delete-field");
-var submitField = document.getElementById("submit-field");
+const apiField = document.getElementById("api-field");
+const userField = document.getElementById("user-field");
+const channelField = document.getElementById("channel-field");
+const emailField = document.getElementById("email-field");
+const deleteField = document.getElementById("delete-field");
+const submitField = document.getElementById("submit-field");
 
-var endpoint = "none";
-var apiStatus = "activate";
+const endpoint = "none";
+const apiStatus = "activate";
 
 function validateUserField() {
 	return !(userField.value > 0 && userField.checkValidity());
@@ -122,9 +122,9 @@ function setStatus() {
 function sendPayload() {
 	document.getElementById("results").className = "";
 
-	var xhr = new XMLHttpRequest();
-	var method;
-	var path = "/api/";
+	const xhr = new XMLHttpRequest();
+	let method;
+	let path = "/api/";
 
 	switch (endpoint) {
 		case "generate":
