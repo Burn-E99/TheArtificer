@@ -10,7 +10,7 @@ import { apiChannelManageActive } from './puts/apiChannelManageActive.ts';
 
 export default {
 	delete: {
-		apiKeyDelete
+		apiKeyDelete,
 	},
 	get: {
 		apiKey,

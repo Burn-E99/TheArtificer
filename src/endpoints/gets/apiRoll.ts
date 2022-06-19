@@ -180,12 +180,14 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 
 					if (b.size > 8388290) {
 						// Update return text
-						newMessage.content = `${apiPrefix}<@${query.get('user')
-							}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
+						newMessage.content = `${apiPrefix}<@${
+							query.get('user')
+						}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
 					} else {
 						// Update return text
-						newMessage.content = `${apiPrefix}<@${query.get('user')
-							}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
+						newMessage.content = `${apiPrefix}<@${
+							query.get('user')
+						}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
 						newMessage.file = { 'blob': b, 'name': 'rollDetails.txt' };
 					}
 
@@ -234,12 +236,14 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 
 						if (b.size > 8388290) {
 							// Update return text
-							newMessage.content = `${apiPrefix}<@${query.get('user')
-								}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
+							newMessage.content = `${apiPrefix}<@${
+								query.get('user')
+							}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
 						} else {
 							// Update return text
-							newMessage.content = `${apiPrefix}<@${query.get('user')
-								}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
+							newMessage.content = `${apiPrefix}<@${
+								query.get('user')
+							}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
 							newMessage.file = { 'blob': b, 'name': 'rollDetails.txt' };
 						}
 					}
