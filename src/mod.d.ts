@@ -26,9 +26,17 @@ export type RollModifiers = {
 
 // QueuedRoll is the structure to track rolls we could not immediately handle
 export type QueuedRoll = {
-	m: DiscordenoMessage;
-	message: DiscordenoMessage;
-	originalCommand: string;
+	apiRoll: boolean;
+	api: {
+		requestEvent: Deno.RequestEvent;
+		channelId: BigInt;
+		userId: BigInt;
+	};
+	dd: {
+		m: DiscordenoMessage;
+		message: DiscordenoMessage;
+		originalCommand: string;
+	};
 	rollCmd: string;
 	modifiers: RollModifiers;
 };

@@ -11,6 +11,7 @@ import {
 import { rollingEmbed, warnColor } from '../commandUtils.ts';
 import rollFuncs from './roll/_index.ts';
 import { queueRoll } from '../solver/rollQueue.ts';
+import { QueuedRoll } from '../mod.d.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run
@@ -48,7 +49,14 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 		// Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituded in
 		const rollCmd = `${command} ${args.join(' ')}`;
 
-		queueRoll(m, message, originalCommand, rollCmd, modifiers);
+		queueRoll(
+			<QueuedRoll> {
+				apiRoll: false,
+				dd: { m, message, originalCommand },
+				rollCmd,
+				modifiers,
+			},
+		);
 	} catch (e) {
 		log(LT.ERROR, `Undandled Error: ${JSON.stringify(e)}`);
 	}
