@@ -8,6 +8,13 @@ export const successColor = 0x0f8108;
 export const infoColor1 = 0x313bf9;
 export const infoColor2 = 0x6805e9;
 
+export const rollingEmbed = {
+	embeds: [{
+		color: infoColor1,
+		title: 'Rolling . . .',
+	}],
+};
+
 export const generatePing = (time: number) => ({
 	embeds: [{
 		color: infoColor1,
