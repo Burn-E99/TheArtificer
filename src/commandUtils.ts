@@ -206,6 +206,9 @@ export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedR
 				color: failColor,
 				title: 'Roll failed:',
 				description: `${returnDetails.errorMsg}`,
+				footer: {
+					text: `Code: ${returnDetails.errorCode}`,
+				},
 			},
 			hasAttachment: false,
 			attachment: {
