@@ -8,7 +8,7 @@ import {
 	log,
 	LT,
 } from '../../deps.ts';
-import { warnColor, rollingEmbed } from '../commandUtils.ts';
+import { rollingEmbed, warnColor } from '../commandUtils.ts';
 import rollFuncs from './roll/_index.ts';
 import { queueRoll } from '../solver/rollQueue.ts';
 
