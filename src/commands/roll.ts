@@ -52,9 +52,10 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 		queueRoll(
 			<QueuedRoll> {
 				apiRoll: false,
-				dd: { m, message, originalCommand },
+				dd: { m, message },
 				rollCmd,
 				modifiers,
+				originalCommand,
 			},
 		);
 	} catch (e) {

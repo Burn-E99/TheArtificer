@@ -9,6 +9,10 @@ import {
 	LT,
 	// Discordeno deps
 	sendDirectMessage,
+	sendMessage,
+	// httpd deps
+	Status,
+	STATUS_TEXT,
 } from '../../deps.ts';
 import { SolvedRoll } from '../solver/solver.d.ts';
 import { QueuedRoll, RollModifiers } from '../mod.d.ts';
@@ -30,19 +34,26 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 	const workerTimeout = setTimeout(async () => {
 		rollWorker.terminate();
 		currentWorkers--;
-		rq.dd.m.edit({
-			embeds: [
-				(await generateRollEmbed(
-					rq.dd.message.authorId,
-					<SolvedRoll> {
-						error: true,
-						errorCode: 'TooComplex',
-						errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
-					},
-					<RollModifiers> {},
-				)).embed,
-			],
-		});
+		if (rq.apiRoll) {
+			rq.api.requestEvent.respondWith(new Response(
+				'Roll took too long to process, try breaking roll down into simpler parts',
+				{ status: Status.RequestTimeout, statusText: STATUS_TEXT.get(Status.RequestTimeout) }
+			));
+		} else {
+			rq.dd.m.edit({
+				embeds: [
+					(await generateRollEmbed(
+						rq.dd.message.authorId,
+						<SolvedRoll> {
+							error: true,
+							errorCode: 'TooComplex',
+							errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
+						},
+						<RollModifiers> {},
+					)).embed,
+				],
+			});
+		}
 	}, config.limits.workerTimeout);
 
 	rollWorker.postMessage({
@@ -51,64 +62,125 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 	});
 
 	rollWorker.addEventListener('message', async (workerMessage) => {
+		let apiErroredOut = false;
 		try {
 			currentWorkers--;
 			clearTimeout(workerTimeout);
 			const returnmsg = workerMessage.data;
-			const pubEmbedDetails = await generateRollEmbed(rq.dd.message.authorId, returnmsg, rq.modifiers);
-			const gmEmbedDetails = await generateRollEmbed(rq.dd.message.authorId, returnmsg, gmModifiers);
+			const pubEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnmsg, rq.modifiers);
+			const gmEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnmsg, gmModifiers);
 			const countEmbed = generateCountDetailsEmbed(returnmsg.counts);
 
 			// If there was an error, report it to the user in hopes that they can determine what they did wrong
 			if (returnmsg.error) {
-				rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
+				if (rq.apiRoll) {
+					rq.api.requestEvent.respondWith(new Response(
+						returnmsg.errorMsg,
+						{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
+					));
+				} else {
+					rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
+				}
 
-				if (DEVMODE && config.logRolls) {
+				if (rq.apiRoll || DEVMODE && config.logRolls) {
 					// If enabled, log rolls so we can see what went wrong
-					dbClient.execute(queries.insertRollLogCmd(0, 1), [rq.dd.originalCommand, returnmsg.errorCode, rq.dd.m.id]).catch((e) => {
+					dbClient.execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnmsg.errorCode, rq.apiRoll ? null : rq.dd.m.id]).catch((e) => {
 						log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 					});
 				}
 			} else {
+				let n: DiscordenoMessage | void;
 				// Determine if we are to send a GM roll or a normal roll
 				if (rq.modifiers.gmRoll) {
-					// Send the public embed to correct channel
-					rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
-
-					// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
-					rq.modifiers.gms.forEach(async (gm) => {
-						log(LT.LOG, `Messaging GM ${gm}`);
-						// Attempt to DM the GM and send a warning if it could not DM a GM
-						await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
-							embeds: rq.modifiers.count ? [gmEmbedDetails.embed, countEmbed] : [gmEmbedDetails.embed],
-						}).then(async () => {
-							// Check if we need to attach a file and send it after the initial details sent
-							if (gmEmbedDetails.hasAttachment) {
-								await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
-									file: gmEmbedDetails.attachment,
-								}).catch(() => {
-									rq.dd.message.reply(generateDMFailed(gm));
-								});
-							}
+					if (rq.apiRoll) {
+						n = await sendMessage(rq.api.channelId, {
+							content: rq.modifiers.apiWarn,
+							embeds: [pubEmbedDetails.embed]
 						}).catch(() => {
-							rq.dd.message.reply(generateDMFailed(gm));
+							apiErroredOut = true;
+							rq.api.requestEvent.respondWith(new Response(
+								'Message failed to send.',
+								{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
+							));
 						});
-					});
+					} else {
+						// Send the public embed to correct channel
+						rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
+					}
+
+					if (!apiErroredOut) {
+						// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
+						rq.modifiers.gms.forEach(async (gm) => {
+							log(LT.LOG, `Messaging GM ${gm}`);
+							// Attempt to DM the GM and send a warning if it could not DM a GM
+							await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
+								embeds: rq.modifiers.count ? [gmEmbedDetails.embed, countEmbed] : [gmEmbedDetails.embed],
+							}).then(async () => {
+								// Check if we need to attach a file and send it after the initial details sent
+								if (gmEmbedDetails.hasAttachment) {
+									await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
+										file: gmEmbedDetails.attachment,
+									}).catch(() => {
+										if (rq.apiRoll && n) {
+											n.reply(generateDMFailed(gm));
+										} else {
+											rq.dd.message.reply(generateDMFailed(gm));
+										}
+									});
+								}
+							}).catch(() => {
+								if (rq.apiRoll && n) {
+									n.reply(generateDMFailed(gm));
+								} else {
+									rq.dd.message.reply(generateDMFailed(gm));
+								}
+							});
+						});
+					}
 				} else {
 					// Not a gm roll, so just send normal embed to correct channel
-					const n = await rq.dd.m.edit({
-						embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed],
-					});
-					if (pubEmbedDetails.hasAttachment) {
+					if (rq.apiRoll) {
+						n = await sendMessage(rq.api.channelId, {
+							content: rq.modifiers.apiWarn,
+							embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed]
+						}).catch(() => {
+							apiErroredOut = true;
+							rq.api.requestEvent.respondWith(new Response(
+								'Message failed to send.',
+								{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
+							));
+						});
+					} else {
+						n = await rq.dd.m.edit({
+							embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed],
+						});
+					}
+
+					if (pubEmbedDetails.hasAttachment && n) {
 						// Attachment requires you to send a new message
 						n.reply({
 							file: pubEmbedDetails.attachment,
 						});
 					}
 				}
+
+				if (!apiErroredOut) {
+					rq.api.requestEvent.respondWith(new Response(
+						JSON.stringify(
+							rq.modifiers.count ? { counts: countEmbed, details: pubEmbedDetails } : { details: pubEmbedDetails }
+						),
+						{ status: Status.OK, statusText: STATUS_TEXT.get(Status.OK) }
+					));
+				}
 			}
 		} catch (e) {
 			log(LT.ERROR, `Unddandled Error: ${JSON.stringify(e)}`);
+			if (rq.apiRoll && !apiErroredOut) {
+				rq.api.requestEvent.respondWith(new Response(
+					JSON.stringify(e),
+					{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
+				));
+			}
 		}
 	});
 };

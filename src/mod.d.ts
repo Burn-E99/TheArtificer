@@ -20,8 +20,9 @@ export type RollModifiers = {
 	gmRoll: boolean;
 	gms: string[];
 	order: string;
-	valid: boolean;
 	count: boolean;
+	valid: boolean;
+	apiWarn: string;
 };
 
 // QueuedRoll is the structure to track rolls we could not immediately handle
@@ -29,14 +30,14 @@ export type QueuedRoll = {
 	apiRoll: boolean;
 	api: {
 		requestEvent: Deno.RequestEvent;
-		channelId: BigInt;
-		userId: BigInt;
+		channelId: bigint;
+		userId: bigint;
 	};
 	dd: {
 		m: DiscordenoMessage;
 		message: DiscordenoMessage;
-		originalCommand: string;
 	};
+	originalCommand: string;
 	rollCmd: string;
 	modifiers: RollModifiers;
 };

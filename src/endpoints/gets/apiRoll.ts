@@ -3,20 +3,17 @@ import { dbClient, queries } from '../../db.ts';
 import {
 	// Discordeno deps
 	cache,
-	CreateMessage,
 	// Log4Deno deps
 	log,
 	LT,
-	// Discordeno deps
-	sendDirectMessage,
-	sendMessage,
 	// httpd deps
 	Status,
 	STATUS_TEXT,
 } from '../../../deps.ts';
-import { RollModifiers } from '../../mod.d.ts';
-import solver from '../../solver/_index.ts';
-import { generateDMFailed } from '../../commandUtils.ts';
+import { RollModifiers, QueuedRoll } from '../../mod.d.ts';
+import { queueRoll } from '../../solver/rollQueue.ts';
+
+const apiWarning =  `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
 export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
 	// Make sure query contains all the needed parts
@@ -56,8 +53,6 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 		if (authorized) {
 			// Rest of this command is in a try-catch to protect all sends/edits from erroring out
 			try {
-				// Flag to tell if roll was completely successful
-				let errorOut = false;
 				// Make sure rollCmd is not undefined
 				let rollCmd = query.get('rollstr') || '';
 				const originalCommand = query.get('rollstr');
@@ -88,192 +83,27 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 				rollCmd = rollCmd.substring(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, ' ');
 
 				const modifiers: RollModifiers = {
-					noDetails: false,
-					superNoDetails: false,
-					spoiler: '',
+					noDetails: query.has('nd'),
+					superNoDetails: query.has('snd'),
+					spoiler: query.has('s') ? '||' : '',
 					maxRoll: query.has('m'),
 					nominalRoll: query.has('n'),
-					gmRoll: false,
-					gms: [],
+					gmRoll: query.has('gms'),
+					gms: query.has('gms') ? (query.get('gms') || '').split(',') : [],
 					order: query.has('o') ? (query.get('o')?.toLowerCase() || '') : '',
-					valid: true,
 					count: query.has('c'),
+					valid: true,
+					apiWarn: hideWarn ? '' : apiWarning,
 				};
 
 				// Parse the roll and get the return text
-				const returnmsg = solver.parseRoll(rollCmd, modifiers);
-
-				// Alert users why this message just appeared and how they can report abues pf this feature
-				const apiPrefix = hideWarn
-					? ''
-					: `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>\n\n`;
-				let m, returnText = '';
-
-				// Handle sending the error message to whoever called the api
-				if (returnmsg.error) {
-					requestEvent.respondWith(new Response(returnmsg.errorMsg, { status: Status.InternalServerError }));
-
-					// Always log API rolls for abuse detection
-					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, returnmsg.errorCode, null]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-					});
-					return;
-				} else {
-					returnText = `${apiPrefix}<@${query.get('user')}>${returnmsg.line1}\n${returnmsg.line2}`;
-					let spoilerTxt = '';
-
-					// Determine if spoiler flag was on
-					if (query.has('s')) {
-						spoilerTxt = '||';
-					}
-
-					// Determine if no details flag was on
-					if (!query.has('snd')) {
-						if (query.has('nd')) {
-							returnText += '\nDetails suppressed by nd query.';
-						} else {
-							returnText += `\nDetails:\n${spoilerTxt}${returnmsg.line3}${spoilerTxt}`;
-						}
-					}
-				}
-
-				// If the roll was a GM roll, send DMs to all the GMs
-				if (query.has('gms')) {
-					// Get all the GM user IDs from the query
-					const gms = (query.get('gms') || '').split(',');
-					if (gms.length === 0) {
-						// Alert API user that they messed up
-						requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
-
-						// Always log API rolls for abuse detection
-						dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'NoGMsSent', null]).catch((e) => {
-							log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-						});
-						return;
-					}
-
-					// Make a new return line to be sent to the roller
-					let normalText = `${apiPrefix}<@${query.get('user')}>${returnmsg.line1}\nResults have been messaged to the following GMs: `;
-					gms.forEach((e) => {
-						log(LT.LOG, `Appending GM ${e} to roll text`);
-						normalText += `<@${e}> `;
-					});
-
-					// Send the return message as a DM or normal message depening on if the channel is set
-					if ((query.get('channel') || '').length > 0) {
-						// todo: embedify
-						m = await sendMessage(BigInt(query.get('channel') || ''), normalText).catch(() => {
-							requestEvent.respondWith(new Response('Message 00 failed to send.', { status: Status.InternalServerError }));
-							errorOut = true;
-						});
-					} else {
-						// todo: embedify
-						m = await sendDirectMessage(BigInt(query.get('user') || ''), normalText).catch(() => {
-							requestEvent.respondWith(new Response('Message 01 failed to send.', { status: Status.InternalServerError }));
-							errorOut = true;
-						});
-					}
-
-					const newMessage: CreateMessage = {};
-					// If its too big, collapse it into a .txt file and send that instead.
-					const b = await new Blob([returnText as BlobPart], { 'type': 'text' });
-
-					if (b.size > 8388290) {
-						// Update return text
-						newMessage.content = `${apiPrefix}<@${
-							query.get('user')
-						}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
-					} else {
-						// Update return text
-						newMessage.content = `${apiPrefix}<@${
-							query.get('user')
-						}>${returnmsg.line1}\n${returnmsg.line2}\nFull details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
-						newMessage.file = { 'blob': b, 'name': 'rollDetails.txt' };
-					}
-
-					// And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
-					gms.forEach(async (e) => {
-						log(LT.LOG, `Messaging GM ${e} roll results`);
-						// Attempt to DM the GMs and send a warning if it could not DM a GM
-						await sendDirectMessage(BigInt(e), newMessage).catch(async () => {
-							const failedSend = generateDMFailed(e);
-							// Send the return message as a DM or normal message depening on if the channel is set
-							if ((query.get('channel') || '').length > 0) {
-								m = await sendMessage(BigInt(query.get('channel') || ''), failedSend).catch(() => {
-									requestEvent.respondWith(new Response('Message failed to send.', { status: Status.InternalServerError }));
-									errorOut = true;
-								});
-							} else {
-								m = await sendDirectMessage(BigInt(query.get('user') || ''), failedSend).catch(() => {
-									requestEvent.respondWith(new Response('Message failed to send.', { status: Status.InternalServerError }));
-									errorOut = true;
-								});
-							}
-						});
-					});
-
-					// Always log API rolls for abuse detection
-					dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, (typeof m === 'object') ? m.id : null]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-					});
-
-					// Handle closing the request out
-					if (errorOut) {
-						return;
-					} else {
-						requestEvent.respondWith(new Response(normalText, { status: Status.OK }));
-						return;
-					}
-				} else {
-					// todo: embedify
-					const newMessage: CreateMessage = {};
-					newMessage.content = returnText;
-
-					// When not a GM roll, make sure the message is not too big
-					if (returnText.length > 2000) {
-						// If its too big, collapse it into a .txt file and send that instead.
-						const b = await new Blob([returnText as BlobPart], { 'type': 'text' });
-
-						if (b.size > 8388290) {
-							// Update return text
-							newMessage.content = `${apiPrefix}<@${
-								query.get('user')
-							}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details could not be attached to this messaged as a \`.txt\` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages instead of bundled into one.`;
-						} else {
-							// Update return text
-							newMessage.content = `${apiPrefix}<@${
-								query.get('user')
-							}>${returnmsg.line1}\n${returnmsg.line2}\nDetails have been ommitted from this message for being over 2000 characters.  Full details have been attached to this messaged as a \`.txt\` file for verification purposes.`;
-							newMessage.file = { 'blob': b, 'name': 'rollDetails.txt' };
-						}
-					}
-
-					// Send the return message as a DM or normal message depening on if the channel is set
-					if ((query.get('channel') || '').length > 0) {
-						m = await sendMessage(BigInt(query.get('channel') || ''), newMessage).catch(() => {
-							requestEvent.respondWith(new Response('Message 20 failed to send.', { status: Status.InternalServerError }));
-							errorOut = true;
-						});
-					} else {
-						m = await sendDirectMessage(BigInt(query.get('user') || ''), newMessage).catch(() => {
-							requestEvent.respondWith(new Response('Message 21 failed to send.', { status: Status.InternalServerError }));
-							errorOut = true;
-						});
-					}
-
-					// If enabled, log rolls so we can verify the bots math
-					dbClient.execute(queries.insertRollLogCmd(1, 0), [originalCommand, returnText, (typeof m === 'object') ? m.id : null]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-					});
-
-					// Handle closing the request out
-					if (errorOut) {
-						return;
-					} else {
-						requestEvent.respondWith(new Response(returnText, { status: Status.OK }));
-						return;
-					}
-				}
+				await queueRoll(<QueuedRoll> {
+					apiRoll: true,
+					api: { requestEvent, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '')},
+					rollCmd,
+					modifiers,
+					originalCommand,
+				});
 			} catch (err) {
 				// Handle any errors we missed
 				log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
@@ -281,7 +111,10 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 			}
 		} else {
 			// Alert API user that they messed up
-			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+			requestEvent.respondWith(new Response(
+				`Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+				{ status: Status.Forbidden, statusText: STATUS_TEXT.get(Status.Forbidden) }
+			));
 		}
 	} else {
 		// Alert API user that they shouldn't be doing this

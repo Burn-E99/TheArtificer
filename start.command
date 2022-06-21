@@ -1,1 +1,1 @@
-deno run --allow-write=./logs --allow-read=./src/solver/rollWorker.ts --allow-net .\mod.ts
+deno run --allow-write=./logs/ --allow-read=./src/solver/ --allow-net .\mod.ts

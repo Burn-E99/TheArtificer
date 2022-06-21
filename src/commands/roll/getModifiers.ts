@@ -24,6 +24,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 		order: '',
 		valid: false,
 		count: false,
+		apiWarn: '',
 	};
 
 	// Check if any of the args are command flags and pull those out into the modifiers object

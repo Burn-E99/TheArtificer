@@ -33,7 +33,7 @@ const start = async (): Promise<void> => {
 			const httpConn = Deno.serveHttp(conn);
 			for await (const requestEvent of httpConn) {
 				const request = requestEvent.request;
-				log(LT.LOG, `Handling request: ${JSON.stringify(request)}`);
+				log(LT.LOG, `Handling request: ${JSON.stringify(request.headers)} | ${JSON.stringify(request.method)} | ${JSON.stringify(request.url)}`);
 				// Check if user is authenticated to be using this API
 				let authenticated = false;
 				let rateLimited = false;
@@ -80,13 +80,14 @@ const start = async (): Promise<void> => {
 
 				if (!rateLimited) {
 					// Get path and query as a string
-					const [path, tempQ] = request.url.split('?');
+					const [urlPath, tempQ] = request.url.split('?');
+					const path = urlPath.split('api')[1];
 
 					// Turn the query into a map (if it exists)
 					const query = new Map<string, string>();
 					if (tempQ !== undefined) {
 						tempQ.split('&').forEach((e: string) => {
-							log(LT.LOG, `Parsing request query #2 ${request} ${e}`);
+							log(LT.LOG, `Parsing request query ${request} ${e}`);
 							const [option, params] = e.split('=');
 							query.set(option.toLowerCase(), params);
 						});
@@ -97,16 +98,16 @@ const start = async (): Promise<void> => {
 						switch (request.method) {
 							case 'GET':
 								switch (path.toLowerCase()) {
-									case '/api/key':
-									case '/api/key/':
+									case '/key':
+									case '/key/':
 										endpoints.get.apiKeyAdmin(requestEvent, query, apiUserid);
 										break;
-									case '/api/channel':
-									case '/api/channel/':
+									case '/channel':
+									case '/channel/':
 										endpoints.get.apiChannel(requestEvent, query, apiUserid);
 										break;
-									case '/api/roll':
-									case '/api/roll/':
+									case '/roll':
+									case '/roll/':
 										endpoints.get.apiRoll(requestEvent, query, apiUserid);
 										break;
 									default:
@@ -117,8 +118,8 @@ const start = async (): Promise<void> => {
 								break;
 							case 'POST':
 								switch (path.toLowerCase()) {
-									case '/api/channel/add':
-									case '/api/channel/add/':
+									case '/channel/add':
+									case '/channel/add/':
 										endpoints.post.apiChannelAdd(requestEvent, query, apiUserid);
 										break;
 									default:
@@ -129,26 +130,26 @@ const start = async (): Promise<void> => {
 								break;
 							case 'PUT':
 								switch (path.toLowerCase()) {
-									case '/api/key/ban':
-									case '/api/key/ban/':
-									case '/api/key/unban':
-									case '/api/key/unban/':
-									case '/api/key/activate':
-									case '/api/key/activate/':
-									case '/api/key/deactivate':
-									case '/api/key/deactivate/':
+									case '/key/ban':
+									case '/key/ban/':
+									case '/key/unban':
+									case '/key/unban/':
+									case '/key/activate':
+									case '/key/activate/':
+									case '/key/deactivate':
+									case '/key/deactivate/':
 										endpoints.put.apiKeyManage(requestEvent, query, apiUserid, path);
 										break;
-									case '/api/channel/ban':
-									case '/api/channel/ban/':
-									case '/api/channel/unban':
-									case '/api/channel/unban/':
+									case '/channel/ban':
+									case '/channel/ban/':
+									case '/channel/unban':
+									case '/channel/unban/':
 										endpoints.put.apiChannelManageBan(requestEvent, query, apiUserid, path);
 										break;
-									case '/api/channel/activate':
-									case '/api/channel/activate/':
-									case '/api/channel/deactivate':
-									case '/api/channel/deactivate/':
+									case '/channel/activate':
+									case '/channel/activate/':
+									case '/channel/deactivate':
+									case '/channel/deactivate/':
 										endpoints.put.apiChannelManageActive(requestEvent, query, apiUserid, path);
 										break;
 									default:
@@ -159,8 +160,8 @@ const start = async (): Promise<void> => {
 								break;
 							case 'DELETE':
 								switch (path.toLowerCase()) {
-									case '/api/key/delete':
-									case '/api/key/delete/':
+									case '/key/delete':
+									case '/key/delete/':
 										endpoints.delete.apiKeyDelete(requestEvent, query, apiUserid, apiUserEmail, apiUserDelCode);
 										break;
 									default:
@@ -185,8 +186,8 @@ const start = async (): Promise<void> => {
 						switch (request.method) {
 							case 'GET':
 								switch (path.toLowerCase()) {
-									case '/api/key':
-									case '/api/key/':
+									case '/key':
+									case '/key/':
 										endpoints.get.apiKey(requestEvent, query);
 										break;
 									default:
