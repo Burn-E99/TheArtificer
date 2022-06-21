@@ -35,10 +35,12 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 		rollWorker.terminate();
 		currentWorkers--;
 		if (rq.apiRoll) {
-			rq.api.requestEvent.respondWith(new Response(
-				'Roll took too long to process, try breaking roll down into simpler parts',
-				{ status: Status.RequestTimeout, statusText: STATUS_TEXT.get(Status.RequestTimeout) }
-			));
+			rq.api.requestEvent.respondWith(
+				new Response(
+					'Roll took too long to process, try breaking roll down into simpler parts',
+					{ status: Status.RequestTimeout, statusText: STATUS_TEXT.get(Status.RequestTimeout) },
+				),
+			);
 		} else {
 			rq.dd.m.edit({
 				embeds: [
@@ -74,10 +76,12 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 			// If there was an error, report it to the user in hopes that they can determine what they did wrong
 			if (returnmsg.error) {
 				if (rq.apiRoll) {
-					rq.api.requestEvent.respondWith(new Response(
-						returnmsg.errorMsg,
-						{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
-					));
+					rq.api.requestEvent.respondWith(
+						new Response(
+							returnmsg.errorMsg,
+							{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
+						),
+					);
 				} else {
 					rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
 				}
@@ -95,13 +99,15 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 					if (rq.apiRoll) {
 						n = await sendMessage(rq.api.channelId, {
 							content: rq.modifiers.apiWarn,
-							embeds: [pubEmbedDetails.embed]
+							embeds: [pubEmbedDetails.embed],
 						}).catch(() => {
 							apiErroredOut = true;
-							rq.api.requestEvent.respondWith(new Response(
-								'Message failed to send.',
-								{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
-							));
+							rq.api.requestEvent.respondWith(
+								new Response(
+									'Message failed to send.',
+									{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
+								),
+							);
 						});
 					} else {
 						// Send the public embed to correct channel
@@ -142,13 +148,15 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 					if (rq.apiRoll) {
 						n = await sendMessage(rq.api.channelId, {
 							content: rq.modifiers.apiWarn,
-							embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed]
+							embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed],
 						}).catch(() => {
 							apiErroredOut = true;
-							rq.api.requestEvent.respondWith(new Response(
-								'Message failed to send.',
-								{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
-							));
+							rq.api.requestEvent.respondWith(
+								new Response(
+									'Message failed to send.',
+									{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
+								),
+							);
 						});
 					} else {
 						n = await rq.dd.m.edit({
@@ -165,21 +173,25 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 				}
 
 				if (!apiErroredOut) {
-					rq.api.requestEvent.respondWith(new Response(
-						JSON.stringify(
-							rq.modifiers.count ? { counts: countEmbed, details: pubEmbedDetails } : { details: pubEmbedDetails }
+					rq.api.requestEvent.respondWith(
+						new Response(
+							JSON.stringify(
+								rq.modifiers.count ? { counts: countEmbed, details: pubEmbedDetails } : { details: pubEmbedDetails },
+							),
+							{ status: Status.OK, statusText: STATUS_TEXT.get(Status.OK) },
 						),
-						{ status: Status.OK, statusText: STATUS_TEXT.get(Status.OK) }
-					));
+					);
 				}
 			}
 		} catch (e) {
 			log(LT.ERROR, `Unddandled Error: ${JSON.stringify(e)}`);
 			if (rq.apiRoll && !apiErroredOut) {
-				rq.api.requestEvent.respondWith(new Response(
-					JSON.stringify(e),
-					{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) }
-				));
+				rq.api.requestEvent.respondWith(
+					new Response(
+						JSON.stringify(e),
+						{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
+					),
+				);
 			}
 		}
 	});

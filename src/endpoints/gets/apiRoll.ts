@@ -10,10 +10,10 @@ import {
 	Status,
 	STATUS_TEXT,
 } from '../../../deps.ts';
-import { RollModifiers, QueuedRoll } from '../../mod.d.ts';
+import { QueuedRoll, RollModifiers } from '../../mod.d.ts';
 import { queueRoll } from '../../solver/rollQueue.ts';
 
-const apiWarning =  `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
+const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
 export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
 	// Make sure query contains all the needed parts
@@ -97,13 +97,15 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 				};
 
 				// Parse the roll and get the return text
-				await queueRoll(<QueuedRoll> {
-					apiRoll: true,
-					api: { requestEvent, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '')},
-					rollCmd,
-					modifiers,
-					originalCommand,
-				});
+				await queueRoll(
+					<QueuedRoll> {
+						apiRoll: true,
+						api: { requestEvent, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
+						rollCmd,
+						modifiers,
+						originalCommand,
+					},
+				);
 			} catch (err) {
 				// Handle any errors we missed
 				log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
@@ -111,10 +113,12 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 			}
 		} else {
 			// Alert API user that they messed up
-			requestEvent.respondWith(new Response(
-				`Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
-				{ status: Status.Forbidden, statusText: STATUS_TEXT.get(Status.Forbidden) }
-			));
+			requestEvent.respondWith(
+				new Response(
+					`Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+					{ status: Status.Forbidden, statusText: STATUS_TEXT.get(Status.Forbidden) },
+				),
+			);
 		}
 	} else {
 		// Alert API user that they shouldn't be doing this
