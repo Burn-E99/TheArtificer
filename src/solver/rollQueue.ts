@@ -104,7 +104,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 							apiErroredOut = true;
 							rq.api.requestEvent.respondWith(
 								new Response(
-									'Message failed to send.',
+									'Message failed to send - location 0.',
 									{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
 								),
 							);
@@ -127,7 +127,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 									await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
 										file: gmEmbedDetails.attachment,
 									}).catch(() => {
-										if (rq.apiRoll && n) {
+										if (n && rq.apiRoll) {
 											n.reply(generateDMFailed(gm));
 										} else {
 											rq.dd.message.reply(generateDMFailed(gm));
@@ -153,7 +153,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 							apiErroredOut = true;
 							rq.api.requestEvent.respondWith(
 								new Response(
-									'Message failed to send.',
+									'Message failed to send - location 1.',
 									{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
 								),
 							);
@@ -172,7 +172,11 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 					}
 				}
 
-				if (!apiErroredOut) {
+				if (rq.apiRoll && !apiErroredOut) {
+					dbClient.execute(queries.insertRollLogCmd(1, 0), [rq.originalCommand, returnmsg.errorCode, n ? n.id : null]).catch((e) => {
+						log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
+					});
+
 					rq.api.requestEvent.respondWith(
 						new Response(
 							JSON.stringify(
