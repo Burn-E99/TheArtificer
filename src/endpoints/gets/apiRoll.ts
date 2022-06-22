@@ -6,12 +6,10 @@ import {
 	// Log4Deno deps
 	log,
 	LT,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../../../deps.ts';
 import { QueuedRoll, RollModifiers } from '../../mod.d.ts';
 import { queueRoll } from '../../solver/rollQueue.ts';
+import stdResp from '../stdResponses.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
@@ -23,7 +21,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 	) {
 		if (query.has('n') && query.has('m')) {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+			requestEvent.respondWith(stdResp.BadRequest(''));
 			return;
 		}
 
@@ -59,7 +57,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 
 				if (rollCmd.length === 0) {
 					// Alert API user that they messed up
-					requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+					requestEvent.respondWith(stdResp.BadRequest(''));
 
 					// Always log API rolls for abuse detection
 					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'EmptyInput', null]).catch((e) => {
@@ -70,7 +68,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 
 				if (query.has('o') && (query.get('o')?.toLowerCase() !== 'd' && query.get('o')?.toLowerCase() !== 'a')) {
 					// Alert API user that they messed up
-					requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+					requestEvent.respondWith(stdResp.BadRequest(''));
 
 					// Always log API rolls for abuse detection
 					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'BadOrder', null]).catch((e) => {
@@ -109,19 +107,18 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 			} catch (err) {
 				// Handle any errors we missed
 				log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
-				requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.InternalServerError), { status: Status.InternalServerError }));
+				requestEvent.respondWith(stdResp.InternalServerError(''));
 			}
 		} else {
 			// Alert API user that they messed up
 			requestEvent.respondWith(
-				new Response(
+				stdResp.Forbidden(
 					`Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
-					{ status: Status.Forbidden, statusText: STATUS_TEXT.get(Status.Forbidden) },
 				),
 			);
 		}
 	} else {
 		// Alert API user that they shouldn't be doing this
-		requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+		requestEvent.respondWith(stdResp.BadRequest(''));
 	}
 };

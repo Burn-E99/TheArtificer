@@ -4,10 +4,8 @@ import {
 	// Log4Deno deps
 	log,
 	LT,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../../../deps.ts';
+import stdResp from '../stdResponses.ts';
 
 export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, path: string) => {
 	if (
@@ -28,7 +26,7 @@ export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query
 			// Execute the DB modification
 			await dbClient.execute('UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-4`, { status: Status.InternalServerError }));
+				requestEvent.respondWith(stdResp.InternalServerError(''));
 				erroredOut = true;
 			});
 
@@ -36,16 +34,16 @@ export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query
 			if (erroredOut) {
 				return;
 			} else {
-				// Send API key as response
-				requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.OK), { status: Status.OK }));
+				// Send OK to indicate modification was successful
+				requestEvent.respondWith(stdResp.OK(''));
 				return;
 			}
 		} else {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+			requestEvent.respondWith(stdResp.Forbidden(''));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+		requestEvent.respondWith(stdResp.BadRequest(''));
 	}
 };

@@ -8,11 +8,9 @@ import {
 	nanoid,
 	// Discordeno deps
 	sendMessage,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../../../deps.ts';
 import { generateApiKeyEmail } from '../../commandUtils.ts';
+import stdResp from '../stdResponses.ts';
 
 export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string, string>) => {
 	if ((query.has('user') && ((query.get('user') || '').length > 0)) && (query.has('email') && ((query.get('email') || '').length > 0))) {
@@ -26,7 +24,7 @@ export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string,
 		await dbClient.execute('INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)', [BigInt(query.get('user') || '0'), newKey, (query.get('email') || '').toLowerCase()]).catch(
 			(e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-9`, { status: Status.InternalServerError }));
+				requestEvent.respondWith(stdResp.InternalServerError(''));
 				erroredOut = true;
 			},
 		);
@@ -38,19 +36,19 @@ export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string,
 
 		// "Send" the email
 		await sendMessage(config.api.email, generateApiKeyEmail(query.get('email') || 'no email', newKey)).catch(() => {
-			requestEvent.respondWith(new Response('Message 31 failed to send.', { status: Status.InternalServerError }));
+			requestEvent.respondWith(stdResp.InternalServerError('Failed to send email.'));
 			erroredOut = true;
 		});
 
 		if (erroredOut) {
 			return;
 		} else {
-			// Send API key as response
-			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.OK), { status: Status.OK }));
+			// Send basic OK to indicate key has been sent
+			requestEvent.respondWith(stdResp.OK(''));
 			return;
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+		requestEvent.respondWith(stdResp.BadRequest(''));
 	}
 };

@@ -9,12 +9,10 @@ import {
 	// Log4Deno deps
 	log,
 	LT,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../deps.ts';
 import { dbClient } from './db.ts';
 import endpoints from './endpoints/_index.ts';
+import stdResp from './endpoints/stdResponses.ts';
 
 // start() returns nothing
 // start initializes and runs the entire API for the bot
@@ -112,7 +110,7 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.NotFound), { status: Status.NotFound }));
+										requestEvent.respondWith(stdResp.NotFound(''));
 										break;
 								}
 								break;
@@ -124,7 +122,7 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.NotFound), { status: Status.NotFound }));
+										requestEvent.respondWith(stdResp.NotFound(''));
 										break;
 								}
 								break;
@@ -154,7 +152,7 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.NotFound), { status: Status.NotFound }));
+										requestEvent.respondWith(stdResp.NotFound(''));
 										break;
 								}
 								break;
@@ -166,13 +164,13 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.NotFound), { status: Status.NotFound }));
+										requestEvent.respondWith(stdResp.NotFound(''));
 										break;
 								}
 								break;
 							default:
 								// Alert API user that they messed up
-								requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.MethodNotAllowed), { status: Status.MethodNotAllowed }));
+								requestEvent.respondWith(stdResp.MethodNotAllowed(''));
 								break;
 						}
 
@@ -192,22 +190,22 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.NotFound), { status: Status.NotFound }));
+										requestEvent.respondWith(stdResp.NotFound(''));
 										break;
 								}
 								break;
 							default:
 								// Alert API user that they messed up
-								requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.MethodNotAllowed), { status: Status.MethodNotAllowed }));
+								requestEvent.respondWith(stdResp.MethodNotAllowed(''));
 								break;
 						}
 					}
 				} else if (authenticated && rateLimited) {
 					// Alert API user that they are doing this too often
-					requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.TooManyRequests), { status: Status.TooManyRequests }));
+					requestEvent.respondWith(stdResp.TooManyRequests('Slow down, servers are expensive and this bot is free to use.'));
 				} else {
 					// Alert API user that they shouldn't be doing this
-					requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+					requestEvent.respondWith(stdResp.Forbidden(''));
 				}
 			}
 		})();

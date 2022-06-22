@@ -6,10 +6,8 @@ import {
 	LT,
 	// nanoid deps
 	nanoid,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../../../deps.ts';
+import stdResp from '../stdResponses.ts';
 
 export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
 	if ((query.has('user') && ((query.get('user') || '').length > 0)) && (query.has('a') && ((query.get('a') || '').length > 0))) {
@@ -23,7 +21,7 @@ export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<st
 			// Insert new key/user pair into the db
 			await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [apiUserid, newKey]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-0`, { status: Status.InternalServerError }));
+				requestEvent.respondWith(stdResp.InternalServerError(''));
 				erroredOut = true;
 			});
 
@@ -32,15 +30,15 @@ export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<st
 				return;
 			} else {
 				// Send API key as response
-				requestEvent.respondWith(new Response(JSON.stringify({ 'key': newKey, 'userid': query.get('user') }), { status: Status.OK }));
+				requestEvent.respondWith(stdResp.OK(JSON.stringify({ 'key': newKey, 'userid': query.get('user') })));
 				return;
 			}
 		} else {
 			// Only allow the db admin to use this API
-			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+			requestEvent.respondWith(stdResp.Forbidden(''));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+		requestEvent.respondWith(stdResp.BadRequest(''));
 	}
 };

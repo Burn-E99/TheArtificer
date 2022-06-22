@@ -10,13 +10,11 @@ import {
 	// Discordeno deps
 	sendDirectMessage,
 	sendMessage,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../../deps.ts';
 import { SolvedRoll } from '../solver/solver.d.ts';
 import { QueuedRoll, RollModifiers } from '../mod.d.ts';
 import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor2, rollingEmbed } from '../commandUtils.ts';
+import stdResp from '../endpoints/stdResponses.ts';
 
 let currentWorkers = 0;
 const rollQueue: Array<QueuedRoll> = [];
@@ -35,12 +33,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 		rollWorker.terminate();
 		currentWorkers--;
 		if (rq.apiRoll) {
-			rq.api.requestEvent.respondWith(
-				new Response(
-					'Roll took too long to process, try breaking roll down into simpler parts',
-					{ status: Status.RequestTimeout, statusText: STATUS_TEXT.get(Status.RequestTimeout) },
-				),
-			);
+			rq.api.requestEvent.respondWith(stdResp.RequestTimeout('Roll took too long to process, try breaking roll down into simpler parts'));
 		} else {
 			rq.dd.m.edit({
 				embeds: [
@@ -76,12 +69,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 			// If there was an error, report it to the user in hopes that they can determine what they did wrong
 			if (returnmsg.error) {
 				if (rq.apiRoll) {
-					rq.api.requestEvent.respondWith(
-						new Response(
-							returnmsg.errorMsg,
-							{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
-						),
-					);
+					rq.api.requestEvent.respondWith(stdResp.InternalServerError(returnmsg.errorMsg));
 				} else {
 					rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
 				}
@@ -102,12 +90,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 							embeds: [pubEmbedDetails.embed],
 						}).catch(() => {
 							apiErroredOut = true;
-							rq.api.requestEvent.respondWith(
-								new Response(
-									'Message failed to send - location 0.',
-									{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
-								),
-							);
+							rq.api.requestEvent.respondWith(stdResp.InternalServerError('Message failed to send - location 0.'));
 						});
 					} else {
 						// Send the public embed to correct channel
@@ -151,12 +134,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 							embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed],
 						}).catch(() => {
 							apiErroredOut = true;
-							rq.api.requestEvent.respondWith(
-								new Response(
-									'Message failed to send - location 1.',
-									{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
-								),
-							);
+							rq.api.requestEvent.respondWith(stdResp.InternalServerError('Message failed to send - location 1.'));
 						});
 					} else {
 						n = await rq.dd.m.edit({
@@ -177,25 +155,22 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 						log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
 					});
 
-					rq.api.requestEvent.respondWith(
-						new Response(
-							JSON.stringify(
-								rq.modifiers.count ? { counts: countEmbed, details: pubEmbedDetails } : { details: pubEmbedDetails },
-							),
-							{ status: Status.OK, statusText: STATUS_TEXT.get(Status.OK) },
-						),
-					);
+					rq.api.requestEvent.respondWith(stdResp.OK(JSON.stringify(
+						rq.modifiers.count
+							? {
+								counts: countEmbed,
+								details: pubEmbedDetails,
+							}
+							: {
+								details: pubEmbedDetails,
+							},
+					)));
 				}
 			}
 		} catch (e) {
 			log(LT.ERROR, `Unddandled Error: ${JSON.stringify(e)}`);
 			if (rq.apiRoll && !apiErroredOut) {
-				rq.api.requestEvent.respondWith(
-					new Response(
-						JSON.stringify(e),
-						{ status: Status.InternalServerError, statusText: STATUS_TEXT.get(Status.InternalServerError) },
-					),
-				);
+				rq.api.requestEvent.respondWith(stdResp.InternalServerError(JSON.stringify(e)));
 			}
 		}
 	});

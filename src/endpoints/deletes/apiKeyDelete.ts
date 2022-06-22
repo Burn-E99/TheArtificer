@@ -8,11 +8,9 @@ import {
 	nanoid,
 	// Discordeno deps
 	sendMessage,
-	// httpd deps
-	Status,
-	STATUS_TEXT,
 } from '../../../deps.ts';
 import { generateApiDeleteEmail } from '../../commandUtils.ts';
+import stdResp from '../stdResponses.ts';
 
 export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, apiUserEmail: string, apiUserDelCode: string) => {
 	if (query.has('user') && ((query.get('user') || '').length > 0) && query.has('email') && ((query.get('email') || '').length > 0)) {
@@ -24,7 +22,7 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 					await dbClient.execute('DELETE FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-						requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-6`, { status: Status.InternalServerError }));
+						requestEvent.respondWith(stdResp.InternalServerError(''));
 						erroredOut = true;
 					});
 					if (erroredOut) {
@@ -33,19 +31,19 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 					await dbClient.execute('DELETE FROM all_keys WHERE userid = ?', [apiUserid]).catch((e) => {
 						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-						requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-7`, { status: Status.InternalServerError }));
+						requestEvent.respondWith(stdResp.InternalServerError(''));
 						erroredOut = true;
 					});
 					if (erroredOut) {
 						return;
 					} else {
-						// Send API key as response
-						requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.OK), { status: Status.OK }));
+						// Send OK as response to indicate key deletion was successful
+						requestEvent.respondWith(stdResp.OK(''));
 						return;
 					}
 				} else {
 					// Alert API user that they shouldn't be doing this
-					requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+					requestEvent.respondWith(stdResp.Forbidden(''));
 				}
 			} else {
 				// User does not have their delete code yet, so we need to generate one and email it to them
@@ -56,7 +54,7 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 				// Execute the DB modification
 				await dbClient.execute('UPDATE all_keys SET deleteCode = ? WHERE userid = ?', [deleteCode, apiUserid]).catch((e) => {
 					log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-					requestEvent.respondWith(new Response(`${STATUS_TEXT.get(Status.InternalServerError)}-8`, { status: Status.InternalServerError }));
+					requestEvent.respondWith(stdResp.InternalServerError(''));
 					erroredOut = true;
 				});
 				if (erroredOut) {
@@ -65,23 +63,23 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 				// "Send" the email
 				await sendMessage(config.api.email, generateApiDeleteEmail(apiUserEmail, deleteCode)).catch(() => {
-					requestEvent.respondWith(new Response('Message 30 failed to send.', { status: Status.InternalServerError }));
+					requestEvent.respondWith(stdResp.InternalServerError('Failed to send email.'));
 					erroredOut = true;
 				});
 				if (erroredOut) {
 					return;
 				} else {
 					// Send API key as response
-					requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.FailedDependency), { status: Status.FailedDependency }));
+					requestEvent.respondWith(stdResp.FailedDependency('Please look for an email containing a Delete Key and run this query again with said key.'));
 					return;
 				}
 			}
 		} else {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.Forbidden), { status: Status.Forbidden }));
+			requestEvent.respondWith(stdResp.Forbidden(''));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(new Response(STATUS_TEXT.get(Status.BadRequest), { status: Status.BadRequest }));
+		requestEvent.respondWith(stdResp.BadRequest(''));
 	}
 };
