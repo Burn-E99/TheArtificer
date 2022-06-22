@@ -16,4 +16,8 @@ export default {
 	OK: (customText: string) => genericResponse(customText, Status.OK),
 	RequestTimeout: (customText: string) => genericResponse(customText, Status.RequestTimeout),
 	TooManyRequests: (customText: string) => genericResponse(customText, Status.TooManyRequests),
+	Strings: {
+		missingParams: 'Missing Parameters.',
+		restricted: 'This API is restricted.',
+	},
 };

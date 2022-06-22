@@ -205,7 +205,7 @@ const start = async (): Promise<void> => {
 					requestEvent.respondWith(stdResp.TooManyRequests('Slow down, servers are expensive and this bot is free to use.'));
 				} else {
 					// Alert API user that they shouldn't be doing this
-					requestEvent.respondWith(stdResp.Forbidden(''));
+					requestEvent.respondWith(stdResp.Forbidden('Why are you here?'));
 				}
 			}
 		})();

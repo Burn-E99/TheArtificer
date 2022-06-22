@@ -119,6 +119,6 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 		}
 	} else {
 		// Alert API user that they shouldn't be doing this
-		requestEvent.respondWith(stdResp.BadRequest(''));
+		requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
 	}
 };

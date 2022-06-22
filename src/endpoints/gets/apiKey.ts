@@ -44,11 +44,11 @@ export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string,
 			return;
 		} else {
 			// Send basic OK to indicate key has been sent
-			requestEvent.respondWith(stdResp.OK(''));
+			requestEvent.respondWith(stdResp.OK('Email Sent.'));
 			return;
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(stdResp.BadRequest(''));
+		requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
 	}
 };

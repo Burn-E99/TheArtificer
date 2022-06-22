@@ -36,10 +36,10 @@ export const apiChannelManageActive = async (requestEvent: Deno.RequestEvent, qu
 			}
 		} else {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(stdResp.Forbidden(''));
+			requestEvent.respondWith(stdResp.Forbidden('You can only manage your own channels.'));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(stdResp.BadRequest(''));
+		requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
 	}
 };

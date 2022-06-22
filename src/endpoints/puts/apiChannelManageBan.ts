@@ -40,10 +40,10 @@ export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query
 			}
 		} else {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(stdResp.Forbidden(''));
+			requestEvent.respondWith(stdResp.Forbidden(stdResp.Strings.restricted));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(stdResp.BadRequest(''));
+		requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
 	}
 };

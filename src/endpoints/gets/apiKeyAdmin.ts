@@ -35,10 +35,10 @@ export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<st
 			}
 		} else {
 			// Only allow the db admin to use this API
-			requestEvent.respondWith(stdResp.Forbidden(''));
+			requestEvent.respondWith(stdResp.Forbidden(stdResp.Strings.restricted));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(stdResp.BadRequest(''));
+		requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
 	}
 };

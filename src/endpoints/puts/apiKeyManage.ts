@@ -46,10 +46,10 @@ export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<s
 			}
 		} else {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(stdResp.Forbidden(''));
+			requestEvent.respondWith(stdResp.Forbidden('You can only manage your own key.'));
 		}
 	} else {
 		// Alert API user that they messed up
-		requestEvent.respondWith(stdResp.BadRequest(''));
+		requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
 	}
 };
