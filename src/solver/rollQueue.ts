@@ -47,6 +47,8 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 						<RollModifiers> {},
 					)).embed,
 				],
+			}).catch((e) => {
+				log(LT.ERROR, `Failed to edit message: ${JSON.stringify(rq.dd.m)} | ${JSON.stringify(e)}`);
 			});
 		}
 	}, config.limits.workerTimeout);

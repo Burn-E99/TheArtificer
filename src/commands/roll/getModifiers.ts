@@ -62,7 +62,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 				}
 				if (modifiers.gms.length < 1) {
 					// If -gm is on and none were found, throw an error
-					m.edit(generateRollError(errorType, 'Must specifiy at least one GM by @mentioning them'));
+					m.edit(generateRollError(errorType, 'Must specifiy at least one GM by @mentioning them')).catch((e) => {
+						log(LT.ERROR, `Failed to edit message: ${JSON.stringify(m)} | ${JSON.stringify(e)}`);
+					});
 
 					if (DEVMODE && config.logRolls) {
 						// If enabled, log rolls so we can verify the bots math
@@ -79,7 +81,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
 				if (!args[i] || args[i].toLowerCase()[0] !== 'd' && args[i].toLowerCase()[0] !== 'a') {
 					// If -o is on and asc or desc was not specified, error out
-					m.edit(generateRollError(errorType, 'Must specifiy `a` or `d` to order the rolls ascending or descending'));
+					m.edit(generateRollError(errorType, 'Must specifiy `a` or `d` to order the rolls ascending or descending')).catch((e) => {
+						log(LT.ERROR, `Failed to edit message: ${JSON.stringify(m)} | ${JSON.stringify(e)}`);
+					});
 
 					if (DEVMODE && config.logRolls) {
 						// If enabled, log rolls so we can verify the bots math
@@ -106,7 +110,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
 	// maxRoll and nominalRoll cannot both be on, throw an error
 	if (modifiers.maxRoll && modifiers.nominalRoll) {
-		m.edit(generateRollError(errorType, 'Cannot maximise and nominise the roll at the same time'));
+		m.edit(generateRollError(errorType, 'Cannot maximise and nominise the roll at the same time')).catch((e) => {
+			log(LT.ERROR, `Failed to edit message: ${JSON.stringify(m)} | ${JSON.stringify(e)}`);
+		});
 
 		if (DEVMODE && config.logRolls) {
 			// If enabled, log rolls so we can verify the bots math
