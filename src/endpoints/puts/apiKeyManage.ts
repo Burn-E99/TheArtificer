@@ -11,7 +11,9 @@ export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<s
 	if ((query.has('a') && ((query.get('a') || '').length > 0)) && (query.has('user') && ((query.get('user') || '').length > 0))) {
 		if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
 			// Flag to see if there is an error inside the catch
-			let key, value, erroredOut = false;
+			let key: string,
+				value: number,
+				erroredOut = false;
 
 			// Determine key to edit
 			if (path.toLowerCase().indexOf('ban') > 0) {
@@ -30,7 +32,7 @@ export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<s
 			// Execute the DB modification
 			await dbClient.execute('UPDATE all_keys SET ?? = ? WHERE userid = ?', [key, value, apiUserid]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError(`Failed to ${key} to ${value}.`));
 				erroredOut = true;
 			});
 
@@ -39,7 +41,7 @@ export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<s
 				return;
 			} else {
 				// Send OK as response to indicate modification was successful
-				requestEvent.respondWith(stdResp.OK(''));
+				requestEvent.respondWith(stdResp.OK(`Successfully ${key} to ${value}.`));
 				return;
 			}
 		} else {

@@ -15,7 +15,7 @@ export const apiChannelAdd = async (requestEvent: Deno.RequestEvent, query: Map<
 			// Insert new user/channel pair into the db
 			await dbClient.execute('INSERT INTO allowed_channels(userid,channelid) values(?,?)', [apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Failed to store channel.'));
 				erroredOut = true;
 			});
 
@@ -24,7 +24,7 @@ export const apiChannelAdd = async (requestEvent: Deno.RequestEvent, query: Map<
 				return;
 			} else {
 				// Send OK to indicate modification was successful
-				requestEvent.respondWith(stdResp.OK(''));
+				requestEvent.respondWith(stdResp.OK('Successfully added channel.'));
 				return;
 			}
 		} else {

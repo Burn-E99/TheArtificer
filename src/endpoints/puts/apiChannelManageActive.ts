@@ -22,7 +22,7 @@ export const apiChannelManageActive = async (requestEvent: Deno.RequestEvent, qu
 			// Update the requested entry
 			await dbClient.execute('UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Failed to update channel.'));
 				erroredOut = true;
 			});
 
@@ -31,7 +31,7 @@ export const apiChannelManageActive = async (requestEvent: Deno.RequestEvent, qu
 				return;
 			} else {
 				// Send API key as response
-				requestEvent.respondWith(stdResp.OK(''));
+				requestEvent.respondWith(stdResp.OK(`Successfully active to ${value}.`));
 				return;
 			}
 		} else {

@@ -110,7 +110,7 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound(''));
+										requestEvent.respondWith(stdResp.NotFound('Auth Get'));
 										break;
 								}
 								break;
@@ -122,7 +122,7 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound(''));
+										requestEvent.respondWith(stdResp.NotFound('Auth Post'));
 										break;
 								}
 								break;
@@ -152,7 +152,7 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound(''));
+										requestEvent.respondWith(stdResp.NotFound('Auth Put'));
 										break;
 								}
 								break;
@@ -164,13 +164,13 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound(''));
+										requestEvent.respondWith(stdResp.NotFound('Auth Del'));
 										break;
 								}
 								break;
 							default:
 								// Alert API user that they messed up
-								requestEvent.respondWith(stdResp.MethodNotAllowed(''));
+								requestEvent.respondWith(stdResp.MethodNotAllowed('Auth'));
 								break;
 						}
 
@@ -190,13 +190,13 @@ const start = async (): Promise<void> => {
 										break;
 									default:
 										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound(''));
+										requestEvent.respondWith(stdResp.NotFound('NoAuth Get'));
 										break;
 								}
 								break;
 							default:
 								// Alert API user that they messed up
-								requestEvent.respondWith(stdResp.MethodNotAllowed(''));
+								requestEvent.respondWith(stdResp.MethodNotAllowed('NoAuth'));
 								break;
 						}
 					}

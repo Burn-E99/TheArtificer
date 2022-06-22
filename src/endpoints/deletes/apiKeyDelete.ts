@@ -22,7 +22,7 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 					await dbClient.execute('DELETE FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-						requestEvent.respondWith(stdResp.InternalServerError('Channel Clean Failed'));
+						requestEvent.respondWith(stdResp.InternalServerError('Channel Clean Failed.'));
 						erroredOut = true;
 					});
 					if (erroredOut) {
@@ -31,19 +31,19 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 					await dbClient.execute('DELETE FROM all_keys WHERE userid = ?', [apiUserid]).catch((e) => {
 						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-						requestEvent.respondWith(stdResp.InternalServerError('Delete Key Failed'));
+						requestEvent.respondWith(stdResp.InternalServerError('Delete Key Failed.'));
 						erroredOut = true;
 					});
 					if (erroredOut) {
 						return;
 					} else {
 						// Send OK as response to indicate key deletion was successful
-						requestEvent.respondWith(stdResp.OK(''));
+						requestEvent.respondWith(stdResp.OK('You have been removed from the DB, Goodbye.'));
 						return;
 					}
 				} else {
 					// Alert API user that they shouldn't be doing this
-					requestEvent.respondWith(stdResp.Forbidden(''));
+					requestEvent.respondWith(stdResp.Forbidden('Invalid Delete Code.'));
 				}
 			} else {
 				// User does not have their delete code yet, so we need to generate one and email it to them

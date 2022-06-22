@@ -26,7 +26,7 @@ export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query
 			// Execute the DB modification
 			await dbClient.execute('UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Failed to update channel.'));
 				erroredOut = true;
 			});
 
@@ -35,7 +35,7 @@ export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query
 				return;
 			} else {
 				// Send OK to indicate modification was successful
-				requestEvent.respondWith(stdResp.OK(''));
+				requestEvent.respondWith(stdResp.OK(`Successfully active to ${value}.`));
 				return;
 			}
 		} else {

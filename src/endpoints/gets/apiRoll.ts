@@ -21,7 +21,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 	) {
 		if (query.has('n') && query.has('m')) {
 			// Alert API user that they shouldn't be doing this
-			requestEvent.respondWith(stdResp.BadRequest(''));
+			requestEvent.respondWith(stdResp.BadRequest('Cannot have both \'n\' and \'m\'.'));
 			return;
 		}
 
@@ -57,7 +57,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 
 				if (rollCmd.length === 0) {
 					// Alert API user that they messed up
-					requestEvent.respondWith(stdResp.BadRequest(''));
+					requestEvent.respondWith(stdResp.BadRequest('rollCmd is required.'));
 
 					// Always log API rolls for abuse detection
 					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'EmptyInput', null]).catch((e) => {
@@ -68,7 +68,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 
 				if (query.has('o') && (query.get('o')?.toLowerCase() !== 'd' && query.get('o')?.toLowerCase() !== 'a')) {
 					// Alert API user that they messed up
-					requestEvent.respondWith(stdResp.BadRequest(''));
+					requestEvent.respondWith(stdResp.BadRequest('Order must be set to \'a\' or \'d\'.'));
 
 					// Always log API rolls for abuse detection
 					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'BadOrder', null]).catch((e) => {
@@ -107,7 +107,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 			} catch (err) {
 				// Handle any errors we missed
 				log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Something went wrong.'));
 			}
 		} else {
 			// Alert API user that they messed up

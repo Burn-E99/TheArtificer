@@ -15,7 +15,7 @@ export const apiChannel = async (requestEvent: Deno.RequestEvent, query: Map<str
 			// Get all channels userid has authorized
 			const dbAllowedChannelQuery = await dbClient.query('SELECT * FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Failed to get channels.'));
 				erroredOut = true;
 			});
 

@@ -21,7 +21,7 @@ export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<st
 			// Insert new key/user pair into the db
 			await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [apiUserid, newKey]).catch((e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Failed to store key.'));
 				erroredOut = true;
 			});
 

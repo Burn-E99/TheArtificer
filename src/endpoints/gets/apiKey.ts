@@ -24,7 +24,7 @@ export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string,
 		await dbClient.execute('INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)', [BigInt(query.get('user') || '0'), newKey, (query.get('email') || '').toLowerCase()]).catch(
 			(e) => {
 				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-				requestEvent.respondWith(stdResp.InternalServerError(''));
+				requestEvent.respondWith(stdResp.InternalServerError('Failed to store key.'));
 				erroredOut = true;
 			},
 		);
