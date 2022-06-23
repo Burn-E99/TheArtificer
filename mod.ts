@@ -90,7 +90,9 @@ startBot({
 		},
 		guildCreate: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
-			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:95', 'Join Guild', e));
+			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch((e: Error) =>
+				utils.commonLoggers.messageSendError('mod.ts:95', 'Join Guild', e)
+			);
 		},
 		guildDelete: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);

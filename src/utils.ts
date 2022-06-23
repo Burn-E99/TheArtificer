@@ -95,8 +95,10 @@ Available Commands:
 };
 
 const genericLogger = (level: LT, message: string) => log(level, message);
-const messageSendError = (location: string, message: DiscordenoMessage | string, err: Error) => genericLogger(LT.ERROR, `${location} | Failed to send message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message} `)
-const messageDeleteError = (location: string, message: DiscordenoMessage | string, err: Error) => genericLogger(LT.ERROR, `${location} | Failed to delete message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message} `)
+const messageSendError = (location: string, message: DiscordenoMessage | string, err: Error) =>
+	genericLogger(LT.ERROR, `${location} | Failed to send message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message} `);
+const messageDeleteError = (location: string, message: DiscordenoMessage | string, err: Error) =>
+	genericLogger(LT.ERROR, `${location} | Failed to delete message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message} `);
 
 export default {
 	commonLoggers: {
