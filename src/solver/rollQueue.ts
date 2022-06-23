@@ -15,6 +15,7 @@ import { SolvedRoll } from '../solver/solver.d.ts';
 import { QueuedRoll, RollModifiers } from '../mod.d.ts';
 import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor2, rollingEmbed } from '../commandUtils.ts';
 import stdResp from '../endpoints/stdResponses.ts';
+import utils from '../utils.ts';
 
 let currentWorkers = 0;
 const rollQueue: Array<QueuedRoll> = [];
@@ -193,9 +194,7 @@ export const queueRoll = async (rq: QueuedRoll) => {
 
 The results for this roll will replace this message when it is done.`,
 			}],
-		}).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(rq.dd.m)} | ${JSON.stringify(e)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('rollQueue.ts:197', rq.dd.m, e));
 		rollQueue.push(rq);
 	}
 };
@@ -206,9 +205,7 @@ setInterval(async () => {
 	if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
 		const temp = rollQueue.shift();
 		if (temp) {
-			temp.dd.m.edit(rollingEmbed).catch((e) => {
-				log(LT.ERROR, `Failed to send message: ${JSON.stringify(temp.dd.m)} | ${JSON.stringify(e)}`);
-			});
+			temp.dd.m.edit(rollingEmbed).catch((e: Error) => utils.commonLoggers.messageSendError('rollQueue.ts:208', temp.dd.m, e));
 			handleRollWorker(temp);
 		}
 	}

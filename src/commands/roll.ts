@@ -12,6 +12,7 @@ import { rollingEmbed, warnColor } from '../commandUtils.ts';
 import rollFuncs from './roll/_index.ts';
 import { queueRoll } from '../solver/rollQueue.ts';
 import { QueuedRoll } from '../mod.d.ts';
+import utils from '../utils.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run
@@ -26,9 +27,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 				color: warnColor,
 				title: 'Command is in development, please try again later.',
 			}],
-		}).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('roll.ts:30', message, e));
 		return;
 	}
 

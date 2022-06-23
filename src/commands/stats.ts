@@ -10,6 +10,7 @@ import {
 } from '../../deps.ts';
 import { generateStats } from '../commandUtils.ts';
 import { compilingStats } from '../commonEmbeds.ts';
+import utils from '../utils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -33,10 +34,8 @@ export const stats = async (message: DiscordenoMessage) => {
 		const cachedGuilds = await cacheHandlers.size('guilds');
 		const cachedChannels = await cacheHandlers.size('channels');
 		const cachedMembers = await cacheHandlers.size('members');
-		m.edit(generateStats(cachedGuilds + cache.dispatchedGuildIds.size, cachedChannels + cache.dispatchedChannelIds.size, cachedMembers, rolls, total - rolls)).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		m.edit(generateStats(cachedGuilds + cache.dispatchedGuildIds.size, cachedChannels + cache.dispatchedChannelIds.size, cachedMembers, rolls, total - rolls)).catch((e: Error) => utils.commonLoggers.messageSendError('stats.ts:37', message, e));
 	} catch (e) {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+		utils.commonLoggers.messageSendError('stats.ts:39', message, e);
 	}
 };

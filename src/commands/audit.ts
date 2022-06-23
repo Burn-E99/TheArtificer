@@ -9,6 +9,7 @@ import {
 } from '../../deps.ts';
 import auditCommands from './auditCmd/_index.ts';
 import { failColor } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const audit = async (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
@@ -47,8 +48,6 @@ export const audit = async (message: DiscordenoMessage, args: string[]) => {
 				color: failColor,
 				title: `Audit commands are powerful and can only be used by ${config.name}'s owner.`,
 			}],
-		}).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('audit.ts:51', message, e));
 	}
 };

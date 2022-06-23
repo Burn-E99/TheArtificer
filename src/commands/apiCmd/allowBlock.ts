@@ -7,14 +7,13 @@ import {
 	LT,
 } from '../../../deps.ts';
 import { generateApiFailed, generateApiSuccess } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 
 export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => {
 	let errorOutInitial = false;
 	const guildQuery = await dbClient.query(`SELECT guildid, channelid FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch((e0) => {
 		log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
-		message.send(generateApiFailed(apiArg)).catch((e1) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
-		});
+		message.send(generateApiFailed(apiArg)).catch((e: Error) => utils.commonLoggers.messageSendError('allowBlock.ts:16', message, e));
 		errorOutInitial = true;
 	});
 	if (errorOutInitial) return;
@@ -25,9 +24,7 @@ export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => 
 		await dbClient.execute(`INSERT INTO allowed_guilds(guildid,channelid,active) values(?,?,?)`, [message.guildId, message.channelId, (apiArg === 'allow' || apiArg === 'enable') ? 1 : 0]).catch(
 			(e0) => {
 				log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e0)}`);
-				message.send(generateApiFailed(apiArg)).catch((e1) => {
-					log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
-				});
+				message.send(generateApiFailed(apiArg)).catch((e: Error) => utils.commonLoggers.messageSendError('allowBlock.ts:27', message, e));
 				errorOut = true;
 			},
 		);
@@ -36,9 +33,7 @@ export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => 
 		await dbClient.execute(`UPDATE allowed_guilds SET active = ? WHERE guildid = ? AND channelid = ?`, [(apiArg === 'allow' || apiArg === 'enable') ? 1 : 0, message.guildId, message.channelId]).catch(
 			(e0) => {
 				log(LT.ERROR, `Failed to update DB: ${JSON.stringify(e0)}`);
-				message.send(generateApiFailed(apiArg)).catch((e1) => {
-					log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
-				});
+				message.send(generateApiFailed(apiArg)).catch((e: Error) => utils.commonLoggers.messageSendError('allowBlock.ts:36', message, e));
 				errorOut = true;
 			},
 		);
@@ -46,7 +41,5 @@ export const allowBlock = async (message: DiscordenoMessage, apiArg: string) => 
 	if (errorOut) return;
 
 	// We won't get here if there's any errors, so we know it has bee successful, so report as such
-	message.send(generateApiSuccess(`${apiArg}ed`)).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	message.send(generateApiSuccess(`${apiArg}ed`)).catch((e: Error) => utils.commonLoggers.messageSendError('allowBlock.ts:44', message, e));
 };

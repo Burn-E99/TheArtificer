@@ -7,6 +7,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import { infoColor1, infoColor2 } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 
 export const help = (message: DiscordenoMessage) => {
 	message.send({
@@ -63,7 +64,5 @@ You may enable and disable the API rolls for your guild as needed.`,
 				],
 			},
 		],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('apiHelp.ts:67', message, e));
 };

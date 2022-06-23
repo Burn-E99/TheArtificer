@@ -6,6 +6,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import { infoColor2 } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 
 export const auditGuilds = (message: DiscordenoMessage) => {
 	message.send({
@@ -15,7 +16,5 @@ export const auditGuilds = (message: DiscordenoMessage) => {
 			description: 'WIP',
 			timestamp: new Date().toISOString(),
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('auditGuild.ts:19', message, e));
 };

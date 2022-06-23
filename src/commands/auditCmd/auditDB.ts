@@ -9,6 +9,7 @@ import {
 } from '../../../deps.ts';
 import { infoColor2 } from '../../commandUtils.ts';
 import { compilingStats } from '../../commonEmbeds.ts';
+import utils from '../../utils.ts';
 
 export const auditDB = async (message: DiscordenoMessage) => {
 	try {
@@ -39,10 +40,8 @@ export const auditDB = async (message: DiscordenoMessage) => {
 				timestamp: new Date().toISOString(),
 				fields: embedFields,
 			}],
-		}).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('auditDB.ts:43', message, e));
 	} catch (e) {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+		utils.commonLoggers.messageSendError('auditDB.ts:45', message, e)
 	}
 };

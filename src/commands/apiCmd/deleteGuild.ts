@@ -7,6 +7,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import { failColor, successColor } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 
 export const deleteGuild = async (message: DiscordenoMessage) => {
 	let errorOut = false;
@@ -18,9 +19,7 @@ export const deleteGuild = async (message: DiscordenoMessage) => {
 				title: 'Failed to delete this guild from the database.',
 				description: 'If this issue persists, please report this to the developers.',
 			}],
-		}).catch((e1) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e1)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('deleteGuild.ts:22', message, e));
 		errorOut = true;
 	});
 	if (errorOut) return;
@@ -31,7 +30,5 @@ export const deleteGuild = async (message: DiscordenoMessage) => {
 			color: successColor,
 			title: 'This guild\'s API setting has been removed from The Artifier\'s Database.',
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('deleteGuild.ts:33', message, e));
 };

@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { infoColor2 } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const help = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -78,7 +79,5 @@ export const help = (message: DiscordenoMessage) => {
 				},
 			],
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('help.ts:82', message, e));
 };

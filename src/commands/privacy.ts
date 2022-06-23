@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { infoColor1 } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const privacy = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -29,7 +30,5 @@ For more details, please check out the Privacy Policy on the GitHub [here](https
 Terms of Service can also be found on GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).`,
 			}],
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('privacy.ts:33', message, e));
 };

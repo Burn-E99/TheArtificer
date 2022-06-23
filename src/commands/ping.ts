@@ -7,6 +7,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { generatePing } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const ping = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -19,6 +20,6 @@ export const ping = async (message: DiscordenoMessage) => {
 		const m = await message.send(generatePing(-1));
 		m.edit(generatePing(m.timestamp - message.timestamp));
 	} catch (e) {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
+		utils.commonLoggers.messageSendError('ping.ts:23', message, e);
 	}
 };

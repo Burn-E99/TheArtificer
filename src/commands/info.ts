@@ -7,6 +7,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { infoColor2 } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const info = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -23,7 +24,5 @@ Additional information can be found on my website [here](https://discord.burne99
 Want to check out my source code?  Check it out [here](https://github.com/Burn-E99/TheArtificer).
 Need help with this bot?  Join my support server [here](https://discord.gg/peHASXMZYv).`,
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('info.ts:27', message, e));
 };

@@ -10,6 +10,7 @@ import {
 	sendMessage,
 } from '../../deps.ts';
 import { failColor, generateReport, successColor } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const report = (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
@@ -18,18 +19,14 @@ export const report = (message: DiscordenoMessage, args: string[]) => {
 	});
 
 	if (args.join(' ')) {
-		sendMessage(config.reportChannel, generateReport(args.join(' '))).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		sendMessage(config.reportChannel, generateReport(args.join(' '))).catch((e: Error) => utils.commonLoggers.messageSendError('report.ts:22', message, e));
 		message.send({
 			embeds: [{
 				color: successColor,
 				title: 'Failed command has been reported to my developer.',
 				description: `For more in depth support, and information about planned maintenance, please join the support server [here](https://discord.gg/peHASXMZYv).`,
 			}],
-		}).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('report.ts:29', message, e));
 	} else {
 		message.send({
 			embeds: [{
@@ -37,8 +34,6 @@ export const report = (message: DiscordenoMessage, args: string[]) => {
 				title: 'Please provide a short description of what failed',
 				description: 'Providing a short description helps my developer quickly diagnose what went wrong.',
 			}],
-		}).catch((e) => {
-			log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-		});
+		}).catch((e: Error) => utils.commonLoggers.messageSendError('report.ts:37', message, e));
 	}
 };

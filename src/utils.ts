@@ -6,6 +6,11 @@
 
 import {
 	// Discordeno deps
+	DiscordenoMessage,
+	// Log4Deno deps
+	log,
+	LT,
+	// Discordeno deps
 	sendMessage,
 } from '../deps.ts';
 
@@ -74,9 +79,14 @@ const cmdPrompt = async (logChannel: bigint, botName: string): Promise<void> => 
 		} // help or h
 		// Shows a basic help menu
 		else if (command === 'help' || command === 'h') {
-			console.log(
-				`${botName} CLI Help:\n\nAvailable Commands:\n  exit - closes bot\n  stop - closes the CLI\n  m [ChannelID] [messgae] - sends message to specific ChannelID as the bot\n  ml [message] sends a message to the specified botlog\n  help - this message`,
-			);
+			console.log(`${botName} CLI Help:
+
+Available Commands:
+  exit - closes bot
+  stop - closes the CLI
+  m [ChannelID] [messgae] - sends message to specific ChannelID as the bot
+  ml [message] sends a message to the specified botlog
+  help - this message`);
 		} // Unhandled commands die here
 		else {
 			console.log('undefined command');
@@ -84,4 +94,14 @@ const cmdPrompt = async (logChannel: bigint, botName: string): Promise<void> => 
 	}
 };
 
-export default { cmdPrompt };
+const genericLogger = (level: LT, message: string) => log(level, message);
+const messageSendError = (location: string, message: DiscordenoMessage | string, err: Error) => genericLogger(LT.ERROR, `${location} | Failed to send message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message} `)
+const messageDeleteError = (location: string, message: DiscordenoMessage | string, err: Error) => genericLogger(LT.ERROR, `${location} | Failed to delete message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message} `)
+
+export default {
+	commonLoggers: {
+		messageSendError,
+		messageDeleteError,
+	},
+	cmdPrompt,
+};

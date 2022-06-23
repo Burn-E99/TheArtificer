@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { infoColor1 } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const version = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -20,7 +21,5 @@ export const version = (message: DiscordenoMessage) => {
 			color: infoColor1,
 			title: `My current version is ${config.version}`,
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('version.ts:24', message, e));
 };

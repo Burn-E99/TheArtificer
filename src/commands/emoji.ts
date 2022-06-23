@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { EmojiConf } from '../mod.d.ts';
+import utils from '../utils.ts';
 
 const allEmojiAliases: string[] = [];
 
@@ -29,14 +30,10 @@ export const emoji = (message: DiscordenoMessage, command: string) => {
 				});
 
 				// Send the needed emoji
-				message.send(`<${emji.animated ? 'a' : ''}:${emji.name}:${emji.id}>`).catch((e) => {
-					log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-				});
+				message.send(`<${emji.animated ? 'a' : ''}:${emji.name}:${emji.id}>`).catch((e: Error) => utils.commonLoggers.messageSendError('emoji.ts:33', message, e));
 				// And attempt to delete if needed
 				if (emji.deleteSender) {
-					message.delete().catch((e) => {
-						log(LT.WARN, `Failed to delete message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-					});
+					message.delete().catch((e: Error) => utils.commonLoggers.messageDeleteError('emoji.ts:36', message, e));
 				}
 				return true;
 			}

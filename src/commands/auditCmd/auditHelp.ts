@@ -7,6 +7,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import { infoColor1 } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 
 export const auditHelp = (message: DiscordenoMessage) => {
 	message.send({
@@ -31,7 +32,5 @@ export const auditHelp = (message: DiscordenoMessage) => {
 				},
 			],
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('auditHelp.ts:35', message, e));
 };

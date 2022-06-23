@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { infoColor1, infoColor2, successColor } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const rollHelp = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -243,7 +244,5 @@ Available directions:
 				],
 			},
 		],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('rollHelp.ts:247', message, e));
 };

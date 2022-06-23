@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../deps.ts';
 import { infoColor1 } from '../commandUtils.ts';
+import utils from '../utils.ts';
 
 export const handleMentions = (message: DiscordenoMessage) => {
 	log(LT.LOG, `Handling @mention message: ${JSON.stringify(message)}`);
@@ -26,7 +27,5 @@ export const handleMentions = (message: DiscordenoMessage) => {
 				value: `To learn about my available commands, please run \`${config.prefix}help\``,
 			}],
 		}],
-	}).catch((e) => {
-		log(LT.ERROR, `Failed to send message: ${JSON.stringify(message)} | ${JSON.stringify(e)}`);
-	});
+	}).catch((e: Error) => utils.commonLoggers.messageSendError('handleMentions.ts:30', message, e));
 };

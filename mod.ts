@@ -85,22 +85,16 @@ startBot({
 					}],
 					status: 'online',
 				});
-				sendMessage(config.logChannel, `${config.name} has started, running version ${config.version}.`).catch((e) => {
-					log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
-				});
+				sendMessage(config.logChannel, `${config.name} has started, running version ${config.version}.`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:88', 'Startup', e));
 			}, 1000);
 		},
 		guildCreate: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
-			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch((e) => {
-				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
-			});
+			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:95', 'Join Guild', e));
 		},
 		guildDelete: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
-			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch((e) => {
-				log(LT.ERROR, `Failed to send message: ${JSON.stringify(e)}`);
-			});
+			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:99', 'Leave Guild', e));
 			dbClient.execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id]).catch((e) => {
 				log(LT.ERROR, `Failed to DELETE guild from DB: ${JSON.stringify(e)}`);
 			});
