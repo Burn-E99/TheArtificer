@@ -1,4 +1,4 @@
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
@@ -10,7 +10,7 @@ import utils from '../utils.ts';
 
 export const api = async (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("api");`).catch((e) => utils.commonLoggers.dbError('apiCmd.ts:16', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncCnt('api')).catch((e) => utils.commonLoggers.dbError('apiCmd.ts:16', 'call sproc INC_CNT on', e));
 
 	// Local apiArg in lowercase
 	const apiArg = (args[0] || 'help').toLowerCase();

@@ -1,4 +1,4 @@
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	cache,
@@ -11,7 +11,7 @@ import utils from '../utils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("stats");`).catch((e) => utils.commonLoggers.dbError('stats.ts', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncCnt('stats')).catch((e) => utils.commonLoggers.dbError('stats.ts', 'call sproc INC_CNT on', e));
 
 	try {
 		const m = await message.send(compilingStats);

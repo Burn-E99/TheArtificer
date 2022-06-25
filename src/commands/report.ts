@@ -1,5 +1,5 @@
 import config from '../../config.ts';
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
@@ -11,7 +11,7 @@ import utils from '../utils.ts';
 
 export const report = (message: DiscordenoMessage, args: string[]) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("report");`).catch((e) => utils.commonLoggers.dbError('report.ts:17', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncCnt('report')).catch((e) => utils.commonLoggers.dbError('report.ts:17', 'call sproc INC_CNT on', e));
 
 	if (args.join(' ')) {
 		sendMessage(config.reportChannel, generateReport(args.join(' '))).catch((e: Error) => utils.commonLoggers.messageSendError('report.ts:22', message, e));

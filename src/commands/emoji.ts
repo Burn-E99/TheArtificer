@@ -1,5 +1,5 @@
 import config from '../../config.ts';
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
@@ -25,7 +25,7 @@ export const emoji = (message: DiscordenoMessage, command: string) => {
 			// If a match gets found
 			if (emji.aliases.indexOf(command || '') > -1) {
 				// Light telemetry to see how many times a command is being run
-				dbClient.execute(`CALL INC_CNT("emojis");`).catch((e) => utils.commonLoggers.dbError('emojis.ts:28', 'call sproc INC_CNT on', e));
+				dbClient.execute(queries.callIncCnt('emojis')).catch((e) => utils.commonLoggers.dbError('emojis.ts:28', 'call sproc INC_CNT on', e));
 
 				// Send the needed emoji
 				message.send(`<${emji.animated ? 'a' : ''}:${emji.name}:${emji.id}>`).catch((e: Error) => utils.commonLoggers.messageSendError('emoji.ts:33', message, e));

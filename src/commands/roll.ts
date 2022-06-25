@@ -1,6 +1,6 @@
 import config from '../../config.ts';
 import { DEVMODE } from '../../flags.ts';
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
@@ -16,7 +16,7 @@ import utils from '../utils.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("roll");`).catch((e) => utils.commonLoggers.dbError('roll.ts:19', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncCnt('roll')).catch((e) => utils.commonLoggers.dbError('roll.ts:19', 'call sproc INC_CNT on', e));
 
 	// If DEVMODE is on, only allow this command to be used in the devServer
 	if (DEVMODE && message.guildId !== config.devServer) {

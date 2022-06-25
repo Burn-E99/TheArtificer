@@ -1,5 +1,5 @@
 import config from '../../config.ts';
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
@@ -14,7 +14,7 @@ export const handleMentions = (message: DiscordenoMessage) => {
 	log(LT.LOG, `Handling @mention message: ${JSON.stringify(message)}`);
 
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("mention");`).catch((e) => utils.commonLoggers.dbError('handleMentions.ts:17', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncCnt('mention')).catch((e) => utils.commonLoggers.dbError('handleMentions.ts:17', 'call sproc INC_CNT on', e));
 
 	message.send({
 		embeds: [{

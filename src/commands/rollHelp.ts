@@ -1,5 +1,5 @@
 import config from '../../config.ts';
-import { dbClient } from '../db.ts';
+import { dbClient, queries } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
@@ -9,7 +9,7 @@ import utils from '../utils.ts';
 
 export const rollHelp = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("rollhelp");`).catch((e) => utils.commonLoggers.dbError('rollHelp.ts:15', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncCnt('rollhelp')).catch((e) => utils.commonLoggers.dbError('rollHelp.ts:15', 'call sproc INC_CNT on', e));
 
 	message.send({
 		embeds: [

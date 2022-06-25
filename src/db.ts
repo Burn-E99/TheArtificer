@@ -12,4 +12,5 @@ export const dbClient = await new Client().connect({
 
 export const queries = {
 	insertRollLogCmd: (api: number, error: number) => `INSERT INTO roll_log(input,result,resultid,api,error) values(?,?,?,${api},${error})`,
+	callIncCnt: (cmdName: string) => `CALL INC_CNT("${cmdName}");`,
 };
