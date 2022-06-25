@@ -16,7 +16,9 @@ import utils from '../utils.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(queries.callIncCnt('roll')).catch((e) => utils.commonLoggers.dbError('roll.ts:19', 'call sproc INC_CNT on', e));
+	const currDateTime = new Date();
+	dbClient.execute(queries.callIncCnt('roll')).catch((e) => utils.commonLoggers.dbError('roll.ts:20', 'call sproc INC_CNT on', e));
+	dbClient.execute(queries.callIncHeatmap(currDateTime)).catch((e) => utils.commonLoggers.dbError('roll.ts:21', 'update', e));
 
 	// If DEVMODE is on, only allow this command to be used in the devServer
 	if (DEVMODE && message.guildId !== config.devServer) {

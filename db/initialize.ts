@@ -15,6 +15,8 @@ await dbClient.execute(`DROP TABLE IF EXISTS allowed_channels;`);
 await dbClient.execute(`DROP TABLE IF EXISTS all_keys;`);
 await dbClient.execute(`DROP TABLE IF EXISTS allowed_guilds;`);
 await dbClient.execute(`DROP TABLE IF EXISTS roll_log;`);
+await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_HEATMAP;`);
+await dbClient.execute(`DROP TABLE IF EXISTS roll_time_heatmap;`);
 await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_CNT;`);
 await dbClient.execute(`DROP TABLE IF EXISTS command_cnt;`);
 console.log('Tables dropped');
@@ -25,13 +27,14 @@ await dbClient.execute(`
 	CREATE TABLE command_cnt (
 		command char(20) NOT NULL,
 		count bigint unsigned NOT NULL DEFAULT 0,
+		dailyRate float unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY (command),
 		UNIQUE KEY command_cnt_command_UNIQUE (command)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 `);
 console.log('Table created');
 
-console.log('Attempt creating increment Stored Procedure');
+console.log('Attempt creating increment count Stored Procedure');
 await dbClient.execute(`
 	CREATE PROCEDURE INC_CNT(
 		IN cmd CHAR(20)
@@ -40,6 +43,44 @@ await dbClient.execute(`
 		declare oldcnt bigint unsigned;
 		set oldcnt = (SELECT count FROM command_cnt WHERE command = cmd);
 		UPDATE command_cnt SET count = oldcnt + 1 WHERE command = cmd;
+	END
+`);
+console.log('Stored Procedure created');
+
+// Holds daily average of commands
+console.log('Attempting to create table roll_time_heatmap');
+await dbClient.execute(`
+	CREATE TABLE roll_time_heatmap (
+		hour tinyint(1) unsigned NOT NULL,
+		sunday bigint unsigned NOT NULL DEFAULT 0,
+		monday bigint unsigned NOT NULL DEFAULT 0,
+		tuesday bigint unsigned NOT NULL DEFAULT 0,
+		wednesday bigint unsigned NOT NULL DEFAULT 0,
+		thursday bigint unsigned NOT NULL DEFAULT 0,
+		friday bigint unsigned NOT NULL DEFAULT 0,
+		saturday bigint unsigned NOT NULL DEFAULT 0,
+		PRIMARY KEY (hour),
+		UNIQUE KEY roll_time_heatmap_hour_UNIQUE (hour)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+`);
+console.log('Table created');
+
+console.log('Attempt creating increment heatmap Stored Procedure');
+await dbClient.execute(`
+	CREATE PROCEDURE INC_HEATMAP(
+		IN dy varchar(10),
+		IN hr tinyint(1)
+	)
+	BEGIN
+		SET @s1=CONCAT('SELECT ',dy,' FROM roll_time_heatmap WHERE hour = ',hr,' INTO @oldcnt');
+		PREPARE stmt1 FROM @s1;
+		EXECUTE stmt1;
+		DEALLOCATE PREPARE stmt1;
+
+		SET @s2=CONCAT('UPDATE roll_time_heatmap SET ',dy,' = @oldcnt + 1 WHERE hour = ',hr);
+		PREPARE stmt2 FROM @s2;
+		EXECUTE stmt2;
+		DEALLOCATE PREPARE stmt2;
 	END
 `);
 console.log('Stored Procedure created');
