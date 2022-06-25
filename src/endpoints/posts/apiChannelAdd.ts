@@ -5,6 +5,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import stdResp from '../stdResponses.ts';
+import utils from '../../utils.ts';
 
 export const apiChannelAdd = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
 	if ((query.has('user') && ((query.get('user') || '').length > 0)) && (query.has('channel') && ((query.get('channel') || '').length > 0))) {
@@ -14,7 +15,7 @@ export const apiChannelAdd = async (requestEvent: Deno.RequestEvent, query: Map<
 
 			// Insert new user/channel pair into the db
 			await dbClient.execute('INSERT INTO allowed_channels(userid,channelid) values(?,?)', [apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
-				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+				utils.commonLoggers.dbError('apiChannelAdd.ts:17', 'insert into', e);
 				requestEvent.respondWith(stdResp.InternalServerError('Failed to store channel.'));
 				erroredOut = true;
 			});

@@ -16,9 +16,7 @@ import utils from '../utils.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("roll");`).catch((e) => {
-		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
-	});
+	dbClient.execute(`CALL INC_CNT("roll");`).catch((e) => utils.commonLoggers.dbError('roll.ts:19', 'call sproc INC_CNT on', e));
 
 	// If DEVMODE is on, only allow this command to be used in the devServer
 	if (DEVMODE && message.guildId !== config.devServer) {

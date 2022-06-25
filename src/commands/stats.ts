@@ -14,20 +14,14 @@ import utils from '../utils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("stats");`).catch((e) => {
-		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
-	});
+	dbClient.execute(`CALL INC_CNT("stats");`).catch((e) => utils.commonLoggers.dbError('stats.ts', 'call sproc INC_CNT on', e));
 
 	try {
 		const m = await message.send(compilingStats);
 
 		// Calculate how many times commands have been run
-		const rollQuery = await dbClient.query(`SELECT count FROM command_cnt WHERE command = "roll";`).catch((e) => {
-			log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e)}`);
-		});
-		const totalQuery = await dbClient.query(`SELECT SUM(count) as count FROM command_cnt;`).catch((e) => {
-			log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e)}`);
-		});
+		const rollQuery = await dbClient.query(`SELECT count FROM command_cnt WHERE command = "roll";`).catch((e) => utils.commonLoggers.dbError('stats.ts:23', 'query', e));
+		const totalQuery = await dbClient.query(`SELECT SUM(count) as count FROM command_cnt;`).catch((e) => utils.commonLoggers.dbError('stats.ts:24', 'query', e));
 		const rolls = BigInt(rollQuery[0].count);
 		const total = BigInt(totalQuery[0].count);
 

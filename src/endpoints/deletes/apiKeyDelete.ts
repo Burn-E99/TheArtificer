@@ -10,6 +10,7 @@ import {
 	sendMessage,
 } from '../../../deps.ts';
 import { generateApiDeleteEmail } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 import stdResp from '../stdResponses.ts';
 
 export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, apiUserEmail: string, apiUserDelCode: string) => {
@@ -21,7 +22,7 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 					let erroredOut = false;
 
 					await dbClient.execute('DELETE FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+						utils.commonLoggers.dbError('apiKeyDelete.ts:25', 'insert into', e);
 						requestEvent.respondWith(stdResp.InternalServerError('Channel Clean Failed.'));
 						erroredOut = true;
 					});
@@ -30,7 +31,7 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 					}
 
 					await dbClient.execute('DELETE FROM all_keys WHERE userid = ?', [apiUserid]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+						utils.commonLoggers.dbError('apiKeyDelete.ts:34', 'delete from', e);
 						requestEvent.respondWith(stdResp.InternalServerError('Delete Key Failed.'));
 						erroredOut = true;
 					});
@@ -53,7 +54,7 @@ export const apiKeyDelete = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 				// Execute the DB modification
 				await dbClient.execute('UPDATE all_keys SET deleteCode = ? WHERE userid = ?', [deleteCode, apiUserid]).catch((e) => {
-					log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+					utils.commonLoggers.dbError('apiKeyDelete.ts:57', 'update', e);
 					requestEvent.respondWith(stdResp.InternalServerError('Delete Code Failed'));
 					erroredOut = true;
 				});

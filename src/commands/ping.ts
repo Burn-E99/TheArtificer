@@ -11,9 +11,7 @@ import utils from '../utils.ts';
 
 export const ping = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("ping");`).catch((e) => {
-		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
-	});
+	dbClient.execute(`CALL INC_CNT("ping");`).catch((e) => utils.commonLoggers.dbError('ping.ts:14', 'call sproc INC_CNT on', e));
 
 	// Calculates ping between sending a message and editing it, giving a nice round-trip latency.
 	try {

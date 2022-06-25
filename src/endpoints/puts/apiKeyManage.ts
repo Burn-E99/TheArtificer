@@ -6,6 +6,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import stdResp from '../stdResponses.ts';
+import utils from '../../utils.ts';
 
 export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, path: string) => {
 	if ((query.has('a') && ((query.get('a') || '').length > 0)) && (query.has('user') && ((query.get('user') || '').length > 0))) {
@@ -31,7 +32,7 @@ export const apiKeyManage = async (requestEvent: Deno.RequestEvent, query: Map<s
 
 			// Execute the DB modification
 			await dbClient.execute('UPDATE all_keys SET ?? = ? WHERE userid = ?', [key, value, apiUserid]).catch((e) => {
-				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+				utils.commonLoggers.dbError('apiKeyManage.ts', 'update', e);
 				requestEvent.respondWith(stdResp.InternalServerError(`Failed to ${key} to ${value}.`));
 				erroredOut = true;
 			});

@@ -5,6 +5,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import stdResp from '../stdResponses.ts';
+import utils from '../../utils.ts';
 
 export const apiChannelManageActive = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, path: string) => {
 	if ((query.has('channel') && ((query.get('channel') || '').length > 0)) && (query.has('user') && ((query.get('user') || '').length > 0))) {
@@ -21,7 +22,7 @@ export const apiChannelManageActive = async (requestEvent: Deno.RequestEvent, qu
 
 			// Update the requested entry
 			await dbClient.execute('UPDATE allowed_channels SET active = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')]).catch((e) => {
-				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+				utils.commonLoggers.dbError('apiChannelManageActive.ts:25', 'update', e);
 				requestEvent.respondWith(stdResp.InternalServerError('Failed to update channel.'));
 				erroredOut = true;
 			});

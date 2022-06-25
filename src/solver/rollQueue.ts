@@ -48,9 +48,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 						<RollModifiers> {},
 					)).embed,
 				],
-			}).catch((e) => {
-				log(LT.ERROR, `Failed to edit message: ${JSON.stringify(rq.dd.m)} | ${JSON.stringify(e)}`);
-			});
+			}).catch((e) => utils.commonLoggers.messageEditError('rollQueue.ts:51', rq.dd.m, e));
 		}
 	}, config.limits.workerTimeout);
 
@@ -79,9 +77,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 
 				if (rq.apiRoll || DEVMODE && config.logRolls) {
 					// If enabled, log rolls so we can see what went wrong
-					dbClient.execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnmsg.errorCode, rq.apiRoll ? null : rq.dd.m.id]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
-					});
+					dbClient.execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnmsg.errorCode, rq.apiRoll ? null : rq.dd.m.id]).catch((e) => utils.commonLoggers.dbError('rollQueue.ts:82', 'insert into', e));
 				}
 			} else {
 				let n: DiscordenoMessage | void;
@@ -154,9 +150,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 				}
 
 				if (rq.apiRoll && !apiErroredOut) {
-					dbClient.execute(queries.insertRollLogCmd(1, 0), [rq.originalCommand, returnmsg.errorCode, n ? n.id : null]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into DB: ${JSON.stringify(e)}`);
-					});
+					dbClient.execute(queries.insertRollLogCmd(1, 0), [rq.originalCommand, returnmsg.errorCode, n ? n.id : null]).catch((e) => utils.commonLoggers.dbError('rollQueue.ts:155', 'insert into', e));
 
 					rq.api.requestEvent.respondWith(stdResp.OK(JSON.stringify(
 						rq.modifiers.count

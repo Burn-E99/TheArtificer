@@ -13,7 +13,7 @@ export const status = async (message: DiscordenoMessage) => {
 	// Get status of guild from the db
 	let errorOut = false;
 	const guildQuery = await dbClient.query(`SELECT active, banned FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch((e0) => {
-		log(LT.ERROR, `Failed to query DB: ${JSON.stringify(e0)}`);
+		utils.commonLoggers.dbError('status.ts:16', 'query', e0);
 		message.send({
 			embeds: [{
 				color: failColor,

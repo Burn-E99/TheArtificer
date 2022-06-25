@@ -10,6 +10,7 @@ import {
 	sendMessage,
 } from '../../../deps.ts';
 import { generateApiKeyEmail } from '../../commandUtils.ts';
+import utils from '../../utils.ts';
 import stdResp from '../stdResponses.ts';
 
 export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string, string>) => {
@@ -23,7 +24,7 @@ export const apiKey = async (requestEvent: Deno.RequestEvent, query: Map<string,
 		// Insert new key/user pair into the db
 		await dbClient.execute('INSERT INTO all_keys(userid,apiKey,email) values(?,?,?)', [BigInt(query.get('user') || '0'), newKey, (query.get('email') || '').toLowerCase()]).catch(
 			(e) => {
-				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+				utils.commonLoggers.dbError('apiKey.ts:27', 'insert into', e);
 				requestEvent.respondWith(stdResp.InternalServerError('Failed to store key.'));
 				erroredOut = true;
 			},

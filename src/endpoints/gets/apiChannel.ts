@@ -5,6 +5,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import stdResp from '../stdResponses.ts';
+import utils from '../../utils.ts';
 
 export const apiChannel = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
 	if (query.has('user') && ((query.get('user') || '').length > 0)) {
@@ -14,7 +15,7 @@ export const apiChannel = async (requestEvent: Deno.RequestEvent, query: Map<str
 
 			// Get all channels userid has authorized
 			const dbAllowedChannelQuery = await dbClient.query('SELECT * FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {
-				log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
+				utils.commonLoggers.dbError('apiChannel.ts', 'query', e);
 				requestEvent.respondWith(stdResp.InternalServerError('Failed to get channels.'));
 				erroredOut = true;
 			});

@@ -97,9 +97,7 @@ startBot({
 		guildDelete: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
 			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:99', 'Leave Guild', e));
-			dbClient.execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id]).catch((e) => {
-				log(LT.ERROR, `Failed to DELETE guild from DB: ${JSON.stringify(e)}`);
-			});
+			dbClient.execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id]).catch((e) => utils.commonLoggers.dbError('mod.ts:100', 'delete from', e));
 		},
 		debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
 		messageCreate: (message: DiscordenoMessage) => {

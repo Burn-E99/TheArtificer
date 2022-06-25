@@ -8,6 +8,7 @@ import {
 	LT,
 } from '../../../deps.ts';
 import { QueuedRoll, RollModifiers } from '../../mod.d.ts';
+import utils from '../../utils.ts';
 import { queueRoll } from '../../solver/rollQueue.ts';
 import stdResp from '../stdResponses.ts';
 
@@ -60,9 +61,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 					requestEvent.respondWith(stdResp.BadRequest('rollCmd is required.'));
 
 					// Always log API rolls for abuse detection
-					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'EmptyInput', null]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-					});
+					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'EmptyInput', null]).catch((e) => utils.commonLoggers.dbError('apiRoll.ts:65', 'insert', e));
 					return;
 				}
 
@@ -71,9 +70,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
 					requestEvent.respondWith(stdResp.BadRequest('Order must be set to \'a\' or \'d\'.'));
 
 					// Always log API rolls for abuse detection
-					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'BadOrder', null]).catch((e) => {
-						log(LT.ERROR, `Failed to insert into database: ${JSON.stringify(e)}`);
-					});
+					dbClient.execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'BadOrder', null]).catch((e) => utils.commonLoggers.dbError('apiRoll.ts:66', 'insert', e));
 					return;
 				}
 

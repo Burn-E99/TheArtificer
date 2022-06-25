@@ -11,9 +11,7 @@ import utils from '../utils.ts';
 
 export const rip = (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
-	dbClient.execute(`CALL INC_CNT("rip");`).catch((e) => {
-		log(LT.ERROR, `Failed to call stored procedure INC_CNT: ${JSON.stringify(e)}`);
-	});
+	dbClient.execute(`CALL INC_CNT("rip");`).catch((e) => utils.commonLoggers.dbError('rip.ts:14', 'call sproc INC_CNT on', e));
 
 	message.send({
 		embeds: [{
