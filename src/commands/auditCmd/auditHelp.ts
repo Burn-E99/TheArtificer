@@ -2,9 +2,6 @@ import config from '../../../config.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../../deps.ts';
 import { infoColor1 } from '../../commandUtils.ts';
 import utils from '../../utils.ts';

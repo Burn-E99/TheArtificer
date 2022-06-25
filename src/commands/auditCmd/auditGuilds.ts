@@ -1,9 +1,6 @@
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../../deps.ts';
 import { infoColor2 } from '../../commandUtils.ts';
 import utils from '../../utils.ts';
