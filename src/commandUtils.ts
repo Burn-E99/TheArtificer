@@ -30,7 +30,7 @@ export const generateReport = (msg: string) => ({
 	}],
 });
 
-export const generateStats = (guildCount: number, channelCount: number, memberCount: number, rollCount: bigint, utilityCount: bigint) => ({
+export const generateStats = (guildCount: number, channelCount: number, memberCount: number, rollCount: bigint, utilityCount: bigint, rollRate: number, utilityRate: number) => ({
 	embeds: [{
 		color: infoColor2,
 		title: 'The Artificer\'s Statistics:',
@@ -53,12 +53,14 @@ export const generateStats = (guildCount: number, channelCount: number, memberCo
 			},
 			{
 				name: 'Roll Commands:',
-				value: `${rollCount}`,
+				value: `${rollCount}
+(${rollRate.toFixed(2)} per hour)`,
 				inline: true,
 			},
 			{
 				name: 'Utility Commands:',
-				value: `${utilityCount}`,
+				value: `${utilityCount}
+(${utilityRate.toFixed(2)} per hour)`,
 				inline: true,
 			},
 		],

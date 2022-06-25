@@ -73,10 +73,17 @@ startBot({
 				intervals.updateListStatistics(botId, cache.guilds.size);
 			}, 86400000);
 
+			// Interval to update hourlyRates every hour
+			setInterval(() => {
+				log(LT.LOG, 'Updating all command hourlyRates');
+				intervals.updateHourlyRates();
+			}, 3600000);
+
 			// setTimeout added to make sure the startup message does not error out
 			setTimeout(() => {
 				LOCALMODE && editBotNickname(config.devServer, `LOCAL - ${config.name}`);
 				LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : intervals.updateListStatistics(botId, cache.guilds.size);
+				intervals.updateHourlyRates();
 				editBotStatus({
 					activities: [{
 						name: 'Booting Complete',

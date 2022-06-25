@@ -27,7 +27,7 @@ await dbClient.execute(`
 	CREATE TABLE command_cnt (
 		command char(20) NOT NULL,
 		count bigint unsigned NOT NULL DEFAULT 0,
-		dailyRate float unsigned NOT NULL DEFAULT 0,
+		hourlyRate float unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY (command),
 		UNIQUE KEY command_cnt_command_UNIQUE (command)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;

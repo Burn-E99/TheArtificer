@@ -12,7 +12,9 @@ import {
 	log,
 	LT,
 } from '../deps.ts';
-
+import { PastCommandCount } from './mod.d.ts';
+import { dbClient } from './db.ts';
+import utils from './utils.ts';
 import config from '../config.ts';
 
 // getRandomStatus() returns status as string
@@ -59,4 +61,40 @@ const updateListStatistics = (botID: bigint, serverCount: number): void => {
 	});
 };
 
-export default { getRandomStatus, updateListStatistics };
+// Keep one week of data
+const hoursToKeep = 7 * 24;
+const previousHours: Array<Array<PastCommandCount>> = []
+// updateHourlyRates() returns nothing
+// Updates the hourlyRate for command usage
+const updateHourlyRates = async () => {
+	try {
+		const newestHour = await dbClient.query(`SELECT command, count FROM command_cnt ORDER BY command;`).catch((e) => utils.commonLoggers.dbError('intervals.ts:71', 'query', e));
+		previousHours.push(newestHour);
+		if (previousHours.length > 1) {
+			const oldestHour = previousHours[0];
+
+			const computedDiff: Array<PastCommandCount> = []
+			for (let i = 0; i < newestHour.length; i++) {
+				computedDiff.push({
+					command: newestHour[i].command,
+					count: (newestHour[i].count - oldestHour[i].count),
+				});
+				log(LT.LOG, `Updating hourlyRate | Computing diffs: ${JSON.stringify(computedDiff)}`);
+			}
+
+			// Update DB
+			computedDiff.forEach(async (cmd) => {
+				log(LT.LOG, `Updating hourlyRate | Storing to DB: ${JSON.stringify(cmd)}`);
+				await dbClient.execute(`UPDATE command_cnt SET hourlyRate = ? WHERE command = ?`, [(cmd.count / previousHours.length), cmd.command]).catch((e) => utils.commonLoggers.dbError('intervals.ts:88', 'update', e));
+			});
+		}
+
+		if (previousHours.length > hoursToKeep) {
+			previousHours.unshift();
+		}
+	} catch (e) {
+		log(LT.ERROR, `Something went wrong in previousHours interval | Error: ${e.name} - ${e.message}`)
+	}
+};
+
+export default { getRandomStatus, updateListStatistics, updateHourlyRates };

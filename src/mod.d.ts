@@ -41,3 +41,8 @@ export type QueuedRoll = {
 	rollCmd: string;
 	modifiers: RollModifiers;
 };
+
+export type PastCommandCount = {
+	command: string;
+	count: number;
+};
