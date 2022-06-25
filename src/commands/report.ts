@@ -3,9 +3,6 @@ import { dbClient } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 	// Discordeno deps
 	sendMessage,
 } from '../../deps.ts';

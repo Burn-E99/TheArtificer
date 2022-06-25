@@ -3,9 +3,6 @@ import {
 	// Discordeno deps
 	DiscordenoMessage,
 	hasGuildPermissions,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../deps.ts';
 import apiCommands from './apiCmd/_index.ts';
 import { failColor } from '../commandUtils.ts';

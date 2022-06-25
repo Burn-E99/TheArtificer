@@ -3,9 +3,6 @@ import {
 	// Discordeno deps
 	DiscordenoMessage,
 	EmbedField,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../../deps.ts';
 import { infoColor2 } from '../../commandUtils.ts';
 import { compilingStats } from '../../commonEmbeds.ts';

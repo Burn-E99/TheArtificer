@@ -4,9 +4,6 @@ import {
 	cache,
 	cacheHandlers,
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../deps.ts';
 import { generateStats } from '../commandUtils.ts';
 import { compilingStats } from '../commonEmbeds.ts';

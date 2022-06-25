@@ -2,9 +2,6 @@ import { dbClient } from '../../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../../deps.ts';
 import { failColor, generateApiStatus } from '../../commandUtils.ts';
 import utils from '../../utils.ts';

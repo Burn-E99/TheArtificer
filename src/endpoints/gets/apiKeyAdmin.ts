@@ -1,9 +1,6 @@
 import config from '../../../config.ts';
 import { dbClient } from '../../db.ts';
 import {
-	// Log4Deno deps
-	log,
-	LT,
 	// nanoid deps
 	nanoid,
 } from '../../../deps.ts';

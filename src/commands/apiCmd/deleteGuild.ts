@@ -2,9 +2,6 @@ import { dbClient } from '../../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../../deps.ts';
 import { failColor, successColor } from '../../commandUtils.ts';
 import utils from '../../utils.ts';
@@ -12,7 +9,7 @@ import utils from '../../utils.ts';
 export const deleteGuild = async (message: DiscordenoMessage) => {
 	let errorOut = false;
 	await dbClient.execute(`DELETE FROM allowed_guilds WHERE guildid = ? AND channelid = ?`, [message.guildId, message.channelId]).catch((e0) => {
-		utils.commonLoggers.dbError('deleteGuild.ts:15', 'query', e0)
+		utils.commonLoggers.dbError('deleteGuild.ts:15', 'query', e0);
 		message.send({
 			embeds: [{
 				color: failColor,

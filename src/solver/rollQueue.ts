@@ -77,7 +77,9 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 
 				if (rq.apiRoll || DEVMODE && config.logRolls) {
 					// If enabled, log rolls so we can see what went wrong
-					dbClient.execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnmsg.errorCode, rq.apiRoll ? null : rq.dd.m.id]).catch((e) => utils.commonLoggers.dbError('rollQueue.ts:82', 'insert into', e));
+					dbClient.execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnmsg.errorCode, rq.apiRoll ? null : rq.dd.m.id]).catch((e) =>
+						utils.commonLoggers.dbError('rollQueue.ts:82', 'insert into', e)
+					);
 				}
 			} else {
 				let n: DiscordenoMessage | void;

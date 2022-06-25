@@ -3,9 +3,6 @@ import { dbClient } from '../db.ts';
 import {
 	// Discordeno deps
 	DiscordenoMessage,
-	// Log4Deno deps
-	log,
-	LT,
 } from '../../deps.ts';
 import auditCommands from './auditCmd/_index.ts';
 import { failColor } from '../commandUtils.ts';
