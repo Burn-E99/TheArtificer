@@ -190,7 +190,7 @@ export const queueRoll = async (rq: QueuedRoll) => {
 
 The results for this roll will replace this message when it is done.`,
 			}],
-		}).catch((e: Error) => utils.commonLoggers.messageSendError('rollQueue.ts:197', rq.dd.m, e));
+		}).catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:197', rq.dd.m, e));
 		rollQueue.push(rq);
 	}
 };
@@ -201,7 +201,7 @@ setInterval(async () => {
 	if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
 		const temp = rollQueue.shift();
 		if (temp) {
-			temp.dd.m.edit(rollingEmbed).catch((e: Error) => utils.commonLoggers.messageSendError('rollQueue.ts:208', temp.dd.m, e));
+			temp.dd.m.edit(rollingEmbed).catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:208', temp.dd.m, e));
 			handleRollWorker(temp);
 		}
 	}

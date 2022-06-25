@@ -35,7 +35,7 @@ export const auditDB = async (message: DiscordenoMessage) => {
 				timestamp: new Date().toISOString(),
 				fields: embedFields,
 			}],
-		}).catch((e: Error) => utils.commonLoggers.messageSendError('auditDB.ts:43', message, e));
+		}).catch((e: Error) => utils.commonLoggers.messageEditError('auditDB.ts:43', message, e));
 	} catch (e) {
 		utils.commonLoggers.messageSendError('auditDB.ts:45', message, e);
 	}

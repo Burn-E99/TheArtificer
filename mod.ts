@@ -196,6 +196,12 @@ startBot({
 					// Audit sub commands
 					commands.audit(message, args);
 					break;
+				case 'heatmap':
+				case 'hm':
+					// [[heatmap or [[hm
+					// Audit sub commands
+					commands.heatmap(message);
+					break;
 				default:
 					// Non-standard commands
 					if (command?.startsWith('xdy')) {
