@@ -6,6 +6,7 @@ import {
 import config from '../../config.ts';
 import { failColor, infoColor2 } from '../commandUtils.ts';
 import utils from '../utils.ts';
+import intervals from '../intervals.ts';
 
 export const heatmap = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
@@ -15,14 +16,17 @@ export const heatmap = async (message: DiscordenoMessage) => {
 		const m = await message.send({
 			embeds: [{
 				title: 'Roll Heatmap',
+				description: `Least Rolls: ${intervals.getMinRollCnt()}
+Most Rolls: ${intervals.getMaxRollCnt()}`,
+				footer: {
+					text: 'Data is shown in US Eastern Time. | This heatmap uses data starting 6/26/2022.',
+				},
 				color: infoColor2,
 				image: {
 					url: `${config.api.publicDomain}api/heatmap.png`,
 				},
 			}],
 		}).catch((e) => utils.commonLoggers.messageSendError('heatmap.ts:21', message, e));
-
-		console.log(m);
 	} else {
 		message.send({
 			embeds: [{

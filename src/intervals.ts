@@ -150,6 +150,8 @@ const hourPixels: Array<Array<number>> = [
 ];
 // updateHeatmap() returns nothing, creates new heatmap.png
 // Updates the heatmap image with latest data from the db
+let minRollCnt: number;
+let maxRollCnt: number;
 const updateHeatmapPng = async () => {
 	const baseHeatmap = Deno.readFileSync('./src/endpoints/gets/heatmap-base.png');
 	const heatmap = await is.decode(baseHeatmap);
@@ -159,8 +161,8 @@ const updateHeatmapPng = async () => {
 	// Get latest data from DB
 	const heatmapData = await dbClient.query('SELECT * FROM roll_time_heatmap ORDER BY hour;').catch((e) => utils.commonLoggers.dbError('intervals.ts:148', 'query', e));
 
-	let minRollCnt = Infinity;
-	let maxRollCnt = 0;
+	minRollCnt = Infinity;
+	maxRollCnt = 0;
 	// determine min and max values
 	for (const hour of heatmapData) {
 		for (const day of weekDays) {
@@ -202,4 +204,6 @@ export default {
 	updateListStatistics,
 	updateHourlyRates,
 	updateHeatmapPng,
+	getMinRollCnt: () => minRollCnt,
+	getMaxRollCnt: () => maxRollCnt,
 };
