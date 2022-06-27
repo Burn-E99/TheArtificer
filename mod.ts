@@ -79,11 +79,18 @@ startBot({
 				intervals.updateHourlyRates();
 			}, 3600000);
 
+			// Interval to update heatmap.png every hour
+			setInterval(() => {
+				log(LT.LOG, 'Updating heatmap.png');
+				intervals.updateHeatmapPng();
+			}, 3600000);
+
 			// setTimeout added to make sure the startup message does not error out
 			setTimeout(() => {
 				LOCALMODE && editBotNickname(config.devServer, `LOCAL - ${config.name}`);
 				LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : intervals.updateListStatistics(botId, cache.guilds.size);
 				intervals.updateHourlyRates();
+				intervals.updateHeatmapPng();
 				editBotStatus({
 					activities: [{
 						name: 'Booting Complete',

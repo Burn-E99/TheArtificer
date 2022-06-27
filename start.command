@@ -1,1 +1,1 @@
-deno run --allow-write=./logs/ --allow-read=./src/solver/ --allow-net .\mod.ts
+deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net .\mod.ts

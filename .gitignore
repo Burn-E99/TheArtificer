@@ -1,3 +1,4 @@
 config.ts
 **/**/Thumbs.db
 logs
+src/endpoints/gets/heatmap.png
