@@ -153,47 +153,48 @@ const hourPixels: Array<Array<number>> = [
 const updateHeatmapPng = async () => {
 	const baseHeatmap = Deno.readFileSync('./src/endpoints/gets/heatmap-base.png');
 	const heatmap = await is.decode(baseHeatmap);
-	if (heatmap instanceof is.Image) {
-		// Get latest data from DB
-		const heatmapData = await dbClient.query('SELECT * FROM roll_time_heatmap ORDER BY hour;').catch((e) => utils.commonLoggers.dbError('intervals.ts:148', 'query', e));
-
-		let minRollCnt = Infinity;
-		let maxRollCnt = 0;
-		// determine min and max values
-		for (const hour of heatmapData) {
-			for (const day of weekDays) {
-				const rollCnt = hour[day];
-				log(LT.LOG, `updateHeatmapPng | finding min/max | min: ${minRollCnt} max: ${maxRollCnt} curr: ${rollCnt}`);
-				if (rollCnt > maxRollCnt) {
-					maxRollCnt = rollCnt;
-				}
-				if (rollCnt < minRollCnt) {
-					minRollCnt = rollCnt;
-				}
-			}
-		}
-
-		// Apply values to image
-		for (let hour = 0; hour < heatmapData.length; hour++) {
-			for (let day = 0; day < weekDays.length; day++) {
-				log(LT.LOG, `updateHeatmapPng | putting ${weekDays[day]} ${hour}:00 into image`);
-				const percent = getPercentOfRange(minRollCnt, maxRollCnt, heatmapData[hour][weekDays[day]]);
-				heatmap.drawBox(
-					dayPixels[day][0] + 1,
-					hourPixels[hour][0] + 1,
-					dayPixels[day][1] - dayPixels[day][0] + 1,
-					hourPixels[hour][1] - hourPixels[hour][0] + 1,
-					is.Image.rgbToColor(
-						255 * (1 - percent),
-						255 * percent,
-						0,
-					),
-				);
-			}
-		}
-
-		Deno.writeFileSync('./src/endpoints/gets/heatmap.png', await heatmap.encode());
+	if (!(heatmap instanceof is.Image)) {
+		return;
 	}
+	// Get latest data from DB
+	const heatmapData = await dbClient.query('SELECT * FROM roll_time_heatmap ORDER BY hour;').catch((e) => utils.commonLoggers.dbError('intervals.ts:148', 'query', e));
+
+	let minRollCnt = Infinity;
+	let maxRollCnt = 0;
+	// determine min and max values
+	for (const hour of heatmapData) {
+		for (const day of weekDays) {
+			const rollCnt = hour[day];
+			log(LT.LOG, `updateHeatmapPng | finding min/max | min: ${minRollCnt} max: ${maxRollCnt} curr: ${rollCnt}`);
+			if (rollCnt > maxRollCnt) {
+				maxRollCnt = rollCnt;
+			}
+			if (rollCnt < minRollCnt) {
+				minRollCnt = rollCnt;
+			}
+		}
+	}
+
+	// Apply values to image
+	for (let hour = 0; hour < heatmapData.length; hour++) {
+		for (let day = 0; day < weekDays.length; day++) {
+			log(LT.LOG, `updateHeatmapPng | putting ${weekDays[day]} ${hour}:00 into image`);
+			const percent = getPercentOfRange(minRollCnt, maxRollCnt, heatmapData[hour][weekDays[day]]);
+			heatmap.drawBox(
+				dayPixels[day][0] + 1,
+				hourPixels[hour][0] + 1,
+				dayPixels[day][1] - dayPixels[day][0] + 1,
+				hourPixels[hour][1] - hourPixels[hour][0] + 1,
+				is.Image.rgbToColor(
+					255 * (1 - percent),
+					255 * percent,
+					0,
+				),
+			);
+		}
+	}
+
+	Deno.writeFileSync('./src/endpoints/gets/heatmap.png', await heatmap.encode());
 };
 
 export default {
