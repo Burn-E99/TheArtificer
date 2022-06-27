@@ -8,7 +8,7 @@ import {
 	// Discordeno deps
 	cache,
 	cacheHandlers,
-	// imagescript
+	// imagescript dep
 	is,
 	// Log4Deno deps
 	log,
@@ -160,9 +160,9 @@ const updateHeatmapPng = async () => {
 		let minRollCnt = Infinity;
 		let maxRollCnt = 0;
 		// determine min and max values
-		for (let hour = 0; hour < heatmapData.length; hour++) {
-			for (let day = 0; day < weekDays.length; day++) {
-				const rollCnt = heatmapData[hour][weekDays[day]];
+		for (const hour of heatmapData) {
+			for (const day of weekDays) {
+				const rollCnt = hour[day];
 				log(LT.LOG, `updateHeatmapPng | finding min/max | min: ${minRollCnt} max: ${maxRollCnt} curr: ${rollCnt}`);
 				if (rollCnt > maxRollCnt) {
 					maxRollCnt = rollCnt;

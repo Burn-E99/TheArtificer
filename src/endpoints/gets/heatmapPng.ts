@@ -10,7 +10,7 @@ export const heatmapPng = async (requestEvent: Deno.RequestEvent) => {
 	requestEvent.respondWith(
 		new Response(file, {
 			status: Status.OK,
-			statusText: STATUS_TEXT.get(Status.OK),
+			statusText: STATUS_TEXT[Status.OK],
 		}),
 	);
 };

@@ -6,7 +6,7 @@
   },
   "lint": {
     "files": {
-      "include": ["src/", "db/", "mod.ts"],
+      "include": ["src/", "db/", "mod.ts", "deps.ts", "config.ts", "config.example.ts"],
       "exclude": []
     },
     "rules": {
@@ -17,7 +17,7 @@
   },
   "fmt": {
     "files": {
-      "include": ["src/", "db/", "mod.ts"],
+      "include": ["src/", "db/", "mod.ts", "deps.ts", "config.ts", "config.example.ts"],
       "exclude": []
     },
     "options": {

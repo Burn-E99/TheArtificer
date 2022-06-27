@@ -4,7 +4,7 @@ import {
 	STATUS_TEXT,
 } from '../../deps.ts';
 
-const genericResponse = (customText: string, status: Status) => new Response(customText || STATUS_TEXT.get(status), { status: status, statusText: STATUS_TEXT.get(status) });
+const genericResponse = (customText: string, status: Status) => new Response(customText || STATUS_TEXT[status], { status: status, statusText: STATUS_TEXT[status] });
 
 export default {
 	BadRequest: (customText: string) => genericResponse(customText, Status.BadRequest),
