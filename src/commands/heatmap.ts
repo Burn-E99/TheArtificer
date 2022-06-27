@@ -4,7 +4,6 @@ import {
 	DiscordenoMessage,
 } from '../../deps.ts';
 import config from '../../config.ts';
-import { LOCALMODE } from '../../flags.ts';
 import { failColor, infoColor2 } from '../commandUtils.ts';
 import utils from '../utils.ts';
 
