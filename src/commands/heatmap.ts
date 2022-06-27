@@ -3,25 +3,34 @@ import {
 	// Discordeno deps
 	DiscordenoMessage,
 } from '../../deps.ts';
-import { } from '../commandUtils.ts';
-import { compilingStats } from '../commonEmbeds.ts';
+import config from '../../config.ts';
+import { LOCALMODE } from '../../flags.ts';
+import { failColor, infoColor2 } from '../commandUtils.ts';
 import utils from '../utils.ts';
 
 export const heatmap = async (message: DiscordenoMessage) => {
 	// Light telemetry to see how many times a command is being run
 	dbClient.execute(queries.callIncCnt('heatmap')).catch((e) => utils.commonLoggers.dbError('heatmap.ts:14', 'call sproc INC_CNT on', e));
 
-	try {
-		const m = await message.send(compilingStats);
+	if (config.api.enable) {
+		const m = await message.send({
+			embeds: [{
+				title: 'Roll Heatmap',
+				color: infoColor2,
+				image: {
+					url: `${config.api.publicDomain}api/heatmap.png`,
+				},
+			}],
+		}).catch((e) => utils.commonLoggers.messageSendError('heatmap.ts:21', message, e));
 
-		// Calculate how many times commands have been run
-		const hmQuery = await dbClient.query(`SELECT * FROM roll_time_heatmap`).catch((e) => utils.commonLoggers.dbError('heatmap.ts:20', 'query', e));
-		console.log(hmQuery);
-
-		m.edit('').catch((e: Error) =>
-			utils.commonLoggers.messageEditError('heatmap.ts:21', m, e)
-		);
-	} catch (e) {
-		utils.commonLoggers.messageSendError('heatmap.ts:24', message, e);
+		console.log(m);
+	} else {
+		message.send({
+			embeds: [{
+				title: 'Roll Heatmap Disabled',
+				description: 'This command requires the bot\'s API to be enabled.  If you are the host of this bot, check your `config.ts` file to enable it.',
+				color: failColor,
+			}],
+		}).catch((e) => utils.commonLoggers.messageSendError('heatmap.ts:21', message, e));
 	}
 };

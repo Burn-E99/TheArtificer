@@ -91,114 +91,121 @@ const start = async (): Promise<void> => {
 						});
 					}
 
-					if (authenticated) {
-						// Handle the authenticated request
-						switch (request.method) {
-							case 'GET':
-								switch (path.toLowerCase()) {
-									case '/key':
-									case '/key/':
-										endpoints.get.apiKeyAdmin(requestEvent, query, apiUserid);
-										break;
-									case '/channel':
-									case '/channel/':
-										endpoints.get.apiChannel(requestEvent, query, apiUserid);
-										break;
-									case '/roll':
-									case '/roll/':
-										endpoints.get.apiRoll(requestEvent, query, apiUserid);
-										break;
-									default:
-										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound('Auth Get'));
-										break;
-								}
-								break;
-							case 'POST':
-								switch (path.toLowerCase()) {
-									case '/channel/add':
-									case '/channel/add/':
-										endpoints.post.apiChannelAdd(requestEvent, query, apiUserid);
-										break;
-									default:
-										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound('Auth Post'));
-										break;
-								}
-								break;
-							case 'PUT':
-								switch (path.toLowerCase()) {
-									case '/key/ban':
-									case '/key/ban/':
-									case '/key/unban':
-									case '/key/unban/':
-									case '/key/activate':
-									case '/key/activate/':
-									case '/key/deactivate':
-									case '/key/deactivate/':
-										endpoints.put.apiKeyManage(requestEvent, query, apiUserid, path);
-										break;
-									case '/channel/ban':
-									case '/channel/ban/':
-									case '/channel/unban':
-									case '/channel/unban/':
-										endpoints.put.apiChannelManageBan(requestEvent, query, apiUserid, path);
-										break;
-									case '/channel/activate':
-									case '/channel/activate/':
-									case '/channel/deactivate':
-									case '/channel/deactivate/':
-										endpoints.put.apiChannelManageActive(requestEvent, query, apiUserid, path);
-										break;
-									default:
-										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound('Auth Put'));
-										break;
-								}
-								break;
-							case 'DELETE':
-								switch (path.toLowerCase()) {
-									case '/key/delete':
-									case '/key/delete/':
-										endpoints.delete.apiKeyDelete(requestEvent, query, apiUserid, apiUserEmail, apiUserDelCode);
-										break;
-									default:
-										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound('Auth Del'));
-										break;
-								}
-								break;
-							default:
-								// Alert API user that they messed up
-								requestEvent.respondWith(stdResp.MethodNotAllowed('Auth'));
-								break;
-						}
+					if (path) {
+						if (authenticated) {
+							// Handle the authenticated request
+							switch (request.method) {
+								case 'GET':
+									switch (path.toLowerCase()) {
+										case '/key':
+										case '/key/':
+											endpoints.get.apiKeyAdmin(requestEvent, query, apiUserid);
+											break;
+										case '/channel':
+										case '/channel/':
+											endpoints.get.apiChannel(requestEvent, query, apiUserid);
+											break;
+										case '/roll':
+										case '/roll/':
+											endpoints.get.apiRoll(requestEvent, query, apiUserid);
+											break;
+										default:
+											// Alert API user that they messed up
+											requestEvent.respondWith(stdResp.NotFound('Auth Get'));
+											break;
+									}
+									break;
+								case 'POST':
+									switch (path.toLowerCase()) {
+										case '/channel/add':
+										case '/channel/add/':
+											endpoints.post.apiChannelAdd(requestEvent, query, apiUserid);
+											break;
+										default:
+											// Alert API user that they messed up
+											requestEvent.respondWith(stdResp.NotFound('Auth Post'));
+											break;
+									}
+									break;
+								case 'PUT':
+									switch (path.toLowerCase()) {
+										case '/key/ban':
+										case '/key/ban/':
+										case '/key/unban':
+										case '/key/unban/':
+										case '/key/activate':
+										case '/key/activate/':
+										case '/key/deactivate':
+										case '/key/deactivate/':
+											endpoints.put.apiKeyManage(requestEvent, query, apiUserid, path);
+											break;
+										case '/channel/ban':
+										case '/channel/ban/':
+										case '/channel/unban':
+										case '/channel/unban/':
+											endpoints.put.apiChannelManageBan(requestEvent, query, apiUserid, path);
+											break;
+										case '/channel/activate':
+										case '/channel/activate/':
+										case '/channel/deactivate':
+										case '/channel/deactivate/':
+											endpoints.put.apiChannelManageActive(requestEvent, query, apiUserid, path);
+											break;
+										default:
+											// Alert API user that they messed up
+											requestEvent.respondWith(stdResp.NotFound('Auth Put'));
+											break;
+									}
+									break;
+								case 'DELETE':
+									switch (path.toLowerCase()) {
+										case '/key/delete':
+										case '/key/delete/':
+											endpoints.delete.apiKeyDelete(requestEvent, query, apiUserid, apiUserEmail, apiUserDelCode);
+											break;
+										default:
+											// Alert API user that they messed up
+											requestEvent.respondWith(stdResp.NotFound('Auth Del'));
+											break;
+									}
+									break;
+								default:
+									// Alert API user that they messed up
+									requestEvent.respondWith(stdResp.MethodNotAllowed('Auth'));
+									break;
+							}
 
-						// Update rate limit details
-						if (updateRateLimitTime) {
-							const apiTimeNow = new Date().getTime();
-							rateLimitTime.set(apiUseridStr, apiTimeNow);
+							// Update rate limit details
+							if (updateRateLimitTime) {
+								const apiTimeNow = new Date().getTime();
+								rateLimitTime.set(apiUseridStr, apiTimeNow);
+							}
+						} else if (!authenticated) {
+							// Handle the unathenticated request
+							switch (request.method) {
+								case 'GET':
+									switch (path.toLowerCase()) {
+										case '/key':
+										case '/key/':
+											endpoints.get.apiKey(requestEvent, query);
+											break;
+										case '/heatmap.png':
+											endpoints.get.heatmapPng(requestEvent);
+											break;
+										default:
+											// Alert API user that they messed up
+											requestEvent.respondWith(stdResp.NotFound('NoAuth Get'));
+											break;
+									}
+									break;
+								default:
+									// Alert API user that they messed up
+									requestEvent.respondWith(stdResp.MethodNotAllowed('NoAuth'));
+									break;
+							}
 						}
-					} else if (!authenticated) {
-						// Handle the unathenticated request
-						switch (request.method) {
-							case 'GET':
-								switch (path.toLowerCase()) {
-									case '/key':
-									case '/key/':
-										endpoints.get.apiKey(requestEvent, query);
-										break;
-									default:
-										// Alert API user that they messed up
-										requestEvent.respondWith(stdResp.NotFound('NoAuth Get'));
-										break;
-								}
-								break;
-							default:
-								// Alert API user that they messed up
-								requestEvent.respondWith(stdResp.MethodNotAllowed('NoAuth'));
-								break;
-						}
+					} else {
+						requestEvent.respondWith(stdResp.Forbidden('What are you trying to do?'));
 					}
 				} else if (authenticated && rateLimited) {
 					// Alert API user that they are doing this too often

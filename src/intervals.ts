@@ -63,7 +63,7 @@ const updateListStatistics = (botID: bigint, serverCount: number): void => {
 
 // Keep one week of data
 const hoursToKeep = 7 * 24;
-const previousHours: Array<Array<PastCommandCount>> = []
+const previousHours: Array<Array<PastCommandCount>> = [];
 // updateHourlyRates() returns nothing
 // Updates the hourlyRate for command usage
 const updateHourlyRates = async () => {
@@ -73,7 +73,7 @@ const updateHourlyRates = async () => {
 		if (previousHours.length > 1) {
 			const oldestHour = previousHours[0];
 
-			const computedDiff: Array<PastCommandCount> = []
+			const computedDiff: Array<PastCommandCount> = [];
 			for (let i = 0; i < newestHour.length; i++) {
 				computedDiff.push({
 					command: newestHour[i].command,
@@ -85,7 +85,9 @@ const updateHourlyRates = async () => {
 			// Update DB
 			computedDiff.forEach(async (cmd) => {
 				log(LT.LOG, `Updating hourlyRate | Storing to DB: ${JSON.stringify(cmd)}`);
-				await dbClient.execute(`UPDATE command_cnt SET hourlyRate = ? WHERE command = ?`, [(cmd.count / previousHours.length), cmd.command]).catch((e) => utils.commonLoggers.dbError('intervals.ts:88', 'update', e));
+				await dbClient.execute(`UPDATE command_cnt SET hourlyRate = ? WHERE command = ?`, [cmd.count / previousHours.length, cmd.command]).catch((e) =>
+					utils.commonLoggers.dbError('intervals.ts:88', 'update', e)
+				);
 			});
 		}
 
@@ -93,7 +95,7 @@ const updateHourlyRates = async () => {
 			previousHours.unshift();
 		}
 	} catch (e) {
-		log(LT.ERROR, `Something went wrong in previousHours interval | Error: ${e.name} - ${e.message}`)
+		log(LT.ERROR, `Something went wrong in previousHours interval | Error: ${e.name} - ${e.message}`);
 	}
 };
 

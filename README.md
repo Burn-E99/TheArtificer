@@ -50,6 +50,8 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * If bot is given the permission `Manage Messages`, the bot will remove the message requesting the emote.
 * `[[stats` or `[[s`
   * Prints out how many users, channels, and servers the bot is currently serving.
+* `[[heatmap` or `[[hm`
+  * Heatmap of when the roll command is run the most.
 * `[[report` or `[[r [command that failed]`
   * People aren't perfect, but this bot is trying to be.
   * If you encounter a command that errors out or returns something unexpected, please use this command to alert the developers of the problem.

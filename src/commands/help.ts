@@ -67,6 +67,11 @@ export const help = (message: DiscordenoMessage) => {
 					inline: true,
 				},
 				{
+					name: `\`${config.prefix}heatmap\``,
+					value: 'Heatmap of when the roll command is run the most',
+					inline: true,
+				},
+				{
 					name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
 					value:
 						`Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,

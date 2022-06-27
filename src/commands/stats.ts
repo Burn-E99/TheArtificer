@@ -27,9 +27,9 @@ export const stats = async (message: DiscordenoMessage) => {
 		const cachedGuilds = await cacheHandlers.size('guilds');
 		const cachedChannels = await cacheHandlers.size('channels');
 		const cachedMembers = await cacheHandlers.size('members');
-		m.edit(generateStats(cachedGuilds + cache.dispatchedGuildIds.size, cachedChannels + cache.dispatchedChannelIds.size, cachedMembers, rolls, (total - rolls), rollRate, (totalRate - rollRate))).catch((e: Error) =>
-			utils.commonLoggers.messageEditError('stats.ts:38', m, e)
-		);
+		m.edit(generateStats(cachedGuilds + cache.dispatchedGuildIds.size, cachedChannels + cache.dispatchedChannelIds.size, cachedMembers, rolls, total - rolls, rollRate, totalRate - rollRate)).catch((
+			e: Error,
+		) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
 	} catch (e) {
 		utils.commonLoggers.messageSendError('stats.ts:41', message, e);
 	}

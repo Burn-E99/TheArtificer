@@ -12,6 +12,7 @@ export const config = {
 	},
 	"api": { // Setting for the built-in API
 		"enable": false, // Leave this off if you have no intention of using this/supporting it
+		"publicDomain": 'http://example.com/', // Public domain that the API is behind, should end with a /
 		"port": 8080, // Port for the API to listen on
 		"supportURL": "your_support_url_for_api_abuse", // Fill this in with the way you wish to be contacted when somebody needs to report API key abuse
 		"rateLimitTime": 10000, // Time range for how often the API rate limits will be lifted (time in ms)
