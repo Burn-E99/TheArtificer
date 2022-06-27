@@ -13,7 +13,7 @@ export const heatmap = async (message: DiscordenoMessage) => {
 	dbClient.execute(queries.callIncCnt('heatmap')).catch((e) => utils.commonLoggers.dbError('heatmap.ts:14', 'call sproc INC_CNT on', e));
 
 	if (config.api.enable) {
-		const m = await message.send({
+		message.send({
 			embeds: [{
 				title: 'Roll Heatmap',
 				description: `Least Rolls: ${intervals.getMinRollCnt()}
