@@ -16,7 +16,9 @@ export const heatmap = async (message: DiscordenoMessage) => {
 		message.send({
 			embeds: [{
 				title: 'Roll Heatmap',
-				description: `Least Rolls: ${intervals.getMinRollCnt()}
+				description: `Over time, this image will show a nice pattern of when rolls are requested the most.
+
+Least Rolls: ${intervals.getMinRollCnt()}
 Most Rolls: ${intervals.getMaxRollCnt()}`,
 				footer: {
 					text: 'Data is shown in US Eastern Time. | This heatmap uses data starting 6/26/2022.',
