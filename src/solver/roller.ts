@@ -5,8 +5,7 @@ import {
 	LT,
 } from '../../deps.ts';
 
-import { RollSet, RollConf } from './solver.d.ts';
-import { rollCWOD } from './customRollers/cwod.ts';
+import { RollSet, RollConf, RollType } from './solver.d.ts';
 import { compareOrigidx, compareRolls, genRoll, loggingEnabled } from './rollUtils.ts';
 
 // roll(rollStr, maximiseRoll, nominalRoll) returns RollSet
@@ -25,6 +24,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	const dpts = rollStr.split('d');
 
 	// Initialize the configuration to store the parsed data
+	let rollType: RollType = 'roll20';
 	const rollConf: RollConf = {
 		dieCount: 0,
 		dieSize: 0,
@@ -90,15 +90,32 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		throw new Error('YouNeedAD');
 	}
 
+	// Manual Parsing for custom roll types
+	let manualParse = false;
 	if (rawDC.endsWith('cwo')) {
-		return rollCWOD(rollStr);
+		// CWOD dice parsing
+		rollType = 'cwod';
+		manualParse = true;
+
+		// Get CWOD parts, setting count and getting difficulty
+		const cwodParts = rollStr.split('cwod');
+		rollConf.dieCount = parseInt(cwodParts[0] || '1');
+		rollConf.dieSize = 10;
+
+		// Use critScore to set the difficulty
+		rollConf.critScore.on = true;
+		const difficulty = parseInt(cwodParts[1] || '10')
+		for (let i = difficulty; i <= rollConf.dieSize; i++) {
+			loggingEnabled && log(LT.LOG, `handling cwod ${rollStr} | Parsing difficulty ${i}`);
+			rollConf.critScore.range.push(i);
+		}
 	}
 
 	loggingEnabled && log(LT.LOG, `Handling roll20 ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);
 	loggingEnabled && log(LT.LOG, `Handling roll20 ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
 
 	// Finish parsing the roll
-	if (remains.length > 0) {
+	if (manualParse || remains.length > 0) {
 		// Determine if the first item is a drop, and if it is, add the d back in
 		if (remains.search(/\D/) !== 0 || remains.indexOf('l') === 0 || remains.indexOf('h') === 0) {
 			remains = `d${remains}`;
@@ -337,7 +354,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 	// Initialize a templet rollSet to copy multiple times
 	const templateRoll: RollSet = {
-		type: 'roll20',
+		type: rollType,
 		origidx: 0,
 		roll: 0,
 		dropped: false,
