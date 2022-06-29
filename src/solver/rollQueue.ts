@@ -52,12 +52,14 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 		}
 	}, config.limits.workerTimeout);
 
-	rollWorker.postMessage({
-		rollCmd: rq.rollCmd,
-		modifiers: rq.modifiers,
-	});
-
 	rollWorker.addEventListener('message', async (workerMessage) => {
+		if (workerMessage.data === 'ready') {
+			rollWorker.postMessage({
+				rollCmd: rq.rollCmd,
+				modifiers: rq.modifiers,
+			});
+			return;
+		}
 		let apiErroredOut = false;
 		try {
 			currentWorkers--;

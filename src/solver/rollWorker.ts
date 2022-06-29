@@ -1,5 +1,9 @@
 import { parseRoll } from './parser.ts';
 
+// Alert rollQueue that this worker is ready
+self.postMessage('ready');
+
+// Handle the roll
 self.onmessage = async (e: any) => {
 	const payload = e.data;
 	const returnmsg = parseRoll(payload.rollCmd, payload.modifiers) || {
