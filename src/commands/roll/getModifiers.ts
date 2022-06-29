@@ -58,7 +58,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 				while (((i + 1) < args.length) && args[i + 1].startsWith('<@')) {
 					log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
 					// Keep looping thru the rest of the args until one does not start with the discord mention code
-					modifiers.gms.push(args[i + 1].replace(/[!]/g, ''));
+					modifiers.gms.push(args[i + 1].replace(/!/g, ''));
 					args.splice(i + 1, 1);
 				}
 				if (modifiers.gms.length < 1) {
