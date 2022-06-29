@@ -115,7 +115,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	loggingEnabled && log(LT.LOG, `Handling roll20 ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
 
 	// Finish parsing the roll
-	if (manualParse || remains.length > 0) {
+	if (!manualParse && remains.length > 0) {
 		// Determine if the first item is a drop, and if it is, add the d back in
 		if (remains.search(/\D/) !== 0 || remains.indexOf('l') === 0 || remains.indexOf('h') === 0) {
 			remains = `d${remains}`;
