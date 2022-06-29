@@ -1,11 +1,12 @@
 import config from '../../config.ts';
 import {
-	log,
 	// Log4Deno deps
+	log,
 	LT,
 } from '../../deps.ts';
 
-import { RollSet } from './solver.d.ts';
+import { RollSet, RollConf } from './solver.d.ts';
+import { rollCWOD } from './customRollers/cwod.ts';
 import { compareOrigidx, compareRolls, genRoll, loggingEnabled } from './rollUtils.ts';
 
 // roll(rollStr, maximiseRoll, nominalRoll) returns RollSet
@@ -24,7 +25,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	const dpts = rollStr.split('d');
 
 	// Initialize the configuration to store the parsed data
-	const rollConf = {
+	const rollConf: RollConf = {
 		dieCount: 0,
 		dieSize: 0,
 		drop: {
@@ -69,7 +70,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	}
 
 	// Fill out the die count, first item will either be an int or empty string, short circuit execution will take care of replacing the empty string with a 1
-	const tempDC = (dpts.shift() || '1').replace(/\D/g, '');
+	const rawDC = dpts.shift() || '1';
+	const tempDC = rawDC.replace(/\D/g, '');
 	rollConf.dieCount = parseInt(tempDC);
 
 	// Finds the end of the die size/beginnning of the additional options
@@ -88,8 +90,12 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		throw new Error('YouNeedAD');
 	}
 
-	loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);
-	loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
+	if (rawDC.endsWith('cwo')) {
+		return rollCWOD(rollStr);
+	}
+
+	loggingEnabled && log(LT.LOG, `Handling roll20 ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);
+	loggingEnabled && log(LT.LOG, `Handling roll20 ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
 
 	// Finish parsing the roll
 	if (remains.length > 0) {
@@ -100,7 +106,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 		// Loop until all remaining args are parsed
 		while (remains.length > 0) {
-			loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing remains ${remains}`);
+			loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing remains ${remains}`);
 			// Find the next number in the remains to be able to cut out the rule name
 			let afterSepIdx = remains.search(/\d/);
 			if (afterSepIdx < 0) {
@@ -158,7 +164,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure reroll for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.reroll.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing r> ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing r> ${i}`);
 						rollConf.reroll.nums.push(i);
 					}
 					break;
@@ -169,7 +175,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure reroll for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.reroll.on = true;
 					for (let i = 1; i <= tNum; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing r< ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing r< ${i}`);
 						rollConf.reroll.nums.push(i);
 					}
 					break;
@@ -183,7 +189,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure CritScore for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critScore.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing cs> ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing cs> ${i}`);
 						rollConf.critScore.range.push(i);
 					}
 					break;
@@ -191,7 +197,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure CritScore for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critScore.on = true;
 					for (let i = 0; i <= tNum; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing cs< ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing cs< ${i}`);
 						rollConf.critScore.range.push(i);
 					}
 					break;
@@ -205,7 +211,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure CritFail for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critFail.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing cf> ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing cf> ${i}`);
 						rollConf.critFail.range.push(i);
 					}
 					break;
@@ -213,7 +219,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure CritFail for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.critFail.on = true;
 					for (let i = 0; i <= tNum; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing cf< ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing cf< ${i}`);
 						rollConf.critFail.range.push(i);
 					}
 					break;
@@ -246,7 +252,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure Exploding for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.exploding.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing !> ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing !> ${i}`);
 						rollConf.exploding.nums.push(i);
 					}
 					break;
@@ -257,7 +263,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Configure Exploding for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.exploding.on = true;
 					for (let i = 1; i <= tNum; i++) {
-						loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Parsing !< ${i}`);
+						loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Parsing !< ${i}`);
 						rollConf.exploding.nums.push(i);
 					}
 					break;
@@ -280,7 +286,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	// Since only one drop or keep option can be active, count how many are active to throw the right error
 	let dkdkCnt = 0;
 	[rollConf.drop.on, rollConf.keep.on, rollConf.dropHigh.on, rollConf.keepLow.on].forEach((e) => {
-		loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Checking if drop/keep is on ${e}`);
+		loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Checking if drop/keep is on ${e}`);
 		if (e) {
 			dkdkCnt++;
 		}
@@ -330,7 +336,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	 */
 
 	// Initialize a templet rollSet to copy multiple times
-	const templateRoll = {
+	const templateRoll: RollSet = {
+		type: 'roll20',
 		origidx: 0,
 		roll: 0,
 		dropped: false,
@@ -345,7 +352,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 	// Initial rolling, not handling reroll or exploding here
 	for (let i = 0; i < rollConf.dieCount; i++) {
-		loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Initial rolling ${i} of ${JSON.stringify(rollConf)}`);
+		loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Initial rolling ${i} of ${JSON.stringify(rollConf)}`);
 		// If loopCount gets too high, stop trying to calculate infinity
 		if (loopCount > config.limits.maxLoops) {
 			throw new Error('MaxLoopsExceeded');
@@ -379,7 +386,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	// If needed, handle rerolling and exploding dice now
 	if (rollConf.reroll.on || rollConf.exploding.on) {
 		for (let i = 0; i < rollSet.length; i++) {
-			loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
+			loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
 			// If loopCount gets too high, stop trying to calculate infinity
 			if (loopCount > config.limits.maxLoops) {
 				throw new Error('MaxLoopsExceeded');
@@ -456,7 +463,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					throw new Error('MaxLoopsExceeded');
 				}
 
-				loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[j])}`);
+				loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[j])}`);
 				rollSet[j].origidx = j;
 
 				if (rollSet[j].rerolled) {
@@ -510,7 +517,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 				throw new Error('MaxLoopsExceeded');
 			}
 
-			loggingEnabled && log(LT.LOG, `Handling roll ${rollStr} | Dropping dice ${dropCount} ${JSON.stringify(rollSet[i])}`);
+			loggingEnabled && log(LT.LOG, `handling roll20 ${rollStr} | Dropping dice ${dropCount} ${JSON.stringify(rollSet[i])}`);
 			// Skip all rolls that were rerolled
 			if (!rollSet[i].rerolled) {
 				rollSet[i].dropped = true;

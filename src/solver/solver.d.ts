@@ -1,7 +1,10 @@
 // solver.ts custom types
 
+export type RollType = '' | 'roll20' | 'cwod' | 'ova';
+
 // RollSet is used to preserve all information about a calculated roll
 export type RollSet = {
+	type: RollType;
 	origidx: number;
 	roll: number;
 	dropped: boolean;
@@ -55,3 +58,43 @@ export type SolvedRoll = {
 	line3: string;
 	counts: CountDetails;
 };
+
+// RollConf is used by the roll20 setup
+export type RollConf = {
+	dieCount: number;
+	dieSize: number;
+	drop: {
+		on: boolean;
+		count: number;
+	};
+	keep: {
+		on: boolean;
+		count: number;
+	};
+	dropHigh: {
+		on: boolean;
+		count: number;
+	};
+	keepLow: {
+		on: boolean;
+		count: number;
+	};
+	reroll: {
+		on: boolean;
+		once: boolean;
+		nums: number[];
+	};
+	critScore: {
+		on: boolean;
+		range: number[];
+	};
+	critFail: {
+		on: boolean;
+		range: number[];
+	};
+	exploding: {
+		on: boolean;
+		once: boolean;
+		nums: number[];
+	};
+}

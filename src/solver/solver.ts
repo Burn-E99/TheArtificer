@@ -10,7 +10,7 @@ import {
 	LT,
 } from '../../deps.ts';
 
-import { SolvedStep } from './solver.d.ts';
+import { SolvedStep, RollType } from './solver.d.ts';
 import { loggingEnabled } from './rollUtils.ts';
 
 // fullSolver(conf, wrapDetails) returns one condensed SolvedStep
@@ -19,6 +19,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 	// Initialize PEMDAS
 	const signs = ['^', '*', '/', '%', '+', '-'];
 	const stepSolve = {
+		rollType: <RollType> '',
 		total: 0,
 		details: '',
 		containsCrit: false,

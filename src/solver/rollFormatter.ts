@@ -6,7 +6,7 @@ import {
 
 import { roll } from './roller.ts';
 import { rollCounter } from './counter.ts';
-import { RollFormat } from './solver.d.ts';
+import { RollFormat, RollType } from './solver.d.ts';
 import { loggingEnabled } from './rollUtils.ts';
 
 // formatRoll(rollConf, maximiseRoll, nominalRoll) returns one SolvedStep
@@ -16,6 +16,7 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 	let tempDetails = '[';
 	let tempCrit = false;
 	let tempFail = false;
+	let tempRollType: RollType = '';
 
 	// Generate the roll, passing flags thru
 	const tempRollSet = roll(rollConf, maximiseRoll, nominalRoll);
@@ -23,12 +24,21 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 	// Loop thru all parts of the roll to document everything that was done to create the total roll
 	tempRollSet.forEach((e) => {
 		loggingEnabled && log(LT.LOG, `Formatting roll ${rollConf} | ${JSON.stringify(e)}`);
+		tempRollType = e.type;
 		let preFormat = '';
 		let postFormat = '';
 
 		if (!e.dropped && !e.rerolled) {
 			// If the roll was not dropped or rerolled, add it to the stepTotal and flag the critHit/critFail
-			tempTotal += e.roll;
+			switch(e.type) {
+				case 'ova':
+				case 'roll20':
+					tempTotal += e.roll;
+					break;
+				case 'cwod':
+					tempTotal += e.critHit ? 1 : 0;
+					break;
+			}
 			if (e.critHit) {
 				tempCrit = true;
 			}
@@ -58,6 +68,9 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 	});
 	// After the looping is done, remove the extra " + " from the details and cap it with the closing ]
 	tempDetails = tempDetails.substring(0, tempDetails.length - 3);
+	if (tempRollSet[0]?.type === 'cwod') {
+		tempDetails += `, ${tempRollSet.filter(e => e.critHit).length} Successes, ${tempRollSet.filter(e => e.critFail).length} Fails`;
+	}
 	tempDetails += ']';
 
 	return {

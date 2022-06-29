@@ -7,7 +7,7 @@ import {
 import config from '../../config.ts';
 
 import { RollModifiers } from '../mod.d.ts';
-import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from './solver.d.ts';
+import { CountDetails, ReturnData, SolvedRoll, SolvedStep, RollType } from './solver.d.ts';
 import { compareTotalRolls, escapeCharacters, loggingEnabled } from './rollUtils.ts';
 import { formatRoll } from './rollFormatter.ts';
 import { fullSolver } from './solver.ts';
