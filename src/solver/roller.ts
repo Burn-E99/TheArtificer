@@ -5,7 +5,7 @@ import {
 	LT,
 } from '../../deps.ts';
 
-import { RollSet, RollConf, RollType } from './solver.d.ts';
+import { RollConf, RollSet, RollType } from './solver.d.ts';
 import { compareOrigidx, compareRolls, genRoll, loggingEnabled } from './rollUtils.ts';
 
 // roll(rollStr, maximiseRoll, nominalRoll) returns RollSet
@@ -104,7 +104,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 		// Use critScore to set the difficulty
 		rollConf.critScore.on = true;
-		const difficulty = parseInt(cwodParts[1] || '10')
+		const difficulty = parseInt(cwodParts[1] || '10');
 		for (let i = difficulty; i <= rollConf.dieSize; i++) {
 			loggingEnabled && log(LT.LOG, `handling cwod ${rollStr} | Parsing difficulty ${i}`);
 			rollConf.critScore.range.push(i);

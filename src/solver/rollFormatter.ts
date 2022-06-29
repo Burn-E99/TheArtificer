@@ -28,7 +28,7 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 
 		if (!e.dropped && !e.rerolled) {
 			// If the roll was not dropped or rerolled, add it to the stepTotal and flag the critHit/critFail
-			switch(e.type) {
+			switch (e.type) {
 				case 'ova':
 				case 'roll20':
 					tempTotal += e.roll;
@@ -67,7 +67,7 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 	// After the looping is done, remove the extra " + " from the details and cap it with the closing ]
 	tempDetails = tempDetails.substring(0, tempDetails.length - 3);
 	if (tempRollSet[0]?.type === 'cwod') {
-		tempDetails += `, ${tempRollSet.filter(e => e.critHit).length} Successes, ${tempRollSet.filter(e => e.critFail).length} Fails`;
+		tempDetails += `, ${tempRollSet.filter((e) => e.critHit).length} Successes, ${tempRollSet.filter((e) => e.critFail).length} Fails`;
 	}
 	tempDetails += ']';
 

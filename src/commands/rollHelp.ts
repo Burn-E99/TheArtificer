@@ -14,13 +14,17 @@ export const rollHelp = (message: DiscordenoMessage) => {
 	message.send({
 		embeds: [
 			{
-				color: infoColor2,
+				color: infoColor1,
 				title: 'The Artificer\'s Roll Command Details:',
 				description: `You can chain as many of these options as you want, as long as the option does not disallow it.
 
-				This command also can fully solve math equations with parenthesis.
-				
-				The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).`,
+This command also can fully solve math equations with parenthesis.
+
+The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).`,
+			},
+			{
+				color: infoColor2,
+				title: 'Roll20 Dice Options:',
 				fields: [
 					{
 						name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
@@ -165,6 +169,19 @@ export const rollHelp = (message: DiscordenoMessage) => {
 			},
 			{
 				color: infoColor1,
+				title: 'Custom Dice Options',
+				fields: [
+					{
+						name: 'CWOD Rolling',
+						value: `\`${config.prefix}xcwody${config.postfix}\`
+\`x\` - Number of CWOD dice to roll
+\`y\` - Difficulty to roll at`,
+						inline: true,
+					},
+				],
+			},
+			{
+				color: infoColor2,
 				title: 'Roll Command Decorators:',
 				description: `This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message.
 

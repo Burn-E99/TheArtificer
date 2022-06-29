@@ -97,4 +97,4 @@ export type RollConf = {
 		once: boolean;
 		nums: number[];
 	};
-}
+};

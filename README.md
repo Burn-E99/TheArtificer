@@ -100,6 +100,10 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[4d20r1!]]` will roll 4 d20 dice, rerolling any dice that land on 1, and repeatedly rolling a new d20 for any critical success rolled.
     * `[[d20/40]]` will roll a d20 die and divide it by 40.
     * `[[((d20+20) - 10) / 5]]` will roll a d20, add 20 to that roll, subtract off 10, and finally divide by 5.
+  * This command can also handle some custom format dice:
+    * CWOD Dice - `[[xcwody]]`
+      * `x` - Number of CWOD dice to roll
+      * `y` - Difficulty to roll at
   * This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message:
     * `-c` - Count - Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions
     * `-nd` - No Details - Suppresses all details of the requested roll
