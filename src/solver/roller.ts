@@ -106,13 +106,13 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	} else {
 		// roll20 dice setup
 		rollConf.dieCount = parseInt(tempDC);
-	
+
 		// Finds the end of the die size/beginnning of the additional options
 		let afterDieIdx = dpts[0].search(/\D/);
 		if (afterDieIdx === -1) {
 			afterDieIdx = dpts[0].length;
 		}
-	
+
 		// Get the die size out of the remains and into the rollConf
 		rollConf.dieSize = parseInt(remains.slice(0, afterDieIdx));
 		remains = remains.slice(afterDieIdx);
@@ -565,21 +565,21 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		const rollVals: Array<number> = new Array(rollConf.dieSize).fill(0);
 
 		// Sum up all rolls
-		for (const roll of rollSet) {
-			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | incrementing rollVals for ${roll}`);
-			rollVals[roll.roll - 1] += roll.roll;
+		for (const ovaRoll of rollSet) {
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | incrementing rollVals for ${ovaRoll}`);
+			rollVals[ovaRoll.roll - 1] += ovaRoll.roll;
 		}
-		
+
 		// Find max value, using lastIndexOf to use the greatest die size max in case of duplicate maximums
 		const maxRoll = rollVals.lastIndexOf(Math.max(...rollVals)) + 1;
-		
+
 		// Drop all dice that are not a part of the max
-		for (let i = 0; i < rollSet.length; i++) {
-			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | checking if this roll should be dropped ${rollSet[i].roll} | to keep: ${maxRoll}`);
-			if (rollSet[i].roll !== maxRoll) {
-				rollSet[i].dropped = true;
-				rollSet[i].critFail = false;
-				rollSet[i].critHit = false;
+		for (const ovaRoll of rollSet) {
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | checking if this roll should be dropped ${ovaRoll.roll} | to keep: ${maxRoll}`);
+			if (ovaRoll.roll !== maxRoll) {
+				ovaRoll.dropped = true;
+				ovaRoll.critFail = false;
+				ovaRoll.critHit = false;
 			}
 		}
 	}
