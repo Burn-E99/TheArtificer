@@ -104,6 +104,9 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * CWOD Dice - `[[xcwody]]`
       * `x` - Number of CWOD dice to roll
       * `y` - Difficulty to roll at
+    * OVA Dice - `[[xovady]]`
+      * `x` - Number of OVA dice to roll
+      * `y` - Size of the die to roll (defaults to 6 if omitted)
   * This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message:
     * `-c` - Count - Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions
     * `-nd` - No Details - Suppresses all details of the requested roll

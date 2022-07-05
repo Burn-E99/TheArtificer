@@ -178,6 +178,13 @@ The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.de
 \`y\` - Difficulty to roll at`,
 						inline: true,
 					},
+					{
+						name: 'OVA Rolling',
+						value: `\`${config.prefix}xovady${config.postfix}\`
+\`x\` - Number of OVA dice to roll
+\`y\` - Size of the die to roll (defaults to 6 if omitted)`,
+						inline: true,
+					},
 				],
 			},
 			{

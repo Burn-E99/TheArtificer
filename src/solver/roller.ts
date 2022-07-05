@@ -561,18 +561,21 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
 	// Handle OVA dropping/keeping
 	if (rollType === 'ova') {
-		const rollCounts: Array<number> = new Array(rollConf.dieSize).fill(0);
+		// Make "empty" vals array to easily sum up which die value is the greatest
+		const rollVals: Array<number> = new Array(rollConf.dieSize).fill(0);
 
+		// Sum up all rolls
 		for (const roll of rollSet) {
-			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | incrementing rollCounts for ${roll}`);
-			rollCounts[roll.roll - 1]++;
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | incrementing rollVals for ${roll}`);
+			rollVals[roll.roll - 1] += roll.roll;
 		}
-
-		const rollVals: Array<number> = rollCounts.map((cnt, idx) => (cnt * (idx + 1)));
-
-		const maxRoll = rollVals.indexOf(Math.max(...rollVals)) + 1;
-
+		
+		// Find max value, using lastIndexOf to use the greatest die size max in case of duplicate maximums
+		const maxRoll = rollVals.lastIndexOf(Math.max(...rollVals)) + 1;
+		
+		// Drop all dice that are not a part of the max
 		for (let i = 0; i < rollSet.length; i++) {
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | checking if this roll should be dropped ${rollSet[i].roll} | to keep: ${maxRoll}`);
 			if (rollSet[i].roll !== maxRoll) {
 				rollSet[i].dropped = true;
 				rollSet[i].critFail = false;
