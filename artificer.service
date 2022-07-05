@@ -1,0 +1,14 @@
+[Unit]
+Description=The Artificer Discord Bot
+Documentation=https://github.com/Burn-E99/TheArtificer
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/deno.pid
+ExecStart=/root/.deno/bin/deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net .\mod.ts
+RestartSec=60
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
