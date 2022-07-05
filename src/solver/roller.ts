@@ -559,5 +559,27 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		rollSet.sort(compareOrigidx);
 	}
 
+	// Handle OVA dropping/keeping
+	if (rollType === 'ova') {
+		const rollCounts: Array<number> = new Array(rollConf.dieSize).fill(0);
+
+		for (const roll of rollSet) {
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | incrementing rollCounts for ${roll}`);
+			rollCounts[roll.roll - 1]++;
+		}
+
+		const rollVals: Array<number> = rollCounts.map((cnt, idx) => (cnt * (idx + 1)));
+
+		const maxRoll = rollVals.indexOf(Math.max(...rollVals)) + 1;
+
+		for (let i = 0; i < rollSet.length; i++) {
+			if (rollSet[i].roll !== maxRoll) {
+				rollSet[i].dropped = true;
+				rollSet[i].critFail = false;
+				rollSet[i].critHit = false;
+			}
+		}
+	}
+
 	return rollSet;
 };
