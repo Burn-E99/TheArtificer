@@ -15,6 +15,7 @@ import { fullSolver } from './solver.ts';
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
+	const operators = ['^', '*', '/', '%', '+', '-'];
 	const returnmsg = <SolvedRoll> {
 		error: false,
 		errorCode: '',
@@ -127,14 +128,14 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 						containsCrit: false,
 						containsFail: false,
 					}]);
-				} else {
+				} else if (!operators.includes(mathConf[i].toString())) {
 					// If nothing else has handled it by now, try it as a roll
 					const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
 					mathConf[i] = formattedRoll.solvedStep;
 					tempCountDetails.push(formattedRoll.countDetails);
 				}
 
-				if (mathConf[i - 1] === '-' && (!mathConf[i - 2] || mathConf[i - 2] === '(')) {
+				if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
 					if (typeof mathConf[i] === 'number') {
 						mathConf[i] = <number> mathConf[i] * -1;
 					} else {

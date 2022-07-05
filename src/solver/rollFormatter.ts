@@ -31,6 +31,7 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 			switch (e.type) {
 				case 'ova':
 				case 'roll20':
+				case 'fate':
 					tempTotal += e.roll;
 					break;
 				case 'cwod':

@@ -1,6 +1,6 @@
 // solver.ts custom types
 
-export type RollType = '' | 'roll20' | 'cwod' | 'ova';
+export type RollType = '' | 'roll20' | 'fate' | 'cwod' | 'ova';
 
 // RollSet is used to preserve all information about a calculated roll
 export type RollSet = {

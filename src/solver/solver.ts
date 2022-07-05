@@ -111,7 +111,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 					subStepSolve.containsFail = operand1.containsFail;
 				} else {
 					// else parse it as a number and add it to the subStep details
-					if (operand1) {
+					if (operand1 || operand1 == 0) {
 						oper1 = parseFloat(operand1.toString());
 						subStepSolve.details = `${oper1.toString()}\\${conf[i]}`;
 					}

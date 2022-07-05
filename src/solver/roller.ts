@@ -6,7 +6,7 @@ import {
 } from '../../deps.ts';
 
 import { RollConf, RollSet, RollType } from './solver.d.ts';
-import { compareOrigidx, compareRolls, genRoll, loggingEnabled } from './rollUtils.ts';
+import { compareOrigidx, compareRolls, genFateRoll, genRoll, loggingEnabled } from './rollUtils.ts';
 
 // roll(rollStr, maximiseRoll, nominalRoll) returns RollSet
 // roll parses and executes the rollStr, if needed it will also make the roll the maximum or average
@@ -24,7 +24,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	const dpts = rollStr.split('d');
 
 	// Initialize the configuration to store the parsed data
-	let rollType: RollType = 'roll20';
+	let rollType: RollType = '';
 	const rollConf: RollConf = {
 		dieCount: 0,
 		dieSize: 0,
@@ -103,8 +103,18 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		const ovaParts = rollStr.split('ovad');
 		rollConf.dieCount = parseInt(ovaParts[0] || '1');
 		rollConf.dieSize = parseInt(ovaParts[1] || '6');
+	} else if (remains.startsWith('f')) {
+		// fate dice setup
+		rollType = 'fate';
+		rollConf.dieCount = parseInt(tempDC);
+		// dieSize set to 1 as 1 is max face value, a six sided die is used internally
+		rollConf.dieSize = 1;
+
+		// remove F from the remains
+		remains = remains.slice(1);
 	} else {
 		// roll20 dice setup
+		rollType = 'roll20';
 		rollConf.dieCount = parseInt(tempDC);
 
 		// Finds the end of the die size/beginnning of the additional options
@@ -389,7 +399,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		// Copy the template to fill out for this iteration
 		const rolling = JSON.parse(JSON.stringify(templateRoll));
 		// If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-		rolling.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
+		rolling.roll = rollType === 'fate' ? genFateRoll(maximiseRoll, nominalRoll) : genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
 		// Set origidx of roll
 		rolling.origidx = i;
 
@@ -403,7 +413,11 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		if (rollConf.critFail.on && rollConf.critFail.range.indexOf(rolling.roll) >= 0) {
 			rolling.critFail = true;
 		} else if (!rollConf.critFail.on) {
-			rolling.critFail = rolling.roll === 1;
+			if (rollType === 'fate') {
+				rolling.critFail = rolling.roll === -1;
+			} else {
+				rolling.critFail = rolling.roll === 1;
+			}
 		}
 
 		// Push the newly created roll and loop again

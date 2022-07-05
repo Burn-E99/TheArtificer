@@ -19,6 +19,17 @@ export const genRoll = (size: number, maximiseRoll: boolean, nominalRoll: boolea
 	}
 };
 
+// genFateRoll returns -1|0|1
+// genFateRoll turns a d6 into a fate die, with sides: -1, -1, 0, 0, 1, 1
+export const genFateRoll = (maximiseRoll: boolean, nominalRoll: boolean): number => {
+	if (nominalRoll) {
+		return 0;
+	} else {
+		const sides = [-1, -1, 0, 0, 1, 1];
+		return sides[genRoll(6, maximiseRoll, nominalRoll) - 1];
+	}
+};
+
 // compareRolls(a, b) returns -1|0|1
 // compareRolls is used to order an array of RollSets by RollSet.roll
 export const compareRolls = (a: RollSet, b: RollSet): number => {
