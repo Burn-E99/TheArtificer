@@ -32,7 +32,8 @@ The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.de
 					},
 					{
 						name: '`x` [Optional]',
-						value: 'Number of dice to roll, if omitted, 1 is used',
+						value: `Number of dice to roll, if omitted, 1 is used
+Additionally, replace \`x\` with \`F\` to roll Fate dice`,
 						inline: true,
 					},
 					{
