@@ -82,11 +82,6 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 				} else if (mathConf[i] == parseFloat(mathConf[i].toString())) {
 					// If its a number, parse the number out
 					mathConf[i] = parseFloat(mathConf[i].toString());
-				} else if (/([0123456789])/g.test(mathConf[i].toString())) {
-					// If there is a number somewhere in mathconf[i] but there are also other characters preventing it from parsing correctly as a number, it should be a dice roll, parse it as such (if it for some reason is not a dice roll, formatRoll/roll will handle it)
-					const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
-					mathConf[i] = formattedRoll.solvedStep;
-					tempCountDetails.push(formattedRoll.countDetails);
 				} else if (mathConf[i].toString().toLowerCase() === 'e') {
 					// If the operand is the constant e, create a SolvedStep for it
 					mathConf[i] = {
@@ -132,6 +127,11 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 						containsCrit: false,
 						containsFail: false,
 					}]);
+				} else {
+					// If nothing else has handled it by now, try it as a roll
+					const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
+					mathConf[i] = formattedRoll.solvedStep;
+					tempCountDetails.push(formattedRoll.countDetails);
 				}
 
 				if (mathConf[i - 1] === '-' && (!mathConf[i - 2] || mathConf[i - 2] === '(')) {
