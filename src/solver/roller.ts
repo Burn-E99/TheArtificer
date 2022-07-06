@@ -522,6 +522,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 	// If penetrating is on, do the decrements
 	if (rollConf.exploding.penetrating) {
 		for (const penRoll of rollSet) {
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | Handling penetrating explosions ${JSON.stringify(penRoll)}`);
 			// If loopCount gets too high, stop trying to calculate infinity
 			if (loopCount > config.limits.maxLoops) {
 				throw new Error('MaxLoopsExceeded');
@@ -530,6 +531,29 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 			// If the die was from an explosion, decrement it by one
 			if (penRoll.exploding) {
 				penRoll.roll--;
+			}
+
+			loopCount++;
+		}
+	}
+
+	// Handle compounding explosions
+	if (rollConf.exploding.compounding) {
+		for (let i = 0; i < rollSet.length; i++) {
+			loggingEnabled && log(LT.LOG, `handling ${rollType} ${rollStr} | Handling compounding explosions ${JSON.stringify(rollSet[i])}`);
+			// If loopCount gets too high, stop trying to calculate infinity
+			if (loopCount > config.limits.maxLoops) {
+				throw new Error('MaxLoopsExceeded');
+			}
+			
+			// Compound the exploding rolls, including the exploding flag and 
+			if (rollSet[i].exploding) {
+				rollSet[i - 1].roll = rollSet[i - 1].roll + rollSet[i].roll;
+				rollSet[i - 1].exploding = true;
+				rollSet[i - 1].critFail = rollSet[i - 1].critFail || rollSet[i].critFail;
+				rollSet[i - 1].critHit = rollSet[i - 1].critHit || rollSet[i].critHit;
+				rollSet.splice(i, 1);
+				i--;
 			}
 
 			loopCount++;
