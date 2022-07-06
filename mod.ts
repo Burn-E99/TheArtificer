@@ -28,6 +28,7 @@ import api from './src/api.ts';
 import { dbClient } from './src/db.ts';
 import commands from './src/commands/_index.ts';
 import intervals from './src/intervals.ts';
+import { successColor, warnColor } from './src/commandUtils.ts';
 import utils from './src/utils.ts';
 
 // Initialize logging client with folder to use for logs, needs --allow-write set on Deno startup
@@ -99,18 +100,72 @@ startBot({
 					}],
 					status: 'online',
 				});
-				sendMessage(config.logChannel, `${config.name} has started, running version ${config.version}.`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:88', 'Startup', e));
+				sendMessage(config.logChannel, {
+					embeds: [{
+						title: `${config.name} is now Online`,
+						color: successColor,
+						fields: [
+							{
+								name: 'Version:',
+								value: `${config.version}`,
+								inline: true,
+							},
+						],
+					}],
+				}).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:88', 'Startup', e));
 			}, 1000);
 		},
 		guildCreate: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
-			sendMessage(config.logChannel, `New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`).catch((e: Error) =>
-				utils.commonLoggers.messageSendError('mod.ts:95', 'Join Guild', e)
-			);
+			sendMessage(config.logChannel, {
+				embeds: [{
+					title: 'New Guild Joined!',
+					color: successColor,
+					fields: [
+						{
+							name: 'Name:',
+							value: `${guild.name}`,
+							inline: true,
+						},
+						{
+							name: 'Id:',
+							value: `${guild.id}`,
+							inline: true,
+						},
+						{
+							name: 'Member Count:',
+							value: `${guild.memberCount}`,
+							inline: true,
+						},
+					],
+				}],
+			}).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:95', 'Join Guild', e));
 		},
 		guildDelete: (guild: DiscordenoGuild) => {
 			log(LT.LOG, `Handling leaving guild ${JSON.stringify(guild)}`);
-			sendMessage(config.logChannel, `I have been removed from: ${guild.name} (id: ${guild.id}).`).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:99', 'Leave Guild', e));
+			sendMessage(config.logChannel, {
+				embeds: [{
+					title: 'Removed from Guild',
+					color: warnColor,
+					fields: [
+						{
+							name: 'Name:',
+							value: `${guild.name}`,
+							inline: true,
+						},
+						{
+							name: 'Id:',
+							value: `${guild.id}`,
+							inline: true,
+						},
+						{
+							name: 'Member Count:',
+							value: `${guild.memberCount}`,
+							inline: true,
+						},
+					],
+				}],
+			}).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:99', 'Leave Guild', e));
 			dbClient.execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id]).catch((e) => utils.commonLoggers.dbError('mod.ts:100', 'delete from', e));
 		},
 		debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
