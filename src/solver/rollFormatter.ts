@@ -61,6 +61,10 @@ export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll:
 			preFormat = `~~${preFormat}`;
 			postFormat = `${postFormat}~~`;
 		}
+		if (e.exploding) {
+			// Add ! to indicate the roll came from an explosion
+			postFormat = `!${postFormat}`;
+		}
 
 		// Finally add this to the roll's details
 		tempDetails += `${preFormat}${e.roll}${postFormat} + `;

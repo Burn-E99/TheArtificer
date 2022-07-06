@@ -519,6 +519,23 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		}
 	}
 
+	// If penetrating is on, do the decrements
+	if (rollConf.exploding.penetrating) {
+		for (const penRoll of rollSet) {
+			// If loopCount gets too high, stop trying to calculate infinity
+			if (loopCount > config.limits.maxLoops) {
+				throw new Error('MaxLoopsExceeded');
+			}
+
+			// If the die was from an explosion, decrement it by one
+			if (penRoll.exploding) {
+				penRoll.roll--;
+			}
+
+			loopCount++;
+		}
+	}
+
 	// If we need to handle the drop/keep flags
 	if (dkdkCnt > 0) {
 		// Count how many rerolled dice there are if the reroll flag was on
