@@ -545,8 +545,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 			if (loopCount > config.limits.maxLoops) {
 				throw new Error('MaxLoopsExceeded');
 			}
-			
-			// Compound the exploding rolls, including the exploding flag and 
+
+			// Compound the exploding rolls, including the exploding flag and
 			if (rollSet[i].exploding) {
 				rollSet[i - 1].roll = rollSet[i - 1].roll + rollSet[i].roll;
 				rollSet[i - 1].exploding = true;
