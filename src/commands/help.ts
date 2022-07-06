@@ -27,6 +27,11 @@ export const help = (message: DiscordenoMessage) => {
 					inline: true,
 				},
 				{
+					name: `\`${config.prefix}rollDecorators\` or \`${config.prefix}???\``,
+					value: `Details on how to use decorators on the roll command`,
+					inline: true,
+				},
+				{
 					name: `\`${config.prefix}api [subcommand]\``,
 					value: `Administrative tools for the bots's API, run \`${config.prefix}api help\` for more details`,
 					inline: true,

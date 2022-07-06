@@ -20,7 +20,9 @@ export const rollHelp = (message: DiscordenoMessage) => {
 
 This command also can fully solve math equations with parenthesis.
 
-The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).`,
+The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).
+
+Run \`[[???\` or \`[[rollDecorators\` for details on the roll decorators.`,
 			},
 			{
 				color: infoColor2,
@@ -132,6 +134,16 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
 						inline: true,
 					},
 					{
+						name: '`!p` [Optional]',
+						value: 'Penetrating Explosion, rolls one `dy` for each crit success, but subtracts one from each resulting explosion',
+						inline: true,
+					},
+					{
+						name: '`!!` [Optional]',
+						value: 'Compounding Explosion, rolls one `dy` for each crit success, but adds the resulting explosion to the die that caused this explosion',
+						inline: true,
+					},
+					{
 						name: '`!=u` [Optional]',
 						value: 'Explode on `u`, rolls another `dy` for every die that lands on `u`',
 						inline: true,
@@ -141,6 +153,11 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
 						value: 'Explode on `u` and greater, rolls another `dy` for every die that lands on `u` or greater',
 						inline: true,
 					},
+				],
+			},
+			{
+				color: infoColor2,
+				fields: [
 					{
 						name: '`!<u` [Optional]',
 						value: 'Explode on `u` and under, rolls another `dy` for every die that lands on `u` or less',
@@ -151,11 +168,6 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
 						value: 'Explodes Once on `u`, rolls another `dy` for each original die that landed on `u`',
 						inline: true,
 					},
-				],
-			},
-			{
-				color: infoColor2,
-				fields: [
 					{
 						name: '`!o>u` [Optional]',
 						value: 'Explode Once on `u` and greater, rolls another `dy` for each original die that landed on `u` or greater',
@@ -164,6 +176,36 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
 					{
 						name: '`!o<u` [Optional]',
 						value: 'Explode Once on `u` and under, rolls another `dy` for each original die that landed on `u` or less',
+						inline: true,
+					},
+					{
+						name: '`!p=u` [Optional]',
+						value: 'Penetrating Explosion on `u`, rolls one `dy` for each die that lands on `u`, but subtracts one from each resulting explosion',
+						inline: true,
+					},
+					{
+						name: '`!p>u` [Optional]',
+						value: 'Penetrating Explosion on `u` and greater, rolls one `dy` for each die that lands on `u` or greater, but subtracts one from each resulting explosion',
+						inline: true,
+					},
+					{
+						name: '`!p<u` [Optional]',
+						value: 'Penetrating Explosion on `u` and under, rolls one `dy` for each die that lands on `u` or under, but subtracts one from each resulting explosion',
+						inline: true,
+					},
+					{
+						name: '`!!=u` [Optional]',
+						value: 'Compounding Explosion on `u`, rolls one `dy` for each die that lands on `u`, but adds the resulting explosion to the die that caused this explosion',
+						inline: true,
+					},
+					{
+						name: '`!!>u` [Optional]',
+						value: 'Compounding Explosion on `u` and greater, rolls one `dy` for each die that lands on `u` or greater, but adds the resulting explosion to the die that caused this explosion',
+						inline: true,
+					},
+					{
+						name: '`!!<u` [Optional]',
+						value: 'Compounding Explosion on `u` and under, rolls one `dy` for each die that lands on `u` or under, but adds the resulting explosion to the die that caused this explosion',
 						inline: true,
 					},
 				],
@@ -184,59 +226,6 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
 						value: `\`${config.prefix}xovady${config.postfix}\`
 \`x\` - Number of OVA dice to roll
 \`y\` - Size of the die to roll (defaults to 6 if omitted)`,
-						inline: true,
-					},
-				],
-			},
-			{
-				color: infoColor2,
-				title: 'Roll Command Decorators:',
-				description: `This command also has some useful decorators that can used.  These decorators simply need to be placed after all rolls in the message.
-
-Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${config.postfix} -nd -s\`, \`${config.prefix}d20${config.postfix} ${config.prefix}d20${config.postfix} ${config.prefix}d20${config.postfix} -o a\``,
-				fields: [
-					{
-						name: '`-nd` - No Details',
-						value: 'Suppresses all details of the requested roll',
-						inline: true,
-					},
-					{
-						name: '`-snd` - Super No Details',
-						value: 'Suppresses all details of the requested roll and hides no details message',
-						inline: true,
-					},
-					{
-						name: '`-s` - Spoiler',
-						value: 'Spoilers all details of the requested roll',
-						inline: true,
-					},
-					{
-						name: '`-m` - Maximize Roll',
-						value: 'Rolls the theoretical maximum roll, cannot be used with -n',
-						inline: true,
-					},
-					{
-						name: '`-n` - Nominal Roll',
-						value: 'Rolls the theoretical nominal roll, cannot be used with -m',
-						inline: true,
-					},
-					{
-						name: '`-gm @user1 @user2 @usern` - GM Roll',
-						value: 'Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs',
-						inline: true,
-					},
-					{
-						name: '`-c` - Count Rolls',
-						value: 'Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions',
-						inline: true,
-					},
-					{
-						name: '`-o [direction]` - Order Roll',
-						value: `Rolls the requested roll and orders the results in the requested direction
-
-Available directions:
-\`a\` - Ascending (least to greatest)
-\`d\` - Descending (greatest to least)`,
 						inline: true,
 					},
 				],

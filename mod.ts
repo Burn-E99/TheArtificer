@@ -157,6 +157,14 @@ startBot({
 					// Help command specifically for the roll command
 					commands.rollHelp(message);
 					break;
+				case 'rolldecorators':
+				case 'rd':
+				case 'dr':
+				case '???':
+					// [[rollDecorators or [[rd or [[dr or [[???
+					// Help command specifically for the roll command decorators
+					commands.rollDecorators(message);
+					break;
 				case 'help':
 				case 'h':
 				case '?':

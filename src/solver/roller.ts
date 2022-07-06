@@ -60,6 +60,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 		exploding: {
 			on: false,
 			once: false,
+			compounding: false,
+			penetrating: false,
 			nums: <number[]> [],
 		},
 	};
@@ -261,10 +263,10 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 						rollConf.critFail.range.push(i);
 					}
 					break;
-				case '!o':
-					rollConf.exploding.once = true;
-					// falls through as !o functions the same as ! in this context
 				case '!':
+				case '!o':
+				case '!p':
+				case '!!':
 					// Configure Exploding
 					rollConf.exploding.on = true;
 					if (afterNumIdx > 0) {
@@ -275,18 +277,18 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 						afterNumIdx = 1;
 					}
 					break;
-				case '!o=':
-					rollConf.exploding.once = true;
-					// falls through as !o= functions the same as != in this context
 				case '!=':
+				case '!o=':
+				case '!p=':
+				case '!!=':
 					// Configure Exploding (this can happen multiple times)
 					rollConf.exploding.on = true;
 					rollConf.exploding.nums.push(tNum);
 					break;
-				case '!o>':
-					rollConf.exploding.once = true;
-					// falls through as !o> functions the same as !> in this context
 				case '!>':
+				case '!o>':
+				case '!p>':
+				case '!!>':
 					// Configure Exploding for all numbers greater than or equal to tNum (this could happen multiple times, but why)
 					rollConf.exploding.on = true;
 					for (let i = tNum; i <= rollConf.dieSize; i++) {
@@ -294,10 +296,10 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 						rollConf.exploding.nums.push(i);
 					}
 					break;
-				case '!o<':
-					rollConf.exploding.once = true;
-					// falls through as !o< functions the same as !< in this context
 				case '!<':
+				case '!o<':
+				case '!p<':
+				case '!!<':
 					// Configure Exploding for all numbers less than or equal to tNum (this could happen multiple times, but why)
 					rollConf.exploding.on = true;
 					for (let i = 1; i <= tNum; i++) {
@@ -309,6 +311,29 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 					// Throw error immediately if unknown op is encountered
 					throw new Error(`UnknownOperation_${tSep}`);
 			}
+
+			// Exploding flags get set in their own switch statement to avoid weird duplicated code
+			switch (tSep) {
+				case '!o':
+				case '!o=':
+				case '!o>':
+				case '!o<':
+					rollConf.exploding.once = true;
+					break;
+				case '!p':
+				case '!p=':
+				case '!p>':
+				case '!p<':
+					rollConf.exploding.penetrating = true;
+					break;
+				case '!!':
+				case '!!=':
+				case '!!>':
+				case '!!<':
+					rollConf.exploding.compounding = true;
+					break;
+			}
+
 			// Finally slice off everything else parsed this loop
 			remains = remains.slice(afterNumIdx);
 		}

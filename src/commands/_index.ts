@@ -1,6 +1,7 @@
 import { ping } from './ping.ts';
 import { rip } from './rip.ts';
 import { rollHelp } from './rollHelp.ts';
+import { rollDecorators } from './rollDecorators.ts';
 import { help } from './help.ts';
 import { info } from './info.ts';
 import { privacy } from './privacy.ts';
@@ -18,6 +19,7 @@ export default {
 	ping,
 	rip,
 	rollHelp,
+	rollDecorators,
 	help,
 	info,
 	privacy,

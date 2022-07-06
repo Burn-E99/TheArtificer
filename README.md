@@ -22,8 +22,10 @@ The Artificer comes with a few supplemental commands to the main rolling command
 
 * `[[help` or `[[h` or `[[?`
   * Provides a message similar to this available commands block.
-* `[[rollhelp` or `[[??`
+* `[[rollhelp` or `[[??` or `[[rh` or `[[hr`
   * Details on how to use the roll command, listed as `[[xdy...]]` below.
+* `[[rolldecorators` or `[[???` or `[[rd` or `[[dr`
+  * Details on how to use decorators on the roll command.
 * `[[api [subcommand]`
   * Administrative tools for the bots's API.  These commands may only be used by the Owner or Admins of your guild.
   * Available Subcommands:
@@ -66,7 +68,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
 
   |  Paramater    |  Required?  |  Repeatable?  |  Description                                                                                                                                                             |
   |---------------|-------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used, additionally, replace x with `F` to roll the dice as Fate dice                                                          |
+  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used, additionally, replace x with `F` to roll the dice as Fate dice                                                           |
   |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                                                                                                |
   |  dz or dlz    |  Optional   |      No       |  drops the lowest z dice, cannot be used with any other drop or keep options                                                                                             |
   |  kz or khz    |  Optional   |      No       |  keeps the highest z dice, cannot be used with any other drop or keep options                                                                                            |
@@ -86,12 +88,20 @@ The Artificer comes with a few supplemental commands to the main rolling command
   |  cf>q         |  Optional   |      Yes      |  changes crit fail to be greater than or equal to q                                                                                                                      |
   |  !            |  Optional   |      No       |  exploding, rolls another dy for every crit success                                                                                                                      |
   |  !o           |  Optional   |      No       |  exploding once, rolls another dy for each original crit success                                                                                                         |
+  |  !p           |  Optional   |      No       |  penetrating explosion, rolls one dy for each crit success, but subtracts one from each resulting explosion                                                              |
+  |  !!           |  Optional   |      No       |  compounding explosion, rolls one dy for each crit success, but adds the resulting explosion to the die that caused this explosion                                       |
   |  !=u          |  Optional   |      Yes      |  exploding, rolls another dy for every die that lands on u                                                                                                               |
   |  !>u          |  Optional   |      Yes      |  exploding, rolls another dy for every die that lands on u or greater                                                                                                    |
   |  !<u>         |  Optional   |      Yes      |  exploding, rolls another dy for every die that lands on u or less                                                                                                       |
   |  !o=u         |  Optional   |      Yes      |  exploding once, rolls another dy for each original die that landed on u                                                                                                 |
   |  !o>u         |  Optional   |      Yes      |  exploding once, rolls another dy for each original die that landed on u or greater                                                                                      |
   |  !o<u         |  Optional   |      Yes      |  exploding once, rolls another dy for each original die that landed on u or less                                                                                         |
+  |  !p=u         |  Optional   |      Yes      |  penetrating explosion, rolls one dy for each die that lands on u, but subtracts one from each resulting explosion                                                       |
+  |  !p>u         |  Optional   |      Yes      |  penetrating explosion, rolls one dy for each die that lands on u or greater, but subtracts one from each resulting explosion                                            |
+  |  !p<u         |  Optional   |      Yes      |  penetrating explosion, rolls one dy for each die that lands on u or under, but subtracts one from each resulting explosion                                              |
+  |  !!=u         |  Optional   |      Yes      |  compounding explosion, rolls one dy for each die that lands on u, but adds the resulting explosion to the die that caused this explosion                                |
+  |  !!>u         |  Optional   |      Yes      |  compounding explosion, rolls one dy for each die that lands on u or greater, but adds the resulting explosion to the die that caused this explosion                     |
+  |  !!<u         |  Optional   |      Yes      |  compounding explosion, rolls one dy for each die that lands on u or under, but adds the resulting explosion to the die that caused this explosion                       |
 
   * If the parameter is Required, it must be provided at all times.
   * If the parameter is Repeatable, it may occur multiple times in the roll configuration.

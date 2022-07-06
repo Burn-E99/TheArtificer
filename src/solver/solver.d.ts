@@ -95,6 +95,8 @@ export type RollConf = {
 	exploding: {
 		on: boolean;
 		once: boolean;
+		compounding: boolean;
+		penetrating: boolean;
 		nums: number[];
 	};
 };
