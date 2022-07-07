@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 PIDFile=/run/deno.pid
-ExecStart=/root/.deno/bin/deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net .\mod.ts
+ExecStart=deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net .\mod.ts
 RestartSec=60
 Restart=on-failure
 
