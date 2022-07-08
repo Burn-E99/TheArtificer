@@ -6,15 +6,8 @@
 
 name="artificer"
 rcvar="artificer_enable"
-start_cmd="artificer_start"
 
-pidfile="/var/dbots/TheArtificer/artificer.pid"
-
-artificer_start()
-{
-	cd /var/dbots/TheArtificer/
-	/usr/local/bin/deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net mod.ts
-}
+command="/usr/local/bin/deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net /var/dbots/TheArtificer/mod.ts"
 
 load_rc_config artificer
 run_rc_command "$1"
