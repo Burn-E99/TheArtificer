@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# PROVIDE: artificer
+
 . /etc/rc.subr
 
 name="artificer"
