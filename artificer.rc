@@ -1,0 +1,16 @@
+#!/bin/sh
+
+. /etc/rc.subr
+
+name="artificer"
+rcvar="artificer_enable"
+start_cmd="artificer_start"
+
+artificer_start()
+{
+	cd /var/dbots/TheArtificer/
+	deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net mod.ts
+}
+
+load_rc_config artificer
+run_rc_command "$1"
