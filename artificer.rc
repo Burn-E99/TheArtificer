@@ -8,6 +8,8 @@ name="artificer"
 rcvar="artificer_enable"
 start_cmd="artificer_start"
 
+pidfile="/var/dbots/TheArtificer/artificer.pid"
+
 artificer_start()
 {
 	cd /var/dbots/TheArtificer/
