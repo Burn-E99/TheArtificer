@@ -6,8 +6,10 @@
 
 name="artificer"
 rcvar="artificer_enable"
+pidfile="/var/dbots/TheArtificer/artificer.pid"
 
-command="/usr/local/bin/deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net /var/dbots/TheArtificer/mod.ts"
+command="/usr/sbin/daemon"
+command_args="-c -f -P ${pidfile} -r /usr/local/bin/deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png --allow-net /var/dbots/TheArtificer/mod.ts"
 
 load_rc_config artificer
 run_rc_command "$1"
