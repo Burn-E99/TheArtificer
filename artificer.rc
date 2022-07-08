@@ -14,7 +14,7 @@ artificer_read="./src/solver/,./src/endpoints/gets/heatmap-base.png,./src/endpoi
 
 artificer_chdir="${artificer_root}"
 command="/usr/sbin/daemon"
-command_args="-c -f -P ${pidfile} /usr/local/bin/deno run --allow-write=${artificer_write} --allow-read=${artificer_read} --allow-net ${artificer_root}/mod.ts"
+command_args="-f -R 5 -P ${pidfile} /usr/local/bin/deno run --allow-write=${artificer_write} --allow-read=${artificer_read} --allow-net ${artificer_root}/mod.ts"
 
 load_rc_config artificer
 run_rc_command "$1"
