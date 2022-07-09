@@ -178,22 +178,22 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
 		// If maximiseRoll or nominalRoll are on, mark the output as such, else use default formatting
 		if (modifiers.maxRoll) {
-			line1 = ` requested the theoretical maximum of: \`${config.prefix}${fullCmd}\``;
+			line1 = ` requested the theoretical maximum of:\n\`${config.prefix}${fullCmd}\``;
 			line2 = 'Theoretical Maximum Results: ';
 		} else if (modifiers.nominalRoll) {
-			line1 = ` requested the theoretical nominal of: \`${config.prefix}${fullCmd}\``;
+			line1 = ` requested the theoretical nominal of:\n\`${config.prefix}${fullCmd}\``;
 			line2 = 'Theoretical Nominal Results: ';
 		} else if (modifiers.order === 'a') {
-			line1 = ` requested the following rolls to be ordered from least to greatest: \`${config.prefix}${fullCmd}\``;
+			line1 = ` requested the following rolls to be ordered from least to greatest:\n\`${config.prefix}${fullCmd}\``;
 			line2 = 'Results: ';
 			tempReturnData.sort(compareTotalRolls);
 		} else if (modifiers.order === 'd') {
-			line1 = ` requested the following rolls to be ordered from greatest to least: \`${config.prefix}${fullCmd}\``;
+			line1 = ` requested the following rolls to be ordered from greatest to least:\n\`${config.prefix}${fullCmd}\``;
 			line2 = 'Results: ';
 			tempReturnData.sort(compareTotalRolls);
 			tempReturnData.reverse();
 		} else {
-			line1 = ` rolled: \`${config.prefix}${fullCmd}\``;
+			line1 = ` rolled:\n\`${config.prefix}${fullCmd}\``;
 			line2 = 'Results: ';
 		}
 
