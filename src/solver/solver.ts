@@ -61,8 +61,10 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 			throw new Error('UnbalancedParens');
 		}
 
-		// Replace the itemes between openParen and closeParen (including the parens) with its solved equilvalent by calling the solver on the items between openParen and closeParen (excluding the parens)
-		conf.splice(openParen, closeParen + 1, fullSolver(conf.slice(openParen + 1, closeParen), true));
+		// Call the solver on the items between openParen and closeParen (excluding the parens)
+		const parenSolve = fullSolver(conf.slice(openParen + 1, closeParen), true);
+		// Replace the itemes between openParen and closeParen (including the parens) with its solved equilvalent
+		conf.splice(openParen, (closeParen - openParen + 1), parenSolve);
 
 		// Determing if we need to add in a multiplication sign to handle implicit multiplication (like "(4)2" = 8)
 		// insertedMult flags if there was a multiplication sign inserted before the parens
