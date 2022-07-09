@@ -39,7 +39,7 @@ If you would like to remove all of your submitted data, this can easily be done 
 
 If you have been banned from using _The API_, your API Key, and registration information (Discord User ID, and Email Address) will not be deleted as this data is considered necessary.
 
-If you would like your Discord Guild ID to be removed from _The Bot_'s database, a Guild Owner or Administrator needs to run `[[api delete`.  This will remove your Discord Guild's ID from _The Bot_'s database, reverting it back to the default setting of blocking _The API_.
+If you would like your Discord Guild ID to be removed from _The Bot_'s database, a Guild Owner or Administrator needs to run `[[api delete`.  This will remove your Discord Guild's ID from _The Bot_'s database, reverting it back to the default setting of blocking _The API_.  Additionally, _The Bot_ will automatically remove any data related to your Discord Guild when _The Bot_ is removed from your guild.
 
 If your guild has been banned from using _The API_, the Discord Guild ID will not be deleted as this data is considered necessary.
 
