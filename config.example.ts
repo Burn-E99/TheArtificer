@@ -1,12 +1,12 @@
 export const config = {
 	'name': 'The Artificer', // Name of the bot
-	'version': '2.0.0', // Version of the bot
+	'version': '2.0.1', // Version of the bot
 	'token': 'the_bot_token', // Discord API Token for this bot
 	'localtoken': 'local_testing_token', // Discord API Token for a secondary OPTIONAL testing bot, THIS MUST BE DIFFERENT FROM "token"
 	'prefix': '[[', // Prefix for all commands
 	'postfix': ']]', // Postfix for rolling command
 	'limits': { // Limits for the bot functions
-		'maxLoops': 10000000, // Determines how long the bot will attempt a roll, number of loops before it kills a roll.  Increase this at your own risk, originally was set to 5 Million before rollWorkers were added, increased to 10 Million since multiple rolls can be handled concurrently
+		'maxLoops': 5000000, // Determines how long the bot will attempt a roll, number of loops before it kills a roll.  Increase this at your own risk, originally was set to 5 Million before rollWorkers were added, increased to 10 Million since multiple rolls can be handled concurrently
 		'maxWorkers': 16, // Maximum number of worker threads to spawn at once (Set this to less than the number of threads your CPU has, Artificer will eat it all if too many rolls happen at once)
 		'workerTimeout': 300000, // Maximum time before the bot kills a worker thread in ms
 	},

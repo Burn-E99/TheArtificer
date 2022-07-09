@@ -79,6 +79,11 @@ Please see attached file for audit details on cached guilds and members.`,
 					value: `${botsCount}`,
 					inline: true,
 				},
+				{
+					name: 'Average members per guild:',
+					value: `${(totalCount / cache.guilds.size).toFixed(2)}`,
+					inline: true,
+				},
 			],
 		}],
 		file: {
