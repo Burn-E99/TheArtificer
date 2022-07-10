@@ -82,7 +82,7 @@ export const help = (message: DiscordenoMessage) => {
 					inline: true,
 				},
 				{
-					name: `\`${config.prefix}opt-in\``,
+					name: `\`${config.prefix}opt-in\` **Available via DM ONLY**`,
 					value: 'Removes you from the ignore list',
 					inline: true,
 				},

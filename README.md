@@ -61,7 +61,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[report [[2+2]] returned 5 when I expected it to return 4` will send the entire message after `[[report` to the devs via Discord.
 * `[[opt-out` or `[[ignore-me`
   * Adds you to an ignore list so the bot will never respond to you
-* `[[opt-in` **Available only via DM**
+* `[[opt-in` **Available via DM ONLY**
   * Removes you from the ignore list
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
