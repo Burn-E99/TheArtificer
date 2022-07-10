@@ -21,8 +21,10 @@ export const handleMentions = (message: DiscordenoMessage) => {
 			color: infoColor1,
 			title: `Hello!  I am ${config.name}!`,
 			fields: [{
-				name: 'I am a bot that specializes in rolling dice and doing basic algebra',
-				value: `To learn about my available commands, please run \`${config.prefix}help\``,
+				name: 'I am a bot that specializes in rolling dice and doing basic algebra.',
+				value: `To learn about my available commands, please run \`${config.prefix}help\`.
+
+Want me to ignore you?  Simply run \`${config.prefix}opt-out\` and ${config.name} will no longer read your messages or respond to you.`,
 			}],
 		}],
 	}).catch((e: Error) => utils.commonLoggers.messageSendError('handleMentions.ts:30', message, e));

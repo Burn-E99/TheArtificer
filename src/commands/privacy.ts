@@ -22,7 +22,9 @@ export const privacy = (message: DiscordenoMessage) => {
 
 For more details, please check out the Privacy Policy on the GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
 
-Terms of Service can also be found on GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).`,
+Terms of Service can also be found on GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).
+
+Want me to ignore you?  Simply run \`${config.prefix}opt-out\` and ${config.name} will no longer read your messages or respond to you.`,
 			}],
 		}],
 	}).catch((e: Error) => utils.commonLoggers.messageSendError('privacy.ts:33', message, e));
