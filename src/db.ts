@@ -16,7 +16,7 @@ export const dbClient = await new Client().connect({
 
 // List of userIds who have requested that the bot ignore them
 export const ignoreList: Array<bigint> = [];
-const dbIgnoreList = await dbClient.query("SELECT * FROM ignore_list");
+const dbIgnoreList = await dbClient.query('SELECT * FROM ignore_list');
 dbIgnoreList.forEach((userIdObj: UserIdObj) => {
 	ignoreList.push(userIdObj.userid);
 });

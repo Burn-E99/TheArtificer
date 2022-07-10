@@ -4,7 +4,7 @@ import {
 	// Discordeno deps
 	DiscordenoMessage,
 } from '../../deps.ts';
-import { successColor, failColor } from '../commandUtils.ts';
+import { failColor, successColor } from '../commandUtils.ts';
 import utils from '../utils.ts';
 
 export const optIn = async (message: DiscordenoMessage) => {
