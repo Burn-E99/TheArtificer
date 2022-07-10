@@ -174,7 +174,7 @@ startBot({
 			if (message.isBot) return;
 
 			// Ignore users who requested to be ignored
-			if (ignoreList.includes(message.authorId) && !message.content.startsWith(`${config.prefix}opt-in`)) return;
+			if (ignoreList.includes(message.authorId) && (!message.content.startsWith(`${config.prefix}opt-in`) || message.guildId !== 0n)) return;
 
 			// Ignore all messages that are not commands
 			if (message.content.indexOf(config.prefix) !== 0) {

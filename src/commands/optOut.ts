@@ -19,7 +19,7 @@ export const optOut = async (message: DiscordenoMessage) => {
 			embeds: [{
 				color: successColor,
 				title: `${config.name} will no longer respond to you.`,
-				description: `If you want ${config.name} to respond to you again, please run the following command:
+				description: `If you want ${config.name} to respond to you again, please DM ${config.name} the following command:
 
 \`${config.prefix}opt-in\``,
 			}],
