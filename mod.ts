@@ -25,7 +25,7 @@ import {
 	startBot,
 } from './deps.ts';
 import api from './src/api.ts';
-import { dbClient } from './src/db.ts';
+import { dbClient, ignoreList } from './src/db.ts';
 import commands from './src/commands/_index.ts';
 import intervals from './src/intervals.ts';
 import { successColor, warnColor } from './src/commandUtils.ts';
@@ -173,6 +173,9 @@ startBot({
 			// Ignore all other bots
 			if (message.isBot) return;
 
+			// Ignore users who requested to be ignored
+			if (ignoreList.includes(message.authorId) && !message.content.startsWith(`${config.prefix}opt-in`)) return;
+
 			// Ignore all messages that are not commands
 			if (message.content.indexOf(config.prefix) !== 0) {
 				// Handle @bot messages
@@ -193,6 +196,17 @@ startBot({
 			// All commands below here
 
 			switch (command) {
+				case 'opt-out':
+				case 'ignore-me':
+					// [[opt-out or [[ignore-me
+					// Tells the bot to add you to the ignore list.
+					commands.optOut(message);
+					break;
+				case 'opt-in':
+					// [[opt-in
+					// Tells the bot to remove you from the ignore list.
+					commands.optIn(message);
+					break;
 				case 'ping':
 					// [[ping
 					// Its a ping test, what else do you want.

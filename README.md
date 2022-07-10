@@ -1,4 +1,4 @@
-# The Artificer - A Dice Rolling Discord Bot | V2.0.3 - 2022/07/09
+# The Artificer - A Dice Rolling Discord Bot | V2.1.0 - 2022/07/10
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-orange.svg)](https://sonarcloud.io/summary/new_code?id=TheArtificer)  
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=bugs)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=TheArtificer) [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=TheArtificer&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=TheArtificer)  
 
@@ -59,6 +59,10 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * If you encounter a command that errors out or returns something unexpected, please use this command to alert the developers of the problem.
   * Example:
     * `[[report [[2+2]] returned 5 when I expected it to return 4` will send the entire message after `[[report` to the devs via Discord.
+* `[[opt-out` or `[[ignore-me`
+  * Adds you to an ignore list so the bot will never respond to you
+* `[[opt-in`
+  * Removes you from the ignore list
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
   * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will no different.

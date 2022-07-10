@@ -14,6 +14,8 @@ import { roll } from './roll.ts';
 import { handleMentions } from './handleMentions.ts';
 import { audit } from './audit.ts';
 import { heatmap } from './heatmap.ts';
+import { optOut } from './optOut.ts';
+import { optIn } from './optIn.ts';
 
 export default {
 	ping,
@@ -32,4 +34,6 @@ export default {
 	handleMentions,
 	audit,
 	heatmap,
+	optOut,
+	optIn,
 };

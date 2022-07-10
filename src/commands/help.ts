@@ -77,6 +77,16 @@ export const help = (message: DiscordenoMessage) => {
 					inline: true,
 				},
 				{
+					name: `\`${config.prefix}opt-out\` or \`${config.prefix}ignore-me\``,
+					value: 'Adds you to an ignore list so the bot will never respond to you',
+					inline: true,
+				},
+				{
+					name: `\`${config.prefix}opt-in\``,
+					value: 'Removes you from the ignore list',
+					inline: true,
+				},
+				{
 					name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
 					value:
 						`Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,

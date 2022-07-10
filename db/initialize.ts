@@ -19,7 +19,19 @@ await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_HEATMAP;`);
 await dbClient.execute(`DROP TABLE IF EXISTS roll_time_heatmap;`);
 await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_CNT;`);
 await dbClient.execute(`DROP TABLE IF EXISTS command_cnt;`);
+await dbClient.execute(`DROP TABLE IF EXISTS ignore_list;`);
 console.log('Tables dropped');
+
+// Table to hold list of users who want to be ignored by the bot
+console.log('Attempting to create table ignore_list');
+await dbClient.execute(`
+	CREATE TABLE ignore_list (
+		userid bigint unsigned NOT NULL,
+		PRIMARY KEY (userid),
+		UNIQUE KEY ignore_list_userid_UNIQUE (userid)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+`);
+console.log('Table created');
 
 // Light telemetry on how many commands have been run
 console.log('Attempting to create table command_cnt');
