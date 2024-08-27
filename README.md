@@ -220,7 +220,7 @@ The Artificer is built on [Deno](https://deno.land/) `v1.22.0` using [Discordeno
 
 You will also need to install and setup a MySQL database with a user for the bot to use to add/modify the database.  This user must have the "DB Manager" admin rights and "REFERENCES" Global Privileges.  Once the DB is installed and a user is setup, run the provided `db\initialize.ts` to create the schema and tables.  After this, run `db\populateDefaults.ts` to insert some needed values into the tables.
 
-Once everything is set up, starting the bot can simply be done with `deno run --allow-net .\mod.ts`.
+Once everything is set up, starting the bot can simply be done with the command in `start.command`.
 
 If you choose to run version `1.1.0` or newer, ensure you disable the API in `config.ts` or verify you have properly secured your instance of The Artificer.  If you enable the API, you should manually generate a 25 char nanoid and place it in `config.api.adminKey` and copy your `userid` and place it in `config.api.admin` before running `db\populateDefaults.ts`.
 
