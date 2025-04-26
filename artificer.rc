@@ -15,7 +15,7 @@ artificer_log="/var/log/artificer.log"
 
 artificer_chdir="${artificer_root}"
 command="/usr/sbin/daemon"
-command_args="-f -R 5 -P ${pidfile} -o ${artificer_log} /usr/local/bin/deno run --allow-write=${artificer_write} --allow-read=${artificer_read} --allow-net ${artificer_root}/mod.ts"
+command_args="-f -R 5 -P ${pidfile} -o ${artificer_log} /usr/local/bin/deno run --allow-write=${artificer_write} --allow-read=${artificer_read} --allow-net --allow-import ${artificer_root}/mod.ts"
 
 load_rc_config artificer
 run_rc_command "$1"
