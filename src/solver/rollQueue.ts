@@ -222,8 +222,10 @@ setInterval(async () => {
   );
   if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
     const temp = rollQueue.shift();
-    if (temp) {
+    if (temp && !temp.apiRoll) {
       temp.dd.m.edit(rollingEmbed).catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:208', temp.dd.m, e));
+      handleRollWorker(temp);
+    } else if (temp && temp.apiRoll) {
       handleRollWorker(temp);
     }
   }
