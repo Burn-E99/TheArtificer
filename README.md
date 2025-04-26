@@ -149,64 +149,9 @@ Every API request **requires** the header `X-Api-Key` with the value set to the 
   * `429` - Too Many Requests - API rate limit exceeded, please slow down.
   * `500` - Internal Server Error - Something broke, if this continues to happen, please submit a GitHub issue.
 
-API URL: `https://artificer.eanm.dev/api/`
+Official API URL: `https://artificer.eanm.dev/api/`
 
-Available Endpoints and Methods Required:
-
-* `/api/roll` - `GET`
-  * Required query parameters:
-    * `user` - Your Discord User ID.
-    * `channel` - The Discord Channel ID that the bot is to send the results into.
-    * `rollstr` - A roll string formatted identically to the roll command detailed in the "Available Commands" section.
-  * Optional query parameters (these parameters do not require values unless specified):
-    * `c` - Count - Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions
-    * `nd` - No Details - Suppresses all details of the requested roll.
-    * `snd` - Super No Details - Suppresses all details of the requested roll and hides no details message.
-    * `s` - Spoiler - Spoilers all details of the requested roll.
-    * `m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with Nominal roll.
-    * `n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with Maximise roll.
-    * `gm` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs.  Takes a comma separated list of Discord User IDs.
-    * `o` - Order Roll - Rolls the requested roll and orders the results in the requested direction.  Takes a single character: `a` or `d`.
-  * Returns:
-    * `200` - OK - Results of the roll should be found in Discord, but also are returned as a string via the API.
-* `/api/channel` - `GET`
-  * Required query parameters:
-    * `user` - Your Discord ID.
-  * Returns:
-    * `200` - OK - JSON Array as a string containing allowed channels with their active and banned statuses.
-* `/api/channel/add` - `POST`
-  * Required query parameters:
-    * `user` - Your Discord ID.
-    * `channel` - The Discord Channel ID you wish to whitelist for your user ID/API Key combo.
-  * Returns:
-    * `200` - OK - Nothing to be returned.
-* `/api/channel/activate` - `PUT`
-  * Required query parameters:
-    * `user` - Your Discord ID.
-    * `channel` - The Discord Channel ID you wish to reactivate.
-  * Returns:
-    * `200` - OK - Nothing to be returned.
-* `/api/channel/deactivate` - `PUT`
-  * Required query parameters:
-    * `user` - Your Discord ID.
-    * `channel` - The Discord Channel ID you wish to deactivate.
-  * Returns:
-    * `200` - OK - Nothing to be returned.
-* `/api/key` - `GET`
-  * This endpoint does not require the `X-Api-Key` header.
-  * Required query parameters:
-    * `user` - Your Discord ID.
-    * `email` - An email address you can be reached at.  The API Key will be sent to this address.
-  * Returns:
-    * `200` - OK - Nothing to be returned.  API Key will be emailed to you within 24 hours.
-* `/api/key/delete` - `DELETE`
-  * Required query parameters:
-    * `user` - Your Discord ID.
-    * `email` - An email address you can be reached at.  This must match the email you registered with.  The delete code will be sent to this address.
-    * `code` - Run this endpoint first without this field.  Once you recieve the email containing the delete code, run this API a second time with this field
-  * Returns:
-    * `424` - Failed dependancy - You will be emailed a delete code to rerun this endpoint with.
-    * `200` - OK - Everything relating to your API key was successfully removed.
+API Documentation can be found in the `.bruno` folder, which can be viewed in [Bruno](https://www.usebruno.com/).
 
 API Key management via a basic GUI is availble on the [API Tools](https://artificer.eanm.dev/) website.
 
