@@ -8,14 +8,14 @@ import {
   log,
   LT,
 } from '../../../deps.ts';
-import { QueuedRoll, RollModifiers } from '../../mod.d.ts';
+import { RollModifiers } from '../../mod.d.ts';
 import utils from '../../utils.ts';
 import { queueRoll } from '../../solver/rollQueue.ts';
 import stdResp from '../stdResponses.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
-export const apiRoll = async (query: Map<string, string>, apiUserid: bigint, request: Request): Promise<Response> => {
+export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Promise<Response> => {
   // Make sure query contains all the needed parts
   if (
     query.has('rollstr') &&
@@ -61,7 +61,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint, req
       try {
         // Make sure rollCmd is not undefined
         let rollCmd = query.get('rollstr') || '';
-        const originalCommand = query.get('rollstr');
+        const originalCommand = query.get('rollstr') || '';
 
         if (rollCmd.length === 0) {
           // Always log API rolls for abuse detection
@@ -101,15 +101,13 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint, req
         };
 
         // Parse the roll and get the return text
-        await queueRoll(
-          <QueuedRoll> {
-            apiRoll: true,
-            api: { request, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
-            rollCmd,
-            modifiers,
-            originalCommand,
-          },
-        );
+        await queueRoll({
+          apiRoll: true,
+          api: { channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
+          rollCmd,
+          modifiers,
+          originalCommand,
+        });
       } catch (err) {
         // Handle any errors we missed
         log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
@@ -118,7 +116,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint, req
     } else {
       // Alert API user that they messed up
       return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
       );
     }
   } else {

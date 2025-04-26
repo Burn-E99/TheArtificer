@@ -16,7 +16,7 @@ import stdResp from './endpoints/stdResponses.ts';
 
 // start() returns nothing
 // start initializes and runs the entire API for the bot
-const start = async (): Promise<void> => {
+const start = () => {
   log(LT.INFO, `HTTP api running at: http://localhost:${config.api.port}/`);
 
   // rateLimitTime holds all users with the last time they started a rate limit timer
@@ -102,13 +102,13 @@ const start = async (): Promise<void> => {
               switch (path.toLowerCase()) {
                 case '/key':
                 case '/key/':
-                  return await endpoints.get.apiKeyAdmin(query, apiUserid);
+                  return endpoints.get.apiKeyAdmin(query, apiUserid);
                 case '/channel':
                 case '/channel/':
-                  return await endpoints.get.apiChannel(query, apiUserid);
+                  return endpoints.get.apiChannel(query, apiUserid);
                 case '/roll':
                 case '/roll/':
-                  return await endpoints.get.apiRoll(query, apiUserid, request);
+                  return endpoints.get.apiRoll(query, apiUserid);
                 default:
                   // Alert API user that they messed up
                   return stdResp.NotFound('Auth Get');
@@ -118,7 +118,7 @@ const start = async (): Promise<void> => {
               switch (path.toLowerCase()) {
                 case '/channel/add':
                 case '/channel/add/':
-                  return await endpoints.post.apiChannelAdd(query, apiUserid);
+                  return endpoints.post.apiChannelAdd(query, apiUserid);
                 default:
                   // Alert API user that they messed up
                   return stdResp.NotFound('Auth Post');
@@ -134,17 +134,17 @@ const start = async (): Promise<void> => {
                 case '/key/activate/':
                 case '/key/deactivate':
                 case '/key/deactivate/':
-                  return await endpoints.put.apiKeyManage(query, apiUserid, path);
+                  return endpoints.put.apiKeyManage(query, apiUserid, path);
                 case '/channel/ban':
                 case '/channel/ban/':
                 case '/channel/unban':
                 case '/channel/unban/':
-                  return await endpoints.put.apiChannelManageBan(query, apiUserid, path);
+                  return endpoints.put.apiChannelManageBan(query, apiUserid, path);
                 case '/channel/activate':
                 case '/channel/activate/':
                 case '/channel/deactivate':
                 case '/channel/deactivate/':
-                  return await endpoints.put.apiChannelManageActive(query, apiUserid, path);
+                  return endpoints.put.apiChannelManageActive(query, apiUserid, path);
                 default:
                   // Alert API user that they messed up
                   return stdResp.NotFound('Auth Put');
@@ -154,7 +154,7 @@ const start = async (): Promise<void> => {
               switch (path.toLowerCase()) {
                 case '/key/delete':
                 case '/key/delete/':
-                  return await endpoints.delete.apiKeyDelete(query, apiUserid, apiUserEmail, apiUserDelCode);
+                  return endpoints.delete.apiKeyDelete(query, apiUserid, apiUserEmail, apiUserDelCode);
                 default:
                   // Alert API user that they messed up
                   return stdResp.NotFound('Auth Del');
@@ -164,14 +164,14 @@ const start = async (): Promise<void> => {
               // Alert API user that they messed up
               return stdResp.MethodNotAllowed('Auth');
           }
-        } else if (!authenticated) {
+        } else {
           // Handle the unathenticated request
           switch (request.method) {
             case 'GET':
               switch (path.toLowerCase()) {
                 case '/key':
                 case '/key/':
-                  return await endpoints.get.apiKey(query);
+                  return endpoints.get.apiKey(query);
                 case '/heatmap.png':
                   return endpoints.get.heatmapPng();
                 default:

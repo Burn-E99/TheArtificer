@@ -13,16 +13,16 @@ import {
   sendMessage,
 } from '../../deps.ts';
 import { SolvedRoll } from '../solver/solver.d.ts';
-import { QueuedRoll, RollModifiers } from '../mod.d.ts';
+import { ApiQueuedRoll, DDQueuedRoll, RollModifiers } from '../mod.d.ts';
 import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor2, rollingEmbed } from '../commandUtils.ts';
 import stdResp from '../endpoints/stdResponses.ts';
 import utils from '../utils.ts';
 
 let currentWorkers = 0;
-const rollQueue: Array<QueuedRoll> = [];
+const rollQueue: Array<ApiQueuedRoll | DDQueuedRoll> = [];
 
 // Handle setting up and calling the rollWorker
-const handleRollWorker = async (rq: QueuedRoll) => {
+const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
   currentWorkers++;
 
   // gmModifiers used to create gmEmbed (basically just turn off the gmRoll)
@@ -43,12 +43,12 @@ const handleRollWorker = async (rq: QueuedRoll) => {
             (
               await generateRollEmbed(
                 rq.dd.message.authorId,
-                <SolvedRoll> {
+                <SolvedRoll>{
                   error: true,
                   errorCode: 'TooComplex',
                   errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
                 },
-                <RollModifiers> {},
+                <RollModifiers>{}
               )
             ).embed,
           ],
@@ -170,14 +170,14 @@ const handleRollWorker = async (rq: QueuedRoll) => {
               JSON.stringify(
                 rq.modifiers.count
                   ? {
-                    counts: countEmbed,
-                    details: pubEmbedDetails,
-                  }
+                      counts: countEmbed,
+                      details: pubEmbedDetails,
+                    }
                   : {
-                    details: pubEmbedDetails,
-                  },
-              ),
-            ),
+                      details: pubEmbedDetails,
+                    }
+              )
+            )
           );
         }
       }
@@ -191,7 +191,7 @@ const handleRollWorker = async (rq: QueuedRoll) => {
 };
 
 // Runs the roll or queues it depending on how many workers are currently running
-export const queueRoll = async (rq: QueuedRoll) => {
+export const queueRoll = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
   if (rq.apiRoll) {
     handleRollWorker(rq);
   } else if (!rollQueue.length && currentWorkers < config.limits.maxWorkers) {
@@ -218,7 +218,7 @@ The results for this roll will replace this message when it is done.`,
 setInterval(async () => {
   log(
     LT.LOG,
-    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`,
+    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`
   );
   if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
     const temp = rollQueue.shift();

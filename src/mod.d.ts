@@ -26,21 +26,25 @@ export type RollModifiers = {
 };
 
 // QueuedRoll is the structure to track rolls we could not immediately handle
-export type QueuedRoll = {
-  apiRoll: boolean;
+interface QueuedRoll {
+  rollCmd: string;
+  modifiers: RollModifiers;
+  originalCommand: string;
+}
+export interface ApiQueuedRoll extends QueuedRoll {
+  apiRoll: true;
   api: {
-    request: Request;
     channelId: bigint;
     userId: bigint;
   };
+}
+export interface DDQueuedRoll extends QueuedRoll {
+  apiRoll: false;
   dd: {
     m: DiscordenoMessage;
     message: DiscordenoMessage;
   };
-  originalCommand: string;
-  rollCmd: string;
-  modifiers: RollModifiers;
-};
+}
 
 export type PastCommandCount = {
   command: string;
