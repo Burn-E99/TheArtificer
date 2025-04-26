@@ -19,7 +19,7 @@ config.emojis.forEach((emji: EmojiConf) => {
 
 export const emoji = (message: DiscordenoMessage, command: string) => {
   // shortcut
-  if (allEmojiAliases.indexOf(command)) {
+  if (allEmojiAliases.includes(command)) {
     // Start looping thru the possible emojis
     config.emojis.some((emji: EmojiConf) => {
       log(LT.LOG, `Checking if command was emoji ${JSON.stringify(emji)}`);
