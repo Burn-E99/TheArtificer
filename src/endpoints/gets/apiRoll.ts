@@ -12,19 +12,13 @@ import { RollModifiers } from '../../mod.d.ts';
 import utils from '../../utils.ts';
 import { queueRoll } from '../../solver/rollQueue.ts';
 import stdResp from '../stdResponses.ts';
+import { verifyQueryHasParams } from '../utils.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
 export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Promise<Response> => {
   // Make sure query contains all the needed parts
-  if (
-    query.has('rollstr') &&
-    (query.get('rollstr') || '').length > 0 &&
-    query.has('channel') &&
-    (query.get('channel') || '').length > 0 &&
-    query.has('user') &&
-    (query.get('user') || '').length > 0
-  ) {
+  if (verifyQueryHasParams(query, ['user', 'channel', 'rollstr'])) {
     if (query.has('n') && query.has('m')) {
       // Alert API user that they shouldn't be doing this
       return stdResp.BadRequest("Cannot have both 'n' and 'm'.");

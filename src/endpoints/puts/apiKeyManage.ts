@@ -2,9 +2,10 @@ import config from '../../../config.ts';
 import dbClient from '../../db/client.ts';
 import stdResp from '../stdResponses.ts';
 import utils from '../../utils.ts';
+import { verifyQueryHasParams } from '../utils.ts';
 
 export const apiKeyManage = async (query: Map<string, string>, apiUserid: bigint, path: string): Promise<Response> => {
-  if (query.has('a') && (query.get('a') || '').length > 0 && query.has('user') && (query.get('user') || '').length > 0) {
+  if (verifyQueryHasParams(query, ['user', 'a'])) {
     if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
       // Flag to see if there is an error inside the catch
       let key: string,

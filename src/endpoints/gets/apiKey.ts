@@ -9,9 +9,10 @@ import {
 import { generateApiKeyEmail } from '../../commandUtils.ts';
 import utils from '../../utils.ts';
 import stdResp from '../stdResponses.ts';
+import { verifyQueryHasParams } from '../utils.ts';
 
 export const apiKey = async (query: Map<string, string>): Promise<Response> => {
-  if (query.has('user') && (query.get('user') || '').length > 0 && query.has('email') && (query.get('email') || '').length > 0) {
+  if (verifyQueryHasParams(query, ['user', 'email'])) {
     // Generate new secure key
     const newKey = await nanoid(25);
 

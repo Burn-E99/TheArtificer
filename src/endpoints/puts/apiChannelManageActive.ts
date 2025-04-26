@@ -1,9 +1,10 @@
 import dbClient from '../../db/client.ts';
 import stdResp from '../stdResponses.ts';
 import utils from '../../utils.ts';
+import { verifyQueryHasParams } from '../utils.ts';
 
 export const apiChannelManageActive = async (query: Map<string, string>, apiUserid: bigint, path: string): Promise<Response> => {
-  if (query.has('channel') && (query.get('channel') || '').length > 0 && query.has('user') && (query.get('user') || '').length > 0) {
+  if (verifyQueryHasParams(query, ['user', 'channel'])) {
     if (apiUserid === BigInt(query.get('user') || '0')) {
       // Flag to see if there is an error inside the catch
       let value,

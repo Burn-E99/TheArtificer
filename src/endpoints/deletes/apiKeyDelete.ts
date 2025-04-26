@@ -9,11 +9,12 @@ import {
 import { generateApiDeleteEmail } from '../../commandUtils.ts';
 import utils from '../../utils.ts';
 import stdResp from '../stdResponses.ts';
+import { verifyQueryHasParams } from '../utils.ts';
 
 export const apiKeyDelete = async (query: Map<string, string>, apiUserid: bigint, apiUserEmail: string, apiUserDelCode: string): Promise<Response> => {
-  if (query.has('user') && (query.get('user') || '').length > 0 && query.has('email') && (query.get('email') || '').length > 0) {
+  if (verifyQueryHasParams(query, ['user', 'email'])) {
     if (apiUserid === BigInt(query.get('user') || '0') && apiUserEmail === query.get('email')) {
-      if (query.has('code') && (query.get('code') || '').length > 0) {
+      if (verifyQueryHasParams(query, ['code'])) {
         if ((query.get('code') || '') === apiUserDelCode) {
           // User has recieved their delete code and we need to delete the account now
           let erroredOut = false;

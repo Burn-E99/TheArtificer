@@ -6,9 +6,10 @@ import {
 } from '../../../deps.ts';
 import stdResp from '../stdResponses.ts';
 import utils from '../../utils.ts';
+import { verifyQueryHasParams } from '../utils.ts';
 
 export const apiKeyAdmin = async (query: Map<string, string>, apiUserid: bigint): Promise<Response> => {
-  if (query.has('user') && (query.get('user') || '').length > 0 && query.has('a') && (query.get('a') || '').length > 0) {
+  if (verifyQueryHasParams(query, ['user', 'a'])) {
     if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
       // Generate new secure key
       const newKey = await nanoid(25);
