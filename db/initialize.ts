@@ -2,10 +2,11 @@
 // DATA WILL BE LOST IF DB ALREADY EXISTS, RUN AT OWN RISK
 
 import config from '../config.ts';
-import { dbClient } from '../src/db.ts';
+import dbClient from '../src/db/client.ts';
 
 console.log('Attempting to create DB');
 await dbClient.execute(`CREATE SCHEMA IF NOT EXISTS ${config.db.name};`);
+console.log('test');
 await dbClient.execute(`USE ${config.db.name}`);
 console.log('DB created');
 
