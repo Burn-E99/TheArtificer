@@ -7,7 +7,6 @@
 import config from './config.ts';
 import { DEBUG, DEVMODE, LOCALMODE } from './flags.ts';
 import {
-  // Discordeno deps
   botId,
   cache,
   DiscordActivityTypes,
@@ -17,10 +16,8 @@ import {
   editBotStatus,
   initLog,
   Intents,
-  // Log4Deno deps
   log,
   LT,
-  // Discordeno deps
   sendMessage,
   startBot,
 } from './deps.ts';
@@ -74,10 +71,12 @@ startBot({
       }, 30000);
 
       // Interval to update bot list stats every 24 hours
-      LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : setInterval(() => {
-        log(LT.LOG, 'Updating all bot lists statistics');
-        intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
-      }, 86400000);
+      LOCALMODE
+        ? log(LT.INFO, 'updateListStatistics not running')
+        : setInterval(() => {
+            log(LT.LOG, 'Updating all bot lists statistics');
+            intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
+          }, 86400000);
 
       // Interval to update hourlyRates every hour
       setInterval(() => {

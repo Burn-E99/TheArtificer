@@ -22,7 +22,7 @@ let currentWorkers = 0;
 const rollQueue: Array<ApiQueuedRoll | DDQueuedRoll> = [];
 
 // Handle setting up and calling the rollWorker
-const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
+const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
   currentWorkers++;
 
   // gmModifiers used to create gmEmbed (basically just turn off the gmRoll)
@@ -191,7 +191,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
 };
 
 // Runs the roll or queues it depending on how many workers are currently running
-export const queueRoll = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
+export const queueRoll = (rq: ApiQueuedRoll | DDQueuedRoll) => {
   if (rq.apiRoll) {
     handleRollWorker(rq);
   } else if (!rollQueue.length && currentWorkers < config.limits.maxWorkers) {
@@ -215,7 +215,7 @@ The results for this roll will replace this message when it is done.`,
 };
 
 // Checks the queue constantly to make sure the queue stays empty
-setInterval(async () => {
+setInterval(() => {
   log(
     LT.LOG,
     `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`
