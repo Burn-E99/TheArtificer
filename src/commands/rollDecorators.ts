@@ -49,8 +49,7 @@ Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${c
             },
             {
               name: '`-gm @user1 @user2 @usern` - GM Roll',
-              value:
-                'Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs',
+              value: 'Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs',
               inline: true,
             },
             {

@@ -1,6 +1,6 @@
 import config from '../../config.ts';
 import dbClient from '../db/client.ts';
-import { queries, ignoreList } from '../db/common.ts';
+import { ignoreList, queries } from '../db/common.ts';
 import {
   // Discordeno deps
   DiscordenoMessage,

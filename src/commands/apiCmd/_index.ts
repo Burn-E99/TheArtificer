@@ -5,9 +5,9 @@ import { status } from './status.ts';
 import { showHideWarn } from './showHideWarn.ts';
 
 export default {
-	help,
-	allowBlock,
-	deleteGuild,
-	status,
-	showHideWarn,
+  help,
+  allowBlock,
+  deleteGuild,
+  status,
+  showHideWarn,
 };

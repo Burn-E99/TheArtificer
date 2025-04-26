@@ -10,22 +10,22 @@ import { apiChannelManageBan } from './puts/apiChannelManageBan.ts';
 import { apiChannelManageActive } from './puts/apiChannelManageActive.ts';
 
 export default {
-	delete: {
-		apiKeyDelete,
-	},
-	get: {
-		apiKey,
-		apiRoll,
-		apiKeyAdmin,
-		apiChannel,
-		heatmapPng,
-	},
-	post: {
-		apiChannelAdd,
-	},
-	put: {
-		apiKeyManage,
-		apiChannelManageBan,
-		apiChannelManageActive,
-	},
+  delete: {
+    apiKeyDelete,
+  },
+  get: {
+    apiKey,
+    apiRoll,
+    apiKeyAdmin,
+    apiChannel,
+    heatmapPng,
+  },
+  post: {
+    apiChannelAdd,
+  },
+  put: {
+    apiKeyManage,
+    apiChannelManageBan,
+    apiChannelManageActive,
+  },
 };

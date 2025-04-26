@@ -74,12 +74,10 @@ startBot({
       }, 30000);
 
       // Interval to update bot list stats every 24 hours
-      LOCALMODE
-        ? log(LT.INFO, 'updateListStatistics not running')
-        : setInterval(() => {
-            log(LT.LOG, 'Updating all bot lists statistics');
-            intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
-          }, 86400000);
+      LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : setInterval(() => {
+        log(LT.LOG, 'Updating all bot lists statistics');
+        intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
+      }, 86400000);
 
       // Interval to update hourlyRates every hour
       setInterval(() => {

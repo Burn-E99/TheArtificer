@@ -53,13 +53,15 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     // Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituded in
     const rollCmd = message.content.substring(2);
 
-    queueRoll(<QueuedRoll>{
-      apiRoll: false,
-      dd: { m, message },
-      rollCmd,
-      modifiers,
-      originalCommand,
-    });
+    queueRoll(
+      <QueuedRoll> {
+        apiRoll: false,
+        dd: { m, message },
+        rollCmd,
+        modifiers,
+        originalCommand,
+      },
+    );
   } catch (e) {
     log(LT.ERROR, `Undandled Error: ${JSON.stringify(e)}`);
   }

@@ -14,6 +14,6 @@ export const heatmapPng = async (requestEvent: Deno.RequestEvent) => {
       status: STATUS_CODE.OK,
       statusText: STATUS_TEXT[STATUS_CODE.OK],
       headers: imageHeaders,
-    })
+    }),
   );
 };

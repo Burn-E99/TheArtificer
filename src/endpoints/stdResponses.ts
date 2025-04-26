@@ -1,12 +1,11 @@
 import {
-  // httpd deps
-  StatusCode,
   STATUS_CODE,
   STATUS_TEXT,
+  // httpd deps
+  StatusCode,
 } from '../../deps.ts';
 
-const genericResponse = (customText: string, status: StatusCode) =>
-  new Response(customText || STATUS_TEXT[status], { status: status, statusText: STATUS_TEXT[status] });
+const genericResponse = (customText: string, status: StatusCode) => new Response(customText || STATUS_TEXT[status], { status: status, statusText: STATUS_TEXT[status] });
 
 export default {
   BadRequest: (customText: string) => genericResponse(customText, STATUS_CODE.BadRequest),

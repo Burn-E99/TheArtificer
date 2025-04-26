@@ -103,13 +103,15 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
         };
 
         // Parse the roll and get the return text
-        await queueRoll(<QueuedRoll>{
-          apiRoll: true,
-          api: { requestEvent, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
-          rollCmd,
-          modifiers,
-          originalCommand,
-        });
+        await queueRoll(
+          <QueuedRoll> {
+            apiRoll: true,
+            api: { requestEvent, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
+            rollCmd,
+            modifiers,
+            originalCommand,
+          },
+        );
       } catch (err) {
         // Handle any errors we missed
         log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
@@ -119,8 +121,8 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
       // Alert API user that they messed up
       requestEvent.respondWith(
         stdResp.Forbidden(
-          `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
-        )
+          `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+        ),
       );
     }
   } else {

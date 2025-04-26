@@ -15,7 +15,7 @@ export const apiKeyDelete = async (
   query: Map<string, string>,
   apiUserid: BigInt,
   apiUserEmail: string,
-  apiUserDelCode: string
+  apiUserDelCode: string,
 ) => {
   if (query.has('user') && (query.get('user') || '').length > 0 && query.has('email') && (query.get('email') || '').length > 0) {
     if (apiUserid === BigInt(query.get('user') || '0') && apiUserEmail === query.get('email')) {
