@@ -3,7 +3,7 @@
 ### Public Bot Information
 Publicly available versions of `The Artificer#8166` (Discord ID: `789045930011656223`) (herein referred to as _The Bot_ or _Bot_) do not track or collect user information via Discord.
 
-Upon inviting _The Bot_ to a user's guild, _The Bot_ sends the guild name, Discord Guild ID, and current count of guild members to Burn_E99#1062 (herein referred to as _The Developer_) via a private Discord Guild.  The guild name, Discord Guild ID, and current count of guild members are only used to roughly gage how popular _The Bot_ is and to determine if _The Bot_'s hosting solution needs to be improved.  These pieces of information will never be sold or shared with anyone.
+Upon inviting _The Bot_ to a user's guild, _The Bot_ sends the guild name, Discord Guild ID, and current count of guild members to Burn_E99 (herein referred to as _The Developer_) via a private Discord Guild.  The guild name, Discord Guild ID, and current count of guild members are only used to roughly gage how popular _The Bot_ is and to determine if _The Bot_'s hosting solution needs to be improved.  These pieces of information will never be sold or shared with anyone.
 
 Like all Discord bots, _The Bot_ reads every message that it is allowed to, meaning if _The Bot_ is allowed to see a channel in a guild, it reads every new message sent in said channel.  This is due to the way the Discord API itself is designed.  _The Bot_ does not read any messages sent in the past.
 * Messages that do not begin with _The Bot_'s command prefix are not saved or stored anywhere.  Messages that do not begin with _The Bot_'s command prefix are ignored and not processed.
@@ -46,4 +46,4 @@ If your guild has been banned from using _The API_, the Discord Guild ID will no
 The data described above is considered necessary to prevent users from abusing the API and ban evading by deleting and recreating their account.
 
 ## Discord Command Data Deletion
-If you would like to ensure that all of your submitted reports are removed from _The Bot_'s private development server, please contact _The Developer_ via Discord (by sending a direct message to Burn_E99#1062) or via email (<ean@milligan.dev>) with a message along the lines of `"Please remove all of my submitted reports from your development server."`.  Submitted reports are deleted from the server as they are processed, which happens roughly once a week, but this can be accelerated if requested.
+If you would like to ensure that all of your submitted reports are removed from _The Bot_'s private development server, please contact _The Developer_ via Discord (by sending a direct message to Burn_E99) or via email (<ean@milligan.dev>) with a message along the lines of `"Please remove all of my submitted reports from your development server."`.  Submitted reports are deleted from the server as they are processed, which happens roughly once a week, but this can be accelerated if requested.
