@@ -1,0 +1,16 @@
+meta {
+  name: Request API Key
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8166/api/key?user=[discord-user-id]&email=[email-address]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  email: [email-address]
+}

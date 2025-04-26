@@ -1,0 +1,16 @@
+meta {
+  name: Activate Channel
+  type: http
+  seq: 3
+}
+
+put {
+  url: http://localhost:8166/api/channel/activate?user=[discord-user-id]&channel=[discord-channel-id]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  channel: [discord-channel-id]
+}

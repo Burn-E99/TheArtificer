@@ -1,0 +1,16 @@
+meta {
+  name: Deactivate Channel
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8166/api/channel/deactivate?user=[discord-user-id]&channel=[discord-channel-id]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  channel: [discord-channel-id]
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Delete API Key
+  type: http
+  seq: 1
+}
+
+delete {
+  url: http://localhost:8166/api/key/delete?user=[discord-user-id]&email=[email-address]&code=[optional:delete-code]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  email: [email-address]
+  code: [optional:delete-code]
+}

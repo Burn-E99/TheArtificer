@@ -1,0 +1,16 @@
+meta {
+  name: Ban API Key
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8166/api/key/ban?user=[discord-user-id]&a=[discord-user-id]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  a: [discord-user-id]
+}

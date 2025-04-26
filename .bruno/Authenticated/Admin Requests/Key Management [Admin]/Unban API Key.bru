@@ -1,0 +1,16 @@
+meta {
+  name: Unban API Key
+  type: http
+  seq: 5
+}
+
+put {
+  url: http://localhost:8166/api/key/unban?user=[discord-user-id]&a=[discord-user-id]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  a: [discord-user-id]
+}

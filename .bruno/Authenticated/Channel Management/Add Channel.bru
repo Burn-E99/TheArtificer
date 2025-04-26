@@ -1,0 +1,16 @@
+meta {
+  name: Add Channel
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8166/api/channel/add?user=[discord-user-id]&channel=[discord-channel-id]
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user: [discord-user-id]
+  channel: [discord-channel-id]
+}

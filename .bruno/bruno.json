@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "name": "The Artificer API",
+  "type": "collection",
+  "ignore": [
+    ".git"
+  ],
+  "presets": {
+    "requestType": "http",
+    "requestUrl": "http://localhost:8166/api"
+  }
+}
