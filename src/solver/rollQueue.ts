@@ -35,7 +35,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
     rollWorker.terminate();
     currentWorkers--;
     if (rq.apiRoll) {
-      rq.api.requestEvent.respondWith(stdResp.RequestTimeout('Roll took too long to process, try breaking roll down into simpler parts'));
+      rq.api.resolve(stdResp.RequestTimeout('Roll took too long to process, try breaking roll down into simpler parts'));
     } else {
       rq.dd.m
         .edit({
@@ -77,7 +77,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
       // If there was an error, report it to the user in hopes that they can determine what they did wrong
       if (returnmsg.error) {
         if (rq.apiRoll) {
-          rq.api.requestEvent.respondWith(stdResp.InternalServerError(returnmsg.errorMsg));
+          rq.api.resolve(stdResp.InternalServerError(returnmsg.errorMsg));
         } else {
           rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
         }
@@ -89,7 +89,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
             .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:82', 'insert into', e));
         }
       } else {
-        let n: DiscordenoMessage | void;
+        let n: DiscordenoMessage | void = undefined;
         // Determine if we are to send a GM roll or a normal roll
         if (rq.modifiers.gmRoll) {
           if (rq.apiRoll) {
@@ -98,7 +98,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
               embeds: [pubEmbedDetails.embed],
             }).catch(() => {
               apiErroredOut = true;
-              rq.api.requestEvent.respondWith(stdResp.InternalServerError('Message failed to send - location 0.'));
+              rq.api.resolve(stdResp.InternalServerError('Message failed to send - location 0.'));
             });
           } else {
             // Send the public embed to correct channel
@@ -121,7 +121,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
                     }).catch(() => {
                       if (n && rq.apiRoll) {
                         n.reply(generateDMFailed(gm));
-                      } else {
+                      } else if (!rq.apiRoll) {
                         rq.dd.message.reply(generateDMFailed(gm));
                       }
                     });
@@ -130,7 +130,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
                 .catch(() => {
                   if (rq.apiRoll && n) {
                     n.reply(generateDMFailed(gm));
-                  } else {
+                  } else if (!rq.apiRoll) {
                     rq.dd.message.reply(generateDMFailed(gm));
                   }
                 });
@@ -144,7 +144,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
               embeds: rq.modifiers.count ? [pubEmbedDetails.embed, countEmbed] : [pubEmbedDetails.embed],
             }).catch(() => {
               apiErroredOut = true;
-              rq.api.requestEvent.respondWith(stdResp.InternalServerError('Message failed to send - location 1.'));
+              rq.api.resolve(stdResp.InternalServerError('Message failed to send - location 1.'));
             });
           } else {
             n = await rq.dd.m.edit({
@@ -165,7 +165,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
             .execute(queries.insertRollLogCmd(1, 0), [rq.originalCommand, returnmsg.errorCode, n ? n.id : null])
             .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:155', 'insert into', e));
 
-          rq.api.requestEvent.respondWith(
+          rq.api.resolve(
             stdResp.OK(
               JSON.stringify(
                 rq.modifiers.count
@@ -184,7 +184,7 @@ const handleRollWorker = async (rq: ApiQueuedRoll | DDQueuedRoll) => {
     } catch (e) {
       log(LT.ERROR, `Unddandled Error: ${JSON.stringify(e)}`);
       if (rq.apiRoll && !apiErroredOut) {
-        rq.api.requestEvent.respondWith(stdResp.InternalServerError(JSON.stringify(e)));
+        rq.api.resolve(stdResp.InternalServerError(JSON.stringify(e)));
       }
     }
   });

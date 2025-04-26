@@ -34,6 +34,7 @@ interface QueuedRoll {
 export interface ApiQueuedRoll extends QueuedRoll {
   apiRoll: true;
   api: {
+    resolve: (value: Response | PromiseLike<Response>) => void;
     channelId: bigint;
     userId: bigint;
   };

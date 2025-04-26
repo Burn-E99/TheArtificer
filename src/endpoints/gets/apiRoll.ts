@@ -94,14 +94,17 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           apiWarn: hideWarn ? '' : apiWarning,
         };
 
-        // Parse the roll and get the return text
-        await queueRoll({
-          apiRoll: true,
-          api: { channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
-          rollCmd,
-          modifiers,
-          originalCommand,
+        return new Promise<Response>((resolve) => {
+          queueRoll({
+            apiRoll: true,
+            api: { resolve, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
+            rollCmd,
+            modifiers,
+            originalCommand,
+          });
         });
+
+        // Parse the roll and get the return text
       } catch (err) {
         // Handle any errors we missed
         log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
