@@ -1,5 +1,6 @@
 import config from '../../../config.ts';
 import dbClient from '../../db/client.ts';
+import { queries } from '../../db/common.ts';
 import {
   // Discordeno deps
   cache,
@@ -14,7 +15,7 @@ import stdResp from '../stdResponses.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
-export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
+export const apiRoll = async (query: Map<string, string>, apiUserid: bigint, request: Request): Promise<Response> => {
   // Make sure query contains all the needed parts
   if (
     query.has('rollstr') &&
@@ -26,8 +27,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
   ) {
     if (query.has('n') && query.has('m')) {
       // Alert API user that they shouldn't be doing this
-      requestEvent.respondWith(stdResp.BadRequest("Cannot have both 'n' and 'm'."));
-      return;
+      return stdResp.BadRequest("Cannot have both 'n' and 'm'.");
     }
 
     // Check if user is authenticated to use this endpoint
@@ -64,25 +64,23 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
         const originalCommand = query.get('rollstr');
 
         if (rollCmd.length === 0) {
-          // Alert API user that they messed up
-          requestEvent.respondWith(stdResp.BadRequest('rollCmd is required.'));
-
           // Always log API rolls for abuse detection
           dbClient
             .execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'EmptyInput', null])
             .catch((e) => utils.commonLoggers.dbError('apiRoll.ts:65', 'insert', e));
-          return;
+
+          // Alert API user that they messed up
+          return stdResp.BadRequest('rollCmd is required.');
         }
 
         if (query.has('o') && query.get('o')?.toLowerCase() !== 'd' && query.get('o')?.toLowerCase() !== 'a') {
-          // Alert API user that they messed up
-          requestEvent.respondWith(stdResp.BadRequest("Order must be set to 'a' or 'd'."));
-
           // Always log API rolls for abuse detection
           dbClient
             .execute(queries.insertRollLogCmd(1, 1), [originalCommand, 'BadOrder', null])
             .catch((e) => utils.commonLoggers.dbError('apiRoll.ts:66', 'insert', e));
-          return;
+
+          // Alert API user that they messed up
+          return stdResp.BadRequest("Order must be set to 'a' or 'd'.");
         }
 
         // Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
@@ -106,7 +104,7 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
         await queueRoll(
           <QueuedRoll> {
             apiRoll: true,
-            api: { requestEvent, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
+            api: { request, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
             rollCmd,
             modifiers,
             originalCommand,
@@ -115,18 +113,16 @@ export const apiRoll = async (requestEvent: Deno.RequestEvent, query: Map<string
       } catch (err) {
         // Handle any errors we missed
         log(LT.ERROR, `Unhandled Error: ${JSON.stringify(err)}`);
-        requestEvent.respondWith(stdResp.InternalServerError('Something went wrong.'));
+        return stdResp.InternalServerError('Something went wrong.');
       }
     } else {
       // Alert API user that they messed up
-      requestEvent.respondWith(
-        stdResp.Forbidden(
-          `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
-        ),
+      return stdResp.Forbidden(
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
       );
     }
   } else {
     // Alert API user that they shouldn't be doing this
-    requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
+    return stdResp.BadRequest(stdResp.Strings.missingParams);
   }
 };

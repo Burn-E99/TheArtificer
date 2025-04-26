@@ -29,7 +29,7 @@ export type RollModifiers = {
 export type QueuedRoll = {
   apiRoll: boolean;
   api: {
-    requestEvent: Deno.RequestEvent;
+    request: Request;
     channelId: bigint;
     userId: bigint;
   };

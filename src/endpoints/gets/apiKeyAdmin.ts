@@ -7,7 +7,7 @@ import {
 import stdResp from '../stdResponses.ts';
 import utils from '../../utils.ts';
 
-export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt) => {
+export const apiKeyAdmin = async (query: Map<string, string>, apiUserid: bigint): Promise<Response> => {
   if (query.has('user') && (query.get('user') || '').length > 0 && query.has('a') && (query.get('a') || '').length > 0) {
     if (apiUserid === config.api.admin && apiUserid === BigInt(query.get('a') || '0')) {
       // Generate new secure key
@@ -19,24 +19,22 @@ export const apiKeyAdmin = async (requestEvent: Deno.RequestEvent, query: Map<st
       // Insert new key/user pair into the db
       await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [apiUserid, newKey]).catch((e) => {
         utils.commonLoggers.dbError('apiKeyAdmin.ts:24', 'insert into', e);
-        requestEvent.respondWith(stdResp.InternalServerError('Failed to store key.'));
         erroredOut = true;
       });
 
       // Exit this case now if catch errored
       if (erroredOut) {
-        return;
+        return stdResp.InternalServerError('Failed to store key.');
       } else {
         // Send API key as response
-        requestEvent.respondWith(stdResp.OK(JSON.stringify({ key: newKey, userid: query.get('user') })));
-        return;
+        return stdResp.OK(JSON.stringify({ key: newKey, userid: query.get('user') }));
       }
     } else {
       // Only allow the db admin to use this API
-      requestEvent.respondWith(stdResp.Forbidden(stdResp.Strings.restricted));
+      return stdResp.Forbidden(stdResp.Strings.restricted);
     }
   } else {
     // Alert API user that they messed up
-    requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
+    return stdResp.BadRequest(stdResp.Strings.missingParams);
   }
 };

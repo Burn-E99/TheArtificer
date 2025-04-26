@@ -3,7 +3,7 @@ import dbClient from '../../db/client.ts';
 import stdResp from '../stdResponses.ts';
 import utils from '../../utils.ts';
 
-export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query: Map<string, string>, apiUserid: BigInt, path: string) => {
+export const apiChannelManageBan = async (query: Map<string, string>, apiUserid: bigint, path: string): Promise<Response> => {
   if (
     query.has('a') &&
     (query.get('a') || '').length > 0 &&
@@ -29,24 +29,22 @@ export const apiChannelManageBan = async (requestEvent: Deno.RequestEvent, query
         .execute('UPDATE allowed_channels SET banned = ? WHERE userid = ? AND channelid = ?', [value, apiUserid, BigInt(query.get('channel') || '0')])
         .catch((e) => {
           utils.commonLoggers.dbError('apiChannelManageBan.ts:28', 'update', e);
-          requestEvent.respondWith(stdResp.InternalServerError('Failed to update channel.'));
           erroredOut = true;
         });
 
       // Exit this case now if catch errored
       if (erroredOut) {
-        return;
+        return stdResp.InternalServerError('Failed to update channel.');
       } else {
         // Send OK to indicate modification was successful
-        requestEvent.respondWith(stdResp.OK(`Successfully active to ${value}.`));
-        return;
+        return stdResp.OK(`Successfully active to ${value}.`);
       }
     } else {
       // Alert API user that they shouldn't be doing this
-      requestEvent.respondWith(stdResp.Forbidden(stdResp.Strings.restricted));
+      return stdResp.Forbidden(stdResp.Strings.restricted);
     }
   } else {
     // Alert API user that they messed up
-    requestEvent.respondWith(stdResp.BadRequest(stdResp.Strings.missingParams));
+    return stdResp.BadRequest(stdResp.Strings.missingParams);
   }
 };
