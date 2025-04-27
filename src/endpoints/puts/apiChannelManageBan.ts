@@ -12,7 +12,7 @@ export const apiChannelManageBan = async (query: Map<string, string>, apiUserid:
         erroredOut = false;
 
       // Determine value to set
-      if (path.toLowerCase().indexOf('un') > 0) {
+      if (path.toLowerCase().includes('un')) {
         value = 0;
       } else {
         value = 1;

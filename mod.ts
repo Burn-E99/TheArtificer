@@ -303,7 +303,7 @@ startBot({
             // [[xdydz (aka someone copy pasted the template as a roll)
             // Help command specifically for the roll command
             commands.rollHelp(message);
-          } else if (command && `${command}${args.join('')}`.indexOf(config.postfix) > -1) {
+          } else if (command && `${command}${args.join('')}`.includes(config.postfix)) {
             // [[roll]]
             // Dice rolling commence!
             commands.roll(message, args, command);

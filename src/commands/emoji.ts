@@ -23,7 +23,7 @@ export const emoji = (message: DiscordenoMessage, command: string) => {
     config.emojis.some((curEmoji: EmojiConf) => {
       log(LT.LOG, `Checking if command was emoji ${JSON.stringify(curEmoji)}`);
       // If a match gets found
-      if (curEmoji.aliases.indexOf(command || '') > -1) {
+      if (curEmoji.aliases.includes(command || '')) {
         // Light telemetry to see how many times a command is being run
         dbClient.execute(queries.callIncCnt('emojis')).catch((e) => utils.commonLoggers.dbError('emojis.ts:28', 'call sproc INC_CNT on', e));
 

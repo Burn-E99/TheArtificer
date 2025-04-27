@@ -11,7 +11,7 @@ export const apiChannelManageActive = async (query: Map<string, string>, apiUser
         erroredOut = false;
 
       // Determine value to set
-      if (path.toLowerCase().indexOf('de') > 0) {
+      if (path.toLowerCase().includes('de')) {
         value = 0;
       } else {
         value = 1;

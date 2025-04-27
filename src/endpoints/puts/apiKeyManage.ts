@@ -13,14 +13,14 @@ export const apiKeyManage = async (query: Map<string, string>, apiUserid: bigint
         erroredOut = false;
 
       // Determine key to edit
-      if (path.toLowerCase().indexOf('ban') > 0) {
+      if (path.toLowerCase().includes('ban')) {
         key = 'banned';
       } else {
         key = 'active';
       }
 
       // Determine value to set
-      if (path.toLowerCase().indexOf('de') > 0 || path.toLowerCase().indexOf('un') > 0) {
+      if (path.toLowerCase().includes('de') || path.toLowerCase().includes('un')) {
         value = 0;
       } else {
         value = 1;

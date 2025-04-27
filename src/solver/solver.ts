@@ -32,7 +32,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
   }
 
   // Evaluate all parenthesis
-  while (conf.indexOf('(') > -1) {
+  while (conf.includes('(')) {
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
     const openParen = conf.indexOf('(');
@@ -91,7 +91,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
     for (let i = 0; i < conf.length; i++) {
       loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
       // Check if the current index is in the active tier of operators
-      if (curOps.indexOf(conf[i].toString()) > -1) {
+      if (curOps.includes(conf[i].toString())) {
         // Grab the operands from before and after the operator
         const operand1 = conf[i - 1];
         const operand2 = conf[i + 1];

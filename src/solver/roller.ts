@@ -411,7 +411,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
   if (rollConf.keepLow.on && rollConf.keepLow.count === 0) {
     throw new Error('NoZerosAllowed_keepLow');
   }
-  if (rollConf.reroll.on && rollConf.reroll.nums.indexOf(0) >= 0) {
+  if (rollConf.reroll.on && rollConf.reroll.nums.includes(0)) {
     throw new Error('NoZerosAllowed_reroll');
   }
 
@@ -466,13 +466,13 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     rolling.origIdx = i;
 
     // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-    if (rollConf.critScore.on && rollConf.critScore.range.indexOf(rolling.roll) >= 0) {
+    if (rollConf.critScore.on && rollConf.critScore.range.includes(rolling.roll)) {
       rolling.critHit = true;
     } else if (!rollConf.critScore.on) {
       rolling.critHit = rolling.roll === rollConf.dieSize;
     }
     // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-    if (rollConf.critFail.on && rollConf.critFail.range.indexOf(rolling.roll) >= 0) {
+    if (rollConf.critFail.on && rollConf.critFail.range.includes(rolling.roll)) {
       rolling.critFail = true;
     } else if (!rollConf.critFail.on) {
       if (rollType === 'fate') {
@@ -535,7 +535,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
       } else if (
         rollConf.exploding.on &&
         !rollSet[i].rerolled &&
-        (rollConf.exploding.nums.length ? rollConf.exploding.nums.indexOf(rollSet[i].roll) >= 0 : rollSet[i].critHit) &&
+        (rollConf.exploding.nums.length ? rollConf.exploding.nums.includes(rollSet[i].roll) : rollSet[i].critHit) &&
         (!rollConf.exploding.once || !rollSet[i].exploding)
       ) {
         // If we have exploding.nums set, use those to determine the exploding range, and make sure if !o is on, make sure we don't repeatedly explode
@@ -549,13 +549,13 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
         newExplodingRoll.exploding = true;
 
         // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-        if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newExplodingRoll.roll) >= 0) {
+        if (rollConf.critScore.on && rollConf.critScore.range.includes(newExplodingRoll.roll)) {
           newExplodingRoll.critHit = true;
         } else if (!rollConf.critScore.on) {
           newExplodingRoll.critHit = newExplodingRoll.roll === rollConf.dieSize;
         }
         // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-        if (rollConf.critFail.on && rollConf.critFail.range.indexOf(newExplodingRoll.roll) >= 0) {
+        if (rollConf.critFail.on && rollConf.critFail.range.includes(newExplodingRoll.roll)) {
           newExplodingRoll.critFail = true;
         } else if (!rollConf.critFail.on) {
           newExplodingRoll.critFail = newExplodingRoll.roll === 1;
