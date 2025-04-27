@@ -141,6 +141,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
               },
             ],
           );
+          i += 2;
         } else if (!operators.includes(mathConf[i].toString())) {
           // If nothing else has handled it by now, try it as a roll
           const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
