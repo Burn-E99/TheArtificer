@@ -168,7 +168,7 @@ function sendPayload() {
 				document.getElementById("desc").innerHTML = "If you got a 200 OK, everything is set.  Your API Key will be emailed to you within 24 hours.<br/>If you did not get a 200 OK, make sure all information entered is correct.";
 				break;
 			case "delete":
-				document.getElementById("desc").innerHTML = "If you got a 200 OK, everything is deleted.<br/>If you got a 424 Failed dependancy, this means you need a delete code before you can procede. Running this endpoint without the code provided will generate one and it will be emailed to you within 24 hours.<br/>If you did not get either of these, make sure all information entered is correct.";
+				document.getElementById("desc").innerHTML = "If you got a 200 OK, everything is deleted.<br/>If you got a 424 Failed dependency, this means you need a delete code before you can proceed. Running this endpoint without the code provided will generate one and it will be emailed to you within 24 hours.<br/>If you did not get either of these, make sure all information entered is correct.";
 				break;
 			case "view":
 				document.getElementById("desc").innerHTML = "If you got a 200 OK, everything is set.<br/>If you did not get a 200 OK, make sure all information entered is correct.";
