@@ -441,7 +441,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
    */
 
   // Initialize a template rollSet to copy multiple times
-  const templateRoll: RollSet = {
+  const getTemplateRoll = (): RollSet => ({
     type: rollType,
     origIdx: 0,
     roll: 0,
@@ -450,7 +450,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     exploding: false,
     critHit: false,
     critFail: false,
-  };
+  });
 
   // Initial rolling, not handling reroll or exploding here
   for (let i = 0; i < rollConf.dieCount; i++) {
@@ -459,7 +459,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     loopCountCheck(++loopCount);
 
     // Copy the template to fill out for this iteration
-    const rolling = JSON.parse(JSON.stringify(templateRoll));
+    const rolling = getTemplateRoll();
     // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
     rolling.roll = rollType === 'fate' ? genFateRoll(maximizeRoll, nominalRoll) : genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
     // Set origIdx of roll
@@ -488,29 +488,43 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
 
   // If needed, handle rerolling and exploding dice now
   if (rollConf.reroll.on || rollConf.exploding.on) {
+    let minMaxOverride = 0;
     for (let i = 0; i < rollSet.length; i++) {
       loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
       // If loopCount gets too high, stop trying to calculate infinity
       loopCountCheck(++loopCount);
 
-      // If we need to reroll this roll, flag its been replaced and...
       // This big boolean statement first checks if reroll is on, if the roll is within the reroll range, and finally if ro is ON, make sure we haven't already rerolled the roll
-      if (rollConf.reroll.on && rollConf.reroll.nums.indexOf(rollSet[i].roll) >= 0 && (!rollConf.reroll.once || !rollSet[i ? i - 1 : i].rerolled)) {
+      if (rollConf.reroll.on && rollConf.reroll.nums.includes(rollSet[i].roll) && (!rollConf.reroll.once || !rollSet[i ? i - 1 : i].rerolled)) {
+        // If we need to reroll this roll, flag its been replaced and...
         rollSet[i].rerolled = true;
 
         // Copy the template to fill out for this iteration
-        const newReroll = JSON.parse(JSON.stringify(templateRoll));
-        // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newReroll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
+        const newReroll = getTemplateRoll();
+        if (maximizeRoll) {
+          // If maximizeRoll is on and we've entered the reroll code, dieSize is not allowed, determine the next best option and always return that
+          if (!minMaxOverride) {
+            mmLoop: for (let m = rollConf.dieSize - 1; m > 0; m--) {
+              if (!rollConf.reroll.nums.includes(m)) {
+                minMaxOverride = m;
+                break mmLoop;
+              }
+            }
+          }
+          newReroll.roll = minMaxOverride;
+        } else {
+          // If nominalRoll is on, set the roll to the average roll of dieSize, otherwise generate a new random roll
+          newReroll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
+        }
 
         // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-        if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newReroll.roll) >= 0) {
+        if (rollConf.critScore.on && rollConf.critScore.range.includes(newReroll.roll)) {
           newReroll.critHit = true;
         } else if (!rollConf.critScore.on) {
           newReroll.critHit = newReroll.roll === rollConf.dieSize;
         }
         // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-        if (rollConf.critFail.on && rollConf.critFail.range.indexOf(newReroll.roll) >= 0) {
+        if (rollConf.critFail.on && rollConf.critFail.range.includes(newReroll.roll)) {
           newReroll.critFail = true;
         } else if (!rollConf.critFail.on) {
           newReroll.critFail = newReroll.roll === 1;
@@ -528,7 +542,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
         // If it exploded, we keep both, so no flags need to be set
 
         // Copy the template to fill out for this iteration
-        const newExplodingRoll = JSON.parse(JSON.stringify(templateRoll));
+        const newExplodingRoll = getTemplateRoll();
         // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
         newExplodingRoll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
         // Always mark this roll as exploding
