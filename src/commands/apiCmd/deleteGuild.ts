@@ -31,7 +31,7 @@ export const deleteGuild = async (message: DiscordenoMessage) => {
       embeds: [
         {
           color: successColor,
-          title: "This guild's API setting has been removed from The Artifier's Database.",
+          title: "This guild's API setting has been removed from The Artificer's Database.",
         },
       ],
     })

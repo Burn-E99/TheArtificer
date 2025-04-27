@@ -28,14 +28,14 @@ export const config = {
     host: '', // IP address for the db, usually localhost
     localhost: '', // IP address for a secondary OPTIONAL local testing DB, usually also is localhost, but depends on your dev environment
     port: 3306, // Port for the db
-    username: '', // Username for the account that will access your DB, this account will need "DB Manager" admin rights and "REFERENCES" Global Privalages
+    username: '', // Username for the account that will access your DB, this account will need "DB Manager" admin rights and "REFERENCES" Global Privileges
     password: '', // Password for the account, user account may need to be authenticated with the "Standard" Authentication Type if this does not work out of the box
     name: '', // Name of the database Schema to use for the bot
   },
   logRolls: false, // Enables logging of roll commands, this should be left disabled for privacy, but exists to allow verification of rolls before deployment, all API rolls will always be logged no matter what this is set to
   logChannel: 0n, // Discord channel ID where the bot should put startup messages and other error messages needed
   reportChannel: 0n, // Discord channel ID where reports will be sent when using the built-in report command
-  devServer: 0n, // Discord guild ID where testing of indev features/commands will be handled, used in conjuction with the DEVMODE bool in mod.ts
+  devServer: 0n, // Discord guild ID where testing of indev features/commands will be handled, used in conjunction with the DEVMODE bool in mod.ts
   emojis: [
     // Array of objects containing all emojis that the bot can send on your behalf, empty this array if you don't want any of them
     {

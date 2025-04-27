@@ -7,7 +7,7 @@ console.log('Attempting to populate DB Admin API key');
 await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [config.api.admin, config.api.adminKey]).catch((e) => {
   console.log('Failed to insert into database', e);
 });
-console.log('Inesrtion done');
+console.log('Insertion done');
 
 console.log('Attempting to insert default commands into command_cnt');
 const commands = [

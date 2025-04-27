@@ -18,7 +18,7 @@ export const apiChannel = async (query: Map<string, string>, apiUserid: bigint):
       if (erroredOut) {
         return stdResp.InternalServerError('Failed to get channels.');
       } else {
-        // Customized strinification to handle BigInts correctly
+        // Customized stringification to handle BigInts correctly
         const returnChannels = JSON.stringify(dbAllowedChannelQuery, (_key, value) => (typeof value === 'bigint' ? value.toString() : value));
         // Send channel list as response
         return stdResp.OK(returnChannels);

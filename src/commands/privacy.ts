@@ -21,8 +21,7 @@ export const privacy = (message: DiscordenoMessage) => {
           fields: [
             {
               name: 'The Artificer does not track or collect user information via Discord.',
-              value:
-                `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of The Artificer can see.
+              value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of The Artificer can see.
 
 For more details, please check out the Privacy Policy on the GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
 

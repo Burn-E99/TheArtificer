@@ -6,11 +6,11 @@ import {
 } from '../../deps.ts';
 
 import { RollConf, RollSet, RollType } from './solver.d.ts';
-import { compareOrigidx, compareRolls, genFateRoll, genRoll, loggingEnabled } from './rollUtils.ts';
+import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from './rollUtils.ts';
 
-// roll(rollStr, maximiseRoll, nominalRoll) returns RollSet
+// roll(rollStr, maximizeRoll, nominalRoll) returns RollSet
 // roll parses and executes the rollStr, if needed it will also make the roll the maximum or average
-export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolean): RollSet[] => {
+export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolean): RollSet[] => {
   /* Roll Capabilities
    * Deciphers and rolls a single dice roll set
    *
@@ -21,7 +21,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
   rollStr = rollStr.toLowerCase();
 
   // Split the roll on the die size (and the drop if its there)
-  const dpts = rollStr.split('d');
+  const dPts = rollStr.split('d');
 
   // Initialize the configuration to store the parsed data
   let rollType: RollType = '';
@@ -47,35 +47,35 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
     reroll: {
       on: false,
       once: false,
-      nums: <number[]> [],
+      nums: <number[]>[],
     },
     critScore: {
       on: false,
-      range: <number[]> [],
+      range: <number[]>[],
     },
     critFail: {
       on: false,
-      range: <number[]> [],
+      range: <number[]>[],
     },
     exploding: {
       on: false,
       once: false,
       compounding: false,
       penetrating: false,
-      nums: <number[]> [],
+      nums: <number[]>[],
     },
   };
 
-  // If the dpts is not long enough, throw error
-  if (dpts.length < 2) {
+  // If the dPts is not long enough, throw error
+  if (dPts.length < 2) {
     throw new Error('YouNeedAD');
   }
 
   // Fill out the die count, first item will either be an int or empty string, short circuit execution will take care of replacing the empty string with a 1
-  const rawDC = dpts.shift() || '1';
+  const rawDC = dPts.shift() || '1';
   const tempDC = rawDC.replace(/\D/g, '');
   // Rejoin all remaining parts
-  let remains = dpts.join('d');
+  let remains = dPts.join('d');
 
   // Manual Parsing for custom roll types
   let manualParse = false;
@@ -119,10 +119,10 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
     rollType = 'roll20';
     rollConf.dieCount = parseInt(tempDC);
 
-    // Finds the end of the die size/beginnning of the additional options
-    let afterDieIdx = dpts[0].search(/\D/);
+    // Finds the end of the die size/beginning of the additional options
+    let afterDieIdx = dPts[0].search(/\D/);
     if (afterDieIdx === -1) {
-      afterDieIdx = dpts[0].length;
+      afterDieIdx = dPts[0].length;
     }
 
     // Get the die size out of the remains and into the rollConf
@@ -377,7 +377,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
   const rollSet = [];
   /* Roll will contain objects of the following format:
    * 	{
-   *	 	origidx: 0,
+   *	 	origIdx: 0,
    *		roll: 0,
    *		dropped: false,
    * 		rerolled: false,
@@ -388,7 +388,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
    *
    * Each of these is defined as following:
    * 	{
-   * 		origidx: The original index of the roll
+   * 		origIdx: The original index of the roll
    *		roll: The resulting roll on this die in the set
    *		dropped: This die is to be dropped as it was one of the dy lowest dice
    * 		rerolled: This die has been rerolled as it matched rz, it is replaced by the very next die in the set
@@ -398,10 +398,10 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
    * 	}
    */
 
-  // Initialize a templet rollSet to copy multiple times
+  // Initialize a template rollSet to copy multiple times
   const templateRoll: RollSet = {
     type: rollType,
-    origidx: 0,
+    origIdx: 0,
     roll: 0,
     dropped: false,
     rerolled: false,
@@ -424,10 +424,10 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
     // Copy the template to fill out for this iteration
     const rolling = JSON.parse(JSON.stringify(templateRoll));
-    // If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-    rolling.roll = rollType === 'fate' ? genFateRoll(maximiseRoll, nominalRoll) : genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
-    // Set origidx of roll
-    rolling.origidx = i;
+    // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
+    rolling.roll = rollType === 'fate' ? genFateRoll(maximizeRoll, nominalRoll) : genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
+    // Set origIdx of roll
+    rolling.origIdx = i;
 
     // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
     if (rollConf.critScore.on && rollConf.critScore.range.indexOf(rolling.roll) >= 0) {
@@ -467,8 +467,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
         // Copy the template to fill out for this iteration
         const newReroll = JSON.parse(JSON.stringify(templateRoll));
-        // If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newReroll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
+        // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
+        newReroll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
 
         // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
         if (rollConf.critScore.on && rollConf.critScore.range.indexOf(newReroll.roll) >= 0) {
@@ -496,8 +496,8 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
 
         // Copy the template to fill out for this iteration
         const newExplodingRoll = JSON.parse(JSON.stringify(templateRoll));
-        // If maximiseRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newExplodingRoll.roll = genRoll(rollConf.dieSize, maximiseRoll, nominalRoll);
+        // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
+        newExplodingRoll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 
@@ -572,7 +572,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
         }
 
         loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[j])}`);
-        rollSet[j].origidx = j;
+        rollSet[j].origIdx = j;
 
         if (rollSet[j].rerolled) {
           rerollCount++;
@@ -634,7 +634,7 @@ export const roll = (rollStr: string, maximiseRoll: boolean, nominalRoll: boolea
     }
 
     // Finally, return the rollSet to its original order
-    rollSet.sort(compareOrigidx);
+    rollSet.sort(compareOrigIdx);
   }
 
   // Handle OVA dropping/keeping

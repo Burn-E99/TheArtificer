@@ -23,7 +23,7 @@ export const showHideWarn = async (message: DiscordenoMessage, apiArg: string) =
     await dbClient
       .execute(`INSERT INTO allowed_guilds(guildid,channelid,hidewarn) values(?,?,?)`, [message.guildId, message.channelId, apiArg === 'hide-warn' ? 1 : 0])
       .catch((e0) => {
-        utils.commonLoggers.dbError('showHideWarn.ts:25', 'insert inot', e0);
+        utils.commonLoggers.dbError('showHideWarn.ts:25', 'insert into', e0);
         message.send(generateApiFailed(`${apiArg} on`)).catch((e: Error) => utils.commonLoggers.messageSendError('showHideWarn.ts:26', message, e));
         errorOut = true;
       });

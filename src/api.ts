@@ -165,7 +165,7 @@ const start = () => {
               return stdResp.MethodNotAllowed('Auth');
           }
         } else {
-          // Handle the unathenticated request
+          // Handle the unauthenticated request
           switch (request.method) {
             case 'GET':
               switch (path.toLowerCase()) {

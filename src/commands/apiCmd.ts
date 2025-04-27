@@ -74,7 +74,8 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
           {
             color: failColor,
             title: 'API commands are powerful and can only be used by guild Owners and Admins.',
-            description: 'For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).',
+            description:
+              'For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).',
           },
         ],
       })

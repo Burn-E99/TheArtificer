@@ -1,4 +1,4 @@
-// All external dependancies are to be loaded here to make updating dependancy versions much easier
+// All external dependencies are to be loaded here to make updating dependency versions much easier
 export {
   botId,
   cache,

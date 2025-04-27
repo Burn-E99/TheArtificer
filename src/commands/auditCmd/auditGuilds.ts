@@ -37,58 +37,62 @@ Tot mem: ${guild.memberCount} | Real: ${localRealCount} | Bot: ${localBotCount}
 `;
   });
 
-  const b = await new Blob([auditText as BlobPart], { 'type': 'text' });
-  const tooBig = await new Blob(['tooBig' as BlobPart], { 'type': 'text' });
+  const b = await new Blob([auditText as BlobPart], { type: 'text' });
+  const tooBig = await new Blob(['tooBig' as BlobPart], { type: 'text' });
 
-  message.send({
-    embeds: [{
-      color: infoColor2,
-      title: 'Guilds Audit',
-      description: `Shows details of the guilds that ${config.name} serves.
+  message
+    .send({
+      embeds: [
+        {
+          color: infoColor2,
+          title: 'Guilds Audit',
+          description: `Shows details of the guilds that ${config.name} serves.
 
 Please see attached file for audit details on cached guilds and members.`,
-      timestamp: new Date().toISOString(),
-      fields: [
-        {
-          name: 'Total Guilds:',
-          value: `${cache.guilds.size}`,
-          inline: true,
-        },
-        {
-          name: 'Cached Guilds:',
-          value: `${cachedGuilds}`,
-          inline: true,
-        },
-        {
-          name: 'Uncached Guilds:',
-          value: `${cache.dispatchedGuildIds.size}`,
-          inline: true,
-        },
-        {
-          name: 'Total Members\n(may be artificially higher if 1 user is in multiple guilds the bot is in):',
-          value: `${totalCount}`,
-          inline: true,
-        },
-        {
-          name: 'Cached Real People:',
-          value: `${realCount}`,
-          inline: true,
-        },
-        {
-          name: 'Cached Bots:',
-          value: `${botsCount}`,
-          inline: true,
-        },
-        {
-          name: 'Average members per guild:',
-          value: `${(totalCount / cache.guilds.size).toFixed(2)}`,
-          inline: true,
+          timestamp: new Date().toISOString(),
+          fields: [
+            {
+              name: 'Total Guilds:',
+              value: `${cache.guilds.size}`,
+              inline: true,
+            },
+            {
+              name: 'Cached Guilds:',
+              value: `${cachedGuilds}`,
+              inline: true,
+            },
+            {
+              name: 'Uncached Guilds:',
+              value: `${cache.dispatchedGuildIds.size}`,
+              inline: true,
+            },
+            {
+              name: 'Total Members\n(may be artificially higher if 1 user is in multiple guilds the bot is in):',
+              value: `${totalCount}`,
+              inline: true,
+            },
+            {
+              name: 'Cached Real People:',
+              value: `${realCount}`,
+              inline: true,
+            },
+            {
+              name: 'Cached Bots:',
+              value: `${botsCount}`,
+              inline: true,
+            },
+            {
+              name: 'Average members per guild:',
+              value: `${(totalCount / cache.guilds.size).toFixed(2)}`,
+              inline: true,
+            },
+          ],
         },
       ],
-    }],
-    file: {
-      'blob': b.size > 8388290 ? tooBig : b,
-      'name': 'auditDetails.txt',
-    },
-  }).catch((e: Error) => utils.commonLoggers.messageSendError('auditGuild.ts:19', message, e));
+      file: {
+        blob: b.size > 8388290 ? tooBig : b,
+        name: 'auditDetails.txt',
+      },
+    })
+    .catch((e: Error) => utils.commonLoggers.messageSendError('auditGuild.ts:19', message, e));
 };

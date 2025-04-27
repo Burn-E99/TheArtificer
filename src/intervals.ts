@@ -44,7 +44,7 @@ const getRandomStatus = async (): Promise<string> => {
   return status;
 };
 
-// updateListStatistics(bot ID, current guild count) returns nothing, posts to botlists
+// updateListStatistics(bot ID, current guild count) returns nothing, posts to bot lists
 // Sends the current server count to all bot list sites we are listed on
 const updateListStatistics = (botID: bigint, serverCount: number): void => {
   config.botLists.forEach(async (e) => {
@@ -58,7 +58,7 @@ const updateListStatistics = (botID: bigint, serverCount: number): void => {
         const response = await fetch(e.apiUrl.replace('?{bot_id}', botID.toString()), {
           method: 'POST',
           headers: tempHeaders,
-          body: JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()), // ?{server_count} needs the "" removed from around it aswell to make sure its sent as a number
+          body: JSON.stringify(e.body).replace('"?{server_count}"', serverCount.toString()), // ?{server_count} needs the "" removed from around it as well to make sure its sent as a number
         });
         log(LT.INFO, `Posted server count to ${e.name}.  Results: ${JSON.stringify(response)}`);
       }
@@ -198,7 +198,7 @@ const updateHeatmapPng = async () => {
         hourPixels[hour][0] + 1,
         dayPixels[day][1] - dayPixels[day][0] + 1,
         hourPixels[hour][1] - hourPixels[hour][0] + 1,
-        is.Image.rgbToColor(255 * (1 - percent), 255 * percent, 0),
+        is.Image.rgbToColor(255 * (1 - percent), 255 * percent, 0)
       );
     }
   }

@@ -72,27 +72,32 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
             },
             {
               name: '`r<q` [Optional]',
-              value: 'Rerolls any rolls that are less than or equal to `a`, `r3` will reroll every die that land on 3, 2, or 1, throwing out old rolls, cannot be used with `ro`',
+              value:
+                'Rerolls any rolls that are less than or equal to `a`, `r3` will reroll every die that land on 3, 2, or 1, throwing out old rolls, cannot be used with `ro`',
               inline: true,
             },
             {
               name: '`r>q` [Optional]',
-              value: 'Rerolls any rolls that are greater than or equal to `a`, `r3` will reroll every die that land on 3 or greater, throwing out old rolls, cannot be used with `ro`',
+              value:
+                'Rerolls any rolls that are greater than or equal to `a`, `r3` will reroll every die that land on 3 or greater, throwing out old rolls, cannot be used with `ro`',
               inline: true,
             },
             {
               name: '`roa` or `ro=q` [Optional]',
-              value: 'Rerolls any rolls that match `a`, `ro3` will reroll each die that lands on 3 ONLY ONE TIME, throwing out old rolls, cannot be used with `r`',
+              value:
+                'Rerolls any rolls that match `a`, `ro3` will reroll each die that lands on 3 ONLY ONE TIME, throwing out old rolls, cannot be used with `r`',
               inline: true,
             },
             {
               name: '`ro<q` [Optional]',
-              value: 'Rerolls any rolls that are less than or equal to `a`, `ro3` will reroll each die that lands on 3, 2, or 1 ONLY ONE TIME, throwing out old rolls, cannot be used with `r`',
+              value:
+                'Rerolls any rolls that are less than or equal to `a`, `ro3` will reroll each die that lands on 3, 2, or 1 ONLY ONE TIME, throwing out old rolls, cannot be used with `r`',
               inline: true,
             },
             {
               name: '`ro>q` [Optional]',
-              value: 'Rerolls any rolls that are greater than or equal to `a`, `ro3` will reroll each die that lands on 3 or greater ONLY ONE TIME, throwing out old rolls, cannot be used with `r`',
+              value:
+                'Rerolls any rolls that are greater than or equal to `a`, `ro3` will reroll each die that lands on 3 or greater ONLY ONE TIME, throwing out old rolls, cannot be used with `r`',
               inline: true,
             },
             {
@@ -187,27 +192,32 @@ Additionally, replace \`x\` with \`F\` to roll Fate dice`,
             },
             {
               name: '`!p>u` [Optional]',
-              value: 'Penetrating Explosion on `u` and greater, rolls one `dy` for each die that lands on `u` or greater, but subtracts one from each resulting explosion',
+              value:
+                'Penetrating Explosion on `u` and greater, rolls one `dy` for each die that lands on `u` or greater, but subtracts one from each resulting explosion',
               inline: true,
             },
             {
               name: '`!p<u` [Optional]',
-              value: 'Penetrating Explosion on `u` and under, rolls one `dy` for each die that lands on `u` or under, but subtracts one from each resulting explosion',
+              value:
+                'Penetrating Explosion on `u` and under, rolls one `dy` for each die that lands on `u` or under, but subtracts one from each resulting explosion',
               inline: true,
             },
             {
               name: '`!!=u` [Optional]',
-              value: 'Compounding Explosion on `u`, rolls one `dy` for each die that lands on `u`, but adds the resulting explosion to the die that caused this explosion',
+              value:
+                'Compounding Explosion on `u`, rolls one `dy` for each die that lands on `u`, but adds the resulting explosion to the die that caused this explosion',
               inline: true,
             },
             {
               name: '`!!>u` [Optional]',
-              value: 'Compounding Explosion on `u` and greater, rolls one `dy` for each die that lands on `u` or greater, but adds the resulting explosion to the die that caused this explosion',
+              value:
+                'Compounding Explosion on `u` and greater, rolls one `dy` for each die that lands on `u` or greater, but adds the resulting explosion to the die that caused this explosion',
               inline: true,
             },
             {
               name: '`!!<u` [Optional]',
-              value: 'Compounding Explosion on `u` and under, rolls one `dy` for each die that lands on `u` or under, but adds the resulting explosion to the die that caused this explosion',
+              value:
+                'Compounding Explosion on `u` and under, rolls one `dy` for each die that lands on `u` or under, but adds the resulting explosion to the die that caused this explosion',
               inline: true,
             },
           ],

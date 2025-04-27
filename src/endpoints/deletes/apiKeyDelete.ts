@@ -16,7 +16,7 @@ export const apiKeyDelete = async (query: Map<string, string>, apiUserid: bigint
     if (apiUserid === BigInt(query.get('user') || '0') && apiUserEmail === query.get('email')) {
       if (verifyQueryHasParams(query, ['code'])) {
         if ((query.get('code') || '') === apiUserDelCode) {
-          // User has recieved their delete code and we need to delete the account now
+          // User has received their delete code and we need to delete the account now
           let erroredOut = false;
 
           await dbClient.execute('DELETE FROM allowed_channels WHERE userid = ?', [apiUserid]).catch((e) => {

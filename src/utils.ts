@@ -23,7 +23,7 @@ const ask = async (question: string, stdin = Deno.stdin, stdout = Deno.stdout): 
   await stdout.write(new TextEncoder().encode(question));
 
   // Read console's input into answer
-  const n = <number> await stdin.read(buf);
+  const n = <number>await stdin.read(buf);
   const answer = new TextDecoder().decode(buf.subarray(0, n));
 
   return answer.trim();
@@ -84,8 +84,8 @@ const cmdPrompt = async (logChannel: bigint, botName: string): Promise<void> => 
 Available Commands:
   exit - closes bot
   stop - closes the CLI
-  m [ChannelID] [messgae] - sends message to specific ChannelID as the bot
-  ml [message] sends a message to the specified botlog
+  m [ChannelID] [message] - sends message to specific ChannelID as the bot
+  ml [message] sends a message to the specified bot log channel
   help - this message`);
     } // Unhandled commands die here
     else {
@@ -101,7 +101,8 @@ const messageSendError = (location: string, message: DiscordenoMessage | string,
   genericLogger(LT.ERROR, `${location} | Failed to send message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message}`);
 const messageDeleteError = (location: string, message: DiscordenoMessage | string, err: Error) =>
   genericLogger(LT.ERROR, `${location} | Failed to delete message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message}`);
-const dbError = (location: string, type: string, err: Error) => genericLogger(LT.ERROR, `${location} | Failed to ${type} database | Error: ${err.name} - ${err.message}`);
+const dbError = (location: string, type: string, err: Error) =>
+  genericLogger(LT.ERROR, `${location} | Failed to ${type} database | Error: ${err.name} - ${err.message}`);
 
 export default {
   commonLoggers: {

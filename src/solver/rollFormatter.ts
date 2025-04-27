@@ -9,16 +9,16 @@ import { rollCounter } from './counter.ts';
 import { RollFormat } from './solver.d.ts';
 import { loggingEnabled } from './rollUtils.ts';
 
-// formatRoll(rollConf, maximiseRoll, nominalRoll) returns one SolvedStep
+// formatRoll(rollConf, maximizeRoll, nominalRoll) returns one SolvedStep
 // formatRoll handles creating and formatting the completed rolls into the SolvedStep format
-export const formatRoll = (rollConf: string, maximiseRoll: boolean, nominalRoll: boolean): RollFormat => {
+export const formatRoll = (rollConf: string, maximizeRoll: boolean, nominalRoll: boolean): RollFormat => {
   let tempTotal = 0;
   let tempDetails = '[';
   let tempCrit = false;
   let tempFail = false;
 
   // Generate the roll, passing flags thru
-  const tempRollSet = roll(rollConf, maximiseRoll, nominalRoll);
+  const tempRollSet = roll(rollConf, maximizeRoll, nominalRoll);
 
   // Loop thru all parts of the roll to document everything that was done to create the total roll
   tempRollSet.forEach((e) => {

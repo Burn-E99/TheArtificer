@@ -10,7 +10,7 @@ import utils from '../utils.ts';
 
 export const help = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
-  dbClient.execute(queries.callIncCnt('help')).catch((e) => utils.commonLoggers.dbError('htlp.ts:15', 'call sproc INC_CNT on', e));
+  dbClient.execute(queries.callIncCnt('help')).catch((e) => utils.commonLoggers.dbError('help.ts:15', 'call sproc INC_CNT on', e));
 
   message
     .send({
@@ -91,8 +91,7 @@ export const help = (message: DiscordenoMessage) => {
             },
             {
               name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
-              value:
-                `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
+              value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
               inline: true,
             },
           ],

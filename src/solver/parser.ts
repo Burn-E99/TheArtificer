@@ -16,7 +16,7 @@ import { fullSolver } from './solver.ts';
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
   const operators = ['^', '*', '/', '%', '+', '-', '(', ')'];
-  const returnmsg = <SolvedRoll> {
+  const returnMsg = <SolvedRoll>{
     error: false,
     errorCode: '',
     errorMsg: '',
@@ -57,7 +57,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
       // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
+      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]>tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
 
       // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
       let parenCnt = 0;
@@ -77,7 +77,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
       // Evaluate all rolls into stepSolve format and all numbers into floats
       for (let i = 0; i < mathConf.length; i++) {
-        loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into mathable items ${JSON.stringify(mathConf[i])}`);
+        loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into math-able items ${JSON.stringify(mathConf[i])}`);
         if (mathConf[i].toString().length === 0) {
           // If its an empty string, get it out of here
           mathConf.splice(i, 1);
@@ -139,7 +139,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
                 containsCrit: false,
                 containsFail: false,
               },
-            ],
+            ]
           );
         } else if (!operators.includes(mathConf[i].toString())) {
           // If nothing else has handled it by now, try it as a roll
@@ -150,10 +150,10 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
         if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
           if (typeof mathConf[i] === 'number') {
-            mathConf[i] = <number> mathConf[i] * -1;
+            mathConf[i] = <number>mathConf[i] * -1;
           } else {
-            (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
-            (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
+            (<SolvedStep>mathConf[i]).total = (<SolvedStep>mathConf[i]).total * -1;
+            (<SolvedStep>mathConf[i]).details = `-${(<SolvedStep>mathConf[i]).details}`;
           }
           mathConf.splice(i - 1, 1);
           i--;
@@ -189,7 +189,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     let line2 = '';
     let line3 = '';
 
-    // If maximiseRoll or nominalRoll are on, mark the output as such, else use default formatting
+    // If maximizeRoll or nominalRoll are on, mark the output as such, else use default formatting
     if (modifiers.maxRoll) {
       line1 = ` requested the theoretical maximum of:\n\`${config.prefix}${fullCmd}\``;
       line2 = 'Theoretical Maximum Results: ';
@@ -216,7 +216,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       let preFormat = '';
       let postFormat = '';
 
-      // If the roll containted a crit success or fail, set the formatting around it
+      // If the roll contained a crit success or fail, set the formatting around it
       if (e.containsCrit) {
         preFormat = `**${preFormat}`;
         postFormat = `${postFormat}**`;
@@ -248,12 +248,12 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     }
 
     // Fill in the return block
-    returnmsg.line1 = line1;
-    returnmsg.line2 = line2;
-    returnmsg.line3 = line3;
+    returnMsg.line1 = line1;
+    returnMsg.line2 = line2;
+    returnMsg.line3 = line3;
 
     // Reduce counts to a single object
-    returnmsg.counts = tempCountDetails.reduce((acc, cnt) => ({
+    returnMsg.counts = tempCountDetails.reduce((acc, cnt) => ({
       total: acc.total + cnt.total,
       successful: acc.successful + cnt.successful,
       failed: acc.failed + cnt.failed,
@@ -344,16 +344,16 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
         errorMsg = 'Error: Roll became undefined, one or more operands are not a roll or a number, check input';
         break;
       default:
-        log(LT.ERROR, `Undangled Error: ${errorName}, ${errorDetails}`);
+        log(LT.ERROR, `Unhandled Parser Error: ${errorName}, ${errorDetails}`);
         errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`${config.prefix}report\` to alert the devs of the issue`;
         break;
     }
 
     // Fill in the return block
-    returnmsg.error = true;
-    returnmsg.errorCode = solverError.message;
-    returnmsg.errorMsg = errorMsg;
+    returnMsg.error = true;
+    returnMsg.errorCode = solverError.message;
+    returnMsg.errorMsg = errorMsg;
   }
 
-  return returnmsg;
+  return returnMsg;
 };

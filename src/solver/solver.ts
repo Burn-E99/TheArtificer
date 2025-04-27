@@ -63,34 +63,34 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
 
     // Call the solver on the items between openParen and closeParen (excluding the parens)
     const parenSolve = fullSolver(conf.slice(openParen + 1, closeParen), true);
-    // Replace the itemes between openParen and closeParen (including the parens) with its solved equilvalent
+    // Replace the items between openParen and closeParen (including the parens) with its solved equivalent
     conf.splice(openParen, closeParen - openParen + 1, parenSolve);
 
-    // Determing if we need to add in a multiplication sign to handle implicit multiplication (like "(4)2" = 8)
+    // Determining if we need to add in a multiplication sign to handle implicit multiplication (like "(4)2" = 8)
     // insertedMult flags if there was a multiplication sign inserted before the parens
     let insertedMult = false;
     // Check if a number was directly before openParen and slip in the "*" if needed
-    if (((openParen - 1) > -1) && (signs.indexOf(conf[openParen - 1].toString()) === -1)) {
+    if (openParen - 1 > -1 && signs.indexOf(conf[openParen - 1].toString()) === -1) {
       insertedMult = true;
       conf.splice(openParen, 0, '*');
     }
     // Check if a number is directly after closeParen and slip in the "*" if needed
-    if (!insertedMult && (((openParen + 1) < conf.length) && (signs.indexOf(conf[openParen + 1].toString()) === -1))) {
+    if (!insertedMult && openParen + 1 < conf.length && signs.indexOf(conf[openParen + 1].toString()) === -1) {
       conf.splice(openParen + 1, 0, '*');
-    } else if (insertedMult && (((openParen + 2) < conf.length) && (signs.indexOf(conf[openParen + 2].toString()) === -1))) {
-      // insertedMult is utilized here to let us account for an additional item being inserted into the array (the "*" from before openParn)
+    } else if (insertedMult && openParen + 2 < conf.length && signs.indexOf(conf[openParen + 2].toString()) === -1) {
+      // insertedMult is utilized here to let us account for an additional item being inserted into the array (the "*" from before openParen)
       conf.splice(openParen + 2, 0, '*');
     }
   }
 
-  // Evaluate all EMMDAS by looping thru each teir of operators (exponential is the higehest teir, addition/subtraction the lowest)
+  // Evaluate all EMDAS by looping thru each tier of operators (exponential is the highest tier, addition/subtraction the lowest)
   const allCurOps = [['^'], ['*', '/', '%'], ['+', '-']];
   allCurOps.forEach((curOps) => {
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
     // Iterate thru all operators/operands in the conf
     for (let i = 0; i < conf.length; i++) {
       loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
-      // Check if the current index is in the active teir of operators
+      // Check if the current index is in the active tier of operators
       if (curOps.indexOf(conf[i].toString()) > -1) {
         // Grab the operands from before and after the operator
         const operand1 = conf[i - 1];
@@ -137,7 +137,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
         }
 
         // Verify a second time that both are numbers before doing math, throwing an error if necessary
-        if ((typeof oper1 === 'number') && (typeof oper2 === 'number')) {
+        if (typeof oper1 === 'number' && typeof oper2 === 'number') {
           // Finally do the operator on the operands, throw an error if the operator is not found
           switch (conf[i]) {
             case '^':
@@ -177,16 +177,16 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
   if (conf.length > 1) {
     loggingEnabled && log(LT.LOG, `ConfWHAT? ${JSON.stringify(conf)}`);
     throw new Error('ConfWhat');
-  } else if (singleNum && (typeof (conf[0]) === 'number')) {
+  } else if (singleNum && typeof conf[0] === 'number') {
     // If we are only left with a number, populate the stepSolve with it
     stepSolve.total = conf[0];
     stepSolve.details = conf[0].toString();
   } else {
     // Else fully populate the stepSolve with what was computed
-    stepSolve.total = (<SolvedStep> conf[0]).total;
-    stepSolve.details = (<SolvedStep> conf[0]).details;
-    stepSolve.containsCrit = (<SolvedStep> conf[0]).containsCrit;
-    stepSolve.containsFail = (<SolvedStep> conf[0]).containsFail;
+    stepSolve.total = (<SolvedStep>conf[0]).total;
+    stepSolve.details = (<SolvedStep>conf[0]).details;
+    stepSolve.containsCrit = (<SolvedStep>conf[0]).containsCrit;
+    stepSolve.containsFail = (<SolvedStep>conf[0]).containsFail;
   }
 
   // If this was a nested call, add on parens around the details to show what math we've done

@@ -6,7 +6,21 @@
 
 import config from './config.ts';
 import { DEBUG, DEVMODE, LOCALMODE } from './flags.ts';
-import { botId, cache, DiscordActivityTypes, DiscordenoGuild, DiscordenoMessage, editBotNickname, editBotStatus, initLog, Intents, log, LT, sendMessage, startBot } from './deps.ts';
+import {
+  botId,
+  cache,
+  DiscordActivityTypes,
+  DiscordenoGuild,
+  DiscordenoMessage,
+  editBotNickname,
+  editBotStatus,
+  initLog,
+  Intents,
+  log,
+  LT,
+  sendMessage,
+  startBot,
+} from './deps.ts';
 import api from './src/api.ts';
 import dbClient from './src/db/client.ts';
 import { ignoreList } from './src/db/common.ts';
@@ -66,10 +80,12 @@ startBot({
       }, 30000);
 
       // Interval to update bot list stats every 24 hours
-      LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : setInterval(() => {
-        log(LT.LOG, 'Updating all bot lists statistics');
-        intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
-      }, 86400000);
+      LOCALMODE
+        ? log(LT.INFO, 'updateListStatistics not running')
+        : setInterval(() => {
+            log(LT.LOG, 'Updating all bot lists statistics');
+            intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
+          }, 86400000);
 
       // Interval to update hourlyRates every hour
       setInterval(() => {
@@ -175,8 +191,8 @@ startBot({
         .execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id])
         .catch((e) => utils.commonLoggers.dbError('mod.ts:100', 'delete from', e));
     },
-    debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
-    raw: DEVMODE ? (dmsg) => log(LT.LOG, `Raw Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
+    debug: DEVMODE ? (dMsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dMsg)}`) : undefined,
+    raw: DEVMODE ? (dMsg) => log(LT.LOG, `Raw Debug Message | ${JSON.stringify(dMsg)}`) : undefined,
     messageCreate: (message: DiscordenoMessage) => {
       // Ignore all other bots
       if (message.isBot) return;
@@ -308,7 +324,7 @@ startBot({
             // Dice rolling commence!
             commands.roll(message, args, command);
           } else if (command) {
-            // [[emoji or [[emojialias
+            // [[emoji or [[emoji-alias
             // Check if the unhandled command is an emoji request
             commands.emoji(message, command);
           }

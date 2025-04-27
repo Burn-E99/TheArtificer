@@ -32,7 +32,7 @@ export const audit = (message: DiscordenoMessage, args: string[]) => {
         break;
       case 'guilds':
         // [[audit guilds
-        // Shows breakdown of guilds and detials on them
+        // Shows breakdown of guilds and details on them
         auditCommands.auditGuilds(message);
         break;
       default:

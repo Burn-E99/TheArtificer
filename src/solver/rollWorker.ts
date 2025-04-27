@@ -11,7 +11,7 @@ self.postMessage('ready');
 // Handle the roll
 self.onmessage = async (e) => {
   const payload = e.data;
-  const returnmsg = parseRoll(payload.rollCmd, payload.modifiers) || {
+  const returnMsg = parseRoll(payload.rollCmd, payload.modifiers) || {
     error: true,
     errorCode: 'EmptyMessage',
     errorMsg: 'Error: Empty message',
@@ -27,7 +27,7 @@ self.onmessage = async (e) => {
       exploded: 0,
     },
   };
-  self.postMessage(returnmsg);
+  self.postMessage(returnMsg);
   loggingEnabled && (await closeLog());
   self.close();
 };

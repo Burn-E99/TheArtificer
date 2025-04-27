@@ -44,12 +44,12 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
             (
               await generateRollEmbed(
                 rq.dd.message.authorId,
-                <SolvedRoll> {
+                <SolvedRoll>{
                   error: true,
                   errorCode: 'TooComplex',
                   errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
                 },
-                <RollModifiers> {},
+                <RollModifiers>{}
               )
             ).embed,
           ],
@@ -71,18 +71,18 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
     try {
       currentWorkers--;
       clearTimeout(workerTimeout);
-      const returnmsg = workerMessage.data;
-      loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnmsg.line1.length} |&| ${returnmsg.line2.length} |&| ${returnmsg.line3.length} `);
-      loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnmsg.line1} |&| ${returnmsg.line2} |&| ${returnmsg.line3} `);
-      const pubEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnmsg, rq.modifiers);
-      const gmEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnmsg, gmModifiers);
-      const countEmbed = generateCountDetailsEmbed(returnmsg.counts);
+      const returnMsg = workerMessage.data;
+      loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnMsg.line1.length} |&| ${returnMsg.line2.length} |&| ${returnMsg.line3.length} `);
+      loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnMsg.line1} |&| ${returnMsg.line2} |&| ${returnMsg.line3} `);
+      const pubEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnMsg, rq.modifiers);
+      const gmEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnMsg, gmModifiers);
+      const countEmbed = generateCountDetailsEmbed(returnMsg.counts);
       loggingEnabled && log(LT.LOG, `Embeds are generated: ${JSON.stringify(pubEmbedDetails)} |&| ${JSON.stringify(gmEmbedDetails)}`);
 
       // If there was an error, report it to the user in hopes that they can determine what they did wrong
-      if (returnmsg.error) {
+      if (returnMsg.error) {
         if (rq.apiRoll) {
-          rq.api.resolve(stdResp.InternalServerError(returnmsg.errorMsg));
+          rq.api.resolve(stdResp.InternalServerError(returnMsg.errorMsg));
         } else {
           rq.dd.m.edit({ embeds: [pubEmbedDetails.embed] });
         }
@@ -90,7 +90,7 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
         if (rq.apiRoll || (DEVMODE && config.logRolls)) {
           // If enabled, log rolls so we can see what went wrong
           dbClient
-            .execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnmsg.errorCode, rq.apiRoll ? null : rq.dd.m.id])
+            .execute(queries.insertRollLogCmd(rq.apiRoll ? 1 : 0, 1), [rq.originalCommand, returnMsg.errorCode, rq.apiRoll ? null : rq.dd.m.id])
             .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:82', 'insert into', e));
         }
       } else {
@@ -167,7 +167,7 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
 
         if (rq.apiRoll && !apiErroredOut) {
           dbClient
-            .execute(queries.insertRollLogCmd(1, 0), [rq.originalCommand, returnmsg.errorCode, n ? n.id : null])
+            .execute(queries.insertRollLogCmd(1, 0), [rq.originalCommand, returnMsg.errorCode, n ? n.id : null])
             .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:155', 'insert into', e));
 
           rq.api.resolve(
@@ -175,19 +175,19 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
               JSON.stringify(
                 rq.modifiers.count
                   ? {
-                    counts: countEmbed,
-                    details: pubEmbedDetails,
-                  }
+                      counts: countEmbed,
+                      details: pubEmbedDetails,
+                    }
                   : {
-                    details: pubEmbedDetails,
-                  },
-              ),
-            ),
+                      details: pubEmbedDetails,
+                    }
+              )
+            )
           );
         }
       }
     } catch (e) {
-      log(LT.ERROR, `Unddandled Error: ${JSON.stringify(e)}`);
+      log(LT.ERROR, `Unhandled RQ Error: ${JSON.stringify(e)}`);
       if (rq.apiRoll && !apiErroredOut) {
         rq.api.resolve(stdResp.InternalServerError(JSON.stringify(e)));
       }
@@ -223,7 +223,7 @@ The results for this roll will replace this message when it is done.`,
 setInterval(() => {
   log(
     LT.LOG,
-    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`,
+    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`
   );
   if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
     const temp = rollQueue.shift();

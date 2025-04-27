@@ -66,11 +66,11 @@ The Artificer comes with a few supplemental commands to the main rolling command
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
   * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will no different.
-  * Any math (limited to exponentials, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
+  * Any math (limited to exponential, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
   * PI and e are available for use.
   * Parameters for rolling:
 
-  |  Paramater    |  Required?  |  Repeatable?  |  Description                                                                                                                                                             |
+  |  Parameter    |  Required?  |  Repeatable?  |  Description                                                                                                                                                             |
   |---------------|-------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
   |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used, additionally, replace x with `F` to roll the dice as Fate dice                                                           |
   |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                                                                                                |
@@ -128,7 +128,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-s` - Spoiler - Spoilers all details of the requested roll
     * `-m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with -n
     * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with -m
-    * `-gm @user1 @user2 ... @usern` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
+    * `-gm @user1 @user2 ... @userN` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
   * The results have some formatting applied on them to provide details on what happened during this roll.
     * Critical successes will be **bolded**
@@ -153,7 +153,7 @@ Official API URL: `https://artificer.eanm.dev/api/`
 
 API Documentation can be found in the `.bruno` folder, which can be viewed in [Bruno](https://www.usebruno.com/).
 
-API Key management via a basic GUI is availble on the [API Tools](https://artificer.eanm.dev/) website.
+API Key management via a basic GUI is available on the [API Tools](https://artificer.eanm.dev/) website.
 
 ## Problems?  Feature requests?
 If you run into any errors or problems with the bot, or think you have a good idea to add to the bot, please submit a new GitHub issue detailing it.  If you don't have a GitHub account, a report command (detailed above) is provided for use in Discord.
