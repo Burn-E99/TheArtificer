@@ -29,6 +29,15 @@ import intervals from './src/intervals.ts';
 import { successColor, warnColor } from './src/commandUtils.ts';
 import utils from './src/utils.ts';
 
+// Extend the BigInt prototype to support JSON.stringify
+interface BigIntX extends BigInt {
+  /** Convert to BigInt to string form in JSON.stringify */
+  toJSON: () => string;
+}
+(BigInt.prototype as BigIntX).toJSON = function () {
+  return this.toString();
+};
+
 // Initialize logging client with folder to use for logs, needs --allow-write set on Deno startup
 initLog('logs', DEBUG);
 
@@ -183,6 +192,7 @@ startBot({
         .catch((e) => utils.commonLoggers.dbError('mod.ts:100', 'delete from', e));
     },
     debug: DEVMODE ? (dmsg) => log(LT.LOG, `Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
+    raw: DEVMODE ? (dmsg) => log(LT.LOG, `Raw Debug Message | ${JSON.stringify(dmsg)}`) : undefined,
     messageCreate: (message: DiscordenoMessage) => {
       // Ignore all other bots
       if (message.isBot) return;
@@ -325,7 +335,7 @@ startBot({
 });
 
 // Start up the command prompt for debug usage
-if (DEBUG) {
+if (DEBUG && DEVMODE) {
   utils.cmdPrompt(config.logChannel, config.name);
 }
 
