@@ -19,9 +19,9 @@ export const info = (message: DiscordenoMessage) => {
           color: infoColor2,
           title: `${config.name}, a Discord bot that specializing in rolling dice and calculating math`,
           description: `${config.name} is developed by Ean AKA Burn_E99.
-Additional information can be found on my website [here](https://discord.burne99.com/TheArtificer/).
-Want to check out my source code?  Check it out [here](https://github.com/Burn-E99/TheArtificer).
-Need help with this bot?  Join my support server [here](https://discord.gg/peHASXMZYv).`,
+Additional information can be found on my website [here](${config.links.homePage}).
+Want to check out my source code?  Check it out [here](${config.links.sourceCode}).
+Need help with this bot?  Join my support server [here](${config.links.supportServer}).`,
         },
       ],
     })

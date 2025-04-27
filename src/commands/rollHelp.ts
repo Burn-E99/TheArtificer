@@ -17,12 +17,12 @@ export const rollHelp = (message: DiscordenoMessage) => {
       embeds: [
         {
           color: infoColor1,
-          title: "The Artificer's Roll Command Details:",
+          title: `${config.name}'s Roll Command Details:`,
           description: `You can chain as many of these options as you want, as long as the option does not disallow it.
 
 This command also can fully solve math equations with parenthesis.
 
-The Artificer supports most of the [Roll20 formatting](https://artificer.eanm.dev/roll20).  More details and examples can be found [here](https://artificer.eanm.dev/roll20).
+${config.name} supports most of the [Roll20 formatting](${config.links.roll20Formatting}).  More details and examples can be found [here](${config.links.roll20Formatting}).
 
 Run \`[[???\` or \`[[rollDecorators\` for details on the roll decorators.`,
         },

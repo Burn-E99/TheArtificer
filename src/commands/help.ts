@@ -17,7 +17,7 @@ export const help = (message: DiscordenoMessage) => {
       embeds: [
         {
           color: infoColor2,
-          title: "The Artificer's Available Commands:",
+          title: `${config.name}'s Available Commands:`,
           fields: [
             {
               name: `\`${config.prefix}?\``,

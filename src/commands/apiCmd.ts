@@ -8,6 +8,7 @@ import {
 import apiCommands from './apiCmd/_index.ts';
 import { failColor } from '../commandUtils.ts';
 import utils from '../utils.ts';
+import config from '../../config.ts';
 
 export const api = async (message: DiscordenoMessage, args: string[]) => {
   // Light telemetry to see how many times a command is being run
@@ -74,8 +75,7 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
           {
             color: failColor,
             title: 'API commands are powerful and can only be used by guild Owners and Admins.',
-            description:
-              'For information on how to use the API, please check the GitHub README for more information [here](https://github.com/Burn-E99/TheArtificer).',
+            description: `For information on how to use the API, please check the GitHub README for more information [here](${config.links.sourceCode}).`,
           },
         ],
       })

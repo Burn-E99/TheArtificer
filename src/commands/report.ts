@@ -22,7 +22,7 @@ export const report = (message: DiscordenoMessage, args: string[]) => {
           {
             color: successColor,
             title: 'Failed command has been reported to my developer.',
-            description: `For more in depth support, and information about planned maintenance, please join the support server [here](https://discord.gg/peHASXMZYv).`,
+            description: `For more in depth support, and information about planned maintenance, please join the support server [here](${config.links.supportServer}).`,
           },
         ],
       })

@@ -21,7 +21,7 @@ export const auditDB = async (message: DiscordenoMessage) => {
     // Get DB statistics
     const auditQuery = await dbClient.query(`SELECT * FROM db_size;`).catch((e) => utils.commonLoggers.dbError('auditDB.ts:19', 'query', e));
 
-    // Turn all tables into embed fields, currently only properly will handle 25 tables, but we'll fix that when artificer gets 26 tables
+    // Turn all tables into embed fields, currently only properly will handle 25 tables, but we'll fix that when it gets 26 tables
     const embedFields: Array<EmbedField> = [];
     auditQuery.forEach((row: DBSizeData) => {
       embedFields.push({

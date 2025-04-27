@@ -20,12 +20,12 @@ export const privacy = (message: DiscordenoMessage) => {
           title: 'Privacy Policy',
           fields: [
             {
-              name: 'The Artificer does not track or collect user information via Discord.',
-              value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of The Artificer can see.
+              name: `${config.name} does not track or collect user information via Discord.`,
+              value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of ${config.name} can see.
 
-For more details, please check out the Privacy Policy on the GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
+For more details, please check out the Privacy Policy on the GitHub [here](${config.links.privacyPolicy}).
 
-Terms of Service can also be found on GitHub [here](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).
+Terms of Service can also be found on GitHub [here](${config.links.termsOfService}).
 
 Want me to ignore you?  Simply run \`${config.prefix}opt-out\` and ${config.name} will no longer read your messages or respond to you.`,
             },

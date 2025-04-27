@@ -32,6 +32,15 @@ export const config = {
     password: '', // Password for the account, user account may need to be authenticated with the "Standard" Authentication Type if this does not work out of the box
     name: '', // Name of the database Schema to use for the bot
   },
+  links: {
+    // Links that are used in the bot
+    sourceCode: 'https://github.com/Burn-E99/TheArtificer', // Link to the repository
+    supportServer: '', // Invite link to the Discord support server
+    roll20Formatting: 'https://help.roll20.net/hc/en-us/articles/360037773133-Dice-Reference', // Link to Roll20 Dice Reference
+    homePage: '', // Link to the bot's home/ad page
+    privacyPolicy: '', // Link to the current Privacy Policy
+    termsOfService: '', // Link to the current Terms of Service
+  },
   logRolls: false, // Enables logging of roll commands, this should be left disabled for privacy, but exists to allow verification of rolls before deployment, all API rolls will always be logged no matter what this is set to
   logChannel: 0n, // Discord channel ID where the bot should put startup messages and other error messages needed
   reportChannel: 0n, // Discord channel ID where reports will be sent when using the built-in report command

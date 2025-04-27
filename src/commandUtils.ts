@@ -50,7 +50,7 @@ export const generateStats = (
   embeds: [
     {
       color: infoColor2,
-      title: "The Artificer's Statistics:",
+      title: `${config.name}'s Statistics:`,
       timestamp: new Date().toISOString(),
       fields: [
         {
@@ -99,7 +99,7 @@ export const generateApiStatus = (banned: boolean, active: boolean) => {
     embeds: [
       {
         color: infoColor1,
-        title: `The Artificer's API is ${config.api.enable ? 'currently enabled' : 'currently disabled'}.`,
+        title: `${config.name}'s API is ${config.api.enable ? 'currently enabled' : 'currently disabled'}.`,
         description: banned ? 'API rolls are banned from being used in this guild.\n\nThis will not be reversed.' : `API rolls are ${apiStatus} in this guild.`,
       },
     ],
@@ -137,20 +137,20 @@ export const generateApiKeyEmail = (email: string, key: string) => ({
         },
         {
           name: 'Subject:',
-          value: 'Artificer API Key',
+          value: `${config.name} API Key`,
         },
         {
           name: 'Body:',
-          value: `Hello Artificer API User,
+          value: `Hello ${config.name} API User,
 
-Welcome aboard The Artificer's API.  You can find full details about the API on the GitHub: https://github.com/Burn-E99/TheArtificer
+Welcome aboard ${config.name}'s API.  You can find full details about the API on the GitHub: ${config.links.sourceCode}
 
 Your API Key is: ${key}
 
 Guard this well, as there is zero tolerance for API abuse.
 
 Welcome aboard,
-The Artificer Developer - Ean Milligan`,
+${config.name} Developer - Ean Milligan`,
         },
       ],
     },
@@ -169,18 +169,18 @@ export const generateApiDeleteEmail = (email: string, deleteCode: string) => ({
         },
         {
           name: 'Subject:',
-          value: 'Artificer API Delete Code',
+          value: `${config.name} API Delete Code`,
         },
         {
           name: 'Body:',
-          value: `Hello Artificer API User,
+          value: `Hello ${config.name} API User,
 
 I am sorry to see you go.  If you would like, please respond to this email detailing what I could have done better.
 
 As requested, here is your delete code: ${deleteCode}
 
 Sorry to see you go,
-The Artificer Developer - Ean Milligan`,
+${config.name} Developer - Ean Milligan`,
         },
       ],
     },

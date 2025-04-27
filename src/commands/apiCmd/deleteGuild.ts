@@ -5,6 +5,7 @@ import {
 } from '../../../deps.ts';
 import { failColor, successColor } from '../../commandUtils.ts';
 import utils from '../../utils.ts';
+import config from '../../../config.ts';
 
 export const deleteGuild = async (message: DiscordenoMessage) => {
   let errorOut = false;
@@ -31,7 +32,7 @@ export const deleteGuild = async (message: DiscordenoMessage) => {
       embeds: [
         {
           color: successColor,
-          title: "This guild's API setting has been removed from The Artificer's Database.",
+          title: `This guild's API setting has been removed from ${config.name}'s Database.`,
         },
       ],
     })

@@ -6,6 +6,7 @@ import {
 } from '../../deps.ts';
 import { infoColor2 } from '../commandUtils.ts';
 import utils from '../utils.ts';
+import config from '../../config.ts';
 
 export const rip = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
@@ -16,7 +17,7 @@ export const rip = (message: DiscordenoMessage) => {
       embeds: [
         {
           color: infoColor2,
-          title: 'The Artificer was built in memory of my Grandmother, Babka',
+          title: `${config.name} was built in memory of my Grandmother, Babka`,
           description: `With much love, Ean
 			
 			December 21, 2020`,
