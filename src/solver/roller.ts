@@ -73,6 +73,9 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
 
   // Fill out the die count, first item will either be an int or empty string, short circuit execution will take care of replacing the empty string with a 1
   const rawDC = dPts.shift() || '1';
+  if (rawDC.includes('.')) {
+    throw new Error('WholeDieCountSizeOnly');
+  }
   const tempDC = rawDC.replace(/\D/g, '');
   // Rejoin all remaining parts
   let remains = dPts.join('d');
@@ -101,10 +104,14 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     rollType = 'ova';
     manualParse = true;
 
-    // Get CWOD parts, setting count and getting difficulty
+    // Get OVA parts, setting count and getting difficulty
     const ovaParts = rollStr.split('ovad');
+    const ovaPart1 = ovaParts[1] || '6';
+    if (ovaPart1.search(/\d+\.\d/) === 0) {
+      throw new Error('WholeDieCountSizeOnly');
+    }
     rollConf.dieCount = parseInt(ovaParts[0] || '1');
-    rollConf.dieSize = parseInt(ovaParts[1] || '6');
+    rollConf.dieSize = parseInt(ovaPart1);
   } else if (remains.startsWith('f')) {
     // fate dice setup
     rollType = 'fate';
@@ -128,6 +135,10 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     // Get the die size out of the remains and into the rollConf
     rollConf.dieSize = parseInt(remains.slice(0, afterDieIdx));
     remains = remains.slice(afterDieIdx);
+
+    if (remains.search(/\.\d/) === 0) {
+      throw new Error('WholeDieCountSizeOnly');
+    }
   }
 
   if (!rollConf.dieCount || !rollConf.dieSize) {

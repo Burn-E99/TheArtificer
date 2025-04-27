@@ -280,6 +280,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
     // Translate the errorName to a specific errorMsg
     switch (errorName) {
+      case 'WholeDieCountSizeOnly':
+        errorMsg = 'Error: Die Size and Die Count must be whole numbers';
+        break;
       case 'YouNeedAD':
         errorMsg = 'Formatting Error: Missing die size and count config';
         break;
