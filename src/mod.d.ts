@@ -16,6 +16,7 @@ export type RollModifiers = {
   superNoDetails: boolean;
   spoiler: string;
   maxRoll: boolean;
+  minRoll: boolean;
   nominalRoll: boolean;
   gmRoll: boolean;
   gms: string[];

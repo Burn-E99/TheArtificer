@@ -20,6 +20,7 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
     superNoDetails: false,
     spoiler: '',
     maxRoll: false,
+    minRoll: false,
     nominalRoll: false,
     gmRoll: false,
     gms: [],
@@ -46,8 +47,12 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
       case '-s':
         modifiers.spoiler = '||';
         break;
+      case '-max':
       case '-m':
         modifiers.maxRoll = true;
+        break;
+      case '-min':
+        modifiers.minRoll = true;
         break;
       case '-n':
         modifiers.nominalRoll = true;
@@ -106,9 +111,11 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
     }
   }
 
-  // maxRoll and nominalRoll cannot both be on, throw an error
-  if (modifiers.maxRoll && modifiers.nominalRoll) {
-    m.edit(generateRollError(errorType, 'Cannot maximize and nominize the roll at the same time')).catch((e) => utils.commonLoggers.messageEditError('getModifiers.ts:106', m, e));
+  // maxRoll, minRoll, and nominalRoll cannot be on at same time, throw an error
+  if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll].filter((b) => b).length > 1) {
+    m.edit(generateRollError(errorType, 'Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`')).catch((e) =>
+      utils.commonLoggers.messageEditError('getModifiers.ts:106', m, e)
+    );
 
     if (DEVMODE && config.logRolls) {
       // If enabled, log rolls so we can verify the bots math

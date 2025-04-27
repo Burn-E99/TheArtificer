@@ -7,6 +7,7 @@ import {
 
 import { RollConf, RollSet, RollType } from './solver.d.ts';
 import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from './rollUtils.ts';
+import { RollModifiers } from '../mod.d.ts';
 
 // Call with loopCountCheck(++loopCount);
 // Will ensure if maxLoops is 10, 10 loops will be allowed, 11 will not.
@@ -20,9 +21,9 @@ const throwDoubleSepError = (sep: string): void => {
   throw new Error(`DoubleSeparator_${sep}`);
 };
 
-// roll(rollStr, maximizeRoll, nominalRoll) returns RollSet
-// roll parses and executes the rollStr, if needed it will also make the roll the maximum or average
-export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolean): RollSet[] => {
+// roll(rollStr, modifiers) returns RollSet
+// roll parses and executes the rollStr
+export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
   /* Roll Capabilities
    * Deciphers and rolls a single dice roll set
    *
@@ -494,7 +495,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     // Copy the template to fill out for this iteration
     const rolling = getTemplateRoll();
     // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-    rolling.roll = rollType === 'fate' ? genFateRoll(maximizeRoll, nominalRoll) : genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
+    rolling.roll = rollType === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers);
     // Set origIdx of roll
     rolling.origIdx = i;
 
@@ -534,22 +535,33 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
 
         // Copy the template to fill out for this iteration
         const newReroll = getTemplateRoll();
-        if (maximizeRoll) {
+        if (modifiers.maxRoll && !minMaxOverride) {
           // If maximizeRoll is on and we've entered the reroll code, dieSize is not allowed, determine the next best option and always return that
-          if (!minMaxOverride) {
-            mmLoop: for (let m = rollConf.dieSize - 1; m > 0; m--) {
-              loopCountCheck(++loopCount);
+          mmMaxLoop: for (let m = rollConf.dieSize - 1; m > 0; m--) {
+            loopCountCheck(++loopCount);
 
-              if (!rollConf.reroll.nums.includes(m)) {
-                minMaxOverride = m;
-                break mmLoop;
-              }
+            if (!rollConf.reroll.nums.includes(m)) {
+              minMaxOverride = m;
+              break mmMaxLoop;
             }
           }
+        } else if (modifiers.minRoll && !minMaxOverride) {
+          // If minimizeRoll is on and we've entered the reroll code, 1 is not allowed, determine the next best option and always return that
+          mmMinLoop: for (let m = 2; m <= rollConf.dieSize; m++) {
+            loopCountCheck(++loopCount);
+
+            if (!rollConf.reroll.nums.includes(m)) {
+              minMaxOverride = m;
+              break mmMinLoop;
+            }
+          }
+        }
+
+        if (modifiers.maxRoll || modifiers.minRoll) {
           newReroll.roll = minMaxOverride;
         } else {
           // If nominalRoll is on, set the roll to the average roll of dieSize, otherwise generate a new random roll
-          newReroll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
+          newReroll.roll = genRoll(rollConf.dieSize, modifiers);
         }
 
         // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
@@ -579,7 +591,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
         // Copy the template to fill out for this iteration
         const newExplodingRoll = getTemplateRoll();
         // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newExplodingRoll.roll = genRoll(rollConf.dieSize, maximizeRoll, nominalRoll);
+        newExplodingRoll.roll = genRoll(rollConf.dieSize, modifiers);
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 

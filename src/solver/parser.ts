@@ -8,7 +8,7 @@ import config from '../../config.ts';
 
 import { RollModifiers } from '../mod.d.ts';
 import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from './solver.d.ts';
-import { compareTotalRolls, escapeCharacters, loggingEnabled } from './rollUtils.ts';
+import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, loggingEnabled } from './rollUtils.ts';
 import { formatRoll } from './rollFormatter.ts';
 import { fullSolver } from './solver.ts';
 
@@ -151,7 +151,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
           i += 2;
         } else if (!operators.includes(mathConf[i].toString())) {
           // If nothing else has handled it by now, try it as a roll
-          const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
+          const formattedRoll = formatRoll(mathConf[i].toString(), modifiers);
           mathConf[i] = formattedRoll.solvedStep;
           tempCountDetails.push(formattedRoll.countDetails);
         }
@@ -197,13 +197,14 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     let line2 = '';
     let line3 = '';
 
-    // If maximizeRoll or nominalRoll are on, mark the output as such, else use default formatting
-    if (modifiers.maxRoll) {
-      line1 = ` requested the theoretical maximum of:\n\`${config.prefix}${fullCmd}\``;
-      line2 = 'Theoretical Maximum Results: ';
-    } else if (modifiers.nominalRoll) {
-      line1 = ` requested the theoretical nominal of:\n\`${config.prefix}${fullCmd}\``;
-      line2 = 'Theoretical Nominal Results: ';
+    // If a theoretical roll is requested, mark the output as such, else use default formatting
+    if (modifiers.maxRoll || modifiers.minRoll || modifiers.nominalRoll) {
+      const theoreticalTexts = ['Maximum', 'Minimum', 'Nominal'];
+      const theoreticalBools = [modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll];
+      const theoreticalText = theoreticalTexts[theoreticalBools.indexOf(true)];
+
+      line1 = ` requested the Theoretical ${theoreticalText} of:\n\`${config.prefix}${fullCmd}\``;
+      line2 = `Theoretical ${theoreticalText} Results: `;
     } else if (modifiers.order === 'a') {
       line1 = ` requested the following rolls to be ordered from least to greatest:\n\`${config.prefix}${fullCmd}\``;
       line2 = 'Results: ';
@@ -211,8 +212,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     } else if (modifiers.order === 'd') {
       line1 = ` requested the following rolls to be ordered from greatest to least:\n\`${config.prefix}${fullCmd}\``;
       line2 = 'Results: ';
-      tempReturnData.sort(compareTotalRolls);
-      tempReturnData.reverse();
+      tempReturnData.sort(compareTotalRollsReverse);
     } else {
       line1 = ` rolled:\n\`${config.prefix}${fullCmd}\``;
       line2 = 'Results: ';
