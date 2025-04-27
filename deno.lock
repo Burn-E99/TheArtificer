@@ -6,6 +6,7 @@
     "jsr:@std/fmt@^1.0.7": "1.0.7",
     "jsr:@std/html@^1.0.3": "1.0.3",
     "jsr:@std/http@1.0.15": "1.0.15",
+    "jsr:@std/io@0.225.2": "0.225.2",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@^1.0.9": "1.0.9",
@@ -36,6 +37,9 @@
         "jsr:@std/path",
         "jsr:@std/streams"
       ]
+    },
+    "@std/io@0.225.2": {
+      "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7"
     },
     "@std/media-types@1.1.0": {
       "integrity": "c9d093f0c05c3512932b330e3cc1fe1d627b301db33a4c2c2185c02471d6eaa4"
@@ -823,6 +827,12 @@
     "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.0.0/deps.ts": "9a1b2d559fc8c33ae1aeed899aa821f53f9d094e9df40bd4b51b099c58961cd7",
     "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.0.0/mod.ts": "d9c38a41a405cf5732c9233c2391a1d7f5a12d0e464aace6f8f596fabf5f21ba",
     "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.0.0/src/logger.ts": "a1924f1f02b35a7501161349de90b60a3aa329e12f1033fdb212b598542897c4",
+    "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.0/deps.ts": "3ab026026d146ca5e7160b16146d5665e45487a62749a7970f8e00c0c934874d",
+    "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.0/mod.ts": "d9c38a41a405cf5732c9233c2391a1d7f5a12d0e464aace6f8f596fabf5f21ba",
+    "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.0/src/logger.ts": "78072b8257a25b4e6adc03d5b92d64ef68b215159a732832fe6020bdebce2ec7",
+    "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/deps.ts": "3ab026026d146ca5e7160b16146d5665e45487a62749a7970f8e00c0c934874d",
+    "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/mod.ts": "d9c38a41a405cf5732c9233c2391a1d7f5a12d0e464aace6f8f596fabf5f21ba",
+    "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/src/logger.ts": "b3a39724d58102dfbcdcd640a829cbfe1f083065060f68003f9c8fd49fdd658a",
     "https://unpkg.com/@evan/wasm@0.0.65/target/zlib/deno.js": "36cd3f1edd2f3a6d6fd4c2376f701c2748338c132703810d4866cfa52b5e7bf9"
   }
 }

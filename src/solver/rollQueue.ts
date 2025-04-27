@@ -17,6 +17,7 @@ import { ApiQueuedRoll, DDQueuedRoll, RollModifiers } from '../mod.d.ts';
 import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor2, rollingEmbed } from '../commandUtils.ts';
 import stdResp from '../endpoints/stdResponses.ts';
 import utils from '../utils.ts';
+import { loggingEnabled } from './rollUtils.ts';
 
 let currentWorkers = 0;
 const rollQueue: Array<ApiQueuedRoll | DDQueuedRoll> = [];
@@ -59,6 +60,7 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
 
   rollWorker.addEventListener('message', async (workerMessage) => {
     if (workerMessage.data === 'ready') {
+      loggingEnabled && log(LT.LOG, `Sending roll to worker: ${rq.rollCmd}, ${JSON.stringify(rq.modifiers)}`);
       rollWorker.postMessage({
         rollCmd: rq.rollCmd,
         modifiers: rq.modifiers,
@@ -70,9 +72,12 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
       currentWorkers--;
       clearTimeout(workerTimeout);
       const returnmsg = workerMessage.data;
+      loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnmsg.line1.length} |&| ${returnmsg.line2.length} |&| ${returnmsg.line3.length} `);
+      loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnmsg.line1} |&| ${returnmsg.line2} |&| ${returnmsg.line3} `);
       const pubEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnmsg, rq.modifiers);
       const gmEmbedDetails = await generateRollEmbed(rq.apiRoll ? rq.api.userId : rq.dd.message.authorId, returnmsg, gmModifiers);
       const countEmbed = generateCountDetailsEmbed(returnmsg.counts);
+      loggingEnabled && log(LT.LOG, `Embeds are generated: ${JSON.stringify(pubEmbedDetails)} |&| ${JSON.stringify(gmEmbedDetails)}`);
 
       // If there was an error, report it to the user in hopes that they can determine what they did wrong
       if (returnmsg.error) {

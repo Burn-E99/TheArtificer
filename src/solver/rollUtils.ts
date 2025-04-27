@@ -6,7 +6,7 @@ import {
 
 import { ReturnData, RollSet } from './solver.d.ts';
 
-export const loggingEnabled = false;
+export const loggingEnabled = true;
 
 // genRoll(size) returns number
 // genRoll rolls a die of size size and returns the result
@@ -15,7 +15,7 @@ export const genRoll = (size: number, maximiseRoll: boolean, nominalRoll: boolea
     return size;
   } else {
     // Math.random * size will return a decimal number between 0 and size (excluding size), so add 1 and floor the result to not get 0 as a result
-    return nominalRoll ? ((size / 2) + 0.5) : Math.floor((Math.random() * size) + 1);
+    return nominalRoll ? size / 2 + 0.5 : Math.floor(Math.random() * size + 1);
   }
 };
 

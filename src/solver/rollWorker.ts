@@ -1,10 +1,15 @@
+import { initLog, closeLog } from '../../deps.ts';
+import { DEBUG } from '../../flags.ts';
 import { parseRoll } from './parser.ts';
+import { loggingEnabled } from './rollUtils.ts';
+
+loggingEnabled && initLog('logs/worker', DEBUG);
 
 // Alert rollQueue that this worker is ready
 self.postMessage('ready');
 
 // Handle the roll
-self.onmessage = async (e: any) => {
+self.onmessage = async (e) => {
   const payload = e.data;
   const returnmsg = parseRoll(payload.rollCmd, payload.modifiers) || {
     error: true,
@@ -23,5 +28,6 @@ self.onmessage = async (e: any) => {
     },
   };
   self.postMessage(returnmsg);
+  loggingEnabled && (await closeLog());
   self.close();
 };

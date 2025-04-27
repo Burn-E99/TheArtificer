@@ -16,7 +16,7 @@ import { fullSolver } from './solver.ts';
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
   const operators = ['^', '*', '/', '%', '+', '-', '(', ')'];
-  const returnmsg = <SolvedRoll> {
+  const returnmsg = <SolvedRoll>{
     error: false,
     errorCode: '',
     errorMsg: '',
@@ -39,23 +39,25 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     const sepRolls = fullCmd.split(config.prefix);
 
     const tempReturnData: ReturnData[] = [];
-    const tempCountDetails: CountDetails[] = [{
-      total: 0,
-      successful: 0,
-      failed: 0,
-      rerolled: 0,
-      dropped: 0,
-      exploded: 0,
-    }];
+    const tempCountDetails: CountDetails[] = [
+      {
+        total: 0,
+        successful: 0,
+        failed: 0,
+        rerolled: 0,
+        dropped: 0,
+        exploded: 0,
+      },
+    ];
 
     // Loop thru all roll/math ops
     for (const sepRoll of sepRolls) {
       loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRoll}`);
-      // Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the opertaion
+      // Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the operation
       const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
       // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
+      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]>tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
 
       // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
       let parenCnt = 0;
@@ -98,7 +100,11 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             containsCrit: false,
             containsFail: false,
           };
-        } else if (mathConf[i].toString().toLowerCase() === 'inf' || mathConf[i].toString().toLowerCase() === 'infinity' || mathConf[i].toString().toLowerCase() === '∞') {
+        } else if (
+          mathConf[i].toString().toLowerCase() === 'inf' ||
+          mathConf[i].toString().toLowerCase() === 'infinity' ||
+          mathConf[i].toString().toLowerCase() === '∞'
+        ) {
           // If the operand is the constant Infinity, create a SolvedStep for it
           mathConf[i] = {
             total: Infinity,
@@ -122,12 +128,19 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             containsCrit: false,
             containsFail: false,
           };
-          mathConf.splice(i + 1, 0, ...['*', {
-            total: Math.E,
-            details: '*e*',
-            containsCrit: false,
-            containsFail: false,
-          }]);
+          mathConf.splice(
+            i + 1,
+            0,
+            ...[
+              '*',
+              {
+                total: Math.E,
+                details: '*e*',
+                containsCrit: false,
+                containsFail: false,
+              },
+            ]
+          );
         } else if (!operators.includes(mathConf[i].toString())) {
           // If nothing else has handled it by now, try it as a roll
           const formattedRoll = formatRoll(mathConf[i].toString(), modifiers.maxRoll, modifiers.nominalRoll);
@@ -137,10 +150,10 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
         if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
           if (typeof mathConf[i] === 'number') {
-            mathConf[i] = <number> mathConf[i] * -1;
+            mathConf[i] = <number>mathConf[i] * -1;
           } else {
-            (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
-            (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
+            (<SolvedStep>mathConf[i]).total = (<SolvedStep>mathConf[i]).total * -1;
+            (<SolvedStep>mathConf[i]).details = `-${(<SolvedStep>mathConf[i]).details}`;
           }
           mathConf.splice(i - 1, 1);
           i--;
@@ -221,7 +234,10 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
         line2 += `${preFormat}${e.rollTotal}${postFormat}, `;
       }
 
-      line2 = line2.replace(/\*\*\*\*/g, '** **').replace(/____/g, '__ __').replace(/~~~~/g, '~~ ~~');
+      line2 = line2
+        .replace(/\*\*\*\*/g, '** **')
+        .replace(/____/g, '__ __')
+        .replace(/~~~~/g, '~~ ~~');
 
       line3 += `\`${e.initConfig}\` = ${e.rollDetails} = ${preFormat}${e.rollTotal}${postFormat}\n`;
     });
@@ -245,7 +261,8 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       dropped: acc.dropped + cnt.dropped,
       exploded: acc.exploded + cnt.exploded,
     }));
-  } catch (solverError) {
+  } catch (e) {
+    const solverError = e as Error;
     // Welp, the unthinkable happened, we hit an error
 
     // Split on _ for the error messages that have more info than just their name
