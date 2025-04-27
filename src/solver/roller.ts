@@ -221,7 +221,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
         case 'r=':
           // Configure Reroll (this can happen multiple times)
           rollConf.reroll.on = true;
-          rollConf.reroll.nums.push(tNum);
+          !rollConf.reroll.nums.includes(tNum) && rollConf.reroll.nums.push(tNum);
           break;
         case 'ro>':
           rollConf.reroll.once = true;
@@ -233,7 +233,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing r> ${i}`);
-            rollConf.reroll.nums.push(i);
+            !rollConf.reroll.nums.includes(i) && rollConf.reroll.nums.push(i);
           }
           break;
         case 'ro<':
@@ -246,14 +246,14 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing r< ${i}`);
-            rollConf.reroll.nums.push(i);
+            !rollConf.reroll.nums.includes(i) && rollConf.reroll.nums.push(i);
           }
           break;
         case 'cs':
         case 'cs=':
           // Configure CritScore for one number (this can happen multiple times)
           rollConf.critScore.on = true;
-          rollConf.critScore.range.push(tNum);
+          !rollConf.critScore.range.includes(tNum) && rollConf.critScore.range.push(tNum);
           break;
         case 'cs>':
           // Configure CritScore for all numbers greater than or equal to tNum (this could happen multiple times, but why)
@@ -262,7 +262,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing cs> ${i}`);
-            rollConf.critScore.range.push(i);
+            !rollConf.critScore.range.includes(i) && rollConf.critScore.range.push(i);
           }
           break;
         case 'cs<':
@@ -272,14 +272,14 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing cs< ${i}`);
-            rollConf.critScore.range.push(i);
+            !rollConf.critScore.range.includes(i) && rollConf.critScore.range.push(i);
           }
           break;
         case 'cf':
         case 'cf=':
           // Configure CritFail for one number (this can happen multiple times)
           rollConf.critFail.on = true;
-          rollConf.critFail.range.push(tNum);
+          !rollConf.critFail.range.includes(tNum) && rollConf.critFail.range.push(tNum);
           break;
         case 'cf>':
           // Configure CritFail for all numbers greater than or equal to tNum (this could happen multiple times, but why)
@@ -288,7 +288,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing cf> ${i}`);
-            rollConf.critFail.range.push(i);
+            !rollConf.critFail.range.includes(i) && rollConf.critFail.range.push(i);
           }
           break;
         case 'cf<':
@@ -298,7 +298,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing cf< ${i}`);
-            rollConf.critFail.range.push(i);
+            !rollConf.critFail.range.includes(i) && rollConf.critFail.range.push(i);
           }
           break;
         case '!':
@@ -309,7 +309,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
           rollConf.exploding.on = true;
           if (afterNumIdx > 0) {
             // User gave a number to explode on, save it
-            rollConf.exploding.nums.push(tNum);
+            !rollConf.exploding.nums.includes(tNum) && rollConf.exploding.nums.push(tNum);
           } else {
             // User did not give number, use cs
             afterNumIdx = 1;
@@ -321,7 +321,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
         case '!!=':
           // Configure Exploding (this can happen multiple times)
           rollConf.exploding.on = true;
-          rollConf.exploding.nums.push(tNum);
+          !rollConf.exploding.nums.includes(tNum) && rollConf.exploding.nums.push(tNum);
           break;
         case '!>':
         case '!o>':
@@ -333,7 +333,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing !> ${i}`);
-            rollConf.exploding.nums.push(i);
+            !rollConf.exploding.nums.includes(i) && rollConf.exploding.nums.push(i);
           }
           break;
         case '!<':
@@ -346,7 +346,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
             loopCountCheck(++loopCount);
 
             loggingEnabled && log(LT.LOG, `${loopCount} Handling ${rollType} ${rollStr} | Parsing !< ${i}`);
-            rollConf.exploding.nums.push(i);
+            !rollConf.exploding.nums.includes(i) && rollConf.exploding.nums.push(i);
           }
           break;
         default:
@@ -381,6 +381,13 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     }
   }
 
+  // Filter rollConf num lists to only include valid numbers
+  const validNumFilter = (curNum: number) => curNum <= rollConf.dieSize && curNum > 0;
+  rollConf.reroll.nums = rollConf.reroll.nums.filter(validNumFilter);
+  rollConf.critScore.range = rollConf.critScore.range.filter(validNumFilter);
+  rollConf.critFail.range = rollConf.critFail.range.filter(validNumFilter);
+  rollConf.exploding.nums = rollConf.exploding.nums.filter(validNumFilter);
+
   // Verify the parse, throwing errors for every invalid config
   if (rollConf.dieCount < 0) {
     throw new Error('NoZerosAllowed_base');
@@ -413,6 +420,9 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
   }
   if (rollConf.reroll.on && rollConf.reroll.nums.includes(0)) {
     throw new Error('NoZerosAllowed_reroll');
+  }
+  if (rollConf.reroll.on && rollConf.reroll.nums.length === rollConf.dieSize) {
+    throw new Error('NoRerollOnAllSides');
   }
 
   // Roll the roll

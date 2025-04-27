@@ -330,6 +330,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
         }
         errorMsg += ' cannot be zero';
         break;
+      case 'NoRerollOnAllSides':
+        errorMsg = 'Error: Cannot reroll all sides of a die, must have at least one side that does not get rerolled';
+        break;
       case 'CritScoreMinGtrMax':
         errorMsg = 'Formatting Error: CritScore maximum cannot be greater than minimum, check formatting and flip min/max';
         break;
