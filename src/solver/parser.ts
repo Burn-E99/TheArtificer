@@ -286,6 +286,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       case 'YouNeedAD':
         errorMsg = 'Formatting Error: Missing die size and count config';
         break;
+      case 'DoubleSeparator':
+        errorMsg = `Formatting Error: \`${errorDetails}\` should only be specified once per roll, remove all but one and repeat roll`;
+        break;
       case 'FormattingError':
         errorMsg = 'Formatting Error: Cannot use Keep and Drop at the same time, remove all but one and repeat roll';
         break;
@@ -307,22 +310,25 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             errorMsg += 'Die Size and Die Count';
             break;
           case 'drop':
-            errorMsg += 'Drop (d or dl)';
+            errorMsg += 'Drop (`d` or `dl`)';
             break;
           case 'keep':
-            errorMsg += 'Keep (k or kh)';
+            errorMsg += 'Keep (`k` or `kh`)';
             break;
           case 'dropHigh':
-            errorMsg += 'Drop Highest (dh)';
+            errorMsg += 'Drop Highest (`dh`)';
             break;
           case 'keepLow':
-            errorMsg += 'Keep Lowest (kl)';
+            errorMsg += 'Keep Lowest (`kl`)';
             break;
           case 'reroll':
-            errorMsg += 'Reroll (r)';
+            errorMsg += 'Reroll (`r`)';
             break;
           case 'critScore':
-            errorMsg += 'Crit Score (cs)';
+            errorMsg += 'Crit Score (`cs`)';
+            break;
+          case 'critFail':
+            errorMsg += 'Crit Fail (`cf`)';
             break;
           default:
             errorMsg += `Unhandled - ${errorDetails}`;

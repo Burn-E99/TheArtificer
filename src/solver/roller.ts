@@ -16,6 +16,10 @@ const loopCountCheck = (loopCount: number): void => {
   }
 };
 
+const throwDoubleSepError = (sep: string): void => {
+  throw new Error(`DoubleSeparator_${sep}`);
+};
+
 // roll(rollStr, maximizeRoll, nominalRoll) returns RollSet
 // roll parses and executes the rollStr, if needed it will also make the roll the maximum or average
 export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolean): RollSet[] => {
@@ -193,22 +197,38 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
       switch (tSep) {
         case 'dl':
         case 'd':
+          if (rollConf.drop.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           // Configure Drop (Lowest)
           rollConf.drop.on = true;
           rollConf.drop.count = tNum;
           break;
         case 'kh':
         case 'k':
+          if (rollConf.keep.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           // Configure Keep (Highest)
           rollConf.keep.on = true;
           rollConf.keep.count = tNum;
           break;
         case 'dh':
+          if (rollConf.dropHigh.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           // Configure Drop (Highest)
           rollConf.dropHigh.on = true;
           rollConf.dropHigh.count = tNum;
           break;
         case 'kl':
+          if (rollConf.keepLow.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           // Configure Keep (Lowest)
           rollConf.keepLow.on = true;
           rollConf.keepLow.count = tNum;
@@ -381,13 +401,6 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     }
   }
 
-  // Filter rollConf num lists to only include valid numbers
-  const validNumFilter = (curNum: number) => curNum <= rollConf.dieSize && curNum > 0;
-  rollConf.reroll.nums = rollConf.reroll.nums.filter(validNumFilter);
-  rollConf.critScore.range = rollConf.critScore.range.filter(validNumFilter);
-  rollConf.critFail.range = rollConf.critFail.range.filter(validNumFilter);
-  rollConf.exploding.nums = rollConf.exploding.nums.filter(validNumFilter);
-
   // Verify the parse, throwing errors for every invalid config
   if (rollConf.dieCount < 0) {
     throw new Error('NoZerosAllowed_base');
@@ -395,6 +408,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
   if (rollConf.dieCount === 0 || rollConf.dieSize === 0) {
     throw new Error('NoZerosAllowed_base');
   }
+
   // Since only one drop or keep option can be active, count how many are active to throw the right error
   let dkdkCnt = 0;
   [rollConf.drop.on, rollConf.keep.on, rollConf.dropHigh.on, rollConf.keepLow.on].forEach((e) => {
@@ -406,6 +420,7 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
   if (dkdkCnt > 1) {
     throw new Error('FormattingError_dk');
   }
+
   if (rollConf.drop.on && rollConf.drop.count === 0) {
     throw new Error('NoZerosAllowed_drop');
   }
@@ -421,6 +436,14 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
   if (rollConf.reroll.on && rollConf.reroll.nums.includes(0)) {
     throw new Error('NoZerosAllowed_reroll');
   }
+
+  // Filter rollConf num lists to only include valid numbers
+  const validNumFilter = (curNum: number) => curNum <= rollConf.dieSize && curNum > 0;
+  rollConf.reroll.nums = rollConf.reroll.nums.filter(validNumFilter);
+  rollConf.critScore.range = rollConf.critScore.range.filter(validNumFilter);
+  rollConf.critFail.range = rollConf.critFail.range.filter(validNumFilter);
+  rollConf.exploding.nums = rollConf.exploding.nums.filter(validNumFilter);
+
   if (rollConf.reroll.on && rollConf.reroll.nums.length === rollConf.dieSize) {
     throw new Error('NoRerollOnAllSides');
   }
