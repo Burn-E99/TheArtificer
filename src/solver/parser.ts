@@ -100,6 +100,13 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             containsCrit: false,
             containsFail: false,
           };
+        } else if (mathConf[i].toString().toLowerCase() === 'sex') {
+          mathConf[i] = {
+            total: 69,
+            details: '( ͡° ͜ʖ ͡°)',
+            containsCrit: false,
+            containsFail: false,
+          };
         } else if (
           mathConf[i].toString().toLowerCase() === 'inf' ||
           mathConf[i].toString().toLowerCase() === 'infinity' ||
