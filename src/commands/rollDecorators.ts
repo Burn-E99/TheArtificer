@@ -38,18 +38,24 @@ Examples: \`${config.prefix}d20${config.postfix} -nd\`, \`${config.prefix}d20${c
               inline: true,
             },
             {
-              name: '`-m` - Maximize Roll',
-              value: 'Rolls the theoretical maximum roll, cannot be used with -n',
+              name: '`-m` or `-max` - Maximize Roll',
+              value: 'Rolls the theoretical maximum roll, cannot be used with `-n` or `-min`',
+              inline: true,
+            },
+            {
+              name: '`-min` - Minimize Roll',
+              value: 'Rolls the theoretical minimum roll, cannot be used with `-m`, `-max`, or `-n`',
               inline: true,
             },
             {
               name: '`-n` - Nominal Roll',
-              value: 'Rolls the theoretical nominal roll, cannot be used with -m',
+              value: 'Rolls the theoretical nominal roll, cannot be used with `-m`, `-max`, or `-min`',
               inline: true,
             },
             {
               name: '`-gm @user1 @user2 @userN` - GM Roll',
-              value: 'Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs',
+              value:
+                'Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs',
               inline: true,
             },
             {

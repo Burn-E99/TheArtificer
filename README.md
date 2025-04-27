@@ -126,8 +126,9 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-nd` - No Details - Suppresses all details of the requested roll
     * `-snd` - Super No Details - Suppresses all details of the requested roll and hides no details message
     * `-s` - Spoiler - Spoilers all details of the requested roll
-    * `-m` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with -n
-    * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with -m
+    * `-m` or `-max` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with `-n` or `-min`
+    * `-min` - Minimize Roll - Rolls the theoretical minimum roll, cannot be used with `-m`, `-max`, or `-n`
+    * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with `-m`, `-max`, or `-min`
     * `-gm @user1 @user2 ... @userN` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
   * The results have some formatting applied on them to provide details on what happened during this roll.
