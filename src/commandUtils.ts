@@ -55,27 +55,27 @@ export const generateStats = (
       fields: [
         {
           name: 'Guilds:',
-          value: `${guildCount}`,
+          value: `${guildCount.toLocaleString()}`,
           inline: true,
         },
         {
           name: 'Channels:',
-          value: `${channelCount}`,
+          value: `${channelCount.toLocaleString()}`,
           inline: true,
         },
         {
           name: 'Active Members:',
-          value: `${memberCount}`,
+          value: `${memberCount.toLocaleString()}`,
           inline: true,
         },
         {
           name: 'Roll Commands:',
-          value: `${rollCount}\n(${rollRate.toFixed(2)} per hour)`,
+          value: `${rollCount.toLocaleString()}\n(${Math.abs(rollRate).toFixed(2)} per hour)`,
           inline: true,
         },
         {
           name: 'Utility Commands:',
-          value: `${utilityCount}\n(${utilityRate.toFixed(2)} per hour)`,
+          value: `${utilityCount.toLocaleString()}\n(${Math.abs(utilityRate).toFixed(2)} per hour)`,
           inline: true,
         },
       ],
