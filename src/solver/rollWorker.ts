@@ -1,4 +1,4 @@
-import { initLog, closeLog } from '../../deps.ts';
+import { closeLog, initLog } from '../../deps.ts';
 import { DEBUG } from '../../flags.ts';
 import { parseRoll } from './parser.ts';
 import { loggingEnabled } from './rollUtils.ts';

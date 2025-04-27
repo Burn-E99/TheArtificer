@@ -24,6 +24,6 @@ export type { StatusCode } from 'jsr:@std/http@1.0.15';
 
 export { nanoid } from 'https://deno.land/x/nanoid@v3.0.0/mod.ts';
 
-export { initLog, closeLog, log, LogTypes as LT } from 'https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/mod.ts';
+export { closeLog, initLog, log, LogTypes as LT } from 'https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/mod.ts';
 
 export * as is from 'https://deno.land/x/imagescript@1.3.0/mod.ts';

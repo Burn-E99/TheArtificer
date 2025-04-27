@@ -44,12 +44,12 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
             (
               await generateRollEmbed(
                 rq.dd.message.authorId,
-                <SolvedRoll>{
+                <SolvedRoll> {
                   error: true,
                   errorCode: 'TooComplex',
                   errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
                 },
-                <RollModifiers>{}
+                <RollModifiers> {},
               )
             ).embed,
           ],
@@ -175,14 +175,14 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
               JSON.stringify(
                 rq.modifiers.count
                   ? {
-                      counts: countEmbed,
-                      details: pubEmbedDetails,
-                    }
+                    counts: countEmbed,
+                    details: pubEmbedDetails,
+                  }
                   : {
-                      details: pubEmbedDetails,
-                    }
-              )
-            )
+                    details: pubEmbedDetails,
+                  },
+              ),
+            ),
           );
         }
       }
@@ -223,7 +223,7 @@ The results for this roll will replace this message when it is done.`,
 setInterval(() => {
   log(
     LT.LOG,
-    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`
+    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`,
   );
   if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
     const temp = rollQueue.shift();

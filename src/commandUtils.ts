@@ -45,7 +45,7 @@ export const generateStats = (
   rollCount: bigint,
   utilityCount: bigint,
   rollRate: number,
-  utilityRate: number
+  utilityRate: number,
 ) => ({
   embeds: [
     {
