@@ -47,22 +47,22 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
     reroll: {
       on: false,
       once: false,
-      nums: <number[]>[],
+      nums: <number[]> [],
     },
     critScore: {
       on: false,
-      range: <number[]>[],
+      range: <number[]> [],
     },
     critFail: {
       on: false,
-      range: <number[]>[],
+      range: <number[]> [],
     },
     exploding: {
       on: false,
       once: false,
       compounding: false,
       penetrating: false,
-      nums: <number[]>[],
+      nums: <number[]> [],
     },
   };
 

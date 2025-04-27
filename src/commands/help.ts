@@ -91,7 +91,8 @@ export const help = (message: DiscordenoMessage) => {
             },
             {
               name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
-              value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
+              value:
+                `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
               inline: true,
             },
           ],

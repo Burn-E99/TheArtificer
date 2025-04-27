@@ -16,7 +16,7 @@ import { fullSolver } from './solver.ts';
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
   const operators = ['^', '*', '/', '%', '+', '-', '(', ')'];
-  const returnMsg = <SolvedRoll>{
+  const returnMsg = <SolvedRoll> {
     error: false,
     errorCode: '',
     errorMsg: '',
@@ -57,7 +57,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
       // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]>tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
+      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
 
       // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
       let parenCnt = 0;
@@ -139,7 +139,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
                 containsCrit: false,
                 containsFail: false,
               },
-            ]
+            ],
           );
         } else if (!operators.includes(mathConf[i].toString())) {
           // If nothing else has handled it by now, try it as a roll
@@ -150,10 +150,10 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
         if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
           if (typeof mathConf[i] === 'number') {
-            mathConf[i] = <number>mathConf[i] * -1;
+            mathConf[i] = <number> mathConf[i] * -1;
           } else {
-            (<SolvedStep>mathConf[i]).total = (<SolvedStep>mathConf[i]).total * -1;
-            (<SolvedStep>mathConf[i]).details = `-${(<SolvedStep>mathConf[i]).details}`;
+            (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
+            (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
           }
           mathConf.splice(i - 1, 1);
           i--;
