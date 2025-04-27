@@ -16,6 +16,6 @@ export const ping = async (message: DiscordenoMessage) => {
     const m = await message.send(generatePing(-1));
     m.edit(generatePing(m.timestamp - message.timestamp));
   } catch (e) {
-    utils.commonLoggers.messageSendError('ping.ts:23', message, e);
+    utils.commonLoggers.messageSendError('ping.ts:23', message, e as Error);
   }
 };

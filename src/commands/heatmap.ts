@@ -9,7 +9,7 @@ import { failColor, infoColor2 } from '../commandUtils.ts';
 import utils from '../utils.ts';
 import intervals from '../intervals.ts';
 
-export const heatmap = async (message: DiscordenoMessage) => {
+export const heatmap = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
   dbClient.execute(queries.callIncCnt('heatmap')).catch((e) => utils.commonLoggers.dbError('heatmap.ts:14', 'call sproc INC_CNT on', e));
 

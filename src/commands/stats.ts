@@ -44,6 +44,6 @@ export const stats = async (message: DiscordenoMessage) => {
       ),
     ).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
   } catch (e) {
-    utils.commonLoggers.messageSendError('stats.ts:41', message, e);
+    utils.commonLoggers.messageSendError('stats.ts:41', message, e as Error);
   }
 };

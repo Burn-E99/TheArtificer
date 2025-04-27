@@ -29,7 +29,7 @@ export const optOut = async (message: DiscordenoMessage) => {
         ],
       })
       .catch((e: Error) => utils.commonLoggers.messageSendError('optOut.ts:25', message, e));
-  } catch (err) {
+  } catch (_e) {
     message
       .reply({
         embeds: [

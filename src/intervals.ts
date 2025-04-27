@@ -62,7 +62,8 @@ const updateListStatistics = (botID: bigint, serverCount: number): void => {
         });
         log(LT.INFO, `Posted server count to ${e.name}.  Results: ${JSON.stringify(response)}`);
       }
-    } catch (err) {
+    } catch (error) {
+      const err = error as Error;
       log(LT.ERROR, `Failed to update statistics for ${e.name} | Error: ${err.name} - ${err.message}`);
     }
   });
@@ -103,7 +104,8 @@ const updateHourlyRates = async () => {
     if (previousHours.length > hoursToKeep) {
       previousHours.unshift();
     }
-  } catch (e) {
+  } catch (err) {
+    const e = err as Error;
     log(LT.ERROR, `Something went wrong in previousHours interval | Error: ${e.name} - ${e.message}`);
   }
 };

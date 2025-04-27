@@ -9,7 +9,7 @@ import auditCommands from './auditCmd/_index.ts';
 import { failColor } from '../commandUtils.ts';
 import utils from '../utils.ts';
 
-export const audit = async (message: DiscordenoMessage, args: string[]) => {
+export const audit = (message: DiscordenoMessage, args: string[]) => {
   // Light telemetry to see how many times a command is being run
   dbClient.execute(queries.callIncCnt('audit')).catch((e) => utils.commonLoggers.dbError('audit.ts:16', 'call sproc INC_CNT on', e));
 

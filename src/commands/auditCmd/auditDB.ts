@@ -8,6 +8,12 @@ import { infoColor2 } from '../../commandUtils.ts';
 import { compilingStats } from '../../commonEmbeds.ts';
 import utils from '../../utils.ts';
 
+interface DBSizeData {
+  table: string;
+  size: string;
+  rows: number;
+}
+
 export const auditDB = async (message: DiscordenoMessage) => {
   try {
     const m = await message.send(compilingStats);
@@ -17,7 +23,7 @@ export const auditDB = async (message: DiscordenoMessage) => {
 
     // Turn all tables into embed fields, currently only properly will handle 25 tables, but we'll fix that when artificer gets 26 tables
     const embedFields: Array<EmbedField> = [];
-    auditQuery.forEach((row: any) => {
+    auditQuery.forEach((row: DBSizeData) => {
       embedFields.push({
         name: `${row.table}`,
         value: `**Size:** ${row.size} MB
@@ -39,6 +45,6 @@ export const auditDB = async (message: DiscordenoMessage) => {
       ],
     }).catch((e: Error) => utils.commonLoggers.messageEditError('auditDB.ts:43', message, e));
   } catch (e) {
-    utils.commonLoggers.messageSendError('auditDB.ts:45', message, e);
+    utils.commonLoggers.messageSendError('auditDB.ts:45', message, e as Error);
   }
 };

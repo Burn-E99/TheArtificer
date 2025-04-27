@@ -31,7 +31,7 @@ export const optIn = async (message: DiscordenoMessage) => {
           ],
         })
         .catch((e: Error) => utils.commonLoggers.messageSendError('optIn.ts:27', message, e));
-    } catch (err) {
+    } catch (_e) {
       message
         .reply({
           embeds: [
