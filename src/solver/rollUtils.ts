@@ -6,7 +6,7 @@ import {
 
 import { ReturnData, RollSet } from './solver.d.ts';
 
-export const loggingEnabled = true;
+export const loggingEnabled = false;
 
 // genRoll(size) returns number
 // genRoll rolls a die of size size and returns the result
