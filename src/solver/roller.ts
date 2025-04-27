@@ -538,6 +538,8 @@ export const roll = (rollStr: string, maximizeRoll: boolean, nominalRoll: boolea
           // If maximizeRoll is on and we've entered the reroll code, dieSize is not allowed, determine the next best option and always return that
           if (!minMaxOverride) {
             mmLoop: for (let m = rollConf.dieSize - 1; m > 0; m--) {
+              loopCountCheck(++loopCount);
+
               if (!rollConf.reroll.nums.includes(m)) {
                 minMaxOverride = m;
                 break mmLoop;
