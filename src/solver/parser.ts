@@ -8,14 +8,14 @@ import config from '../../config.ts';
 
 import { RollModifiers } from '../mod.d.ts';
 import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from './solver.d.ts';
-import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, loggingEnabled } from './rollUtils.ts';
+import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, legalMathOperators, loggingEnabled } from './rollUtils.ts';
 import { formatRoll } from './rollFormatter.ts';
 import { fullSolver } from './solver.ts';
 
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
-  const operators = ['^', '*', '/', '%', '+', '-', '(', ')'];
+  const operators = ['(', ')', '^', '*', '/', '%', '+', '-'];
   const returnMsg = <SolvedRoll> {
     error: false,
     errorCode: '',
@@ -78,14 +78,17 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       // Evaluate all rolls into stepSolve format and all numbers into floats
       for (let i = 0; i < mathConf.length; i++) {
         loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into math-able items ${JSON.stringify(mathConf[i])}`);
-        if (mathConf[i].toString().length === 0) {
+
+        const strMathConfI = mathConf[i].toString();
+
+        if (strMathConfI.length === 0) {
           // If its an empty string, get it out of here
           mathConf.splice(i, 1);
           i--;
-        } else if (mathConf[i] == parseFloat(mathConf[i].toString())) {
+        } else if (mathConf[i] == parseFloat(strMathConfI)) {
           // If its a number, parse the number out
-          mathConf[i] = parseFloat(mathConf[i].toString());
-        } else if (mathConf[i].toString().toLowerCase() === 'e') {
+          mathConf[i] = parseFloat(strMathConfI);
+        } else if (strMathConfI.toLowerCase() === 'e') {
           // If the operand is the constant e, create a SolvedStep for it
           mathConf[i] = {
             total: Math.E,
@@ -93,25 +96,21 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             containsCrit: false,
             containsFail: false,
           };
-        } else if (mathConf[i].toString().toLowerCase() === 'fart' || mathConf[i].toString().toLowerCase() === '💩') {
+        } else if (strMathConfI.toLowerCase() === 'fart' || strMathConfI.toLowerCase() === '💩') {
           mathConf[i] = {
             total: 7,
             details: '💩',
             containsCrit: false,
             containsFail: false,
           };
-        } else if (mathConf[i].toString().toLowerCase() === 'sex') {
+        } else if (strMathConfI.toLowerCase() === 'sex') {
           mathConf[i] = {
             total: 69,
             details: '( ͡° ͜ʖ ͡°)',
             containsCrit: false,
             containsFail: false,
           };
-        } else if (
-          mathConf[i].toString().toLowerCase() === 'inf' ||
-          mathConf[i].toString().toLowerCase() === 'infinity' ||
-          mathConf[i].toString().toLowerCase() === '∞'
-        ) {
+        } else if (strMathConfI.toLowerCase() === 'inf' || strMathConfI.toLowerCase() === 'infinity' || strMathConfI.toLowerCase() === '∞') {
           // If the operand is the constant Infinity, create a SolvedStep for it
           mathConf[i] = {
             total: Infinity,
@@ -119,7 +118,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             containsCrit: false,
             containsFail: false,
           };
-        } else if (mathConf[i].toString().toLowerCase() === 'pi' || mathConf[i].toString().toLowerCase() === '𝜋') {
+        } else if (strMathConfI.toLowerCase() === 'pi' || strMathConfI.toLowerCase() === '𝜋') {
           // If the operand is the constant pi, create a SolvedStep for it
           mathConf[i] = {
             total: Math.PI,
@@ -127,7 +126,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             containsCrit: false,
             containsFail: false,
           };
-        } else if (mathConf[i].toString().toLowerCase() === 'pie') {
+        } else if (strMathConfI.toLowerCase() === 'pie') {
           // If the operand is pie, pi*e, create a SolvedStep for e and pi (and the multiplication symbol between them)
           mathConf[i] = {
             total: Math.PI,
@@ -149,23 +148,37 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
             ],
           );
           i += 2;
-        } else if (!operators.includes(mathConf[i].toString())) {
+        } else if (!legalMathOperators.includes(strMathConfI) && legalMathOperators.some((mathOp) => strMathConfI.endsWith(mathOp))) {
+          // Identify when someone does something weird like 4floor(2.5) and split 4 and floor
+          const matchedMathOp = legalMathOperators.filter((mathOp) => strMathConfI.endsWith(mathOp))[0];
+          mathConf[i] = parseFloat(strMathConfI.replace(matchedMathOp, ''));
+
+          mathConf.splice(i + 1, 0, ...['*', matchedMathOp]);
+          i += 2;
+        } else if (![...operators, ...legalMathOperators].includes(strMathConfI)) {
           // If nothing else has handled it by now, try it as a roll
-          const formattedRoll = formatRoll(mathConf[i].toString(), modifiers);
+          const formattedRoll = formatRoll(strMathConfI, modifiers);
           mathConf[i] = formattedRoll.solvedStep;
           tempCountDetails.push(formattedRoll.countDetails);
         }
 
         // Identify if we are in a state where the current number is a negative number
         if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
-          if (typeof mathConf[i] === 'number') {
-            mathConf[i] = <number> mathConf[i] * -1;
+          if (typeof mathConf[i] === 'string') {
+            // Current item is a mathOp, need to insert a "-1 *" before it
+            mathConf.splice(i - 1, 1, ...[parseFloat('-1'), '*']);
+            i += 2;
           } else {
-            (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
-            (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
+            // Handle normally, just set current item to negative
+            if (typeof mathConf[i] === 'number') {
+              mathConf[i] = <number> mathConf[i] * -1;
+            } else {
+              (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
+              (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
+            }
+            mathConf.splice(i - 1, 1);
+            i--;
           }
-          mathConf.splice(i - 1, 1);
-          i--;
         }
       }
 

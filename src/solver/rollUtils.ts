@@ -8,6 +8,8 @@ import { RollModifiers } from '../mod.d.ts';
 import { ReturnData, RollSet } from './solver.d.ts';
 
 export const loggingEnabled = false;
+export const legalMath = [Math.abs, Math.ceil, Math.floor, Math.round, Math.sqrt, Math.cbrt];
+export const legalMathOperators = legalMath.map((oper) => oper.name);
 
 // genRoll(size) returns number
 // genRoll rolls a die of size size and returns the result

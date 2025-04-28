@@ -11,7 +11,7 @@ import {
 } from '../../deps.ts';
 
 import { SolvedStep } from './solver.d.ts';
-import { loggingEnabled } from './rollUtils.ts';
+import { legalMath, legalMathOperators, loggingEnabled } from './rollUtils.ts';
 
 // fullSolver(conf, wrapDetails) returns one condensed SolvedStep
 // fullSolver is a function that recursively solves the full roll and math
@@ -35,7 +35,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
   while (conf.includes('(')) {
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
-    const openParenIdx = conf.indexOf('(');
+    let openParenIdx = conf.indexOf('(');
     let closeParenIdx = -1;
     let nextParenIdx = 0;
 
@@ -66,18 +66,28 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
     // Replace the items between openParenIdx and closeParenIdx (including the parens) with its solved equivalent
     conf.splice(openParenIdx, closeParenIdx - openParenIdx + 1, parenSolve);
 
+    // Determine if previous idx is a Math operator and execute it
+    if (openParenIdx - 1 > -1 && legalMathOperators.includes(conf[openParenIdx - 1].toString())) {
+      // Update total and details of parenSolve
+      parenSolve.total = legalMath[legalMathOperators.indexOf(conf[openParenIdx - 1].toString())](parenSolve.total);
+      parenSolve.details = `${conf[openParenIdx - 1]}${parenSolve.details}`;
+
+      conf.splice(openParenIdx - 1, 2, parenSolve);
+      // shift openParenIdx as we have just removed something before it
+      openParenIdx--;
+    }
+
     // Determining if we need to add in a multiplication sign to handle implicit multiplication (like "(4)2" = 8)
-    // insertedMult flags if there was a multiplication sign inserted before the parens
-    let insertedMult = 0;
     // Check if a number was directly before openParenIdx and slip in the "*" if needed
     if (openParenIdx - 1 > -1 && !signs.includes(conf[openParenIdx - 1].toString())) {
-      insertedMult = 1;
       conf.splice(openParenIdx, 0, '*');
+      // shift openParenIdx as we have just added something before it
+      openParenIdx++;
     }
     // Check if a number is directly after the closing paren and slip in the "*" if needed
     // openParenIdx is used here as the conf array has already been collapsed down
-    if (openParenIdx + 1 + insertedMult < conf.length && !signs.includes(conf[openParenIdx + 1 + insertedMult].toString())) {
-      conf.splice(openParenIdx + 1 + insertedMult, 0, '*');
+    if (openParenIdx + 1 < conf.length && !signs.includes(conf[openParenIdx + 1].toString())) {
+      conf.splice(openParenIdx + 1, 0, '*');
     }
   }
 
