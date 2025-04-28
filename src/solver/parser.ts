@@ -211,6 +211,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     let line2 = '';
     let line3 = '';
 
+    // The ': ' is used by generateRollEmbed to split line 2 up
+    const resultStr = tempReturnData.length > 1 ? 'Results: ' : 'Result: ';
+
     // If a theoretical roll is requested, mark the output as such, else use default formatting
     if (modifiers.maxRoll || modifiers.minRoll || modifiers.nominalRoll) {
       const theoreticalTexts = ['Maximum', 'Minimum', 'Nominal'];
@@ -218,18 +221,18 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       const theoreticalText = theoreticalTexts[theoreticalBools.indexOf(true)];
 
       line1 = ` requested the Theoretical ${theoreticalText} of:\n\`${config.prefix}${fullCmd}\``;
-      line2 = `Theoretical ${theoreticalText} Results: `;
+      line2 = `Theoretical ${theoreticalText} ${resultStr}`;
     } else if (modifiers.order === 'a') {
       line1 = ` requested the following rolls to be ordered from least to greatest:\n\`${config.prefix}${fullCmd}\``;
-      line2 = 'Results: ';
+      line2 = resultStr;
       tempReturnData.sort(compareTotalRolls);
     } else if (modifiers.order === 'd') {
       line1 = ` requested the following rolls to be ordered from greatest to least:\n\`${config.prefix}${fullCmd}\``;
-      line2 = 'Results: ';
+      line2 = resultStr;
       tempReturnData.sort(compareTotalRollsReverse);
     } else {
       line1 = ` rolled:\n\`${config.prefix}${fullCmd}\``;
-      line2 = 'Results: ';
+      line2 = resultStr;
     }
 
     // Fill out all of the details and results now
