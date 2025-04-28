@@ -156,6 +156,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
           tempCountDetails.push(formattedRoll.countDetails);
         }
 
+        // Identify if we are in a state where the current number is a negative number
         if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
           if (typeof mathConf[i] === 'number') {
             mathConf[i] = <number> mathConf[i] * -1;
