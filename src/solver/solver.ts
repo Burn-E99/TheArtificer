@@ -35,51 +35,49 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
   while (conf.includes('(')) {
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
-    const openParen = conf.indexOf('(');
-    let closeParen = -1;
-    let nextParen = 0;
+    const openParenIdx = conf.indexOf('(');
+    let closeParenIdx = -1;
+    let nextParenIdx = 0;
 
-    // Using nextParen to count the opening/closing parens, find the matching paren to openParen above
-    for (let i = openParen; i < conf.length; i++) {
-      loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParen} checking: ${i}`);
-      // If we hit an open, add one (this includes the openParen we start with), if we hit a close, subtract one
+    // Using nextParenIdx to count the opening/closing parens, find the matching paren to openParenIdx above
+    closingParenLocator: for (let i = openParenIdx; i < conf.length; i++) {
+      loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParenIdx} checking: ${i}`);
+      // If we hit an open, add one (this includes the openParenIdx we start with), if we hit a close, subtract one
       if (conf[i] === '(') {
-        nextParen++;
+        nextParenIdx++;
       } else if (conf[i] === ')') {
-        nextParen--;
+        nextParenIdx--;
       }
 
-      // When nextParen reaches 0 again, we will have found the matching closing parenthesis and can safely exit the for loop
-      if (nextParen === 0) {
-        closeParen = i;
-        break;
+      // When nextParenIdx reaches 0 again, we will have found the matching closing parenthesis and can safely exit the for loop
+      if (nextParenIdx === 0) {
+        closeParenIdx = i;
+        break closingParenLocator;
       }
     }
 
     // Make sure we did find the correct closing paren, if not, error out now
-    if (closeParen === -1 || closeParen < openParen) {
+    if (closeParenIdx === -1 || closeParenIdx < openParenIdx) {
       throw new Error('UnbalancedParens');
     }
 
-    // Call the solver on the items between openParen and closeParen (excluding the parens)
-    const parenSolve = fullSolver(conf.slice(openParen + 1, closeParen), true);
-    // Replace the items between openParen and closeParen (including the parens) with its solved equivalent
-    conf.splice(openParen, closeParen - openParen + 1, parenSolve);
+    // Call the solver on the items between openParenIdx and closeParenIdx (excluding the parens)
+    const parenSolve = fullSolver(conf.slice(openParenIdx + 1, closeParenIdx), true);
+    // Replace the items between openParenIdx and closeParenIdx (including the parens) with its solved equivalent
+    conf.splice(openParenIdx, closeParenIdx - openParenIdx + 1, parenSolve);
 
     // Determining if we need to add in a multiplication sign to handle implicit multiplication (like "(4)2" = 8)
     // insertedMult flags if there was a multiplication sign inserted before the parens
-    let insertedMult = false;
-    // Check if a number was directly before openParen and slip in the "*" if needed
-    if (openParen - 1 > -1 && signs.indexOf(conf[openParen - 1].toString()) === -1) {
-      insertedMult = true;
-      conf.splice(openParen, 0, '*');
+    let insertedMult = 0;
+    // Check if a number was directly before openParenIdx and slip in the "*" if needed
+    if (openParenIdx - 1 > -1 && !signs.includes(conf[openParenIdx - 1].toString())) {
+      insertedMult = 1;
+      conf.splice(openParenIdx, 0, '*');
     }
-    // Check if a number is directly after closeParen and slip in the "*" if needed
-    if (!insertedMult && openParen + 1 < conf.length && signs.indexOf(conf[openParen + 1].toString()) === -1) {
-      conf.splice(openParen + 1, 0, '*');
-    } else if (insertedMult && openParen + 2 < conf.length && signs.indexOf(conf[openParen + 2].toString()) === -1) {
-      // insertedMult is utilized here to let us account for an additional item being inserted into the array (the "*" from before openParen)
-      conf.splice(openParen + 2, 0, '*');
+    // Check if a number is directly after the closing paren and slip in the "*" if needed
+    // openParenIdx is used here as the conf array has already been collapsed down
+    if (openParenIdx + 1 + insertedMult < conf.length && !signs.includes(conf[openParenIdx + 1 + insertedMult].toString())) {
+      conf.splice(openParenIdx + 1 + insertedMult, 0, '*');
     }
   }
 
