@@ -91,6 +91,8 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
   const rawDC = dPts.shift() || '1';
   if (rawDC.includes('.')) {
     throw new Error('WholeDieCountSizeOnly');
+  } else if (rawDC.match(/\D/)) {
+    throw new Error(`CannotParseDieCount_${rawDC}`);
   }
   const tempDC = rawDC.replace(/\D/g, '');
   // Rejoin all remaining parts

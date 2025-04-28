@@ -288,7 +288,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     // Welp, the unthinkable happened, we hit an error
 
     // Split on _ for the error messages that have more info than just their name
-    const [errorName, errorDetails] = solverError.message.split('_');
+    const errorSplits = solverError.message.split('_');
+    const errorName = errorSplits.shift();
+    const errorDetails = errorSplits.join('_');
 
     let errorMsg = '';
 
@@ -299,6 +301,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
         break;
       case 'YouNeedAD':
         errorMsg = 'Formatting Error: Missing die size and count config';
+        break;
+      case 'CannotParseDieCount':
+        errorMsg = `Formatting Error: Cannot parse \`${errorDetails}\` as a number`;
         break;
       case 'DoubleSeparator':
         errorMsg = `Formatting Error: \`${errorDetails}\` should only be specified once per roll, remove all but one and repeat roll`;
