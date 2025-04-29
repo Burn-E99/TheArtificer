@@ -9,23 +9,26 @@ import {
 import { infoColor2 } from '../../commandUtils.ts';
 import utils from '../../utils.ts';
 
+const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {
+  if (a.memberCount < b.memberCount) {
+    return 1;
+  }
+  if (a.memberCount > b.memberCount) {
+    return -1;
+  }
+  return 0;
+};
+
 export const auditGuilds = async (message: DiscordenoMessage) => {
   const cachedGuilds = await cacheHandlers.size('guilds');
+  const guildOwnerCounts = new Map<bigint, number>();
+
   let totalCount = 0;
   let realCount = 0;
   let botsCount = 0;
 
   let auditText = '';
 
-  const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {
-    if (a.memberCount < b.memberCount) {
-      return 1;
-    }
-    if (a.memberCount > b.memberCount) {
-      return -1;
-    }
-    return 0;
-  };
   cache.guilds
     .array()
     .sort(sortGuildByMemberCount)
@@ -43,6 +46,9 @@ export const auditGuilds = async (message: DiscordenoMessage) => {
         }
       });
 
+      // Track repeat guild owners
+      guildOwnerCounts.set(guild.ownerId, (guildOwnerCounts.get(guild.ownerId) ?? 0) + 1);
+
       auditText += `Guild: ${guild.name} (${guild.id})
 Owner: ${guild.owner?.username}#${guild.owner?.discriminator} (${guild.ownerId})
 Tot mem: ${guild.memberCount} | Real: ${localRealCount} | Bot: ${localBotCount}
@@ -52,6 +58,12 @@ Tot mem: ${guild.memberCount} | Real: ${localRealCount} | Bot: ${localBotCount}
 
   const b = await new Blob([auditText as BlobPart], { type: 'text' });
   const tooBig = await new Blob(['tooBig' as BlobPart], { type: 'text' });
+
+  // Condense repeat guild owners
+  const repeatCounts: number[] = [];
+  Array.from(guildOwnerCounts).map(([_owenId, cnt]) => {
+    repeatCounts[cnt - 1] = (repeatCounts[cnt - 1] ?? 0) + 1;
+  });
 
   message
     .send({
@@ -98,6 +110,13 @@ Please see attached file for audit details on cached guilds and members.`,
               name: 'Average members per guild:',
               value: `${(totalCount / cache.guilds.size).toFixed(2)}`,
               inline: true,
+            },
+            {
+              name: 'Repeat Guild Owners:',
+              value: repeatCounts
+                .map((ownerCnt, serverIdx) => `${ownerCnt} ${ownerCnt === 1 ? 'person has' : 'people have'} me in ${serverIdx + 1} of their guilds`)
+                .filter((str) => str)
+                .join('\n') || 'No Repeat Guild Owners',
             },
           ],
         },
