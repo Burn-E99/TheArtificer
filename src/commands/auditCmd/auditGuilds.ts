@@ -3,6 +3,7 @@ import {
   // Discordeno deps
   cache,
   cacheHandlers,
+  DiscordenoGuild,
   DiscordenoMessage,
 } from '../../../deps.ts';
 import { infoColor2 } from '../../commandUtils.ts';
@@ -16,26 +17,38 @@ export const auditGuilds = async (message: DiscordenoMessage) => {
 
   let auditText = '';
 
-  cache.guilds.forEach((guild) => {
-    totalCount += guild.memberCount;
-    let localBotCount = 0;
-    let localRealCount = 0;
-    guild.members.forEach((member) => {
-      if (member.bot) {
-        botsCount++;
-        localBotCount++;
-      } else {
-        realCount++;
-        localRealCount++;
-      }
-    });
+  const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {
+    if (a.memberCount < b.memberCount) {
+      return 1;
+    }
+    if (a.memberCount > b.memberCount) {
+      return -1;
+    }
+    return 0;
+  };
+  cache.guilds
+    .array()
+    .sort(sortGuildByMemberCount)
+    .forEach((guild) => {
+      totalCount += guild.memberCount;
+      let localBotCount = 0;
+      let localRealCount = 0;
+      guild.members.forEach((member) => {
+        if (member.bot) {
+          botsCount++;
+          localBotCount++;
+        } else {
+          realCount++;
+          localRealCount++;
+        }
+      });
 
-    auditText += `Guild: ${guild.name} (${guild.id})
+      auditText += `Guild: ${guild.name} (${guild.id})
 Owner: ${guild.owner?.username}#${guild.owner?.discriminator} (${guild.ownerId})
 Tot mem: ${guild.memberCount} | Real: ${localRealCount} | Bot: ${localBotCount}
 
 `;
-  });
+    });
 
   const b = await new Blob([auditText as BlobPart], { type: 'text' });
   const tooBig = await new Blob(['tooBig' as BlobPart], { type: 'text' });
