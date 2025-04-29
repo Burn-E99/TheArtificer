@@ -167,7 +167,6 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
       const percentCount = rawDS.match(/%/g)?.length ?? 1;
       rollConf.dPercent.sizeAdjustment = Math.pow(10, percentCount - 1);
       rollConf.dPercent.critVal = Math.pow(10, percentCount) - rollConf.dPercent.sizeAdjustment;
-      console.log(percentCount, rollConf.dPercent);
     } else {
       rollConf.dieSize = parseInt(rawDS);
     }
