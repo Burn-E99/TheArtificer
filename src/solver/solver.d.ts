@@ -59,10 +59,17 @@ export type SolvedRoll = {
   counts: CountDetails;
 };
 
+export type DPercentConf = {
+  on: boolean;
+  sizeAdjustment: number;
+  critVal: number;
+};
+
 // RollConf is used by the roll20 setup
 export type RollConf = {
   dieCount: number;
   dieSize: number;
+  dPercent: DPercentConf;
   drop: {
     on: boolean;
     count: number;

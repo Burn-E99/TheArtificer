@@ -44,6 +44,11 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
   const rollConf: RollConf = {
     dieCount: 0,
     dieSize: 0,
+    dPercent: {
+      on: false,
+      sizeAdjustment: 0,
+      critVal: 0,
+    },
     drop: {
       on: false,
       count: 0,
@@ -147,14 +152,25 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
     rollConf.dieCount = parseInt(tempDC);
 
     // Finds the end of the die size/beginning of the additional options
-    let afterDieIdx = dPts[0].search(/\D/);
+    let afterDieIdx = dPts[0].search(/[^%\d]/);
     if (afterDieIdx === -1) {
       afterDieIdx = dPts[0].length;
     }
 
     // Get the die size out of the remains and into the rollConf
-    rollConf.dieSize = parseInt(remains.slice(0, afterDieIdx));
+    const rawDS = remains.slice(0, afterDieIdx);
     remains = remains.slice(afterDieIdx);
+
+    if (rawDS.startsWith('%')) {
+      rollConf.dieSize = 10;
+      rollConf.dPercent.on = true;
+      const percentCount = rawDS.match(/%/g)?.length ?? 1;
+      rollConf.dPercent.sizeAdjustment = Math.pow(10, percentCount - 1);
+      rollConf.dPercent.critVal = Math.pow(10, percentCount) - rollConf.dPercent.sizeAdjustment;
+      console.log(percentCount, rollConf.dPercent);
+    } else {
+      rollConf.dieSize = parseInt(rawDS);
+    }
 
     if (remains.search(/\.\d/) === 0) {
       throw new Error('WholeDieCountSizeOnly');
@@ -436,12 +452,12 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
   if (rollConf.keepLow.on && rollConf.keepLow.count === 0) {
     throw new Error('NoZerosAllowed_keepLow');
   }
-  if (rollConf.reroll.on && rollConf.reroll.nums.includes(0)) {
+  if (rollConf.reroll.on && !rollConf.dPercent.on && rollConf.reroll.nums.includes(0)) {
     throw new Error('NoZerosAllowed_reroll');
   }
 
   // Filter rollConf num lists to only include valid numbers
-  const validNumFilter = (curNum: number) => curNum <= rollConf.dieSize && curNum > 0;
+  const validNumFilter = (curNum: number) => curNum <= rollConf.dieSize && curNum > (rollConf.dPercent.on ? -1 : 0);
   rollConf.reroll.nums = rollConf.reroll.nums.filter(validNumFilter);
   rollConf.critScore.range = rollConf.critScore.range.filter(validNumFilter);
   rollConf.critFail.range = rollConf.critFail.range.filter(validNumFilter);
@@ -497,7 +513,7 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
     // Copy the template to fill out for this iteration
     const rolling = getTemplateRoll();
     // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-    rolling.roll = rollType === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers);
+    rolling.roll = rollType === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
     // Set origIdx of roll
     rolling.origIdx = i;
 
@@ -505,7 +521,7 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
     if (rollConf.critScore.on && rollConf.critScore.range.includes(rolling.roll)) {
       rolling.critHit = true;
     } else if (!rollConf.critScore.on) {
-      rolling.critHit = rolling.roll === rollConf.dieSize;
+      rolling.critHit = rolling.roll === (rollConf.dPercent.on ? rollConf.dPercent.critVal : rollConf.dieSize);
     }
     // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
     if (rollConf.critFail.on && rollConf.critFail.range.includes(rolling.roll)) {
@@ -514,7 +530,7 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
       if (rollType === 'fate') {
         rolling.critFail = rolling.roll === -1;
       } else {
-        rolling.critFail = rolling.roll === 1;
+        rolling.critFail = rolling.roll === (rollConf.dPercent.on ? 0 : 1);
       }
     }
 
@@ -549,7 +565,7 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
           }
         } else if (modifiers.minRoll && !minMaxOverride) {
           // If minimizeRoll is on and we've entered the reroll code, 1 is not allowed, determine the next best option and always return that
-          mmMinLoop: for (let m = 2; m <= rollConf.dieSize; m++) {
+          mmMinLoop: for (let m = rollConf.dPercent.on ? 1 : 2; m <= rollConf.dieSize; m++) {
             loopCountCheck(++loopCount);
 
             if (!rollConf.reroll.nums.includes(m)) {
@@ -563,20 +579,20 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
           newReroll.roll = minMaxOverride;
         } else {
           // If nominalRoll is on, set the roll to the average roll of dieSize, otherwise generate a new random roll
-          newReroll.roll = genRoll(rollConf.dieSize, modifiers);
+          newReroll.roll = genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
         }
 
         // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
         if (rollConf.critScore.on && rollConf.critScore.range.includes(newReroll.roll)) {
           newReroll.critHit = true;
         } else if (!rollConf.critScore.on) {
-          newReroll.critHit = newReroll.roll === rollConf.dieSize;
+          newReroll.critHit = newReroll.roll === (rollConf.dPercent.on ? rollConf.dPercent.critVal : rollConf.dieSize);
         }
         // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
         if (rollConf.critFail.on && rollConf.critFail.range.includes(newReroll.roll)) {
           newReroll.critFail = true;
         } else if (!rollConf.critFail.on) {
-          newReroll.critFail = newReroll.roll === 1;
+          newReroll.critFail = newReroll.roll === (rollConf.dPercent.on ? 0 : 1);
         }
 
         // Slot this new roll in after the current iteration so it can be processed in the next loop
@@ -593,7 +609,7 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
         // Copy the template to fill out for this iteration
         const newExplodingRoll = getTemplateRoll();
         // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newExplodingRoll.roll = genRoll(rollConf.dieSize, modifiers);
+        newExplodingRoll.roll = genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 
@@ -601,13 +617,13 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
         if (rollConf.critScore.on && rollConf.critScore.range.includes(newExplodingRoll.roll)) {
           newExplodingRoll.critHit = true;
         } else if (!rollConf.critScore.on) {
-          newExplodingRoll.critHit = newExplodingRoll.roll === rollConf.dieSize;
+          newExplodingRoll.critHit = newExplodingRoll.roll === (rollConf.dPercent.on ? rollConf.dPercent.critVal : rollConf.dieSize);
         }
         // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
         if (rollConf.critFail.on && rollConf.critFail.range.includes(newExplodingRoll.roll)) {
           newExplodingRoll.critFail = true;
         } else if (!rollConf.critFail.on) {
-          newExplodingRoll.critFail = newExplodingRoll.roll === 1;
+          newExplodingRoll.critFail = newExplodingRoll.roll === (rollConf.dPercent.on ? 0 : 1);
         }
 
         // Slot this new roll in after the current iteration so it can be processed in the next loop

@@ -57,7 +57,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
       // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/%^])/g);
+      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/^]|(?<![d%])%)/g);
 
       // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
       let parenCnt = 0;
