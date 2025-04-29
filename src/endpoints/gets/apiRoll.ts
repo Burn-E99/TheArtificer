@@ -91,6 +91,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           gms: query.has('gms') ? (query.get('gms') || '').split(',') : [],
           order: query.has('o') ? query.get('o')?.toLowerCase() || '' : '',
           count: query.has('c'),
+          commaTotals: query.has('ct'),
           valid: true,
           apiWarn: hideWarn ? '' : apiWarning,
         };

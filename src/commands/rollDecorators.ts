@@ -71,6 +71,11 @@ Available directions:
 \`d\` - Descending (greatest to least)`,
               inline: true,
             },
+            {
+              name: '`-ct` - Comma Totals',
+              value: 'Adds commas to totals for readability',
+              inline: true,
+            },
           ],
         },
       ],

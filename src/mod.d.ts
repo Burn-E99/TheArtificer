@@ -22,6 +22,7 @@ export type RollModifiers = {
   gms: string[];
   order: string;
   count: boolean;
+  commaTotals: boolean;
   valid: boolean;
   apiWarn: string;
 };

@@ -25,8 +25,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
     gmRoll: false,
     gms: [],
     order: '',
-    valid: false,
     count: false,
+    commaTotals: false,
+    valid: false,
     apiWarn: '',
   };
 
@@ -98,6 +99,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
         }
 
         modifiers.order = args[i].toLowerCase()[0];
+        break;
+      case '-ct':
+        modifiers.commaTotals = true;
         break;
       default:
         // Default case should not mess with the array

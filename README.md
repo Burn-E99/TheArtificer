@@ -131,6 +131,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with `-m`, `-max`, or `-min`
     * `-gm @user1 @user2 ... @userN` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
+    * `-ct` - Comma Totals - Adds commas to totals for readability
   * The results have some formatting applied on them to provide details on what happened during this roll.
     * Critical successes will be **bolded**
     * Critical fails will be <ins>underlined</ins>
