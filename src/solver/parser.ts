@@ -68,6 +68,11 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
         } else if (e === ')') {
           parenCnt--;
         }
+
+        // If parenCnt ever goes below 0, that means too many closing paren appeared before opening parens
+        if (parenCnt < 0) {
+          throw new Error('UnbalancedParens');
+        }
       });
 
       // If the parenCnt is not 0, then we do not have balanced parens and need to error out now
