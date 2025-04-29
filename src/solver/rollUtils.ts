@@ -7,8 +7,15 @@ import { RollModifiers } from '../mod.d.ts';
 
 import { DPercentConf, ReturnData, RollSet } from './solver.d.ts';
 
+type MathFunction = (arg: number) => number;
 export const loggingEnabled = false;
-export const legalMath = [Math.abs, Math.ceil, Math.floor, Math.round, Math.sqrt, Math.cbrt];
+export const legalMath: MathFunction[] = [];
+(Object.getOwnPropertyNames(Math) as (keyof Math)[]).forEach((propName) => {
+  const mathProp = Math[propName];
+  if (typeof mathProp === 'function' && mathProp.length === 1) {
+    legalMath.push(mathProp as MathFunction);
+  }
+});
 export const legalMathOperators = legalMath.map((oper) => oper.name);
 
 // genRoll(size) returns number
