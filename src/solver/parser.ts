@@ -253,16 +253,11 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
       // Populate line2 (the results) and line3 (the details) with their data
       if (modifiers.order === '') {
-        line2 += `${preFormat}${e.rollTotal}${postFormat}${escapeCharacters(e.rollPostFormat, '|*_~`')}`;
+        line2 += `${preFormat}${e.rollTotal}${postFormat}${escapeCharacters(e.rollPostFormat, '|*_~`')} `;
       } else {
         // If order is on, turn rolls into csv without formatting
         line2 += `${preFormat}${e.rollTotal}${postFormat}, `;
       }
-
-      line2 = line2
-        .replace(/\*\*\*\*/g, '** **')
-        .replace(/____/g, '__ __')
-        .replace(/~~~~/g, '~~ ~~');
 
       line3 += `\`${e.initConfig}\` = ${e.rollDetails} = ${preFormat}${e.rollTotal}${postFormat}\n`;
     });
