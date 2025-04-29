@@ -22,6 +22,8 @@ const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {
 export const auditGuilds = async (message: DiscordenoMessage) => {
   const cachedGuilds = await cacheHandlers.size('guilds');
   const guildOwnerCounts = new Map<bigint, number>();
+  const sizeCats = [10000, 5000, 1000, 500, 100, 50, 25, 10, 1];
+  const guildSizeDist = new Map<number, number>(sizeCats.map((size) => [size, 0]));
 
   let totalCount = 0;
   let realCount = 0;
@@ -46,9 +48,17 @@ export const auditGuilds = async (message: DiscordenoMessage) => {
         }
       });
 
+      sizeCats.some((size) => {
+        if (guild.memberCount >= size) {
+          guildSizeDist.set(size, (guildSizeDist.get(size) ?? 0) + 1);
+          return true;
+        }
+      });
+
       // Track repeat guild owners
       guildOwnerCounts.set(guild.ownerId, (guildOwnerCounts.get(guild.ownerId) ?? 0) + 1);
 
+      // Add guild to output text
       auditText += `Guild: ${guild.name} (${guild.id})
 Owner: ${guild.owner?.username}#${guild.owner?.discriminator} (${guild.ownerId})
 Tot mem: ${guild.memberCount} | Real: ${localRealCount} | Bot: ${localBotCount}
@@ -93,7 +103,7 @@ Please see attached file for audit details on cached guilds and members.`,
             },
             {
               name: 'Total Members\n(may be artificially higher if 1 user is in multiple guilds the bot is in):',
-              value: `${totalCount}`,
+              value: `${totalCount.toLocaleString()}`,
               inline: true,
             },
             {
@@ -113,10 +123,25 @@ Please see attached file for audit details on cached guilds and members.`,
             },
             {
               name: 'Repeat Guild Owners:',
-              value: repeatCounts
-                .map((ownerCnt, serverIdx) => `${ownerCnt} ${ownerCnt === 1 ? 'person has' : 'people have'} me in ${serverIdx + 1} of their guilds`)
-                .filter((str) => str)
-                .join('\n') || 'No Repeat Guild Owners',
+              value:
+                repeatCounts
+                  .map((ownerCnt, serverIdx) => `${ownerCnt} ${ownerCnt === 1 ? 'person has' : 'people have'} me in ${serverIdx + 1} of their guilds`)
+                  .filter((str) => str)
+                  .join('\n') || 'No Repeat Guild Owners',
+            },
+            {
+              name: 'Guild Size Dist:',
+              value:
+                Array.from(guildSizeDist)
+                  .map(
+                    ([size, count], idx) =>
+                      `${count} Guild${count === 1 ? ' has' : 's have'} ${
+                        guildSizeDist.has(sizeCats[idx - 1])
+                          ? `${size.toLocaleString()} - ${(sizeCats[idx - 1] - 1).toLocaleString()}`
+                          : `at least ${size.toLocaleString()}`
+                      } Member${size === 1 ? '' : 's'}`
+                  )
+                  .join('\n') || 'Not available',
             },
           ],
         },
