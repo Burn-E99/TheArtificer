@@ -17,6 +17,7 @@ export const stats = async (message: DiscordenoMessage) => {
   try {
     const m = await message.send(compilingStats);
 
+    const startTime = new Date().getTime();
     // Calculate how many times commands have been run
     const rollQuery = await dbClient
       .query(`SELECT count, hourlyRate FROM command_cnt WHERE command = "roll";`)
@@ -32,6 +33,9 @@ export const stats = async (message: DiscordenoMessage) => {
     const cachedGuilds = await cacheHandlers.size('guilds');
     const cachedChannels = await cacheHandlers.size('channels');
     const cachedMembers = await cacheHandlers.size('members');
+
+    const endTime = new Date().getTime();
+
     m.edit(
       generateStats(
         cachedGuilds + cache.dispatchedGuildIds.size,
@@ -41,6 +45,7 @@ export const stats = async (message: DiscordenoMessage) => {
         total - rolls,
         rollRate,
         totalRate - rollRate,
+        endTime - startTime,
       ),
     ).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
   } catch (e) {

@@ -46,6 +46,7 @@ export const generateStats = (
   utilityCount: bigint,
   rollRate: number,
   utilityRate: number,
+  queryTimeMs: number,
 ) => ({
   embeds: [
     {
@@ -79,6 +80,9 @@ export const generateStats = (
           inline: true,
         },
       ],
+      footer: {
+        text: `Total query time: ${queryTimeMs}ms`,
+      },
     },
   ],
 });
