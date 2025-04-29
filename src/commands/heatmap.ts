@@ -28,7 +28,7 @@ Most Rolls: ${intervals.getMaxRollCnt()}`,
             },
             color: infoColor2,
             image: {
-              url: `${config.api.publicDomain}api/heatmap.png`,
+              url: `${config.api.publicDomain}api/heatmap.png?now=${new Date().getTime()}`,
             },
           },
         ],
