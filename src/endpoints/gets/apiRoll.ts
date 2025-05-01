@@ -115,7 +115,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
     } else {
       // Alert API user that they messed up
       return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
       );
     }
   } else {

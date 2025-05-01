@@ -35,7 +35,7 @@ The results for this roll will replace this message when it is done.`,
 setInterval(() => {
   log(
     LT.LOG,
-    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`
+    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`,
   );
   if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
     const temp = rollQueue.shift();

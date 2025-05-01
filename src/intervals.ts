@@ -4,7 +4,7 @@
  * December 21, 2020
  */
 import { cache, cacheHandlers } from '@discordeno';
-import { Image, decode } from '@imagescript';
+import { decode, Image } from '@imagescript';
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '/config.ts';
@@ -193,7 +193,7 @@ const updateHeatmapPng = async () => {
         hourPixels[hour][0] + 1,
         dayPixels[day][1] - dayPixels[day][0] + 1,
         hourPixels[hour][1] - hourPixels[hour][0] + 1,
-        Image.rgbToColor(255 * (1 - percent), 255 * percent, 0)
+        Image.rgbToColor(255 * (1 - percent), 255 * percent, 0),
       );
     }
   }

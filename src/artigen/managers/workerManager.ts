@@ -35,12 +35,12 @@ export const handleRollWorker = (rq: QueuedRoll) => {
             (
               await generateRollEmbed(
                 rq.dd.message.authorId,
-                <SolvedRoll>{
+                <SolvedRoll> {
                   error: true,
                   errorCode: 'TooComplex',
                   errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
                 },
-                <RollModifiers>{}
+                <RollModifiers> {},
               )
             ).embed,
           ],
@@ -166,14 +166,14 @@ export const handleRollWorker = (rq: QueuedRoll) => {
               JSON.stringify(
                 rq.modifiers.count
                   ? {
-                      counts: countEmbed,
-                      details: pubEmbedDetails,
-                    }
+                    counts: countEmbed,
+                    details: pubEmbedDetails,
+                  }
                   : {
-                      details: pubEmbedDetails,
-                    }
-              )
-            )
+                    details: pubEmbedDetails,
+                  },
+              ),
+            ),
           );
         }
       }

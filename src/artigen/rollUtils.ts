@@ -36,7 +36,7 @@ export const genFateRoll = (modifiers: RollModifiers): number => {
     return 0;
   } else {
     const sides = [-1, -1, 0, 0, 1, 1];
-    return sides[genRoll(6, modifiers, <DPercentConf>{ on: false }) - 1];
+    return sides[genRoll(6, modifiers, <DPercentConf> { on: false }) - 1];
   }
 };
 

@@ -49,7 +49,7 @@ export const generateStats = (
   utilityCount: bigint,
   rollRate: number,
   utilityRate: number,
-  queryTimeMs: number
+  queryTimeMs: number,
 ) => ({
   embeds: [
     {

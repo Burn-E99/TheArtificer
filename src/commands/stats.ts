@@ -42,8 +42,8 @@ export const stats = async (message: DiscordenoMessage) => {
         total - rolls,
         rollRate,
         totalRate - rollRate,
-        endTime - startTime
-      )
+        endTime - startTime,
+      ),
     ).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
   } catch (e) {
     utils.commonLoggers.messageSendError('stats.ts:41', message, e as Error);

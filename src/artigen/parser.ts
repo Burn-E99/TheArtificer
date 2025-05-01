@@ -12,7 +12,7 @@ import { fullSolver } from 'artigen/solver.ts';
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
   const operators = ['(', ')', '^', '*', '/', '%', '+', '-'];
-  const returnMsg = <SolvedRoll>{
+  const returnMsg = <SolvedRoll> {
     error: false,
     errorCode: '',
     errorMsg: '',
@@ -54,7 +54,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       const [tempConf, tempFormat] = sepRoll.split(config.postfix);
 
       // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]>tempConf.replace(/ /g, '').split(/([-+()*/^]|(?<![d%])%)/g);
+      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/^]|(?<![d%])%)/g);
 
       // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
       let parenCnt = 0;
@@ -147,7 +147,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
                 containsCrit: false,
                 containsFail: false,
               },
-            ]
+            ],
           );
           i += 2;
         } else if (!legalMathOperators.includes(strMathConfI) && legalMathOperators.some((mathOp) => strMathConfI.endsWith(mathOp))) {
@@ -173,10 +173,10 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
           } else {
             // Handle normally, just set current item to negative
             if (typeof mathConf[i] === 'number') {
-              mathConf[i] = <number>mathConf[i] * -1;
+              mathConf[i] = <number> mathConf[i] * -1;
             } else {
-              (<SolvedStep>mathConf[i]).total = (<SolvedStep>mathConf[i]).total * -1;
-              (<SolvedStep>mathConf[i]).details = `-${(<SolvedStep>mathConf[i]).details}`;
+              (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
+              (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
             }
             mathConf.splice(i - 1, 1);
             i--;
@@ -255,10 +255,12 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
       // Populate line2 (the results) and line3 (the details) with their data
       if (modifiers.order === '') {
-        line2 += `${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}${escapeCharacters(
-          e.rollPostFormat,
-          '|*_~`'
-        )} `;
+        line2 += `${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}${
+          escapeCharacters(
+            e.rollPostFormat,
+            '|*_~`',
+          )
+        } `;
       } else {
         // If order is on, turn rolls into csv without formatting
         line2 += `${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}, `;
