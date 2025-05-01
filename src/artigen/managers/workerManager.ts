@@ -1,15 +1,20 @@
+import { DiscordenoMessage, sendDirectMessage, sendMessage } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
+
 import config from '/config.ts';
+import { DEVMODE } from '/flags.ts';
+
+import { loggingEnabled } from 'artigen/rollUtils.ts';
+import { SolvedRoll } from 'artigen/solver.d.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import stdResp from 'endpoints/stdResponses.ts';
+
 import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from 'src/commandUtils.ts';
 import { QueuedRoll, RollModifiers } from 'src/mod.d.ts';
 import utils from 'src/utils.ts';
-import { SolvedRoll } from 'src/artigen/solver.d.ts';
-import { loggingEnabled } from 'src/artigen/rollUtils.ts';
-import { log, LogTypes as LT } from '@Log4Deno';
-import { DEVMODE } from '/flags.ts';
-import dbClient from 'src/db/client.ts';
-import stdResp from 'src/endpoints/stdResponses.ts';
-import { DiscordenoMessage, sendDirectMessage, sendMessage } from '@discordeno';
-import { queries } from 'src/db/common.ts';
 
 export let currentWorkers = 0;
 

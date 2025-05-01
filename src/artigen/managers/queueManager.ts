@@ -1,9 +1,12 @@
-import config from '/config.ts';
 import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+
+import { currentWorkers, handleRollWorker } from 'artigen/managers/workerManager.ts';
+
 import { infoColor2, rollingEmbed } from 'src/commandUtils.ts';
 import { QueuedRoll } from 'src/mod.d.ts';
 import utils from 'src/utils.ts';
-import { currentWorkers, handleRollWorker } from 'artigen/managers/workerManager.ts';
 
 const rollQueue: Array<QueuedRoll> = [];
 

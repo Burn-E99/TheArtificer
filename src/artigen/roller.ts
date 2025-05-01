@@ -1,8 +1,10 @@
-import config from '/config.ts';
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';
+import config from '/config.ts';
+
 import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from 'artigen/rollUtils.ts';
+import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';
+
 import { RollModifiers } from 'src/mod.d.ts';
 
 // Call with loopCountCheck(++loopCount);

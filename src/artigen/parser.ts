@@ -2,11 +2,12 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '/config.ts';
 
-import { RollModifiers } from 'src/mod.d.ts';
-import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from 'artigen/solver.d.ts';
-import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, legalMathOperators, loggingEnabled } from 'artigen/rollUtils.ts';
 import { formatRoll } from 'artigen/rollFormatter.ts';
+import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, legalMathOperators, loggingEnabled } from 'artigen/rollUtils.ts';
 import { fullSolver } from 'artigen/solver.ts';
+import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from 'artigen/solver.d.ts';
+
+import { RollModifiers } from 'src/mod.d.ts';
 
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
