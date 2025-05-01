@@ -1,8 +1,8 @@
 import { DiscordenoMessage } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
-import { DEVMODE } from '/flags.ts';
+import config from '~config';
+import { DEVMODE } from '~flags';
 
 import { queueRoll } from 'artigen/managers/queueManager.ts';
 

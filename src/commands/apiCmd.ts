@@ -1,6 +1,6 @@
 import { DiscordenoMessage, hasGuildPermissions } from '@discordeno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import apiCommands from 'commands/apiCmd/_index.ts';
 

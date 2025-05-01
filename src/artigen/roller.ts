@@ -1,6 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from 'artigen/rollUtils.ts';
 import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';

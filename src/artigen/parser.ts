@@ -1,6 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import { formatRoll } from 'artigen/rollFormatter.ts';
 import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, legalMathOperators, loggingEnabled } from 'artigen/rollUtils.ts';

@@ -7,7 +7,7 @@ import { cache, cacheHandlers } from '@discordeno';
 import { decode, Image } from '@imagescript';
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import dbClient from 'db/client.ts';
 import { weekDays } from 'db/common.ts';

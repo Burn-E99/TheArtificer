@@ -834,5 +834,10 @@
     "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/mod.ts": "d9c38a41a405cf5732c9233c2391a1d7f5a12d0e464aace6f8f596fabf5f21ba",
     "https://raw.githubusercontent.com/Burn-E99/Log4Deno/V2.1.1/src/logger.ts": "b3a39724d58102dfbcdcd640a829cbfe1f083065060f68003f9c8fd49fdd658a",
     "https://unpkg.com/@evan/wasm@0.0.65/target/zlib/deno.js": "36cd3f1edd2f3a6d6fd4c2376f701c2748338c132703810d4866cfa52b5e7bf9"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/http@1.0.15"
+    ]
   }
 }

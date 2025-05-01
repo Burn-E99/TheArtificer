@@ -5,7 +5,7 @@
  */
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import dbClient from 'db/client.ts';
 

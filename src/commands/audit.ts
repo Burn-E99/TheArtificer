@@ -1,6 +1,6 @@
 import { DiscordenoMessage } from '@discordeno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import auditCommands from 'commands/auditCmd/_index.ts';
 

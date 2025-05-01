@@ -6,8 +6,8 @@
 import { botId, cache, DiscordActivityTypes, DiscordenoGuild, DiscordenoMessage, editBotNickname, editBotStatus, Intents, sendMessage, startBot } from '@discordeno';
 import { initLog, log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
-import { DEBUG, DEVMODE, LOCALMODE } from '/flags.ts';
+import config from '~config';
+import { DEBUG, DEVMODE, LOCALMODE } from '~flags';
 
 import commands from 'commands/_index.ts';
 

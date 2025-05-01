@@ -1,6 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import { currentWorkers, handleRollWorker } from 'artigen/managers/workerManager.ts';
 

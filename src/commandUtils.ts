@@ -1,6 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import { loggingEnabled } from 'artigen/rollUtils.ts';
 import { CountDetails, SolvedRoll } from 'artigen/solver.d.ts';

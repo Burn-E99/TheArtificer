@@ -1,6 +1,6 @@
 import { DiscordenoMessage } from '@discordeno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import { infoColor1, infoColor2 } from 'src/commandUtils.ts';
 import utils from 'src/utils.ts';

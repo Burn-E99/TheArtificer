@@ -1,6 +1,6 @@
 // This file will populate the tables with default values
 
-import config from '../config.ts';
+import config from '..~config';
 import dbClient from 'src/db/client.ts';
 
 console.log('Attempting to populate DB Admin API key');

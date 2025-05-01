@@ -1,6 +1,6 @@
 import { closeLog, initLog } from '@Log4Deno';
 
-import { DEBUG } from '/flags.ts';
+import { DEBUG } from '~flags';
 
 import { parseRoll } from 'artigen/parser.ts';
 import { loggingEnabled } from 'artigen/rollUtils.ts';

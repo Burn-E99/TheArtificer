@@ -1,8 +1,8 @@
 import { DiscordenoMessage, sendDirectMessage, sendMessage } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
-import { DEVMODE } from '/flags.ts';
+import config from '~config';
+import { DEVMODE } from '~flags';
 
 import { loggingEnabled } from 'artigen/rollUtils.ts';
 import { SolvedRoll } from 'artigen/solver.d.ts';
@@ -26,7 +26,7 @@ export const handleRollWorker = (rq: QueuedRoll) => {
   const gmModifiers = JSON.parse(JSON.stringify(rq.modifiers));
   gmModifiers.gmRoll = false;
 
-  const rollWorker = new Worker(new URL('../artigen/rollWorker.ts', import.meta.url).href, { type: 'module' });
+  const rollWorker = new Worker(new URL('../rollWorker.ts', import.meta.url).href, { type: 'module' });
 
   const workerTimeout = setTimeout(async () => {
     rollWorker.terminate();

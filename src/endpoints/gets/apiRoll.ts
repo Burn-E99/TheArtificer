@@ -1,7 +1,7 @@
 import { cache } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '/config.ts';
+import config from '~config';
 
 import { queueRoll } from 'artigen/managers/queueManager.ts';
 
