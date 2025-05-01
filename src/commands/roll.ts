@@ -50,7 +50,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     }
 
     // Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituted in
-    const rollCmd = message.content.substring(2);
+    const rollCmd = message.content.substring(config.prefix.length);
 
     queueRoll({
       apiRoll: false,
