@@ -1,8 +1,11 @@
-import config from '../config.ts';
-import { CountDetails, SolvedRoll } from './solver/solver.d.ts';
-import { RollModifiers } from './mod.d.ts';
-import { loggingEnabled } from './solver/rollUtils.ts';
-import { log, LT } from '../deps.ts';
+import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+
+import { loggingEnabled } from 'artigen/rollUtils.ts';
+import { CountDetails, SolvedRoll } from 'artigen/solver.d.ts';
+
+import { RollModifiers } from 'src/mod.d.ts';
 
 export const failColor = 0xe71212;
 export const warnColor = 0xe38f28;
@@ -46,7 +49,7 @@ export const generateStats = (
   utilityCount: bigint,
   rollRate: number,
   utilityRate: number,
-  queryTimeMs: number,
+  queryTimeMs: number
 ) => ({
   embeds: [
     {

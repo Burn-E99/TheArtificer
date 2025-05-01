@@ -1,7 +1,9 @@
-import dbClient from '../../db/client.ts';
-import stdResp from '../stdResponses.ts';
-import utils from '../../utils.ts';
-import { verifyQueryHasParams } from '../utils.ts';
+import dbClient from 'db/client.ts';
+
+import stdResp from 'endpoints/stdResponses.ts';
+import { verifyQueryHasParams } from 'endpoints/utils.ts';
+
+import utils from 'src/utils.ts';
 
 export const apiChannelManageActive = async (query: Map<string, string>, apiUserid: bigint, path: string): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user', 'channel'])) {

@@ -1,12 +1,12 @@
-import config from '../../config.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../deps.ts';
-import { infoColor2 } from '../commandUtils.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { infoColor2 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const help = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
@@ -91,8 +91,7 @@ export const help = (message: DiscordenoMessage) => {
             },
             {
               name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
-              value:
-                `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
+              value: `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
               inline: true,
             },
           ],

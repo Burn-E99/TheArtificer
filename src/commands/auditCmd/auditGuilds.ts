@@ -1,13 +1,9 @@
-import config from '../../../config.ts';
-import {
-  // Discordeno deps
-  cache,
-  cacheHandlers,
-  DiscordenoGuild,
-  DiscordenoMessage,
-} from '../../../deps.ts';
-import { infoColor2 } from '../../commandUtils.ts';
-import utils from '../../utils.ts';
+import { cache, cacheHandlers, DiscordenoGuild, DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import { infoColor2 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {
   if (a.memberCount < b.memberCount) {
@@ -123,21 +119,25 @@ Please see attached file for audit details on cached guilds and members.`,
             },
             {
               name: 'Repeat Guild Owners:',
-              value: repeatCounts
-                .map((ownerCnt, serverIdx) => `${ownerCnt} ${ownerCnt === 1 ? 'person has' : 'people have'} me in ${serverIdx + 1} of their guilds`)
-                .filter((str) => str)
-                .join('\n') || 'No Repeat Guild Owners',
+              value:
+                repeatCounts
+                  .map((ownerCnt, serverIdx) => `${ownerCnt} ${ownerCnt === 1 ? 'person has' : 'people have'} me in ${serverIdx + 1} of their guilds`)
+                  .filter((str) => str)
+                  .join('\n') || 'No Repeat Guild Owners',
             },
             {
               name: 'Guild Size Dist:',
-              value: Array.from(guildSizeDist)
-                .map(
-                  ([size, count], idx) =>
-                    `${count} Guild${count === 1 ? ' has' : 's have'} ${
-                      guildSizeDist.has(sizeCats[idx - 1]) ? `${size.toLocaleString()} - ${(sizeCats[idx - 1] - 1).toLocaleString()}` : `at least ${size.toLocaleString()}`
-                    } Member${size === 1 ? '' : 's'}`,
-                )
-                .join('\n') || 'Not available',
+              value:
+                Array.from(guildSizeDist)
+                  .map(
+                    ([size, count], idx) =>
+                      `${count} Guild${count === 1 ? ' has' : 's have'} ${
+                        guildSizeDist.has(sizeCats[idx - 1])
+                          ? `${size.toLocaleString()} - ${(sizeCats[idx - 1] - 1).toLocaleString()}`
+                          : `at least ${size.toLocaleString()}`
+                      } Member${size === 1 ? '' : 's'}`
+                  )
+                  .join('\n') || 'Not available',
             },
           ],
         },

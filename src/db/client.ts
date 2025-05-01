@@ -1,6 +1,7 @@
-import config from '../../config.ts';
-import { Client } from '../../deps.ts';
-import { LOCALMODE } from '../../flags.ts';
+import { Client } from '@mysql';
+
+import config from '/config.ts';
+import { LOCALMODE } from '/flags.ts';
 
 const dbClient = await new Client().connect({
   hostname: LOCALMODE ? config.db.localhost : config.db.host,

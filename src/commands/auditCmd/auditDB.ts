@@ -1,12 +1,10 @@
-import dbClient from '../../db/client.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-  EmbedField,
-} from '../../../deps.ts';
-import { infoColor2 } from '../../commandUtils.ts';
-import { compilingStats } from '../../commonEmbeds.ts';
-import utils from '../../utils.ts';
+import { DiscordenoMessage, EmbedField } from '@discordeno';
+
+import dbClient from 'db/client.ts';
+
+import { compilingStats } from 'src/commonEmbeds.ts';
+import { infoColor2 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 interface DBSizeData {
   table: string;

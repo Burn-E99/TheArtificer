@@ -1,11 +1,11 @@
-import dbClient from '../../db/client.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../../deps.ts';
-import { failColor, successColor } from '../../commandUtils.ts';
-import utils from '../../utils.ts';
-import config from '../../../config.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+
+import { failColor, successColor } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const deleteGuild = async (message: DiscordenoMessage) => {
   let errorOut = false;

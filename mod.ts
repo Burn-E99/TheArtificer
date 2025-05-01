@@ -3,17 +3,32 @@
  *
  * December 21, 2020
  */
+import {
+  botId,
+  cache,
+  DiscordActivityTypes,
+  DiscordenoGuild,
+  DiscordenoMessage,
+  editBotNickname,
+  editBotStatus,
+  Intents,
+  sendMessage,
+  startBot,
+} from '@discordeno';
+import { initLog, log, LogTypes as LT } from '@Log4Deno';
 
-import config from './config.ts';
-import { DEBUG, DEVMODE, LOCALMODE } from './flags.ts';
-import { botId, cache, DiscordActivityTypes, DiscordenoGuild, DiscordenoMessage, editBotNickname, editBotStatus, initLog, Intents, log, LT, sendMessage, startBot } from './deps.ts';
-import api from './src/api.ts';
-import dbClient from './src/db/client.ts';
-import { ignoreList } from './src/db/common.ts';
-import commands from './src/commands/_index.ts';
-import intervals from './src/intervals.ts';
-import { successColor, warnColor } from './src/commandUtils.ts';
-import utils from './src/utils.ts';
+import config from '/config.ts';
+import { DEBUG, DEVMODE, LOCALMODE } from '/flags.ts';
+
+import commands from 'commands/_index.ts';
+
+import dbClient from 'db/client.ts';
+import { ignoreList } from 'db/common.ts';
+
+import api from 'src/api.ts';
+import { successColor, warnColor } from 'src/commandUtils.ts';
+import intervals from 'src/intervals.ts';
+import utils from 'src/utils.ts';
 
 // Extend the BigInt prototype to support JSON.stringify
 interface BigIntX extends BigInt {
@@ -66,10 +81,12 @@ startBot({
       }, 30000);
 
       // Interval to update bot list stats every 24 hours
-      LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : setInterval(() => {
-        log(LT.LOG, 'Updating all bot lists statistics');
-        intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
-      }, 86400000);
+      LOCALMODE
+        ? log(LT.INFO, 'updateListStatistics not running')
+        : setInterval(() => {
+            log(LT.LOG, 'Updating all bot lists statistics');
+            intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
+          }, 86400000);
 
       // Interval to update hourlyRates every hour
       setInterval(() => {

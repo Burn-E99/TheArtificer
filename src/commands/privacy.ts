@@ -1,12 +1,12 @@
-import config from '../../config.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../deps.ts';
-import { infoColor1 } from '../commandUtils.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { infoColor1 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const privacy = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
@@ -21,8 +21,7 @@ export const privacy = (message: DiscordenoMessage) => {
           fields: [
             {
               name: `${config.name} does not track or collect user information via Discord.`,
-              value:
-                `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of ${config.name} can see.
+              value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of ${config.name} can see.
 
 For more details, please check out the Privacy Policy on the GitHub [here](${config.links.privacyPolicy}).
 

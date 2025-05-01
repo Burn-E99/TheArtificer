@@ -1,10 +1,9 @@
-import dbClient from '../../db/client.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../../deps.ts';
-import { failColor, generateApiStatus } from '../../commandUtils.ts';
-import utils from '../../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import dbClient from 'db/client.ts';
+
+import { failColor, generateApiStatus } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const status = async (message: DiscordenoMessage) => {
   // Get status of guild from the db

@@ -1,18 +1,18 @@
-import config from '../../../config.ts';
-import dbClient from '../../db/client.ts';
-import { queries } from '../../db/common.ts';
-import {
-  // Discordeno deps
-  cache,
-  // Log4Deno deps
-  log,
-  LT,
-} from '../../../deps.ts';
-import { RollModifiers } from '../../mod.d.ts';
-import utils from '../../utils.ts';
-import { queueRoll } from '../../solver/rollQueue.ts';
-import stdResp from '../stdResponses.ts';
-import { verifyQueryHasParams } from '../utils.ts';
+import { cache } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+
+import { queueRoll } from 'artigen/managers/queueManager.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import stdResp from 'endpoints/stdResponses.ts';
+import { verifyQueryHasParams } from 'endpoints/utils.ts';
+
+import { RollModifiers } from 'src/mod.d.ts';
+import utils from 'src/utils.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
@@ -115,7 +115,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
     } else {
       // Alert API user that they messed up
       return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
       );
     }
   } else {

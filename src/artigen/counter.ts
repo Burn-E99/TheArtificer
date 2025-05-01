@@ -1,4 +1,4 @@
-import { CountDetails, RollSet } from './solver.d.ts';
+import { CountDetails, RollSet } from 'artigen/solver.d.ts';
 
 export const rollCounter = (rollSet: RollSet[]): CountDetails => {
   const countDetails = {

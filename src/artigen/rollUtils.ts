@@ -1,11 +1,7 @@
-import {
-  log,
-  // Log4Deno deps
-  LT,
-} from '../../deps.ts';
-import { RollModifiers } from '../mod.d.ts';
+import { log, LogTypes as LT } from '@Log4Deno';
+import { RollModifiers } from 'src/mod.d.ts';
 
-import { DPercentConf, ReturnData, RollSet } from './solver.d.ts';
+import { DPercentConf, ReturnData, RollSet } from 'artigen/solver.d.ts';
 
 type MathFunction = (arg: number) => number;
 export const loggingEnabled = false;
@@ -40,7 +36,7 @@ export const genFateRoll = (modifiers: RollModifiers): number => {
     return 0;
   } else {
     const sides = [-1, -1, 0, 0, 1, 1];
-    return sides[genRoll(6, modifiers, <DPercentConf> { on: false }) - 1];
+    return sides[genRoll(6, modifiers, <DPercentConf>{ on: false }) - 1];
   }
 };
 

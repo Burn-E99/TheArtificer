@@ -1,12 +1,13 @@
-import config from '../../../config.ts';
-import dbClient from '../../db/client.ts';
-import {
-  // nanoid deps
-  nanoid,
-} from '../../../deps.ts';
-import stdResp from '../stdResponses.ts';
-import utils from '../../utils.ts';
-import { verifyQueryHasParams } from '../utils.ts';
+import { nanoid } from '@nanoid';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+
+import stdResp from 'endpoints/stdResponses.ts';
+import { verifyQueryHasParams } from 'endpoints/utils.ts';
+
+import utils from 'src/utils.ts';
 
 export const apiKeyAdmin = async (query: Map<string, string>, apiUserid: bigint): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user', 'a'])) {

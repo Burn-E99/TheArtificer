@@ -1,5 +1,4 @@
-// mod.d.ts custom types
-import { DiscordenoMessage } from '../deps.ts';
+import { DiscordenoMessage } from '@discordeno';
 
 // EmojiConf is used as a structure for the emojis stored in config.ts
 export type EmojiConf = {
@@ -28,12 +27,12 @@ export type RollModifiers = {
 };
 
 // QueuedRoll is the structure to track rolls we could not immediately handle
-interface QueuedRoll {
+interface BaseQueuedRoll {
   rollCmd: string;
   modifiers: RollModifiers;
   originalCommand: string;
 }
-export interface ApiQueuedRoll extends QueuedRoll {
+export interface ApiQueuedRoll extends BaseQueuedRoll {
   apiRoll: true;
   api: {
     resolve: (value: Response | PromiseLike<Response>) => void;
@@ -41,13 +40,14 @@ export interface ApiQueuedRoll extends QueuedRoll {
     userId: bigint;
   };
 }
-export interface DDQueuedRoll extends QueuedRoll {
+export interface DDQueuedRoll extends BaseQueuedRoll {
   apiRoll: false;
   dd: {
     m: DiscordenoMessage;
     message: DiscordenoMessage;
   };
 }
+export type QueuedRoll = ApiQueuedRoll | DDQueuedRoll;
 
 export type PastCommandCount = {
   command: string;

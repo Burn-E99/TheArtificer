@@ -1,1 +1,1 @@
-deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/solver/,./src/endpoints/gets/heatmap-base.png,./src/endpoints/gets/heatmap.png,./config.ts,./deps.ts,./flags.ts,./src/mod.d.ts --allow-net --allow-import mod.ts
+deno run --allow-write=./logs/,./src/endpoints/gets/heatmap.png --allow-read=./src/artigen/,./src/endpoints/gets/heatmap-base.png,./src/endpoints/gets/heatmap.png,./config.ts,./deps.ts,./flags.ts,./src/mod.d.ts --allow-net --allow-import mod.ts

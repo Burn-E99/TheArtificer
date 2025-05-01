@@ -3,15 +3,10 @@
  *
  * December 21, 2020
  */
+import { log, LogTypes as LT } from '@Log4Deno';
 
-import {
-  log,
-  // Log4Deno deps
-  LT,
-} from '../../deps.ts';
-
-import { SolvedStep } from './solver.d.ts';
-import { legalMath, legalMathOperators, loggingEnabled } from './rollUtils.ts';
+import { SolvedStep } from 'artigen/solver.d.ts';
+import { legalMath, legalMathOperators, loggingEnabled } from 'artigen/rollUtils.ts';
 
 // fullSolver(conf, wrapDetails) returns one condensed SolvedStep
 // fullSolver is a function that recursively solves the full roll and math
@@ -191,10 +186,10 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
     stepSolve.details = conf[0].toString();
   } else {
     // Else fully populate the stepSolve with what was computed
-    stepSolve.total = (<SolvedStep> conf[0]).total;
-    stepSolve.details = (<SolvedStep> conf[0]).details;
-    stepSolve.containsCrit = (<SolvedStep> conf[0]).containsCrit;
-    stepSolve.containsFail = (<SolvedStep> conf[0]).containsFail;
+    stepSolve.total = (<SolvedStep>conf[0]).total;
+    stepSolve.details = (<SolvedStep>conf[0]).details;
+    stepSolve.containsCrit = (<SolvedStep>conf[0]).containsCrit;
+    stepSolve.containsFail = (<SolvedStep>conf[0]).containsFail;
   }
 
   // If this was a nested call, add on parens around the details to show what math we've done

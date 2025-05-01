@@ -1,13 +1,9 @@
-import config from '../../config.ts';
-import {
-  // Log4Deno deps
-  log,
-  LT,
-} from '../../deps.ts';
+import config from '/config.ts';
+import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollConf, RollSet, RollType } from './solver.d.ts';
-import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from './rollUtils.ts';
-import { RollModifiers } from '../mod.d.ts';
+import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';
+import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from 'artigen/rollUtils.ts';
+import { RollModifiers } from 'src/mod.d.ts';
 
 // Call with loopCountCheck(++loopCount);
 // Will ensure if maxLoops is 10, 10 loops will be allowed, 11 will not.
@@ -68,22 +64,22 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
     reroll: {
       on: false,
       once: false,
-      nums: <number[]> [],
+      nums: <number[]>[],
     },
     critScore: {
       on: false,
-      range: <number[]> [],
+      range: <number[]>[],
     },
     critFail: {
       on: false,
-      range: <number[]> [],
+      range: <number[]>[],
     },
     exploding: {
       on: false,
       once: false,
       compounding: false,
       penetrating: false,
-      nums: <number[]> [],
+      nums: <number[]>[],
     },
   };
 

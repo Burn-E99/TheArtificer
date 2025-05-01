@@ -1,36 +1,27 @@
-import config from '../../config.ts';
-import { DEVMODE } from '../../flags.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-  // Log4Deno deps
-  log,
-  LT,
-  // Discordeno deps
-  sendDirectMessage,
-  sendMessage,
-} from '../../deps.ts';
-import { SolvedRoll } from '../solver/solver.d.ts';
-import { ApiQueuedRoll, DDQueuedRoll, RollModifiers } from '../mod.d.ts';
-import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed, infoColor2, rollingEmbed } from '../commandUtils.ts';
-import stdResp from '../endpoints/stdResponses.ts';
-import utils from '../utils.ts';
-import { loggingEnabled } from './rollUtils.ts';
+import config from '/config.ts';
+import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from 'src/commandUtils.ts';
+import { QueuedRoll, RollModifiers } from 'src/mod.d.ts';
+import utils from 'src/utils.ts';
+import { SolvedRoll } from 'src/artigen/solver.d.ts';
+import { loggingEnabled } from 'src/artigen/rollUtils.ts';
+import { log, LogTypes as LT } from '@Log4Deno';
+import { DEVMODE } from '/flags.ts';
+import dbClient from 'src/db/client.ts';
+import stdResp from 'src/endpoints/stdResponses.ts';
+import { DiscordenoMessage, sendDirectMessage, sendMessage } from '@discordeno';
+import { queries } from 'src/db/common.ts';
 
-let currentWorkers = 0;
-const rollQueue: Array<ApiQueuedRoll | DDQueuedRoll> = [];
+export let currentWorkers = 0;
 
 // Handle setting up and calling the rollWorker
-const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
+export const handleRollWorker = (rq: QueuedRoll) => {
   currentWorkers++;
 
   // gmModifiers used to create gmEmbed (basically just turn off the gmRoll)
   const gmModifiers = JSON.parse(JSON.stringify(rq.modifiers));
   gmModifiers.gmRoll = false;
 
-  const rollWorker = new Worker(new URL('../solver/rollWorker.ts', import.meta.url).href, { type: 'module' });
+  const rollWorker = new Worker(new URL('../artigen/rollWorker.ts', import.meta.url).href, { type: 'module' });
 
   const workerTimeout = setTimeout(async () => {
     rollWorker.terminate();
@@ -44,12 +35,12 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
             (
               await generateRollEmbed(
                 rq.dd.message.authorId,
-                <SolvedRoll> {
+                <SolvedRoll>{
                   error: true,
                   errorCode: 'TooComplex',
                   errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
                 },
-                <RollModifiers> {},
+                <RollModifiers>{}
               )
             ).embed,
           ],
@@ -175,14 +166,14 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
               JSON.stringify(
                 rq.modifiers.count
                   ? {
-                    counts: countEmbed,
-                    details: pubEmbedDetails,
-                  }
+                      counts: countEmbed,
+                      details: pubEmbedDetails,
+                    }
                   : {
-                    details: pubEmbedDetails,
-                  },
-              ),
-            ),
+                      details: pubEmbedDetails,
+                    }
+              )
+            )
           );
         }
       }
@@ -194,44 +185,3 @@ const handleRollWorker = (rq: ApiQueuedRoll | DDQueuedRoll) => {
     }
   });
 };
-
-// Runs the roll or queues it depending on how many workers are currently running
-export const queueRoll = (rq: ApiQueuedRoll | DDQueuedRoll) => {
-  if (rq.apiRoll) {
-    handleRollWorker(rq);
-  } else if (!rollQueue.length && currentWorkers < config.limits.maxWorkers) {
-    handleRollWorker(rq);
-  } else {
-    rq.dd.m
-      .edit({
-        embeds: [
-          {
-            color: infoColor2,
-            title: `${config.name} currently has its hands full and has queued your roll.`,
-            description: `There are currently ${currentWorkers + rollQueue.length} rolls ahead of this roll.
-
-The results for this roll will replace this message when it is done.`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:197', rq.dd.m, e));
-    rollQueue.push(rq);
-  }
-};
-
-// Checks the queue constantly to make sure the queue stays empty
-setInterval(() => {
-  log(
-    LT.LOG,
-    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${currentWorkers}, config.limits.maxWorkers: ${config.limits.maxWorkers}`,
-  );
-  if (rollQueue.length && currentWorkers < config.limits.maxWorkers) {
-    const temp = rollQueue.shift();
-    if (temp && !temp.apiRoll) {
-      temp.dd.m.edit(rollingEmbed).catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:208', temp.dd.m, e));
-      handleRollWorker(temp);
-    } else if (temp && temp.apiRoll) {
-      handleRollWorker(temp);
-    }
-  }
-}, 1000);

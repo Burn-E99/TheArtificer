@@ -1,8 +1,4 @@
-import {
-  // httpd deps
-  STATUS_CODE,
-  STATUS_TEXT,
-} from '../../../deps.ts';
+import { STATUS_CODE, STATUS_TEXT } from '@std/http';
 
 export const heatmapPng = (): Response => {
   const file = Deno.readFileSync('./src/endpoints/gets/heatmap.png');

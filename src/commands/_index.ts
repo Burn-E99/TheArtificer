@@ -1,21 +1,21 @@
-import { ping } from './ping.ts';
-import { rip } from './rip.ts';
-import { rollHelp } from './rollHelp.ts';
-import { rollDecorators } from './rollDecorators.ts';
-import { help } from './help.ts';
-import { info } from './info.ts';
-import { privacy } from './privacy.ts';
-import { version } from './version.ts';
-import { report } from './report.ts';
-import { stats } from './stats.ts';
-import { api } from './apiCmd.ts';
-import { emoji } from './emoji.ts';
-import { roll } from './roll.ts';
-import { handleMentions } from './handleMentions.ts';
-import { audit } from './audit.ts';
-import { heatmap } from './heatmap.ts';
-import { optOut } from './optOut.ts';
-import { optIn } from './optIn.ts';
+import { api } from 'commands/apiCmd.ts';
+import { audit } from 'commands/audit.ts';
+import { emoji } from 'commands/emoji.ts';
+import { handleMentions } from 'commands/handleMentions.ts';
+import { heatmap } from 'commands/heatmap.ts';
+import { help } from 'commands/help.ts';
+import { info } from 'commands/info.ts';
+import { optIn } from 'commands/optIn.ts';
+import { optOut } from 'commands/optOut.ts';
+import { ping } from 'commands/ping.ts';
+import { privacy } from 'commands/privacy.ts';
+import { rip } from 'commands/rip.ts';
+import { report } from 'commands/report.ts';
+import { roll } from 'commands/roll.ts';
+import { rollDecorators } from 'commands/rollDecorators.ts';
+import { rollHelp } from 'commands/rollHelp.ts';
+import { stats } from 'commands/stats.ts';
+import { version } from 'commands/version.ts';
 
 export default {
   ping,

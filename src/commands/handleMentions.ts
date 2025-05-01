@@ -1,15 +1,13 @@
-import config from '../../config.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-  // Log4Deno deps
-  log,
-  LT,
-} from '../../deps.ts';
-import { infoColor1 } from '../commandUtils.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { infoColor1 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const handleMentions = (message: DiscordenoMessage) => {
   log(LT.LOG, `Handling @mention message: ${JSON.stringify(message)}`);

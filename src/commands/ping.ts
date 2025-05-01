@@ -1,11 +1,10 @@
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../deps.ts';
-import { generatePing } from '../commandUtils.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { generatePing } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const ping = async (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run

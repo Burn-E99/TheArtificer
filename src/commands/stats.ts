@@ -1,14 +1,11 @@
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  cache,
-  cacheHandlers,
-  DiscordenoMessage,
-} from '../../deps.ts';
-import { generateStats } from '../commandUtils.ts';
-import { compilingStats } from '../commonEmbeds.ts';
-import utils from '../utils.ts';
+import { cache, cacheHandlers, DiscordenoMessage } from '@discordeno';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { compilingStats } from 'src/commonEmbeds.ts';
+import { generateStats } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
@@ -45,8 +42,8 @@ export const stats = async (message: DiscordenoMessage) => {
         total - rolls,
         rollRate,
         totalRate - rollRate,
-        endTime - startTime,
-      ),
+        endTime - startTime
+      )
     ).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
   } catch (e) {
     utils.commonLoggers.messageSendError('stats.ts:41', message, e as Error);

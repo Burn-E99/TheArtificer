@@ -1,4 +1,4 @@
-import dbClient from './client.ts';
+import dbClient from 'db/client.ts';
 
 type UserIdObj = {
   userid: bigint;

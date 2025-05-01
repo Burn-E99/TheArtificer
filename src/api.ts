@@ -3,16 +3,14 @@
  *
  * December 21, 2020
  */
+import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '../config.ts';
-import {
-  // Log4Deno deps
-  log,
-  LT,
-} from '../deps.ts';
-import dbClient from './db/client.ts';
-import endpoints from './endpoints/_index.ts';
-import stdResp from './endpoints/stdResponses.ts';
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+
+import endpoints from 'endpoints/_index.ts';
+import stdResp from 'endpoints/stdResponses.ts';
 
 // start() returns nothing
 // start initializes and runs the entire API for the bot

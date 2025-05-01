@@ -1,18 +1,18 @@
-import config from '../../config.ts';
-import { DEVMODE } from '../../flags.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-  // Log4Deno deps
-  log,
-  LT,
-} from '../../deps.ts';
-import { rollingEmbed, warnColor } from '../commandUtils.ts';
-import rollFuncs from './roll/_index.ts';
-import { queueRoll } from '../solver/rollQueue.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+import { DEVMODE } from '/flags.ts';
+
+import { queueRoll } from 'artigen/managers/queueManager.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import rollFuncs from 'commands/roll/_index.ts';
+
+import { rollingEmbed, warnColor } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
   // Light telemetry to see how many times a command is being run

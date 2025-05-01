@@ -1,6 +1,6 @@
-import { auditHelp } from './auditHelp.ts';
-import { auditDB } from './auditDB.ts';
-import { auditGuilds } from './auditGuilds.ts';
+import { auditDB } from 'commands/auditCmd/auditDB.ts';
+import { auditGuilds } from 'commands/auditCmd/auditGuilds.ts';
+import { auditHelp } from 'commands/auditCmd/auditHelp.ts';
 
 export default {
   auditHelp,

@@ -3,22 +3,17 @@
  *
  * December 21, 2020
  */
+import { cache, cacheHandlers } from '@discordeno';
+import { Image, decode } from '@imagescript';
+import { log, LogTypes as LT } from '@Log4Deno';
 
-import {
-  // Discordeno deps
-  cache,
-  cacheHandlers,
-  // imagescript dep
-  is,
-  // Log4Deno deps
-  log,
-  LT,
-} from '../deps.ts';
-import { PastCommandCount } from './mod.d.ts';
-import dbClient from './db/client.ts';
-import { weekDays } from './db/common.ts';
-import utils from './utils.ts';
-import config from '../config.ts';
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+import { weekDays } from 'db/common.ts';
+
+import { PastCommandCount } from 'src/mod.d.ts';
+import utils from 'src/utils.ts';
 
 // getRandomStatus() returns status as string
 // Gets a new random status for the bot
@@ -163,8 +158,8 @@ let minRollCnt: number;
 let maxRollCnt: number;
 const updateHeatmapPng = async () => {
   const baseHeatmap = Deno.readFileSync('./src/endpoints/gets/heatmap-base.png');
-  const heatmap = await is.decode(baseHeatmap);
-  if (!(heatmap instanceof is.Image)) {
+  const heatmap = await decode(baseHeatmap);
+  if (!(heatmap instanceof Image)) {
     return;
   }
   // Get latest data from DB
@@ -198,7 +193,7 @@ const updateHeatmapPng = async () => {
         hourPixels[hour][0] + 1,
         dayPixels[day][1] - dayPixels[day][0] + 1,
         hourPixels[hour][1] - hourPixels[hour][0] + 1,
-        is.Image.rgbToColor(255 * (1 - percent), 255 * percent, 0),
+        Image.rgbToColor(255 * (1 - percent), 255 * percent, 0)
       );
     }
   }

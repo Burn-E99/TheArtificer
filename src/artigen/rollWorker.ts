@@ -1,7 +1,7 @@
-import { closeLog, initLog } from '../../deps.ts';
-import { DEBUG } from '../../flags.ts';
-import { parseRoll } from './parser.ts';
-import { loggingEnabled } from './rollUtils.ts';
+import { closeLog, initLog } from '@Log4Deno';
+import { DEBUG } from '/flags.ts';
+import { parseRoll } from 'artigen/parser.ts';
+import { loggingEnabled } from 'artigen/rollUtils.ts';
 
 loggingEnabled && initLog('logs/worker', DEBUG);
 

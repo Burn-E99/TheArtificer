@@ -1,10 +1,9 @@
-import config from '../../../config.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../../deps.ts';
-import { infoColor1 } from '../../commandUtils.ts';
-import utils from '../../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import { infoColor1 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const auditHelp = (message: DiscordenoMessage) => {
   message

@@ -1,12 +1,12 @@
-import config from '../../config.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../deps.ts';
-import { infoColor1 } from '../commandUtils.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { infoColor1 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const version = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run

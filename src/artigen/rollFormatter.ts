@@ -1,14 +1,10 @@
-import {
-  log,
-  // Log4Deno deps
-  LT,
-} from '../../deps.ts';
+import { log, LogTypes as LT } from '@Log4Deno';
 
-import { roll } from './roller.ts';
-import { rollCounter } from './counter.ts';
-import { RollFormat } from './solver.d.ts';
-import { loggingEnabled } from './rollUtils.ts';
-import { RollModifiers } from '../mod.d.ts';
+import { roll } from 'artigen/roller.ts';
+import { rollCounter } from 'artigen/counter.ts';
+import { RollFormat } from 'artigen/solver.d.ts';
+import { loggingEnabled } from 'artigen/rollUtils.ts';
+import { RollModifiers } from 'src/mod.d.ts';
 
 // formatRoll(rollConf, modifiers) returns one SolvedStep
 // formatRoll handles creating and formatting the completed rolls into the SolvedStep format

@@ -1,10 +1,9 @@
-import config from '../../../config.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../../deps.ts';
-import { infoColor1, infoColor2 } from '../../commandUtils.ts';
-import utils from '../../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import { infoColor1, infoColor2 } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const help = (message: DiscordenoMessage) => {
   message
@@ -13,8 +12,7 @@ export const help = (message: DiscordenoMessage) => {
         {
           color: infoColor2,
           title: `${config.name}'s API Details:`,
-          description:
-            `${config.name} has a built in API that allows user to roll dice into Discord using third party programs.  By default, API rolls are blocked from being sent in your guild.  The API warning is also enabled by default.  These commands may only be used by the Owner or Admins of your guild.
+          description: `${config.name} has a built in API that allows user to roll dice into Discord using third party programs.  By default, API rolls are blocked from being sent in your guild.  The API warning is also enabled by default.  These commands may only be used by the Owner or Admins of your guild.
 
 For information on how to use the API, please check the GitHub README for more information [here](${config.links.sourceCode}).
 

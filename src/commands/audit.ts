@@ -1,13 +1,14 @@
-import config from '../../config.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-} from '../../deps.ts';
-import auditCommands from './auditCmd/_index.ts';
-import { failColor } from '../commandUtils.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+
+import config from '/config.ts';
+
+import auditCommands from 'commands/auditCmd/_index.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { failColor } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const audit = (message: DiscordenoMessage, args: string[]) => {
   // Light telemetry to see how many times a command is being run

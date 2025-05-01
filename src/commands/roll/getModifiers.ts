@@ -1,17 +1,15 @@
-import config from '../../../config.ts';
-import { DEVMODE } from '../../../flags.ts';
-import dbClient from '../../db/client.ts';
-import { queries } from '../../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-  // Log4Deno deps
-  log,
-  LT,
-} from '../../../deps.ts';
-import { generateRollError } from '../../commandUtils.ts';
-import { RollModifiers } from '../../mod.d.ts';
-import utils from '../../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+import { DEVMODE } from '/flags.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { generateRollError } from 'src/commandUtils.ts';
+import { RollModifiers } from 'src/mod.d.ts';
+import utils from 'src/utils.ts';
 
 export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {
   const errorType = 'Modifiers invalid:';
@@ -70,7 +68,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
         }
         if (modifiers.gms.length < 1) {
           // If -gm is on and none were found, throw an error
-          m.edit(generateRollError(errorType, 'Must specify at least one GM by @mentioning them')).catch((e) => utils.commonLoggers.messageEditError('getModifiers.ts:66', m, e));
+          m.edit(generateRollError(errorType, 'Must specify at least one GM by @mentioning them')).catch((e) =>
+            utils.commonLoggers.messageEditError('getModifiers.ts:66', m, e)
+          );
 
           if (DEVMODE && config.logRolls) {
             // If enabled, log rolls so we can verify the bots math
@@ -87,7 +87,9 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
         if (!args[i] || (args[i].toLowerCase()[0] !== 'd' && args[i].toLowerCase()[0] !== 'a')) {
           // If -o is on and asc or desc was not specified, error out
-          m.edit(generateRollError(errorType, 'Must specify `a` or `d` to order the rolls ascending or descending')).catch((e) => utils.commonLoggers.messageEditError('getModifiers.ts:81', m, e));
+          m.edit(generateRollError(errorType, 'Must specify `a` or `d` to order the rolls ascending or descending')).catch((e) =>
+            utils.commonLoggers.messageEditError('getModifiers.ts:81', m, e)
+          );
 
           if (DEVMODE && config.logRolls) {
             // If enabled, log rolls so we can verify the bots math

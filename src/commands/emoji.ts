@@ -1,15 +1,13 @@
-import config from '../../config.ts';
-import dbClient from '../db/client.ts';
-import { queries } from '../db/common.ts';
-import {
-  // Discordeno deps
-  DiscordenoMessage,
-  // Log4Deno deps
-  log,
-  LT,
-} from '../../deps.ts';
-import { EmojiConf } from '../mod.d.ts';
-import utils from '../utils.ts';
+import { DiscordenoMessage } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+import { queries } from 'db/common.ts';
+
+import { EmojiConf } from 'src/mod.d.ts';
+import utils from 'src/utils.ts';
 
 const allEmojiAliases: string[] = [];
 

@@ -1,15 +1,15 @@
-import config from '../../../config.ts';
-import dbClient from '../../db/client.ts';
-import {
-  // nanoid deps
-  nanoid,
-  // Discordeno deps
-  sendMessage,
-} from '../../../deps.ts';
-import { generateApiDeleteEmail } from '../../commandUtils.ts';
-import utils from '../../utils.ts';
-import stdResp from '../stdResponses.ts';
-import { verifyQueryHasParams } from '../utils.ts';
+import { sendMessage } from '@discordeno';
+import { nanoid } from '@nanoid';
+
+import config from '/config.ts';
+
+import dbClient from 'db/client.ts';
+
+import stdResp from 'endpoints/stdResponses.ts';
+import { verifyQueryHasParams } from 'endpoints/utils.ts';
+
+import { generateApiDeleteEmail } from 'src/commandUtils.ts';
+import utils from 'src/utils.ts';
 
 export const apiKeyDelete = async (query: Map<string, string>, apiUserid: bigint, apiUserEmail: string, apiUserDelCode: string): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user', 'email'])) {
