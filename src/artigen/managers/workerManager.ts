@@ -10,7 +10,7 @@ import { terminateWorker } from 'artigen/managers/handler/workerTerminate.ts';
 export const handleRollRequest = (rollRequest: QueuedRoll) => {
   // Handle setting up and calling the rollWorker
   addWorker();
-  const rollWorker = new Worker(new URL('../rollWorker.ts', import.meta.url).href, { type: 'module' });
+  const rollWorker = new Worker(new URL('./artigenWorker.ts', import.meta.url).href, { type: 'module' });
   const workerTimeout = setTimeout(() => terminateWorker(rollWorker, rollRequest), config.limits.workerTimeout);
 
   // Handle events from the worker

@@ -2,8 +2,11 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import { compareOrigIdx, compareRolls, genFateRoll, genRoll, loggingEnabled } from 'artigen/rollUtils.ts';
 import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';
+
+import { genFateRoll, genRoll } from 'artigen/utils/generateRoll.ts';
+import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { compareOrigIdx, compareRolls } from 'artigen/utils/sortFuncs.ts';
 
 import { RollModifiers } from 'src/mod.d.ts';
 

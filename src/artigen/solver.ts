@@ -6,7 +6,9 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import { SolvedStep } from 'artigen/solver.d.ts';
-import { legalMath, legalMathOperators, loggingEnabled } from 'artigen/rollUtils.ts';
+
+import { legalMath, legalMathOperators } from 'artigen/utils/legalMath.ts';
+import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 // fullSolver(conf, wrapDetails) returns one condensed SolvedStep
 // fullSolver is a function that recursively solves the full roll and math

@@ -3,9 +3,13 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 
 import { formatRoll } from 'artigen/rollFormatter.ts';
-import { compareTotalRolls, compareTotalRollsReverse, escapeCharacters, legalMathOperators, loggingEnabled } from 'artigen/rollUtils.ts';
 import { fullSolver } from 'artigen/solver.ts';
 import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from 'artigen/solver.d.ts';
+
+import { escapeCharacters } from 'artigen/utils/escape.ts';
+import { legalMathOperators } from 'artigen/utils/legalMath.ts';
+import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
 
 import { RollModifiers } from 'src/mod.d.ts';
 
@@ -34,7 +38,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
   try {
     // Split the fullCmd by the command prefix to allow every roll/math op to be handled individually
     const sepRolls = fullCmd.split(config.prefix);
-    // TODO: HERE for the [[ ]] nesting stuff
+    // TODO(@burn-e99): HERE for the [[ ]] nesting stuff
 
     const tempReturnData: ReturnData[] = [];
     const tempCountDetails: CountDetails[] = [

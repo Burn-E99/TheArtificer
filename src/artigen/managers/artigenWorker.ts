@@ -1,11 +1,9 @@
 import { closeLog, initLog } from '@Log4Deno';
 
-import { DEBUG } from '~flags';
-
 import { parseRoll } from 'artigen/parser.ts';
-import { loggingEnabled } from 'artigen/rollUtils.ts';
+import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
-loggingEnabled && initLog('logs/worker', DEBUG);
+loggingEnabled && initLog('logs/worker', loggingEnabled);
 
 // Alert rollQueue that this worker is ready
 self.postMessage('ready');
