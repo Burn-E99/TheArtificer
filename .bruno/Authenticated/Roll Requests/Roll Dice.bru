@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:8166/api/roll?user=[discord-user-id]&channel=[discord-channel-id]&rollstr=[artificer-roll-cmd]&documentation=All items below are optional. Flags do not need values.&nd=[no-details-flag]&snd=[super-no-details-flag]&s=[spoiler-results-flag]&m or max=[max-roll-flag, cannot be used with n flag]&min=[[min-roll-flag, cannot be used with n or max&n=[nominal-roll-flag, cannot be used with max or min flag]&gms=[csv-of-discord-user-ids-to-be-dmed-results]&o=[order-rolls, must be a or d]&c=[count-flag]
+  url: http://localhost:8166/api/roll?user=[discord-user-id]&channel=[discord-channel-id]&rollstr=[artificer-roll-cmd]&documentation=All items below are optional. Flags do not need values.&nd=[no-details-flag]&snd=[super-no-details-flag]&s=[spoiler-results-flag]&m-or-max=[max-roll-flag, cannot be used with n flag]&min=[[min-roll-flag, cannot be used with n or max]&n=[nominal-roll-flag, cannot be used with max or min flag]&gms=[csv-of-discord-user-ids-to-be-dmed-results]&o=[order-rolls, must be a or d]&c=[count-flag]
   body: none
   auth: inherit
 }
@@ -18,8 +18,8 @@ params:query {
   nd: [no-details-flag]
   snd: [super-no-details-flag]
   s: [spoiler-results-flag]
-  m or max: [max-roll-flag, cannot be used with n flag]
-  min: [[min-roll-flag, cannot be used with n or max
+  m-or-max: [max-roll-flag, cannot be used with n flag]
+  min: [[min-roll-flag, cannot be used with n or max]
   n: [nominal-roll-flag, cannot be used with max or min flag]
   gms: [csv-of-discord-user-ids-to-be-dmed-results]
   o: [order-rolls, must be a or d]
