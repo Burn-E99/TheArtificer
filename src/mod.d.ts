@@ -1,5 +1,3 @@
-import { DiscordenoMessage } from '@discordeno';
-
 // EmojiConf is used as a structure for the emojis stored in config.ts
 export type EmojiConf = {
   name: string;
@@ -26,29 +24,7 @@ export type RollModifiers = {
   apiWarn: string;
 };
 
-// QueuedRoll is the structure to track rolls we could not immediately handle
-interface BaseQueuedRoll {
-  rollCmd: string;
-  modifiers: RollModifiers;
-  originalCommand: string;
-}
-export interface ApiQueuedRoll extends BaseQueuedRoll {
-  apiRoll: true;
-  api: {
-    resolve: (value: Response | PromiseLike<Response>) => void;
-    channelId: bigint;
-    userId: bigint;
-  };
-}
-export interface DDQueuedRoll extends BaseQueuedRoll {
-  apiRoll: false;
-  dd: {
-    m: DiscordenoMessage;
-    message: DiscordenoMessage;
-  };
-}
-export type QueuedRoll = ApiQueuedRoll | DDQueuedRoll;
-
+// PastCommandCount is used in calculating the hourly rate of commands
 export type PastCommandCount = {
   command: string;
   count: number;

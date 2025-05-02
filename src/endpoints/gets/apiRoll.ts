@@ -3,7 +3,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import { queueRoll } from 'artigen/managers/queueManager.ts';
+import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
@@ -97,7 +97,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
         };
 
         return new Promise<Response>((resolve) => {
-          queueRoll({
+          sendRollRequest({
             apiRoll: true,
             api: { resolve, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
             rollCmd,

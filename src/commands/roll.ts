@@ -4,7 +4,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 import { DEVMODE } from '~flags';
 
-import { queueRoll } from 'artigen/managers/queueManager.ts';
+import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
@@ -52,9 +52,9 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     // Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituted in
     const rollCmd = message.content.substring(config.prefix.length);
 
-    queueRoll({
+    sendRollRequest({
       apiRoll: false,
-      dd: { m, message },
+      dd: { myResponse: m, originalMessage: message },
       rollCmd,
       modifiers,
       originalCommand,
