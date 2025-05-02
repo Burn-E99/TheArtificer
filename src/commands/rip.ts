@@ -18,9 +18,8 @@ export const rip = (message: DiscordenoMessage) => {
         {
           color: infoColor2,
           title: `${config.name} was built in memory of my Grandmother, Babka`,
-          description: `With much love, Ean
-			
-			December 21, 2020`,
+          description: 'With much love, Ean',
+          footer: { text: 'December 21, 2020' },
         },
       ],
     })
