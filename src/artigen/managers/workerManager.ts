@@ -3,9 +3,9 @@ import config from '~config';
 import { addWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
-import { onWorkerComplete } from 'artigen/managers/worker/complete.ts';
-import { onWorkerReady } from 'artigen/managers/worker/ready.ts';
-import { terminateWorker } from 'artigen/managers/worker/terminate.ts';
+import { onWorkerComplete } from 'artigen/managers/handler/workerComplete.ts';
+import { onWorkerReady } from 'artigen/managers/handler/workerReady.ts';
+import { terminateWorker } from 'artigen/managers/handler/workerTerminate.ts';
 
 export const handleRollRequest = (rollRequest: QueuedRoll) => {
   // Handle setting up and calling the rollWorker
