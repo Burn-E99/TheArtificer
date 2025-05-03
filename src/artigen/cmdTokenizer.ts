@@ -15,7 +15,7 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
-export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean, previousResults: number[]): [ReturnData[], CountDetails[]] => {
+export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean, previousResults: number[] = []): [ReturnData[], CountDetails[]] => {
   loggingEnabled && log(LT.LOG, `Tokenizing command ${JSON.stringify(cmd)}`);
 
   const returnData: ReturnData[] = [];

@@ -41,7 +41,7 @@ export const runCmd = (fullCmd: string, modifiers: RollModifiers): SolvedRoll =>
     assertPrePostBalance(sepCmds);
 
     // Send the split roll into the command tokenizer to get raw response data
-    const [tempReturnData, tempCountDetails] = tokenizeCmd(sepCmds, modifiers, true, []);
+    const [tempReturnData, tempCountDetails] = tokenizeCmd(sepCmds, modifiers, true);
     loggingEnabled && log(LT.LOG, `Return data is back ${JSON.stringify(tempReturnData)}`);
 
     // Remove any floating spaces from fullCmd
