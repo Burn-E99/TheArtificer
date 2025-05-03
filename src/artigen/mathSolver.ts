@@ -11,9 +11,9 @@ import { legalMath, legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingParenIdx } from 'artigen/utils/parenBalance.ts';
 
-// fullSolver(conf, wrapDetails) returns one condensed SolvedStep
-// fullSolver is a function that recursively solves the full roll and math
-export const fullSolver = (conf: MathConf[], wrapDetails = false): SolvedStep => {
+// mathSolver(conf, wrapDetails) returns one condensed SolvedStep
+// mathSolver is a function that recursively solves the full roll and math
+export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep => {
   // Initialize PEMDAS
   const signs = ['^', '*', '/', '%', '+', '-'];
   const stepSolve: SolvedStep = {
@@ -37,7 +37,7 @@ export const fullSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     const closeParenIdx = getMatchingParenIdx(conf, openParenIdx);
 
     // Call the solver on the items between openParenIdx and closeParenIdx (excluding the parens)
-    const parenSolve = fullSolver(conf.slice(openParenIdx + 1, closeParenIdx), true);
+    const parenSolve = mathSolver(conf.slice(openParenIdx + 1, closeParenIdx), true);
     // Replace the items between openParenIdx and closeParenIdx (including the parens) with its solved equivalent
     conf.splice(openParenIdx, closeParenIdx - openParenIdx + 1, parenSolve);
 

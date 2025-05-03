@@ -1,7 +1,7 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { formatRoll } from 'artigen/rollFormatter.ts';
-import { fullSolver } from 'artigen/solver.ts';
+import { generateSolvedRoll } from 'artigen/generateSolvedRoll.ts';
+import { mathSolver } from 'artigen/mathSolver.ts';
 import { CountDetails, MathConf, ReturnData, SolvedStep } from 'artigen/solver.d.ts';
 
 import { cmdSplitRegex, internalWrapRegex } from 'artigen/utils/escape.ts';
@@ -112,7 +112,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
       i += 2;
     } else if (![...operators, ...legalMathOperators].includes(strMathConfI)) {
       // If nothing else has handled it by now, try it as a roll
-      const formattedRoll = formatRoll(strMathConfI, modifiers);
+      const formattedRoll = generateSolvedRoll(strMathConfI, modifiers);
       mathConf[i] = formattedRoll.solvedStep;
       countDetails.push(formattedRoll.countDetails);
     }
@@ -138,7 +138,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
   }
 
   // Now that mathConf is parsed, send it into the solver
-  const tempSolved = fullSolver(mathConf);
+  const tempSolved = mathSolver(mathConf);
 
   // Push all of this step's solved data into the temp array
   return [

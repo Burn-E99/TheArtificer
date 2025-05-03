@@ -24,7 +24,7 @@ const throwDoubleSepError = (sep: string): void => {
 
 // roll(rollStr, modifiers) returns RollSet
 // roll parses and executes the rollStr
-export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
+export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
   /* Roll Capabilities
    * Deciphers and rolls a single dice roll set
    *

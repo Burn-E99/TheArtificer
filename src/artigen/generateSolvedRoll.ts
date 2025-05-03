@@ -2,21 +2,21 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import { rollCounter } from './utils/counter.ts';
 import { RollModifiers } from 'src/mod.d.ts';
-import { roll } from 'artigen/roller.ts';
+import { executeRoll } from 'artigen/executeRoll.ts';
 import { RollFormat } from 'artigen/solver.d.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
-// formatRoll(rollConf, modifiers) returns one SolvedStep
-// formatRoll handles creating and formatting the completed rolls into the SolvedStep format
-export const formatRoll = (rollConf: string, modifiers: RollModifiers): RollFormat => {
+// generateSolvedRoll(rollConf, modifiers) returns one SolvedStep
+// generateSolvedRoll handles creating and formatting the completed rolls into the SolvedStep format
+export const generateSolvedRoll = (rollConf: string, modifiers: RollModifiers): RollFormat => {
   let tempTotal = 0;
   let tempDetails = '[';
   let tempCrit = false;
   let tempFail = false;
 
   // Generate the roll, passing flags thru
-  const tempRollSet = roll(rollConf, modifiers);
+  const tempRollSet = executeRoll(rollConf, modifiers);
 
   // Loop thru all parts of the roll to document everything that was done to create the total roll
   tempRollSet.forEach((e) => {
