@@ -11,9 +11,9 @@ import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
 import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
 import { translateError } from 'artigen/utils/translateError.ts';
 
-// parseRoll(fullCmd, modifiers)
-// parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
-export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
+// runCmd(fullCmd, modifiers)
+// runCmd handles converting fullCmd into a computer readable format for processing, and finally executes the solving
+export const runCmd = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
   const returnMsg: SolvedRoll = {
     error: false,
     errorCode: '',

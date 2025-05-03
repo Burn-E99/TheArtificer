@@ -1,6 +1,6 @@
 import { closeLog, initLog } from '@Log4Deno';
 
-import { parseRoll } from 'artigen/parser.ts';
+import { runCmd } from 'artigen/artigen.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 loggingEnabled && initLog('logs/worker', loggingEnabled);
@@ -11,7 +11,7 @@ self.postMessage('ready');
 // Handle the roll
 self.onmessage = async (e) => {
   const payload = e.data;
-  const returnMsg = parseRoll(payload.rollCmd, payload.modifiers) || {
+  const returnMsg = runCmd(payload.rollCmd, payload.modifiers) || {
     error: true,
     errorCode: 'EmptyMessage',
     errorMsg: 'Error: Empty message',
