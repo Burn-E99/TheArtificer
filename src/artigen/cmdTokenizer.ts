@@ -6,6 +6,8 @@ import { ReturnData } from 'artigen/artigen.d.ts';
 
 import { CountDetails, RollModifiers } from 'artigen/dice/dice.d.ts';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
 import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
@@ -21,6 +23,8 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
 
   // Wrapped commands still exist, unwrap them
   while (cmd.includes(config.prefix)) {
+    loopCountCheck();
+
     const openIdx = cmd.indexOf(config.prefix);
     const closeIdx = getMatchingPostfixIdx(cmd, openIdx);
 
@@ -67,6 +71,8 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     const initConf = data.initConfig.split(internalWrapRegex).filter((x) => x);
     loggingEnabled && log(LT.LOG, `Split solved math initConfig ${JSON.stringify(initConf)}`);
     while (initConf.includes(openInternal)) {
+      loopCountCheck();
+
       const openIdx = initConf.indexOf(openInternal);
       const closeIdx = getMatchingInternalIdx(initConf, openIdx);
 

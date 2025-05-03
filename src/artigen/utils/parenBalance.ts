@@ -2,6 +2,8 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 import { MathConf } from 'artigen/math/math.d.ts';
 
 import { closeInternal, openInternal } from 'artigen/utils/escape.ts';
@@ -12,6 +14,7 @@ const checkBalance = (conf: MathConf[], openStr: string, closeStr: string, error
 
   // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
   for (let i = openIdx; i < conf.length; i++) {
+    loopCountCheck();
     loggingEnabled &&
       log(
         LT.LOG,

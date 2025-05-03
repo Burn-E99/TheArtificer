@@ -1,7 +1,7 @@
 import { SolvedStep } from 'artigen/math/math.d.ts';
 
 // Available Roll Types
-export type RollType = '' | 'roll20' | 'fate' | 'cwod' | 'ova';
+type RollType = '' | 'roll20' | 'fate' | 'cwod' | 'ova';
 
 // RollSet is used to preserve all information about a calculated roll
 export interface RollSet {
@@ -67,6 +67,7 @@ export interface DPercentConf {
 
 // RollConf is used by the roll20 setup
 export interface RollConf {
+  type: RollType;
   dieCount: number;
   dieSize: number;
   dPercent: DPercentConf;

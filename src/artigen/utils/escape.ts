@@ -3,12 +3,15 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { loopCountCheck } from 'src/artigen/managers/loopManager.ts';
 
 // escapeCharacters(str, esc) returns str
 // escapeCharacters escapes all characters listed in esc
 export const escapeCharacters = (str: string, esc: string): string => {
   // Loop thru each esc char one at a time
   for (const e of esc) {
+    loopCountCheck();
+
     loggingEnabled && log(LT.LOG, `Escaping character ${e} | ${str}, ${esc}`);
     // Create a new regex to look for that char that needs replaced and escape it
     const tempRgx = new RegExp(`[${e}]`, 'g');

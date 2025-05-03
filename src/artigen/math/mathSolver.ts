@@ -7,6 +7,8 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import { MathConf, SolvedStep } from 'artigen/math/math.d.ts';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 import { legalMath, legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingParenIdx } from 'artigen/utils/parenBalance.ts';
@@ -31,6 +33,8 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
 
   // Evaluate all parenthesis
   while (conf.includes('(')) {
+    loopCountCheck();
+
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
     let openParenIdx = conf.indexOf('(');
@@ -72,6 +76,8 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
     // Iterate thru all operators/operands in the conf
     for (let i = 0; i < conf.length; i++) {
+      loopCountCheck();
+
       loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
       // Check if the current index is in the active tier of operators
       if (curOps.includes(conf[i].toString())) {

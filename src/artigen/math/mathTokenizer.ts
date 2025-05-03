@@ -7,6 +7,8 @@ import { MathConf, SolvedStep } from 'artigen/math/math.d.ts';
 import { CountDetails, RollModifiers } from 'artigen/dice/dice.d.ts';
 import { generateFormattedRoll } from 'artigen/dice/generateFormattedRoll.ts';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 import { mathSolver } from 'artigen/math/mathSolver.ts';
 
 import { cmdSplitRegex, internalWrapRegex } from 'artigen/utils/escape.ts';
@@ -35,6 +37,8 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
 
   // Evaluate all rolls into stepSolve format and all numbers into floats
   for (let i = 0; i < mathConf.length; i++) {
+    loopCountCheck();
+
     loggingEnabled && log(LT.LOG, `Parsing roll ${JSON.stringify(cmd)} | Evaluating rolls into math-able items ${JSON.stringify(mathConf[i])}`);
 
     const strMathConfI = mathConf[i].toString();
