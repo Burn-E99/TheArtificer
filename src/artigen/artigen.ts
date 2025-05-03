@@ -117,14 +117,24 @@ export const runCmd = (fullCmd: string, modifiers: RollModifiers): SolvedRoll =>
     returnMsg.line3 = line3;
 
     // Reduce counts to a single object
-    returnMsg.counts = tempCountDetails.reduce((acc, cnt) => ({
-      total: acc.total + cnt.total,
-      successful: acc.successful + cnt.successful,
-      failed: acc.failed + cnt.failed,
-      rerolled: acc.rerolled + cnt.rerolled,
-      dropped: acc.dropped + cnt.dropped,
-      exploded: acc.exploded + cnt.exploded,
-    }));
+    returnMsg.counts = tempCountDetails.reduce(
+      (acc, cnt) => ({
+        total: acc.total + cnt.total,
+        successful: acc.successful + cnt.successful,
+        failed: acc.failed + cnt.failed,
+        rerolled: acc.rerolled + cnt.rerolled,
+        dropped: acc.dropped + cnt.dropped,
+        exploded: acc.exploded + cnt.exploded,
+      }),
+      {
+        total: 0,
+        successful: 0,
+        failed: 0,
+        rerolled: 0,
+        dropped: 0,
+        exploded: 0,
+      },
+    );
   } catch (e) {
     // Fill in the return block
     returnMsg.error = true;
