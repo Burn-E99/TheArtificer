@@ -15,7 +15,7 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
-export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean): [ReturnData[], CountDetails[]] => {
+export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean, previousResults: number[]): [ReturnData[], CountDetails[]] => {
   loggingEnabled && log(LT.LOG, `Tokenizing command ${JSON.stringify(cmd)}`);
 
   const returnData: ReturnData[] = [];
@@ -28,8 +28,15 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     const openIdx = cmd.indexOf(config.prefix);
     const closeIdx = getMatchingPostfixIdx(cmd, openIdx);
 
+    loggingEnabled && log(LT.LOG, `Setting previous results: topLevel:${topLevel} ${topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults}`);
+
     // Handle any nested commands
-    const [tempData, tempCounts] = tokenizeCmd(cmd.slice(openIdx + 1, closeIdx), modifiers, false);
+    const [tempData, tempCounts] = tokenizeCmd(
+      cmd.slice(openIdx + 1, closeIdx),
+      modifiers,
+      false,
+      topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults,
+    );
     const data = tempData[0];
 
     if (topLevel) {
@@ -60,7 +67,7 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     loggingEnabled && log(LT.LOG, `Tokenizing math ${JSON.stringify(cmd)}`);
 
     // Solve the math and rolls for this cmd
-    const [tempData, tempCounts] = tokenizeMath(cmd.join(''), modifiers);
+    const [tempData, tempCounts] = tokenizeMath(cmd.join(''), modifiers, previousResults);
     const data = tempData[0];
     loggingEnabled && log(LT.LOG, `Solved math is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)}`);
 

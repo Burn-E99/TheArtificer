@@ -104,6 +104,9 @@ export const translateError = (solverError: Error): [string, string] => {
     case 'UndefinedStep':
       errorMsg = 'Error: Roll became undefined, one or more operands are not a roll or a number, check input';
       break;
+    case 'IllegalVariable':
+      errorMsg = `Error: \`${errorDetails}\` is not a valid variable`;
+      break;
     default:
       log(LT.ERROR, `Unhandled Parser Error: ${errorName}, ${errorDetails}`);
       errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`${config.prefix}report\` to alert the devs of the issue`;

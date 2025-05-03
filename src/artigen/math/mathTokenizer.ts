@@ -18,17 +18,17 @@ import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
 
 const operators = ['(', ')', '^', '*', '/', '%', '+', '-'];
 
-export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData[], CountDetails[]] => {
+export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResults: number[]): [ReturnData[], CountDetails[]] => {
   const countDetails: CountDetails[] = [];
 
-  loggingEnabled && log(LT.LOG, `Parsing roll ${cmd}`);
+  loggingEnabled && log(LT.LOG, `Parsing roll ${cmd} | ${JSON.stringify(modifiers)} | ${JSON.stringify(previousResults)}`);
 
   // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
   const mathConf: MathConf[] = cmd
     .replace(cmdSplitRegex, '')
     .replace(internalWrapRegex, '')
     .replace(/ /g, '')
-    .split(/([-+()*/^]|(?<![d%])%)/g)
+    .split(/([-+()*/^]|(?<![d%])%)|(x\d+(\.\d*)?)/g)
     .filter((x) => x);
   loggingEnabled && log(LT.LOG, `Split roll into mathConf ${JSON.stringify(mathConf)}`);
 
@@ -41,16 +41,16 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
 
     loggingEnabled && log(LT.LOG, `Parsing roll ${JSON.stringify(cmd)} | Evaluating rolls into math-able items ${JSON.stringify(mathConf[i])}`);
 
-    const strMathConfI = mathConf[i].toString();
+    const curMathConfStr = mathConf[i].toString();
 
-    if (strMathConfI.length === 0) {
+    if (curMathConfStr.length === 0) {
       // If its an empty string, get it out of here
       mathConf.splice(i, 1);
       i--;
-    } else if (mathConf[i] == parseFloat(strMathConfI)) {
+    } else if (mathConf[i] == parseFloat(curMathConfStr)) {
       // If its a number, parse the number out
-      mathConf[i] = parseFloat(strMathConfI);
-    } else if (strMathConfI.toLowerCase() === 'e') {
+      mathConf[i] = parseFloat(curMathConfStr);
+    } else if (curMathConfStr.toLowerCase() === 'e') {
       // If the operand is the constant e, create a SolvedStep for it
       mathConf[i] = {
         total: Math.E,
@@ -58,21 +58,21 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
         containsCrit: false,
         containsFail: false,
       };
-    } else if (strMathConfI.toLowerCase() === 'fart' || strMathConfI.toLowerCase() === '💩') {
+    } else if (curMathConfStr.toLowerCase() === 'fart' || curMathConfStr.toLowerCase() === '💩') {
       mathConf[i] = {
         total: 7,
         details: '💩',
         containsCrit: false,
         containsFail: false,
       };
-    } else if (strMathConfI.toLowerCase() === 'sex') {
+    } else if (curMathConfStr.toLowerCase() === 'sex') {
       mathConf[i] = {
         total: 69,
         details: '( ͡° ͜ʖ ͡°)',
         containsCrit: false,
         containsFail: false,
       };
-    } else if (strMathConfI.toLowerCase() === 'inf' || strMathConfI.toLowerCase() === 'infinity' || strMathConfI.toLowerCase() === '∞') {
+    } else if (curMathConfStr.toLowerCase() === 'inf' || curMathConfStr.toLowerCase() === 'infinity' || curMathConfStr.toLowerCase() === '∞') {
       // If the operand is the constant Infinity, create a SolvedStep for it
       mathConf[i] = {
         total: Infinity,
@@ -80,7 +80,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
         containsCrit: false,
         containsFail: false,
       };
-    } else if (strMathConfI.toLowerCase() === 'pi' || strMathConfI.toLowerCase() === '𝜋') {
+    } else if (curMathConfStr.toLowerCase() === 'pi' || curMathConfStr.toLowerCase() === '𝜋') {
       // If the operand is the constant pi, create a SolvedStep for it
       mathConf[i] = {
         total: Math.PI,
@@ -88,7 +88,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
         containsCrit: false,
         containsFail: false,
       };
-    } else if (strMathConfI.toLowerCase() === 'pie') {
+    } else if (curMathConfStr.toLowerCase() === 'pie') {
       // If the operand is pie, pi*e, create a SolvedStep for e and pi (and the multiplication symbol between them)
       mathConf[i] = {
         total: Math.PI,
@@ -110,16 +110,31 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
         ],
       );
       i += 2;
-    } else if (!legalMathOperators.includes(strMathConfI) && legalMathOperators.some((mathOp) => strMathConfI.endsWith(mathOp))) {
+    } else if (!legalMathOperators.includes(curMathConfStr) && legalMathOperators.some((mathOp) => curMathConfStr.endsWith(mathOp))) {
       // Identify when someone does something weird like 4floor(2.5) and split 4 and floor
-      const matchedMathOp = legalMathOperators.filter((mathOp) => strMathConfI.endsWith(mathOp))[0];
-      mathConf[i] = parseFloat(strMathConfI.replace(matchedMathOp, ''));
+      const matchedMathOp = legalMathOperators.filter((mathOp) => curMathConfStr.endsWith(mathOp))[0];
+      mathConf[i] = parseFloat(curMathConfStr.replace(matchedMathOp, ''));
 
       mathConf.splice(i + 1, 0, ...['*', matchedMathOp]);
       i += 2;
-    } else if (![...operators, ...legalMathOperators].includes(strMathConfI)) {
+    } else if (/(x\d+(\.\d*)?)/.test(curMathConfStr)) {
+      // Identify when someone is using a variable from previous commands
+      if (curMathConfStr.includes('.')) {
+        // Verify someone did not enter x1.1 as a variable
+        throw new Error(`IllegalVariable_${curMathConfStr}`);
+      }
+
+      const varIdx = parseInt(curMathConfStr.replaceAll('x', ''));
+
+      // Get the index from the variable and attempt to use it to query the previousResults
+      if (previousResults.length > varIdx) {
+        mathConf[i] = parseFloat(previousResults[varIdx].toString());
+      } else {
+        throw new Error(`IllegalVariable_${curMathConfStr}`);
+      }
+    } else if (![...operators, ...legalMathOperators].includes(curMathConfStr)) {
       // If nothing else has handled it by now, try it as a roll
-      const formattedRoll = generateFormattedRoll(strMathConfI, modifiers);
+      const formattedRoll = generateFormattedRoll(curMathConfStr, modifiers);
       mathConf[i] = formattedRoll.solvedStep;
       countDetails.push(formattedRoll.countDetails);
     }

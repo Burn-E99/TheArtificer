@@ -70,6 +70,21 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     }
   }
 
+  // Look for any implicit multiplication that may have been missed
+  // Start at index 1 as there will never be implicit multiplication before the first element
+  for (let i = 1; i < conf.length; i++) {
+    loopCountCheck();
+
+    const prevConfAsStr = <string> conf[i - 1];
+    const curConfAsStr = <string> conf[i];
+    if (!signs.includes(curConfAsStr) && !signs.includes(prevConfAsStr)) {
+      // Both previous and current conf are operators, slip in the "*"
+      conf.splice(i, 0, '*');
+    }
+  }
+
+  // At this point, conf should be [num, op, num, op, num, op, num, etc]
+
   // Evaluate all EMDAS by looping thru each tier of operators (exponential is the highest tier, addition/subtraction the lowest)
   const allCurOps = [['^'], ['*', '/', '%'], ['+', '-']];
   allCurOps.forEach((curOps) => {
