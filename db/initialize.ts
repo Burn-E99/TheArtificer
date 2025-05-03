@@ -1,7 +1,7 @@
 // This file will create all tables for the artificer schema
 // DATA WILL BE LOST IF DB ALREADY EXISTS, RUN AT OWN RISK
-
 import config from '~config';
+
 import dbClient from 'db/client.ts';
 
 console.log('Attempting to create DB');

@@ -1,7 +1,7 @@
 // This file will populate the tables with default values
+import config from '~config';
 
-import config from '..~config';
-import dbClient from 'src/db/client.ts';
+import dbClient from 'db/client.ts';
 
 console.log('Attempting to populate DB Admin API key');
 await dbClient.execute('INSERT INTO all_keys(userid,apiKey) values(?,?)', [config.api.admin, config.api.adminKey]).catch((e) => {
