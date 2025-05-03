@@ -1,19 +1,8 @@
-import { DiscordenoMessage } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
-
-import config from '~config';
-import { DEVMODE } from '~flags';
 
 import { RollModifiers } from 'artigen/dice/dice.d.ts';
 
-import dbClient from 'db/client.ts';
-import { queries } from 'db/common.ts';
-
-import { generateRollError } from 'src/commandUtils.ts';
-import utils from 'src/utils.ts';
-
-export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {
-  const errorType = 'Modifiers invalid:';
+export const getModifiers = (args: string[]): RollModifiers => {
   const modifiers: RollModifiers = {
     noDetails: false,
     superNoDetails: false,
@@ -26,13 +15,14 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
     order: '',
     count: false,
     commaTotals: false,
-    valid: false,
     apiWarn: '',
+    valid: false,
+    error: new Error(),
   };
 
   // Check if any of the args are command flags and pull those out into the modifiers object
   for (let i = 0; i < args.length; i++) {
-    log(LT.LOG, `Checking ${command}${args.join(' ')} for command modifiers ${i}`);
+    log(LT.LOG, `Checking ${args.join(' ')} for command modifiers ${i}`);
     let defaultCase = false;
     switch (args[i].toLowerCase()) {
       case '-c':
@@ -69,14 +59,8 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
         }
         if (modifiers.gms.length < 1) {
           // If -gm is on and none were found, throw an error
-          m.edit(generateRollError(errorType, 'Must specify at least one GM by @mentioning them')).catch((e) => utils.commonLoggers.messageEditError('getModifiers.ts:66', m, e));
-
-          if (DEVMODE && config.logRolls) {
-            // If enabled, log rolls so we can verify the bots math
-            dbClient
-              .execute(queries.insertRollLogCmd(0, 1), [originalCommand, 'NoGMsFound', m.id])
-              .catch((e) => utils.commonLoggers.dbError('getModifiers.ts:72', 'insert into', e));
-          }
+          modifiers.error.name = 'NoGMsFound';
+          modifiers.error.message = 'Must specify at least one GM by @mentioning them';
           return modifiers;
         }
         break;
@@ -86,14 +70,8 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
         if (!args[i] || (args[i].toLowerCase()[0] !== 'd' && args[i].toLowerCase()[0] !== 'a')) {
           // If -o is on and asc or desc was not specified, error out
-          m.edit(generateRollError(errorType, 'Must specify `a` or `d` to order the rolls ascending or descending')).catch((e) => utils.commonLoggers.messageEditError('getModifiers.ts:81', m, e));
-
-          if (DEVMODE && config.logRolls) {
-            // If enabled, log rolls so we can verify the bots math
-            dbClient
-              .execute(queries.insertRollLogCmd(0, 1), [originalCommand, 'NoOrderFound', m.id])
-              .catch((e) => utils.commonLoggers.dbError('getModifiers.ts:89', 'insert into', e));
-          }
+          modifiers.error.name = 'NoOrderFound';
+          modifiers.error.message = 'Must specify `a` or `d` to order the rolls ascending or descending';
           return modifiers;
         }
 
@@ -116,16 +94,8 @@ export const getModifiers = (m: DiscordenoMessage, args: string[], command: stri
 
   // maxRoll, minRoll, and nominalRoll cannot be on at same time, throw an error
   if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll].filter((b) => b).length > 1) {
-    m.edit(generateRollError(errorType, 'Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`')).catch((e) =>
-      utils.commonLoggers.messageEditError('getModifiers.ts:106', m, e)
-    );
-
-    if (DEVMODE && config.logRolls) {
-      // If enabled, log rolls so we can verify the bots math
-      dbClient
-        .execute(queries.insertRollLogCmd(0, 1), [originalCommand, 'MaxAndNominal', m.id])
-        .catch((e) => utils.commonLoggers.dbError('getModifiers.ts:120', 'insert into', e));
-    }
+    modifiers.error.name = 'MaxAndNominal';
+    modifiers.error.message = 'Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`';
     return modifiers;
   }
 

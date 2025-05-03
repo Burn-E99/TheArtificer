@@ -4,14 +4,14 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 import { DEVMODE } from '~flags';
 
+import { getModifiers } from 'artigen/dice/getModifiers.ts';
+
 import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import rollFuncs from 'commands/roll/_index.ts';
-
-import { rollingEmbed, warnColor } from 'src/commandUtils.ts';
+import { generateRollError, rollingEmbed, warnColor } from 'src/commandUtils.ts';
 import utils from 'src/utils.ts';
 
 export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
@@ -42,10 +42,18 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     const m = await message.reply(rollingEmbed);
 
     // Get modifiers from command
-    const modifiers = rollFuncs.getModifiers(m, args, command, originalCommand);
+    const modifiers = getModifiers(args);
 
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
+      m.edit(generateRollError('Modifiers invalid:', modifiers.error.name, modifiers.error.message)).catch((e) => utils.commonLoggers.messageEditError('roll.ts:50', m, e));
+
+      if (DEVMODE && config.logRolls) {
+        // If enabled, log rolls so we can verify the bots math
+        dbClient
+          .execute(queries.insertRollLogCmd(0, 1), [originalCommand, modifiers.error.name, m.id])
+          .catch((e) => utils.commonLoggers.dbError('roll.ts:57', 'insert into', e));
+      }
       return;
     }
 

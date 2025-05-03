@@ -195,7 +195,7 @@ ${config.name} Developer - Ean Milligan`,
   ],
 });
 
-export const generateRollError = (errorType: string, errorMsg: string) => ({
+export const generateRollError = (errorType: string, errorName: string, errorMsg: string) => ({
   embeds: [
     {
       color: failColor,
@@ -206,6 +206,9 @@ export const generateRollError = (errorType: string, errorMsg: string) => ({
           value: `${errorMsg}\n\nPlease try again.  If the error is repeated, please report the issue using the \`${config.prefix}report\` command.`,
         },
       ],
+      footer: {
+        text: errorName,
+      },
     },
   ],
 });

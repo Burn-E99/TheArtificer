@@ -44,8 +44,9 @@ export interface RollModifiers {
   order: string;
   count: boolean;
   commaTotals: boolean;
-  valid: boolean;
   apiWarn: string;
+  valid: boolean;
+  error: Error;
 }
 
 // Basic conf interfaces
