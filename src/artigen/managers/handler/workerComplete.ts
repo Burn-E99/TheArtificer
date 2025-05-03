@@ -25,10 +25,6 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     removeWorker();
     clearTimeout(workerTimeout);
 
-    // gmModifiers used to create gmEmbed (basically just turn off the gmRoll)
-    const gmModifiers = JSON.parse(JSON.stringify(rollRequest.modifiers));
-    gmModifiers.gmRoll = false;
-
     const returnMsg = workerMessage.data;
     loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnMsg.line1.length} |&| ${returnMsg.line2.length} |&| ${returnMsg.line3.length} `);
     loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnMsg.line1} |&| ${returnMsg.line2} |&| ${returnMsg.line3} `);
@@ -37,11 +33,10 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
       returnMsg,
       rollRequest.modifiers,
     );
-    const gmEmbedDetails = await generateRollEmbed(
-      rollRequest.apiRoll ? rollRequest.api.userId : rollRequest.dd.originalMessage.authorId,
-      returnMsg,
-      gmModifiers,
-    );
+    const gmEmbedDetails = await generateRollEmbed(rollRequest.apiRoll ? rollRequest.api.userId : rollRequest.dd.originalMessage.authorId, returnMsg, {
+      ...rollRequest.modifiers,
+      gmRoll: false,
+    });
     const countEmbed = generateCountDetailsEmbed(returnMsg.counts);
     loggingEnabled && log(LT.LOG, `Embeds are generated: ${JSON.stringify(pubEmbedDetails)} |&| ${JSON.stringify(gmEmbedDetails)}`);
 
