@@ -1,11 +1,13 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { rollCounter } from './utils/counter.ts';
-import { RollModifiers } from 'src/mod.d.ts';
-import { executeRoll } from 'artigen/executeRoll.ts';
 import { RollFormat } from 'artigen/solver.d.ts';
 
+import { executeRoll } from 'artigen/dice/executeRoll.ts';
+
+import { rollCounter } from 'artigen/utils/counter.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+
+import { RollModifiers } from 'src/mod.d.ts';
 
 // generateSolvedRoll(rollConf, modifiers) returns one SolvedStep
 // generateSolvedRoll handles creating and formatting the completed rolls into the SolvedStep format

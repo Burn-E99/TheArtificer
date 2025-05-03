@@ -2,8 +2,9 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import { tokenizeMath } from 'artigen/mathTokenizer.ts';
 import { CountDetails, ReturnData } from 'artigen/solver.d.ts';
+
+import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
 import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';

@@ -1,8 +1,10 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { generateSolvedRoll } from 'artigen/generateSolvedRoll.ts';
-import { mathSolver } from 'artigen/mathSolver.ts';
 import { CountDetails, MathConf, ReturnData, SolvedStep } from 'artigen/solver.d.ts';
+
+import { generateSolvedRoll } from 'artigen/dice/generateSolvedRoll.ts';
+
+import { mathSolver } from 'artigen/math/mathSolver.ts';
 
 import { cmdSplitRegex, internalWrapRegex } from 'artigen/utils/escape.ts';
 import { legalMathOperators } from 'artigen/utils/legalMath.ts';
@@ -100,7 +102,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
             containsCrit: false,
             containsFail: false,
           },
-        ],
+        ]
       );
       i += 2;
     } else if (!legalMathOperators.includes(strMathConfI) && legalMathOperators.some((mathOp) => strMathConfI.endsWith(mathOp))) {
@@ -126,10 +128,10 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
       } else {
         // Handle normally, just set current item to negative
         if (typeof mathConf[i] === 'number') {
-          mathConf[i] = <number> mathConf[i] * -1;
+          mathConf[i] = <number>mathConf[i] * -1;
         } else {
-          (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
-          (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
+          (<SolvedStep>mathConf[i]).total = (<SolvedStep>mathConf[i]).total * -1;
+          (<SolvedStep>mathConf[i]).details = `-${(<SolvedStep>mathConf[i]).details}`;
         }
         mathConf.splice(i - 1, 1);
         i--;
