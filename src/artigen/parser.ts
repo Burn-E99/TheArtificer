@@ -14,7 +14,7 @@ import { assertPrePostBalance } from 'src/artigen/utils/parenBalance.ts';
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
-  const returnMsg = <SolvedRoll> {
+  const returnMsg: SolvedRoll = {
     error: false,
     errorCode: '',
     errorMsg: '',

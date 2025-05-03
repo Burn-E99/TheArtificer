@@ -16,7 +16,7 @@ import { getMatchingParenIdx } from 'artigen/utils/parenBalance.ts';
 export const fullSolver = (conf: MathConf[], wrapDetails = false): SolvedStep => {
   // Initialize PEMDAS
   const signs = ['^', '*', '/', '%', '+', '-'];
-  const stepSolve = {
+  const stepSolve: SolvedStep = {
     total: 0,
     details: '',
     containsCrit: false,
@@ -166,10 +166,11 @@ export const fullSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     stepSolve.details = conf[0].toString();
   } else {
     // Else fully populate the stepSolve with what was computed
-    stepSolve.total = (<SolvedStep> conf[0]).total;
-    stepSolve.details = (<SolvedStep> conf[0]).details;
-    stepSolve.containsCrit = (<SolvedStep> conf[0]).containsCrit;
-    stepSolve.containsFail = (<SolvedStep> conf[0]).containsFail;
+    const tempConf = <SolvedStep> conf[0];
+    stepSolve.total = tempConf.total;
+    stepSolve.details = tempConf.details;
+    stepSolve.containsCrit = tempConf.containsCrit;
+    stepSolve.containsFail = tempConf.containsFail;
   }
 
   // If this was a nested call, add on parens around the details to show what math we've done

@@ -19,7 +19,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
   loggingEnabled && log(LT.LOG, `Parsing roll ${cmd}`);
 
   // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-  const mathConf: MathConf[] = <MathConf[]> cmd
+  const mathConf: MathConf[] = cmd
     .replace(cmdSplitRegex, '')
     .replace(internalWrapRegex, '')
     .replace(/ /g, '')

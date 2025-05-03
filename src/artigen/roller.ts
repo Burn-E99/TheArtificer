@@ -69,22 +69,22 @@ export const roll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
     reroll: {
       on: false,
       once: false,
-      nums: <number[]> [],
+      nums: [],
     },
     critScore: {
       on: false,
-      range: <number[]> [],
+      range: [],
     },
     critFail: {
       on: false,
-      range: <number[]> [],
+      range: [],
     },
     exploding: {
       on: false,
       once: false,
       compounding: false,
       penetrating: false,
-      nums: <number[]> [],
+      nums: [],
     },
   };
 
