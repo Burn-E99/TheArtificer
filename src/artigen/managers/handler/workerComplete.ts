@@ -78,30 +78,32 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         if (!apiErroredOut) {
           // And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
           rollRequest.modifiers.gms.forEach(async (gm) => {
-            log(LT.LOG, `Messaging GM ${gm}`);
+            const gmId: bigint = BigInt(gm.startsWith('<') ? gm.substring(2, gm.length - 1) : gm);
+            log(LT.LOG, `Messaging GM ${gm} | ${gmId}`);
             // Attempt to DM the GM and send a warning if it could not DM a GM
-            await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
+            await sendDirectMessage(gmId, {
+              content: `Original GM Roll Request: ${rollRequest.apiRoll ? newMsg && newMsg.link : rollRequest.dd.myResponse.link}`,
               embeds: rollRequest.modifiers.count ? [gmEmbedDetails.embed, countEmbed] : [gmEmbedDetails.embed],
             })
               .then(async () => {
                 // Check if we need to attach a file and send it after the initial details sent
                 if (gmEmbedDetails.hasAttachment) {
-                  await sendDirectMessage(BigInt(gm.substring(2, gm.length - 1)), {
+                  await sendDirectMessage(gmId, {
                     file: gmEmbedDetails.attachment,
                   }).catch(() => {
                     if (newMsg && rollRequest.apiRoll) {
-                      newMsg.reply(generateDMFailed(gm));
+                      newMsg.reply(generateDMFailed(gmId));
                     } else if (!rollRequest.apiRoll) {
-                      rollRequest.dd.originalMessage.reply(generateDMFailed(gm));
+                      rollRequest.dd.originalMessage.reply(generateDMFailed(gmId));
                     }
                   });
                 }
               })
               .catch(() => {
                 if (rollRequest.apiRoll && newMsg) {
-                  newMsg.reply(generateDMFailed(gm));
+                  newMsg.reply(generateDMFailed(gmId));
                 } else if (!rollRequest.apiRoll) {
-                  rollRequest.dd.originalMessage.reply(generateDMFailed(gm));
+                  rollRequest.dd.originalMessage.reply(generateDMFailed(gmId));
                 }
               });
           });

@@ -123,11 +123,11 @@ export const generateApiSuccess = (args: string) => ({
   ],
 });
 
-export const generateDMFailed = (user: string) => ({
+export const generateDMFailed = (user: bigint) => ({
   embeds: [
     {
       color: failColor,
-      title: `WARNING: ${user} could not be messaged.`,
+      title: `WARNING: <@${user}> could not be messaged.`,
       description: 'If this issue persists, make sure direct messages are allowed from this server.',
     },
   ],
@@ -274,7 +274,11 @@ export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedR
       return {
         embed: {
           color: infoColor2,
-          description: `<@${authorId}>${returnDetails.line1}\n\nResults have been messaged to the following GMs: ${modifiers.gms.join(' ')}`,
+          description: `<@${authorId}>${returnDetails.line1}\n\nResults have been messaged to the following GMs: ${
+            modifiers.gms
+              .map((gm) => (gm.startsWith('<') ? gm : `<@${gm}>`))
+              .join(' ')
+          }`,
         },
         hasAttachment: false,
         attachment: {
