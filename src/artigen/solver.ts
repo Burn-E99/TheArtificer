@@ -5,14 +5,15 @@
  */
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { SolvedStep } from 'artigen/solver.d.ts';
+import { MathConf, SolvedStep } from 'artigen/solver.d.ts';
 
 import { legalMath, legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { getMatchingParenIdx } from 'artigen/utils/parenBalance.ts';
 
 // fullSolver(conf, wrapDetails) returns one condensed SolvedStep
 // fullSolver is a function that recursively solves the full roll and math
-export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: boolean): SolvedStep => {
+export const fullSolver = (conf: MathConf[], wrapDetails = false): SolvedStep => {
   // Initialize PEMDAS
   const signs = ['^', '*', '/', '%', '+', '-'];
   const stepSolve = {
@@ -33,30 +34,7 @@ export const fullSolver = (conf: (string | number | SolvedStep)[], wrapDetails: 
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
     let openParenIdx = conf.indexOf('(');
-    let closeParenIdx = -1;
-    let nextParenIdx = 0;
-
-    // Using nextParenIdx to count the opening/closing parens, find the matching paren to openParenIdx above
-    closingParenLocator: for (let i = openParenIdx; i < conf.length; i++) {
-      loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for matching ) openIdx: ${openParenIdx} checking: ${i}`);
-      // If we hit an open, add one (this includes the openParenIdx we start with), if we hit a close, subtract one
-      if (conf[i] === '(') {
-        nextParenIdx++;
-      } else if (conf[i] === ')') {
-        nextParenIdx--;
-      }
-
-      // When nextParenIdx reaches 0 again, we will have found the matching closing parenthesis and can safely exit the for loop
-      if (nextParenIdx === 0) {
-        closeParenIdx = i;
-        break closingParenLocator;
-      }
-    }
-
-    // Make sure we did find the correct closing paren, if not, error out now
-    if (closeParenIdx === -1 || closeParenIdx < openParenIdx) {
-      throw new Error('UnbalancedParens');
-    }
+    const closeParenIdx = getMatchingParenIdx(conf, openParenIdx);
 
     // Call the solver on the items between openParenIdx and closeParenIdx (excluding the parens)
     const parenSolve = fullSolver(conf.slice(openParenIdx + 1, closeParenIdx), true);

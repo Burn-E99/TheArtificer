@@ -1,5 +1,7 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
+import config from '~config';
+
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 // escapeCharacters(str, esc) returns str
@@ -14,3 +16,13 @@ export const escapeCharacters = (str: string, esc: string): string => {
   }
   return str;
 };
+
+// escapePrefixPostfix(str) returns str
+// Escapes all characters that need escaped in a regex string to allow prefix/postfix to be configurable
+const escapePrefixPostfix = (str: string): string => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export const cmdSplitRegex = new RegExp(`(${escapePrefixPostfix(config.prefix)})|(${escapePrefixPostfix(config.postfix)})`, 'g');
+
+// Internal is used for recursive text replacement, these will always be the top level as they get replaced with config.prefix/postfix when exiting each level
+export const openInternal = '\u2045';
+export const closeInternal = '\u2046';
+export const internalWrapRegex = new RegExp(`([${openInternal}${closeInternal}])`, 'g');

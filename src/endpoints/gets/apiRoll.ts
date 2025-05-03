@@ -78,7 +78,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
         }
 
         // Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
-        rollCmd = rollCmd.substring(rollCmd.indexOf(config.prefix) + 2).replace(/%20/g, ' ');
+        rollCmd = rollCmd.replace(/%20/g, ' ').trim();
 
         const modifiers: RollModifiers = {
           noDetails: query.has('nd'),

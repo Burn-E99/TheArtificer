@@ -1,22 +1,19 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import config from '~config';
+import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
+import { SolvedRoll } from 'artigen/solver.d.ts';
 
-import { formatRoll } from 'artigen/rollFormatter.ts';
-import { fullSolver } from 'artigen/solver.ts';
-import { CountDetails, ReturnData, SolvedRoll, SolvedStep } from 'artigen/solver.d.ts';
-
-import { escapeCharacters } from 'artigen/utils/escape.ts';
-import { legalMathOperators } from 'artigen/utils/legalMath.ts';
+import { cmdSplitRegex, escapeCharacters } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
+import { translateError } from 'artigen/utils/translateError.ts';
 
 import { RollModifiers } from 'src/mod.d.ts';
+import { assertPrePostBalance } from 'src/artigen/utils/parenBalance.ts';
 
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving
 export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll => {
-  const operators = ['(', ')', '^', '*', '/', '%', '+', '-'];
   const returnMsg = <SolvedRoll> {
     error: false,
     errorCode: '',
@@ -34,181 +31,21 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
     },
   };
 
-  // Whole function lives in a try-catch to allow safe throwing of errors on purpose
+  // Whole processor lives in a try-catch to catch artigen's intentional error conditions
   try {
-    // Split the fullCmd by the command prefix to allow every roll/math op to be handled individually
-    const sepRolls = fullCmd.split(config.prefix);
-    // TODO(@burn-e99): HERE for the [[ ]] nesting stuff
+    // filter removes all null/empty strings since we don't care about them
+    const sepCmds = fullCmd.split(cmdSplitRegex).filter((x) => x);
+    loggingEnabled && log(LT.LOG, `Split cmd into parts ${JSON.stringify(sepCmds)}`);
 
-    const tempReturnData: ReturnData[] = [];
-    const tempCountDetails: CountDetails[] = [
-      {
-        total: 0,
-        successful: 0,
-        failed: 0,
-        rerolled: 0,
-        dropped: 0,
-        exploded: 0,
-      },
-    ];
+    // Verify prefix/postfix balance
+    assertPrePostBalance(sepCmds);
 
-    // Loop thru all roll/math ops
-    for (const sepRoll of sepRolls) {
-      loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Working ${sepRoll}`);
-      // Split the current iteration on the command postfix to separate the operation to be parsed and the text formatting after the operation
-      const [tempConf, tempFormat] = sepRoll.split(config.postfix);
-
-      // Remove all spaces from the operation config and split it by any operator (keeping the operator in mathConf for fullSolver to do math on)
-      const mathConf: (string | number | SolvedStep)[] = <(string | number | SolvedStep)[]> tempConf.replace(/ /g, '').split(/([-+()*/^]|(?<![d%])%)/g);
-
-      // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
-      let parenCnt = 0;
-      mathConf.forEach((e) => {
-        loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Checking parenthesis balance ${e}`);
-        if (e === '(') {
-          parenCnt++;
-        } else if (e === ')') {
-          parenCnt--;
-        }
-
-        // If parenCnt ever goes below 0, that means too many closing paren appeared before opening parens
-        if (parenCnt < 0) {
-          throw new Error('UnbalancedParens');
-        }
-      });
-
-      // If the parenCnt is not 0, then we do not have balanced parens and need to error out now
-      if (parenCnt !== 0) {
-        throw new Error('UnbalancedParens');
-      }
-
-      // Evaluate all rolls into stepSolve format and all numbers into floats
-      for (let i = 0; i < mathConf.length; i++) {
-        loggingEnabled && log(LT.LOG, `Parsing roll ${fullCmd} | Evaluating rolls into math-able items ${JSON.stringify(mathConf[i])}`);
-
-        const strMathConfI = mathConf[i].toString();
-
-        if (strMathConfI.length === 0) {
-          // If its an empty string, get it out of here
-          mathConf.splice(i, 1);
-          i--;
-        } else if (mathConf[i] == parseFloat(strMathConfI)) {
-          // If its a number, parse the number out
-          mathConf[i] = parseFloat(strMathConfI);
-        } else if (strMathConfI.toLowerCase() === 'e') {
-          // If the operand is the constant e, create a SolvedStep for it
-          mathConf[i] = {
-            total: Math.E,
-            details: '*e*',
-            containsCrit: false,
-            containsFail: false,
-          };
-        } else if (strMathConfI.toLowerCase() === 'fart' || strMathConfI.toLowerCase() === '💩') {
-          mathConf[i] = {
-            total: 7,
-            details: '💩',
-            containsCrit: false,
-            containsFail: false,
-          };
-        } else if (strMathConfI.toLowerCase() === 'sex') {
-          mathConf[i] = {
-            total: 69,
-            details: '( ͡° ͜ʖ ͡°)',
-            containsCrit: false,
-            containsFail: false,
-          };
-        } else if (strMathConfI.toLowerCase() === 'inf' || strMathConfI.toLowerCase() === 'infinity' || strMathConfI.toLowerCase() === '∞') {
-          // If the operand is the constant Infinity, create a SolvedStep for it
-          mathConf[i] = {
-            total: Infinity,
-            details: '∞',
-            containsCrit: false,
-            containsFail: false,
-          };
-        } else if (strMathConfI.toLowerCase() === 'pi' || strMathConfI.toLowerCase() === '𝜋') {
-          // If the operand is the constant pi, create a SolvedStep for it
-          mathConf[i] = {
-            total: Math.PI,
-            details: '𝜋',
-            containsCrit: false,
-            containsFail: false,
-          };
-        } else if (strMathConfI.toLowerCase() === 'pie') {
-          // If the operand is pie, pi*e, create a SolvedStep for e and pi (and the multiplication symbol between them)
-          mathConf[i] = {
-            total: Math.PI,
-            details: '𝜋',
-            containsCrit: false,
-            containsFail: false,
-          };
-          mathConf.splice(
-            i + 1,
-            0,
-            ...[
-              '*',
-              {
-                total: Math.E,
-                details: '*e*',
-                containsCrit: false,
-                containsFail: false,
-              },
-            ],
-          );
-          i += 2;
-        } else if (!legalMathOperators.includes(strMathConfI) && legalMathOperators.some((mathOp) => strMathConfI.endsWith(mathOp))) {
-          // Identify when someone does something weird like 4floor(2.5) and split 4 and floor
-          const matchedMathOp = legalMathOperators.filter((mathOp) => strMathConfI.endsWith(mathOp))[0];
-          mathConf[i] = parseFloat(strMathConfI.replace(matchedMathOp, ''));
-
-          mathConf.splice(i + 1, 0, ...['*', matchedMathOp]);
-          i += 2;
-        } else if (![...operators, ...legalMathOperators].includes(strMathConfI)) {
-          // If nothing else has handled it by now, try it as a roll
-          const formattedRoll = formatRoll(strMathConfI, modifiers);
-          mathConf[i] = formattedRoll.solvedStep;
-          tempCountDetails.push(formattedRoll.countDetails);
-        }
-
-        // Identify if we are in a state where the current number is a negative number
-        if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
-          if (typeof mathConf[i] === 'string') {
-            // Current item is a mathOp, need to insert a "-1 *" before it
-            mathConf.splice(i - 1, 1, ...[parseFloat('-1'), '*']);
-            i += 2;
-          } else {
-            // Handle normally, just set current item to negative
-            if (typeof mathConf[i] === 'number') {
-              mathConf[i] = <number> mathConf[i] * -1;
-            } else {
-              (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
-              (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
-            }
-            mathConf.splice(i - 1, 1);
-            i--;
-          }
-        }
-      }
-
-      // Now that mathConf is parsed, send it into the solver
-      const tempSolved = fullSolver(mathConf, false);
-
-      // Push all of this step's solved data into the temp array
-      tempReturnData.push({
-        rollTotal: tempSolved.total,
-        rollPostFormat: tempFormat,
-        rollDetails: tempSolved.details,
-        containsCrit: tempSolved.containsCrit,
-        containsFail: tempSolved.containsFail,
-        initConfig: tempConf,
-      });
-    }
-
-    // Parsing/Solving done, time to format the output for Discord
+    // Send the split roll into the command tokenizer to get raw response data
+    const [tempReturnData, tempCountDetails] = tokenizeCmd(sepCmds, modifiers, true);
+    loggingEnabled && log(LT.LOG, `Return data is back ${JSON.stringify(tempReturnData)}`);
 
     // Remove any floating spaces from fullCmd
-    if (fullCmd[fullCmd.length - 1] === ' ') {
-      fullCmd = fullCmd.substring(0, fullCmd.length - 1);
-    }
+    fullCmd = fullCmd.trim();
 
     // Escape any | and ` chars in fullCmd to prevent spoilers and code blocks from acting up
     fullCmd = escapeCharacters(fullCmd, '|');
@@ -220,6 +57,7 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
     // The ': ' is used by generateRollEmbed to split line 2 up
     const resultStr = tempReturnData.length > 1 ? 'Results: ' : 'Result: ';
+    line2 = resultStr;
 
     // If a theoretical roll is requested, mark the output as such, else use default formatting
     if (modifiers.maxRoll || modifiers.minRoll || modifiers.nominalRoll) {
@@ -227,19 +65,16 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       const theoreticalBools = [modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll];
       const theoreticalText = theoreticalTexts[theoreticalBools.indexOf(true)];
 
-      line1 = ` requested the Theoretical ${theoreticalText} of:\n\`${config.prefix}${fullCmd}\``;
+      line1 = ` requested the Theoretical ${theoreticalText} of:\n\`${fullCmd}\``;
       line2 = `Theoretical ${theoreticalText} ${resultStr}`;
     } else if (modifiers.order === 'a') {
-      line1 = ` requested the following rolls to be ordered from least to greatest:\n\`${config.prefix}${fullCmd}\``;
-      line2 = resultStr;
+      line1 = ` requested the following rolls to be ordered from least to greatest:\n\`${fullCmd}\``;
       tempReturnData.sort(compareTotalRolls);
     } else if (modifiers.order === 'd') {
-      line1 = ` requested the following rolls to be ordered from greatest to least:\n\`${config.prefix}${fullCmd}\``;
-      line2 = resultStr;
+      line1 = ` requested the following rolls to be ordered from greatest to least:\n\`${fullCmd}\``;
       tempReturnData.sort(compareTotalRollsReverse);
     } else {
-      line1 = ` rolled:\n\`${config.prefix}${fullCmd}\``;
-      line2 = resultStr;
+      line1 = ` rolled:\n\`${fullCmd}\``;
     }
 
     // Fill out all of the details and results now
@@ -260,12 +95,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
 
       // Populate line2 (the results) and line3 (the details) with their data
       if (modifiers.order === '') {
-        line2 += `${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}${
-          escapeCharacters(
-            e.rollPostFormat,
-            '|*_~`',
-          )
-        } `;
+        line2 += `${e.rollPreFormat ? escapeCharacters(e.rollPreFormat, '|*_~`') : ' '}${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}${
+          e.rollPostFormat ? escapeCharacters(e.rollPostFormat, '|*_~`') : ''
+        }`;
       } else {
         // If order is on, turn rolls into csv without formatting
         line2 += `${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}, `;
@@ -294,114 +126,9 @@ export const parseRoll = (fullCmd: string, modifiers: RollModifiers): SolvedRoll
       exploded: acc.exploded + cnt.exploded,
     }));
   } catch (e) {
-    const solverError = e as Error;
-    // Welp, the unthinkable happened, we hit an error
-
-    // Split on _ for the error messages that have more info than just their name
-    const errorSplits = solverError.message.split('_');
-    const errorName = errorSplits.shift();
-    const errorDetails = errorSplits.join('_');
-
-    let errorMsg = '';
-
-    // Translate the errorName to a specific errorMsg
-    switch (errorName) {
-      case 'WholeDieCountSizeOnly':
-        errorMsg = 'Error: Die Size and Die Count must be whole numbers';
-        break;
-      case 'YouNeedAD':
-        errorMsg = 'Formatting Error: Missing die size and count config';
-        break;
-      case 'CannotParseDieCount':
-        errorMsg = `Formatting Error: Cannot parse \`${errorDetails}\` as a number`;
-        break;
-      case 'DoubleSeparator':
-        errorMsg = `Formatting Error: \`${errorDetails}\` should only be specified once per roll, remove all but one and repeat roll`;
-        break;
-      case 'FormattingError':
-        errorMsg = 'Formatting Error: Cannot use Keep and Drop at the same time, remove all but one and repeat roll';
-        break;
-      case 'NoMaxWithDash':
-        errorMsg = 'Formatting Error: CritScore range specified without a maximum, remove - or add maximum to correct';
-        break;
-      case 'UnknownOperation':
-        errorMsg = `Error: Unknown Operation ${errorDetails}`;
-        if (errorDetails === '-') {
-          errorMsg += '\nNote: Negative numbers are not supported';
-        } else if (errorDetails === ' ') {
-          errorMsg += `\nNote: Every roll must be closed by ${config.postfix}`;
-        }
-        break;
-      case 'NoZerosAllowed':
-        errorMsg = 'Formatting Error: ';
-        switch (errorDetails) {
-          case 'base':
-            errorMsg += 'Die Size and Die Count';
-            break;
-          case 'drop':
-            errorMsg += 'Drop (`d` or `dl`)';
-            break;
-          case 'keep':
-            errorMsg += 'Keep (`k` or `kh`)';
-            break;
-          case 'dropHigh':
-            errorMsg += 'Drop Highest (`dh`)';
-            break;
-          case 'keepLow':
-            errorMsg += 'Keep Lowest (`kl`)';
-            break;
-          case 'reroll':
-            errorMsg += 'Reroll (`r`)';
-            break;
-          case 'critScore':
-            errorMsg += 'Crit Score (`cs`)';
-            break;
-          case 'critFail':
-            errorMsg += 'Crit Fail (`cf`)';
-            break;
-          default:
-            errorMsg += `Unhandled - ${errorDetails}`;
-            break;
-        }
-        errorMsg += ' cannot be zero';
-        break;
-      case 'NoRerollOnAllSides':
-        errorMsg = 'Error: Cannot reroll all sides of a die, must have at least one side that does not get rerolled';
-        break;
-      case 'CritScoreMinGtrMax':
-        errorMsg = 'Formatting Error: CritScore maximum cannot be greater than minimum, check formatting and flip min/max';
-        break;
-      case 'MaxLoopsExceeded':
-        errorMsg = 'Error: Roll is too complex or reaches infinity';
-        break;
-      case 'UnbalancedParens':
-        errorMsg = 'Formatting Error: At least one of the equations contains unbalanced parenthesis';
-        break;
-      case 'EMDASNotNumber':
-        errorMsg = 'Error: One or more operands is not a number';
-        break;
-      case 'ConfWhat':
-        errorMsg = 'Error: Not all values got processed, please report the command used';
-        break;
-      case 'OperatorWhat':
-        errorMsg = 'Error: Something really broke with the Operator, try again';
-        break;
-      case 'OperandNaN':
-        errorMsg = 'Error: One or more operands reached NaN, check input';
-        break;
-      case 'UndefinedStep':
-        errorMsg = 'Error: Roll became undefined, one or more operands are not a roll or a number, check input';
-        break;
-      default:
-        log(LT.ERROR, `Unhandled Parser Error: ${errorName}, ${errorDetails}`);
-        errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`${config.prefix}report\` to alert the devs of the issue`;
-        break;
-    }
-
     // Fill in the return block
     returnMsg.error = true;
-    returnMsg.errorCode = solverError.message;
-    returnMsg.errorMsg = errorMsg;
+    [returnMsg.errorCode, returnMsg.errorMsg] = translateError(e as Error);
   }
 
   return returnMsg;

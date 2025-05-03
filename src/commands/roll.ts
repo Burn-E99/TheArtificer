@@ -49,13 +49,10 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       return;
     }
 
-    // Rejoin all of the args and send it into the solver, if solver returns a falsy item, an error object will be substituted in
-    const rollCmd = message.content.substring(config.prefix.length);
-
     sendRollRequest({
       apiRoll: false,
       dd: { myResponse: m, originalMessage: message },
-      rollCmd,
+      rollCmd: message.content,
       modifiers,
       originalCommand,
     });

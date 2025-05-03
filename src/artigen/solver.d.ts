@@ -1,6 +1,8 @@
 // Available Roll Types
 export type RollType = '' | 'roll20' | 'fate' | 'cwod' | 'ova';
 
+export type MathConf = string | number | SolvedStep;
+
 // RollSet is used to preserve all information about a calculated roll
 export type RollSet = {
   type: RollType;
@@ -24,6 +26,7 @@ export type SolvedStep = {
 // ReturnData is the temporary internal type used before getting turned into SolvedRoll
 export type ReturnData = {
   rollTotal: number;
+  rollPreFormat: string;
   rollPostFormat: string;
   rollDetails: string;
   containsCrit: boolean;
