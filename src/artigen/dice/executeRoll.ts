@@ -25,7 +25,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
   const rollConf = getRollConf(rollStr);
 
   // Roll the roll
-  const rollSet = [];
+  const rollSet: RollSet[] = [];
   /* Roll will contain objects of the following format:
    * 	{
    *	 	origIdx: 0,
