@@ -1,8 +1,8 @@
 import dbClient from 'db/client.ts';
 
-type UserIdObj = {
+interface UserIdObj {
   userid: bigint;
-};
+}
 
 // List of userIds who have requested that the bot ignore them
 export const ignoreList: Array<bigint> = [];
