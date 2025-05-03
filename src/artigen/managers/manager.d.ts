@@ -1,6 +1,6 @@
 import { DiscordenoMessage } from '@discordeno';
 
-import { RollModifiers } from 'src/mod.d.ts';
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
 
 // QueuedRoll is the structure to track rolls we could not immediately handle
 interface BaseQueuedRoll {

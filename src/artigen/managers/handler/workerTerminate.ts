@@ -1,5 +1,7 @@
 import { SolvedRoll } from 'artigen/solver.d.ts';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
@@ -7,7 +9,6 @@ import stdResp from 'endpoints/stdResponses.ts';
 
 import { generateRollEmbed } from 'src/commandUtils.ts';
 import utils from 'src/utils.ts';
-import { RollModifiers } from 'src/mod.d.ts';
 
 export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRoll) => {
   rollWorker.terminate();

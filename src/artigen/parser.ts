@@ -3,13 +3,13 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
 import { SolvedRoll } from 'artigen/solver.d.ts';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import { cmdSplitRegex, escapeCharacters } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { assertPrePostBalance } from 'src/artigen/utils/parenBalance.ts';
 import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
 import { translateError } from 'artigen/utils/translateError.ts';
-
-import { RollModifiers } from 'src/mod.d.ts';
-import { assertPrePostBalance } from 'src/artigen/utils/parenBalance.ts';
 
 // parseRoll(fullCmd, modifiers)
 // parseRoll handles converting fullCmd into a computer readable format for processing, and finally executes the solving

@@ -4,11 +4,12 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 import { DEVMODE } from '~flags';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
 import { generateRollError } from 'src/commandUtils.ts';
-import { RollModifiers } from 'src/mod.d.ts';
 import utils from 'src/utils.ts';
 
 export const getModifiers = (m: DiscordenoMessage, args: string[], command: string, originalCommand: string): RollModifiers => {

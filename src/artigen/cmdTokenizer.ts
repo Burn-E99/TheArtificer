@@ -4,13 +4,13 @@ import config from '~config';
 
 import { CountDetails, ReturnData } from 'artigen/solver.d.ts';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
 import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
-
-import { RollModifiers } from 'src/mod.d.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
 export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean): [ReturnData[], CountDetails[]] => {

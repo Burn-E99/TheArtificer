@@ -4,11 +4,11 @@ import config from '~config';
 
 import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import { genFateRoll, genRoll } from 'artigen/utils/generateRoll.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { compareOrigIdx, compareRolls } from 'artigen/utils/sortFuncs.ts';
-
-import { RollModifiers } from 'src/mod.d.ts';
 
 // Call with loopCountCheck(++loopCount);
 // Will ensure if maxLoops is 10, 10 loops will be allowed, 11 will not.

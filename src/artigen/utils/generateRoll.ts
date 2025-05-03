@@ -1,4 +1,4 @@
-import { RollModifiers } from 'src/mod.d.ts';
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { DPercentConf } from 'artigen/solver.d.ts';
 

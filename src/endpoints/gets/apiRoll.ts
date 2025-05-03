@@ -3,6 +3,8 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
 import dbClient from 'db/client.ts';
@@ -11,7 +13,6 @@ import { queries } from 'db/common.ts';
 import stdResp from 'endpoints/stdResponses.ts';
 import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
-import { RollModifiers } from 'src/mod.d.ts';
 import utils from 'src/utils.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;

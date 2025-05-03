@@ -2,7 +2,8 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import { CountDetails, MathConf, ReturnData, SolvedStep } from 'artigen/solver.d.ts';
 
-import { generateSolvedRoll } from 'artigen/dice/generateSolvedRoll.ts';
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import { generateFormattedRoll } from 'artigen/dice/generateFormattedRoll.ts';
 
 import { mathSolver } from 'artigen/math/mathSolver.ts';
 
@@ -10,8 +11,6 @@ import { cmdSplitRegex, internalWrapRegex } from 'artigen/utils/escape.ts';
 import { legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
-
-import { RollModifiers } from 'src/mod.d.ts';
 
 const operators = ['(', ')', '^', '*', '/', '%', '+', '-'];
 
@@ -102,7 +101,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
             containsCrit: false,
             containsFail: false,
           },
-        ]
+        ],
       );
       i += 2;
     } else if (!legalMathOperators.includes(strMathConfI) && legalMathOperators.some((mathOp) => strMathConfI.endsWith(mathOp))) {
@@ -114,7 +113,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
       i += 2;
     } else if (![...operators, ...legalMathOperators].includes(strMathConfI)) {
       // If nothing else has handled it by now, try it as a roll
-      const formattedRoll = generateSolvedRoll(strMathConfI, modifiers);
+      const formattedRoll = generateFormattedRoll(strMathConfI, modifiers);
       mathConf[i] = formattedRoll.solvedStep;
       countDetails.push(formattedRoll.countDetails);
     }
@@ -128,10 +127,10 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
       } else {
         // Handle normally, just set current item to negative
         if (typeof mathConf[i] === 'number') {
-          mathConf[i] = <number>mathConf[i] * -1;
+          mathConf[i] = <number> mathConf[i] * -1;
         } else {
-          (<SolvedStep>mathConf[i]).total = (<SolvedStep>mathConf[i]).total * -1;
-          (<SolvedStep>mathConf[i]).details = `-${(<SolvedStep>mathConf[i]).details}`;
+          (<SolvedStep> mathConf[i]).total = (<SolvedStep> mathConf[i]).total * -1;
+          (<SolvedStep> mathConf[i]).details = `-${(<SolvedStep> mathConf[i]).details}`;
         }
         mathConf.splice(i - 1, 1);
         i--;

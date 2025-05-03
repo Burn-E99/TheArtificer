@@ -2,11 +2,11 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
 import { CountDetails, SolvedRoll } from 'artigen/solver.d.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-
-import { RollModifiers } from 'src/mod.d.ts';
 
 export const failColor = 0xe71212;
 export const warnColor = 0xe38f28;
