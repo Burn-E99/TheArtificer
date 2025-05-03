@@ -125,7 +125,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers): [ReturnData
     }
 
     // Identify if we are in a state where the current number is a negative number
-    if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || mathConf[i - 2] === '(')) {
+    if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || operators.includes(<string> mathConf[i - 2]))) {
       if (typeof mathConf[i] === 'string') {
         // Current item is a mathOp, need to insert a "-1 *" before it
         mathConf.splice(i - 1, 1, ...[parseFloat('-1'), '*']);
