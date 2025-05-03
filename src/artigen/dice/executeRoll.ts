@@ -2,9 +2,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import { RollConf, RollSet, RollType } from 'artigen/solver.d.ts';
-
-import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import { RollConf, RollModifiers, RollSet, RollType } from 'artigen/dice/dice.d.ts';
 
 import { genFateRoll, genRoll } from 'artigen/utils/generateRoll.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';

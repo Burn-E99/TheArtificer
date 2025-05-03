@@ -2,9 +2,9 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import { SolvedRoll } from 'artigen/artigen.d.ts';
 
-import { CountDetails, SolvedRoll } from 'artigen/solver.d.ts';
+import { CountDetails, RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 

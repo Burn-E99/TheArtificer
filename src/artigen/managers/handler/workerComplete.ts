@@ -4,14 +4,14 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 import { DEVMODE } from '~flags';
 
-import { SolvedRoll } from 'artigen/solver.d.ts';
+import { SolvedRoll } from 'artigen/artigen.d.ts';
 
 import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import dbClient from 'db/client.ts';
 
+import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
 import stdResp from 'endpoints/stdResponses.ts';

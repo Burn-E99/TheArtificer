@@ -1,8 +1,10 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { CountDetails, MathConf, ReturnData, SolvedStep } from 'artigen/solver.d.ts';
+import { ReturnData } from 'artigen/artigen.d.ts';
 
-import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import { MathConf, SolvedStep } from 'artigen/math/math.d.ts';
+
+import { CountDetails, RollModifiers } from 'artigen/dice/dice.d.ts';
 import { generateFormattedRoll } from 'artigen/dice/generateFormattedRoll.ts';
 
 import { mathSolver } from 'artigen/math/mathSolver.ts';

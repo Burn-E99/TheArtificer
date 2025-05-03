@@ -1,6 +1,4 @@
-import { RollModifiers } from 'artigen/dice/dice.d.ts';
-
-import { DPercentConf } from 'artigen/solver.d.ts';
+import { DPercentConf, RollModifiers } from 'artigen/dice/dice.d.ts';
 
 // genRoll(size) returns number
 // genRoll rolls a die of size size and returns the result

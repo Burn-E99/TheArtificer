@@ -1,4 +1,6 @@
-import { ReturnData, RollSet } from 'src/artigen/solver.d.ts';
+import { ReturnData } from 'artigen/artigen.d.ts';
+
+import { RollSet } from 'artigen/dice/dice.d.ts';
 
 // compareRolls(a, b) returns -1|0|1
 // compareRolls is used to order an array of RollSets by RollSet.roll

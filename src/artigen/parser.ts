@@ -1,13 +1,13 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
+import { SolvedRoll } from 'artigen/artigen.d.ts';
 import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
-import { SolvedRoll } from 'artigen/solver.d.ts';
 
 import { RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { cmdSplitRegex, escapeCharacters } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { assertPrePostBalance } from 'src/artigen/utils/parenBalance.ts';
+import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
 import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
 import { translateError } from 'artigen/utils/translateError.ts';
 

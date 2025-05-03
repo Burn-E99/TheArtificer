@@ -1,8 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollFormat } from 'artigen/solver.d.ts';
-
-import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import { RollFormat, RollModifiers } from 'artigen/dice/dice.d.ts';
 import { executeRoll } from 'artigen/dice/executeRoll.ts';
 
 import { rollCounter } from 'artigen/utils/counter.ts';

@@ -1,4 +1,4 @@
-import { SolvedRoll } from 'artigen/solver.d.ts';
+import { SolvedRoll } from 'artigen/artigen.d.ts';
 
 import { RollModifiers } from 'artigen/dice/dice.d.ts';
 

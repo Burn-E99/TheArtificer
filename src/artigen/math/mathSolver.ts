@@ -5,7 +5,7 @@
  */
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { MathConf, SolvedStep } from 'artigen/solver.d.ts';
+import { MathConf, SolvedStep } from 'artigen/math/math.d.ts';
 
 import { legalMath, legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';

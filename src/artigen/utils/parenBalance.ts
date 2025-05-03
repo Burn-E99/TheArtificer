@@ -2,7 +2,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import { MathConf } from 'artigen/solver.d.ts';
+import { MathConf } from 'artigen/math/math.d.ts';
 
 import { closeInternal, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
