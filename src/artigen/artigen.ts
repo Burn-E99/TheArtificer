@@ -137,8 +137,10 @@ export const runCmd = (fullCmd: string, modifiers: RollModifiers): SolvedRoll =>
     );
   } catch (e) {
     // Fill in the return block
+    const solverError = e as Error;
+    loggingEnabled && log(LT.ERROR, `Error hit: ${solverError.message} | ${fullCmd}`);
     returnMsg.error = true;
-    [returnMsg.errorCode, returnMsg.errorMsg] = translateError(e as Error);
+    [returnMsg.errorCode, returnMsg.errorMsg] = translateError(solverError);
   }
 
   return returnMsg;
