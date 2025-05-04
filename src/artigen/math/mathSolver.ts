@@ -72,6 +72,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
 
   // Look for any implicit multiplication that may have been missed
   // Start at index 1 as there will never be implicit multiplication before the first element
+  loggingEnabled && log(LT.LOG, `Checking for missing implicit multiplication ${JSON.stringify(conf)}`);
   for (let i = 1; i < conf.length; i++) {
     loopCountCheck();
 

@@ -16,7 +16,9 @@ import { legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
 
-const operators = ['(', ')', '^', '*', '/', '%', '+', '-'];
+// minusOps are operators that will cause a negative sign to collapse into a number (in cases like + - 1)
+const minusOps = ['(', '^', '*', '/', '%', '+', '-'];
+const allOps = [...minusOps, ')'];
 
 export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResults: number[]): [ReturnData[], CountDetails[]] => {
   const countDetails: CountDetails[] = [];
@@ -132,7 +134,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
       } else {
         throw new Error(`IllegalVariable_${curMathConfStr}`);
       }
-    } else if (![...operators, ...legalMathOperators].includes(curMathConfStr)) {
+    } else if (![...allOps, ...legalMathOperators].includes(curMathConfStr)) {
       // If nothing else has handled it by now, try it as a roll
       const formattedRoll = generateFormattedRoll(curMathConfStr, modifiers);
       mathConf[i] = formattedRoll.solvedStep;
@@ -140,7 +142,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
     }
 
     // Identify if we are in a state where the current number is a negative number
-    if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || operators.includes(<string> mathConf[i - 2]))) {
+    if (mathConf[i - 1] === '-' && ((!mathConf[i - 2] && mathConf[i - 2] !== 0) || minusOps.includes(<string> mathConf[i - 2]))) {
       if (typeof mathConf[i] === 'string') {
         // Current item is a mathOp, need to insert a "-1 *" before it
         mathConf.splice(i - 1, 1, ...[parseFloat('-1'), '*']);
