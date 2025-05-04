@@ -60,6 +60,13 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         containsCrit: false,
         containsFail: false,
       };
+    } else if (curMathConfStr.toLowerCase() === 'lemon' || curMathConfStr.toLowerCase() === '🍋') {
+      mathConf[i] = {
+        total: 5,
+        details: '🍋',
+        containsCrit: false,
+        containsFail: false,
+      };
     } else if (curMathConfStr.toLowerCase() === 'fart' || curMathConfStr.toLowerCase() === '💩') {
       mathConf[i] = {
         total: 7,
@@ -67,7 +74,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         containsCrit: false,
         containsFail: false,
       };
-    } else if (curMathConfStr.toLowerCase() === 'sex') {
+    } else if (curMathConfStr.toLowerCase() === 'sex' || curMathConfStr.toLowerCase() === '🍆🍑' || curMathConfStr.toLowerCase() === '🍑🍆') {
       mathConf[i] = {
         total: 69,
         details: '( ͡° ͜ʖ ͡°)',
@@ -90,7 +97,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         containsCrit: false,
         containsFail: false,
       };
-    } else if (curMathConfStr.toLowerCase() === 'pie') {
+    } else if (curMathConfStr.toLowerCase() === 'pie' || curMathConfStr.toLowerCase() === '🥧') {
       // If the operand is pie, pi*e, create a SolvedStep for e and pi (and the multiplication symbol between them)
       mathConf[i] = {
         total: Math.PI,
