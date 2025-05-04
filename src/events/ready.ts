@@ -90,6 +90,6 @@ export const readyHandler = () => {
           ],
         },
       ],
-    }).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:88', 'Startup', e));
+    }).catch((e: Error) => utils.commonLoggers.messageSendError('ready.ts:93', 'Startup', e));
   }, 1000);
 };

@@ -33,5 +33,5 @@ export const guildCreateHandler = (guild: DiscordenoGuild) => {
         ],
       },
     ],
-  }).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:95', 'Join Guild', e));
+  }).catch((e: Error) => utils.commonLoggers.messageSendError('guildCreate.ts:36', 'Join Guild', e));
 };

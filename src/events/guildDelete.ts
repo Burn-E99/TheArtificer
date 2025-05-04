@@ -35,8 +35,8 @@ export const guildDeleteHandler = (guild: DiscordenoGuild) => {
         ],
       },
     ],
-  }).catch((e: Error) => utils.commonLoggers.messageSendError('mod.ts:99', 'Leave Guild', e));
+  }).catch((e: Error) => utils.commonLoggers.messageSendError('guildDelete.ts:38', 'Leave Guild', e));
   dbClient
     .execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id])
-    .catch((e) => utils.commonLoggers.dbError('mod.ts:100', 'delete from', e));
+    .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:41', 'delete from', e));
 };
