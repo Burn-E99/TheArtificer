@@ -3,7 +3,7 @@ import { auditGuilds } from 'commands/auditCmd/auditGuilds.ts';
 import { auditHelp } from 'commands/auditCmd/auditHelp.ts';
 
 export default {
-  auditHelp,
   auditDB,
   auditGuilds,
+  auditHelp,
 };

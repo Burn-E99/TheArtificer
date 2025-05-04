@@ -5,9 +5,9 @@ import { showHideWarn } from 'commands/apiCmd/showHideWarn.ts';
 import { status } from 'commands/apiCmd/status.ts';
 
 export default {
-  help,
   allowBlock,
+  help,
   deleteGuild,
-  status,
   showHideWarn,
+  status,
 };
