@@ -2,7 +2,9 @@ import { DiscordenoMessage } from '@discordeno';
 
 import dbClient from 'db/client.ts';
 
-import { failColor, generateApiStatus } from 'src/commandUtils.ts';
+import { generateApiStatus } from 'embeds/api.ts';
+import { failColor } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
 
 export const status = async (message: DiscordenoMessage) => {

@@ -2,7 +2,8 @@ import { cache, cacheHandlers, DiscordenoGuild, DiscordenoMessage } from '@disco
 
 import config from '~config';
 
-import { infoColor2 } from 'src/commandUtils.ts';
+import { infoColor2 } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
 
 const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {

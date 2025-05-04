@@ -1,10 +1,13 @@
 import { cache, cacheHandlers, DiscordenoMessage } from '@discordeno';
 
+import config from '~config';
+
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { compilingStats } from 'src/commonEmbeds.ts';
-import { generateStats } from 'src/commandUtils.ts';
+import { infoColor2 } from 'embeds/colors.ts';
+import { compilingStats } from 'embeds/common.ts';
+
 import utils from 'src/utils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
@@ -33,18 +36,45 @@ export const stats = async (message: DiscordenoMessage) => {
 
     const endTime = new Date().getTime();
 
-    m.edit(
-      generateStats(
-        cachedGuilds + cache.dispatchedGuildIds.size,
-        cachedChannels + cache.dispatchedChannelIds.size,
-        cachedMembers,
-        rolls,
-        total - rolls,
-        rollRate,
-        totalRate - rollRate,
-        endTime - startTime,
-      ),
-    ).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
+    m.edit({
+      embeds: [
+        {
+          color: infoColor2,
+          title: `${config.name}'s Statistics:`,
+          timestamp: new Date().toISOString(),
+          fields: [
+            {
+              name: 'Guilds:',
+              value: `${(cachedGuilds + cache.dispatchedGuildIds.size).toLocaleString()}`,
+              inline: true,
+            },
+            {
+              name: 'Channels:',
+              value: `${(cachedChannels + cache.dispatchedChannelIds.size).toLocaleString()}`,
+              inline: true,
+            },
+            {
+              name: 'Active Members:',
+              value: `${cachedMembers.toLocaleString()}`,
+              inline: true,
+            },
+            {
+              name: 'Roll Commands:',
+              value: `${rolls.toLocaleString()}\n(${Math.abs(rollRate).toFixed(2)} per hour)`,
+              inline: true,
+            },
+            {
+              name: 'Utility Commands:',
+              value: `${(total - rolls).toLocaleString()}\n(${Math.abs(totalRate - rollRate).toFixed(2)} per hour)`,
+              inline: true,
+            },
+          ],
+          footer: {
+            text: `Total query time: ${endTime - startTime}ms`,
+          },
+        },
+      ],
+    }).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
   } catch (e) {
     utils.commonLoggers.messageSendError('stats.ts:41', message, e as Error);
   }

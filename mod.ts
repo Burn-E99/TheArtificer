@@ -14,8 +14,9 @@ import commands from 'commands/_index.ts';
 import dbClient from 'db/client.ts';
 import { ignoreList } from 'db/common.ts';
 
+import { successColor, warnColor } from 'embeds/colors.ts';
+
 import api from 'src/api.ts';
-import { successColor, warnColor } from 'src/commandUtils.ts';
 import intervals from 'src/intervals.ts';
 import utils from 'src/utils.ts';
 

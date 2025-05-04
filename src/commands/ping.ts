@@ -3,8 +3,18 @@ import { DiscordenoMessage } from '@discordeno';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { generatePing } from 'src/commandUtils.ts';
+import { infoColor1 } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
+
+const generatePing = (time: number) => ({
+  embeds: [
+    {
+      color: infoColor1,
+      title: time === -1 ? 'Ping?' : `Pong! Latency is ${time}ms.`,
+    },
+  ],
+});
 
 export const ping = async (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run

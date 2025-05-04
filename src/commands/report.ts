@@ -5,7 +5,7 @@ import config from '~config';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { failColor, generateReport, successColor } from 'src/commandUtils.ts';
+import { failColor, infoColor2, successColor } from 'embeds/colors.ts';
 import utils from 'src/utils.ts';
 
 export const report = (message: DiscordenoMessage, args: string[]) => {
@@ -13,7 +13,15 @@ export const report = (message: DiscordenoMessage, args: string[]) => {
   dbClient.execute(queries.callIncCnt('report')).catch((e) => utils.commonLoggers.dbError('report.ts:17', 'call sproc INC_CNT on', e));
 
   if (args.join(' ')) {
-    sendMessage(config.reportChannel, generateReport(args.join(' '))).catch((e: Error) => utils.commonLoggers.messageSendError('report.ts:22', message, e));
+    sendMessage(config.reportChannel, {
+      embeds: [
+        {
+          color: infoColor2,
+          title: 'USER REPORT:',
+          description: args.join(' ') || 'No message',
+        },
+      ],
+    }).catch((e: Error) => utils.commonLoggers.messageSendError('report.ts:22', message, e));
     message
       .send({
         embeds: [

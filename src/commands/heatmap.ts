@@ -5,7 +5,8 @@ import config from '~config';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { failColor, infoColor2 } from 'src/commandUtils.ts';
+import { failColor, infoColor2 } from 'embeds/colors.ts';
+
 import intervals from 'src/intervals.ts';
 import utils from 'src/utils.ts';
 

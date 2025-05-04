@@ -2,8 +2,9 @@ import { DiscordenoMessage, EmbedField } from '@discordeno';
 
 import dbClient from 'db/client.ts';
 
-import { compilingStats } from 'src/commonEmbeds.ts';
-import { infoColor2 } from 'src/commandUtils.ts';
+import { infoColor2 } from 'embeds/colors.ts';
+import { compilingStats } from 'embeds/common.ts';
+
 import utils from 'src/utils.ts';
 
 interface DBSizeData {

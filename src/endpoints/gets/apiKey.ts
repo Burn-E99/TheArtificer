@@ -8,7 +8,8 @@ import dbClient from 'db/client.ts';
 import stdResp from 'endpoints/stdResponses.ts';
 import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
-import { generateApiKeyEmail } from 'src/commandUtils.ts';
+import { generateApiKeyEmail } from 'embeds/api.ts';
+
 import utils from 'src/utils.ts';
 
 export const apiKey = async (query: Map<string, string>): Promise<Response> => {

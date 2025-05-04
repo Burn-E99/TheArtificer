@@ -14,9 +14,10 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
+import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from 'embeds/artigen.ts';
+
 import stdResp from 'endpoints/stdResponses.ts';
 
-import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from 'src/commandUtils.ts';
 import utils from 'src/utils.ts';
 
 export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, workerTimeout: number, rollRequest: QueuedRoll) => {

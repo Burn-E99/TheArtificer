@@ -7,7 +7,8 @@ import auditCommands from 'commands/auditCmd/_index.ts';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { failColor } from 'src/commandUtils.ts';
+import { failColor } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
 
 export const audit = (message: DiscordenoMessage, args: string[]) => {

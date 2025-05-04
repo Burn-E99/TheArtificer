@@ -1,4 +1,4 @@
-import { warnColor } from 'src/commandUtils.ts';
+import { warnColor } from 'embeds/colors.ts';
 
 export const compilingStats = {
   embeds: [

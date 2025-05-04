@@ -8,7 +8,8 @@ import dbClient from 'db/client.ts';
 import stdResp from 'endpoints/stdResponses.ts';
 import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
-import { generateApiDeleteEmail } from 'src/commandUtils.ts';
+import { generateApiDeleteEmail } from 'embeds/api.ts';
+
 import utils from 'src/utils.ts';
 
 export const apiKeyDelete = async (query: Map<string, string>, apiUserid: bigint, apiUserEmail: string, apiUserDelCode: string): Promise<Response> => {

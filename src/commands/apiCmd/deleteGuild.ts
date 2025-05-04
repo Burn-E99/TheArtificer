@@ -4,7 +4,8 @@ import config from '~config';
 
 import dbClient from 'db/client.ts';
 
-import { failColor, successColor } from 'src/commandUtils.ts';
+import { failColor, successColor } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
 
 export const deleteGuild = async (message: DiscordenoMessage) => {

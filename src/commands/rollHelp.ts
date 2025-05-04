@@ -5,7 +5,8 @@ import config from '~config';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { infoColor1, infoColor2, successColor } from 'src/commandUtils.ts';
+import { infoColor1, infoColor2, successColor } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
 
 export const rollHelp = (message: DiscordenoMessage) => {

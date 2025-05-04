@@ -6,7 +6,9 @@ import { getWorkerCnt } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 import { handleRollRequest } from 'artigen/managers/workerManager.ts';
 
-import { infoColor2, rollingEmbed } from 'src/commandUtils.ts';
+import { rollingEmbed } from 'embeds/artigen.ts';
+import { infoColor2 } from 'embeds/colors.ts';
+
 import utils from 'src/utils.ts';
 
 const rollQueue: Array<QueuedRoll> = [];

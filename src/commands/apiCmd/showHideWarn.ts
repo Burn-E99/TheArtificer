@@ -2,7 +2,8 @@ import { DiscordenoMessage } from '@discordeno';
 
 import dbClient from 'db/client.ts';
 
-import { generateApiFailed, generateApiSuccess } from 'src/commandUtils.ts';
+import { generateApiFailed, generateApiSuccess } from 'embeds/api.ts';
+
 import utils from 'src/utils.ts';
 
 export const showHideWarn = async (message: DiscordenoMessage, apiArg: string) => {

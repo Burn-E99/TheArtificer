@@ -5,9 +5,10 @@ import { RollModifiers } from 'artigen/dice/dice.d.ts';
 import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
+import { generateRollEmbed } from 'embeds/artigen.ts';
+
 import stdResp from 'endpoints/stdResponses.ts';
 
-import { generateRollEmbed } from 'src/commandUtils.ts';
 import utils from 'src/utils.ts';
 
 export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRoll) => {
