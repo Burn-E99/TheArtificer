@@ -7,7 +7,7 @@ import { queries } from 'db/common.ts';
 
 import { failColor, infoColor2 } from 'embeds/colors.ts';
 
-import intervals from 'src/intervals.ts';
+import intervals from 'utils/intervals.ts';
 import utils from 'utils/utils.ts';
 
 export const heatmap = (message: DiscordenoMessage) => {

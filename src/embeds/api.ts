@@ -1,5 +1,6 @@
-import config from '../../config.example.ts';
-import { failColor, infoColor1, successColor } from 'src/embeds/colors.ts';
+import config from '~config';
+
+import { failColor, infoColor1, successColor } from 'embeds/colors.ts';
 
 export const generateApiFailed = (args: string) => ({
   embeds: [

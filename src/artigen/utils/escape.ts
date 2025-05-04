@@ -2,8 +2,9 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { loopCountCheck } from 'src/artigen/managers/loopManager.ts';
 
 // escapeCharacters(str, esc) returns str
 // escapeCharacters escapes all characters listed in esc

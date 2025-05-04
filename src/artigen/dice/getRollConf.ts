@@ -2,7 +2,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import { RollConf } from 'artigen/dice/dice.d.ts';
 
-import { getLoopCount, loopCountCheck } from 'src/artigen/managers/loopManager.ts';
+import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
