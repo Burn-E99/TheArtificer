@@ -23,7 +23,7 @@ import utils from 'utils/utils.ts';
 
 // Extend the BigInt prototype to support JSON.stringify
 interface BigIntX extends BigInt {
-  /** Convert to BigInt to string form in JSON.stringify */
+  // Convert to BigInt to string form in JSON.stringify
   toJSON: () => string;
 }
 (BigInt.prototype as BigIntX).toJSON = function () {

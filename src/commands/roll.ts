@@ -60,6 +60,8 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     }
 
     let rollCmd = message.content.startsWith(`${config.prefix}r`) ? args.join(' ') : message.content;
+
+    // Try to ensure the roll is wrapped
     if (!rollCmd.includes(config.prefix)) {
       rollCmd = `${config.prefix}${rollCmd}`;
     }
