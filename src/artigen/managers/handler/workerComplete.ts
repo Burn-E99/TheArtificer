@@ -32,7 +32,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     const pubEmbedDetails = await generateRollEmbed(
       rollRequest.apiRoll ? rollRequest.api.userId : rollRequest.dd.originalMessage.authorId,
       returnMsg,
-      rollRequest.modifiers
+      rollRequest.modifiers,
     );
     const gmEmbedDetails = await generateRollEmbed(rollRequest.apiRoll ? rollRequest.api.userId : rollRequest.dd.originalMessage.authorId, returnMsg, {
       ...rollRequest.modifiers,
@@ -143,14 +143,14 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
             JSON.stringify(
               rollRequest.modifiers.count
                 ? {
-                    counts: countEmbed,
-                    details: pubEmbedDetails,
-                  }
+                  counts: countEmbed,
+                  details: pubEmbedDetails,
+                }
                 : {
-                    details: pubEmbedDetails,
-                  }
-            )
-          )
+                  details: pubEmbedDetails,
+                },
+            ),
+          ),
         );
       }
     }

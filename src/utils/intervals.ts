@@ -197,7 +197,7 @@ const updateHeatmapPng = async () => {
         hourPixels[hour][0] + 1,
         dayPixels[day][1] - dayPixels[day][0] + 1,
         hourPixels[hour][1] - hourPixels[hour][0] + 1,
-        Image.rgbToColor(255 * (1 - percent), 255 * percent, 0)
+        Image.rgbToColor(255 * (1 - percent), 255 * percent, 0),
       );
     }
   }

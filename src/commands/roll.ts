@@ -48,9 +48,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
-      m.edit(generateRollError('Modifiers invalid:', modifiers.error.name, modifiers.error.message)).catch((e) =>
-        utils.commonLoggers.messageEditError('roll.ts:50', m, e)
-      );
+      m.edit(generateRollError('Modifiers invalid:', modifiers.error.name, modifiers.error.message)).catch((e) => utils.commonLoggers.messageEditError('roll.ts:50', m, e));
 
       if (DEVMODE && config.logRolls) {
         // If enabled, log rolls so we can verify the bots math
