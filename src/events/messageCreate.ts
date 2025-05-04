@@ -129,6 +129,8 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       break;
     case 'roll':
     case 'r':
+      // [[roll or [[r
+      // Dice rolling commence!
       commands.roll(message, args, args.join(''));
       break;
     default:
