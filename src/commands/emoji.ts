@@ -6,8 +6,15 @@ import config from '~config';
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { EmojiConf } from 'src/mod.d.ts';
 import utils from 'src/utils.ts';
+
+interface EmojiConf {
+  name: string;
+  aliases: string[];
+  id: string;
+  animated: boolean;
+  deleteSender: boolean;
+}
 
 const allEmojiAliases: string[] = [];
 
