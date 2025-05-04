@@ -34,7 +34,9 @@
     "db/": "./src/db/",
     "embeds/": "./src/embeds/",
     "endpoints/": "./src/endpoints/",
+    "events/": "./src/events/",
     "utils/": "./src/utils/",
-    "src/api.ts": "./src/api.ts"
+    "src/api.ts": "./src/api.ts",
+    "src/events.ts": "./src/events.ts"
   }
 }
