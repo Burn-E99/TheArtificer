@@ -13,7 +13,7 @@ import { queries } from 'db/common.ts';
 import stdResp from 'endpoints/stdResponses.ts';
 import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 const apiWarning = `The following roll was conducted using my built in API.  If someone in this channel did not request this roll, please report API abuse here: <${config.api.supportURL}>`;
 
@@ -116,7 +116,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
     } else {
       // Alert API user that they messed up
       return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
       );
     }
   } else {

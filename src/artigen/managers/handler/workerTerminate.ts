@@ -9,7 +9,7 @@ import { generateRollEmbed } from 'embeds/artigen.ts';
 
 import stdResp from 'endpoints/stdResponses.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRoll) => {
   rollWorker.terminate();
@@ -24,12 +24,12 @@ export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRol
           (
             await generateRollEmbed(
               rollRequest.dd.originalMessage.authorId,
-              <SolvedRoll> {
+              <SolvedRoll>{
                 error: true,
                 errorCode: 'TooComplex',
                 errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
               },
-              <RollModifiers> {},
+              <RollModifiers>{}
             )
           ).embed,
         ],

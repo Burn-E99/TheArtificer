@@ -12,7 +12,7 @@ import config from '~config';
 import dbClient from 'db/client.ts';
 import { weekDays } from 'db/common.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 interface PastCommandCount {
   command: string;

@@ -9,7 +9,7 @@ import { queries } from 'db/common.ts';
 
 import { failColor } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const api = async (message: DiscordenoMessage, args: string[]) => {
   // Light telemetry to see how many times a command is being run

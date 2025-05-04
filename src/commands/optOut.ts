@@ -7,7 +7,7 @@ import { ignoreList, queries } from 'db/common.ts';
 
 import { failColor, successColor } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const optOut = async (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run

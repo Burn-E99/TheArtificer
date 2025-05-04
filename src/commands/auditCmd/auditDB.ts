@@ -5,7 +5,7 @@ import dbClient from 'db/client.ts';
 import { infoColor2 } from 'embeds/colors.ts';
 import { compilingStats } from 'embeds/common.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 interface DBSizeData {
   table: string;

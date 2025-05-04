@@ -9,7 +9,7 @@ import { handleRollRequest } from 'artigen/managers/workerManager.ts';
 import { rollingEmbed } from 'embeds/artigen.ts';
 import { infoColor2 } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 const rollQueue: Array<QueuedRoll> = [];
 
@@ -41,7 +41,9 @@ The results for this roll will replace this message when it is done.`,
 setInterval(() => {
   log(
     LT.LOG,
-    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${getWorkerCnt()}, config.limits.maxWorkers: ${config.limits.maxWorkers}`,
+    `Checking rollQueue for items, rollQueue length: ${rollQueue.length}, currentWorkers: ${getWorkerCnt()}, config.limits.maxWorkers: ${
+      config.limits.maxWorkers
+    }`
   );
   if (rollQueue.length && getWorkerCnt() < config.limits.maxWorkers) {
     const rollRequest = rollQueue.shift();

@@ -5,7 +5,7 @@ import { queries } from 'db/common.ts';
 
 import { infoColor1 } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 const generatePing = (time: number) => ({
   embeds: [

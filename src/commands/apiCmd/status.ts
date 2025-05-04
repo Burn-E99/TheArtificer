@@ -5,7 +5,7 @@ import dbClient from 'db/client.ts';
 import { generateApiStatus } from 'embeds/api.ts';
 import { failColor } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const status = async (message: DiscordenoMessage) => {
   // Get status of guild from the db

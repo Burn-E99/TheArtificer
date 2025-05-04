@@ -31,9 +31,10 @@
     "~flags": "./flags.ts",
     "artigen/": "./src/artigen/",
     "commands/": "./src/commands/",
+    "db/": "./src/db/",
     "embeds/": "./src/embeds/",
     "endpoints/": "./src/endpoints/",
-    "db/": "./src/db/",
-    "src/": "./src/"
+    "utils/": "./src/utils/",
+    "src/api.ts": "./src/api.ts"
   }
 }

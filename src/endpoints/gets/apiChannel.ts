@@ -3,7 +3,7 @@ import dbClient from 'db/client.ts';
 import stdResp from 'endpoints/stdResponses.ts';
 import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const apiChannel = async (query: Map<string, string>, apiUserid: bigint): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user'])) {

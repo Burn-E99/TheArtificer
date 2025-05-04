@@ -8,7 +8,7 @@ import { queries } from 'db/common.ts';
 
 import { infoColor1 } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const handleMentions = (message: DiscordenoMessage) => {
   log(LT.LOG, `Handling @mention message: ${JSON.stringify(message)}`);

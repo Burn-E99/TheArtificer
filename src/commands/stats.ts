@@ -8,7 +8,7 @@ import { queries } from 'db/common.ts';
 import { infoColor2 } from 'embeds/colors.ts';
 import { compilingStats } from 'embeds/common.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const stats = async (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run

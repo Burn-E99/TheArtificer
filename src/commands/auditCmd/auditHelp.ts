@@ -4,7 +4,7 @@ import config from '~config';
 
 import { infoColor1 } from 'embeds/colors.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const auditHelp = (message: DiscordenoMessage) => {
   message

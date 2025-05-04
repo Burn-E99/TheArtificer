@@ -5,7 +5,7 @@ import dbClient from 'db/client.ts';
 import stdResp from 'endpoints/stdResponses.ts';
 import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const apiChannelManageBan = async (query: Map<string, string>, apiUserid: bigint, path: string): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user', 'channel', 'a'])) {

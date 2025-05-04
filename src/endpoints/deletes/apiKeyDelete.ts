@@ -10,7 +10,7 @@ import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
 import { generateApiDeleteEmail } from 'embeds/api.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const apiKeyDelete = async (query: Map<string, string>, apiUserid: bigint, apiUserEmail: string, apiUserDelCode: string): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user', 'email'])) {

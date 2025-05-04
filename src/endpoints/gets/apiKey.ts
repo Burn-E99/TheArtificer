@@ -10,7 +10,7 @@ import { verifyQueryHasParams } from 'endpoints/utils.ts';
 
 import { generateApiKeyEmail } from 'embeds/api.ts';
 
-import utils from 'src/utils.ts';
+import utils from 'utils/utils.ts';
 
 export const apiKey = async (query: Map<string, string>): Promise<Response> => {
   if (verifyQueryHasParams(query, ['user', 'email'])) {
