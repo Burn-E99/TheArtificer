@@ -59,10 +59,18 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       return;
     }
 
+    let rollCmd = message.content.startsWith(`${config.prefix}r`) ? args.join(' ') : message.content;
+    if (!rollCmd.includes(config.prefix)) {
+      rollCmd = `${config.prefix}${rollCmd}`;
+    }
+    if (!rollCmd.includes(config.postfix)) {
+      rollCmd = `${rollCmd}${config.postfix}`;
+    }
+
     sendRollRequest({
       apiRoll: false,
       dd: { myResponse: m, originalMessage: message },
-      rollCmd: message.content,
+      rollCmd,
       modifiers,
       originalCommand,
     });

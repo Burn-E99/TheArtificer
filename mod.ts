@@ -276,8 +276,8 @@ startBot({
           commands.version(message);
           break;
         case 'report':
-        case 'r':
-          // [[report or [[r (command that failed)
+        case 're':
+          // [[report or [[re (command that failed)
           // Manually report a failed roll
           commands.report(message, args);
           break;
@@ -302,6 +302,10 @@ startBot({
           // [[heatmap or [[hm
           // Audit sub commands
           commands.heatmap(message);
+          break;
+        case 'roll':
+        case 'r':
+          commands.roll(message, args, args.join(''));
           break;
         default:
           // Non-standard commands
