@@ -10,16 +10,18 @@ import utils from 'utils/utils.ts';
 let guildsJoined: EmbedField[] = [];
 
 const sendGuildJoinedBatch = () => {
-  sendMessage(config.logChannel, {
-    embeds: [
-      {
-        title: 'Guild Joined!',
-        color: infoColor1,
-        fields: guildsJoined,
-      },
-    ],
-  }).catch((e: Error) => utils.commonLoggers.messageSendError('guildCreate.ts:21', 'Join Guild', e));
-  guildsJoined = [];
+  if (guildsJoined.length) {
+    sendMessage(config.logChannel, {
+      embeds: [
+        {
+          title: 'Guild Joined!',
+          color: infoColor1,
+          fields: guildsJoined,
+        },
+      ],
+    }).catch((e: Error) => utils.commonLoggers.messageSendError('guildCreate.ts:21', 'Join Guild', e));
+    guildsJoined = [];
+  }
 };
 
 setInterval(() => {
