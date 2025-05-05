@@ -2,7 +2,22 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import { RollModifiers } from 'artigen/dice/dice.d.ts';
 
-export const getModifiers = (args: string[]): RollModifiers => {
+export const Modifiers = Object.freeze({
+  Count: '-c',
+  NoDetails: '-nd',
+  SuperNoDetails: '-snd',
+  HideRaw: '-hr',
+  Spoiler: '-s',
+  Max: '-max',
+  MaxShorthand: '-m',
+  Min: '-min',
+  Nominal: '-n',
+  GM: '-gm',
+  Order: '-o',
+  CommaTotals: '-ct',
+});
+
+export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
   const modifiers: RollModifiers = {
     noDetails: false,
     superNoDetails: false,
@@ -26,32 +41,32 @@ export const getModifiers = (args: string[]): RollModifiers => {
     log(LT.LOG, `Checking ${args.join(' ')} for command modifiers ${i}`);
     let defaultCase = false;
     switch (args[i].toLowerCase()) {
-      case '-c':
+      case Modifiers.Count:
         modifiers.count = true;
         break;
-      case '-nd':
+      case Modifiers.NoDetails:
         modifiers.noDetails = true;
         break;
-      case '-snd':
+      case Modifiers.SuperNoDetails:
         modifiers.superNoDetails = true;
         break;
-      case '-hr':
+      case Modifiers.HideRaw:
         modifiers.hideRaw = true;
         break;
-      case '-s':
+      case Modifiers.Spoiler:
         modifiers.spoiler = '||';
         break;
-      case '-max':
-      case '-m':
+      case Modifiers.Max:
+      case Modifiers.MaxShorthand:
         modifiers.maxRoll = true;
         break;
-      case '-min':
+      case Modifiers.Min:
         modifiers.minRoll = true;
         break;
-      case '-n':
+      case Modifiers.Nominal:
         modifiers.nominalRoll = true;
         break;
-      case '-gm':
+      case Modifiers.GM:
         modifiers.gmRoll = true;
 
         // -gm is a little more complex, as we must get all of the GMs that need to be DMd
@@ -65,10 +80,10 @@ export const getModifiers = (args: string[]): RollModifiers => {
           // If -gm is on and none were found, throw an error
           modifiers.error.name = 'NoGMsFound';
           modifiers.error.message = 'Must specify at least one GM by @mentioning them';
-          return modifiers;
+          return [modifiers, args];
         }
         break;
-      case '-o':
+      case Modifiers.Order:
         // Shift the -o out of the array so the next item is the direction
         args.splice(i, 1);
 
@@ -76,12 +91,12 @@ export const getModifiers = (args: string[]): RollModifiers => {
           // If -o is on and asc or desc was not specified, error out
           modifiers.error.name = 'NoOrderFound';
           modifiers.error.message = 'Must specify `a` or `d` to order the rolls ascending or descending';
-          return modifiers;
+          return [modifiers, args];
         }
 
         modifiers.order = args[i].toLowerCase()[0];
         break;
-      case '-ct':
+      case Modifiers.CommaTotals:
         modifiers.commaTotals = true;
         break;
       default:
@@ -100,9 +115,9 @@ export const getModifiers = (args: string[]): RollModifiers => {
   if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll].filter((b) => b).length > 1) {
     modifiers.error.name = 'MaxAndNominal';
     modifiers.error.message = 'Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`';
-    return modifiers;
+    return [modifiers, args];
   }
 
   modifiers.valid = true;
-  return modifiers;
+  return [modifiers, args];
 };

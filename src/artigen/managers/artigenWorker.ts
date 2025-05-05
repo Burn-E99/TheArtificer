@@ -1,6 +1,9 @@
 import { closeLog, initLog } from '@Log4Deno';
 
 import { runCmd } from 'artigen/artigen.ts';
+
+import { QueuedRoll } from 'artigen/managers/manager.d.ts';
+
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 loggingEnabled && initLog('logs/worker', loggingEnabled);
@@ -9,9 +12,9 @@ loggingEnabled && initLog('logs/worker', loggingEnabled);
 self.postMessage('ready');
 
 // Handle the roll
-self.onmessage = async (e) => {
+self.onmessage = async (e: MessageEvent<QueuedRoll>) => {
   const payload = e.data;
-  const returnMsg = runCmd(payload.rollCmd, payload.modifiers) || {
+  const returnMsg = runCmd(payload) || {
     error: true,
     errorCode: 'EmptyMessage',
     errorMsg: 'Error: Empty message',

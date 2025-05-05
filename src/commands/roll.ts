@@ -45,7 +45,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     const m = await message.reply(rollingEmbed);
 
     // Get modifiers from command
-    const modifiers = getModifiers(args);
+    const [modifiers, remainingArgs] = getModifiers(args);
 
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
@@ -60,7 +60,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       return;
     }
 
-    let rollCmd = message.content.startsWith(`${config.prefix}r`) ? args.join(' ') : message.content;
+    let rollCmd = message.content.startsWith(`${config.prefix}r`) ? remainingArgs.join(' ') : `${config.prefix}${command} ${remainingArgs.join(' ')}`;
 
     // Try to ensure the roll is wrapped
     if (!rollCmd.includes(config.prefix)) {
