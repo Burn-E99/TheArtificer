@@ -11,7 +11,7 @@ import utils from 'utils/utils.ts';
 
 export const optIn = async (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
-  dbClient.execute(queries.callIncCnt('opt-out')).catch((e) => utils.commonLoggers.dbError('optIn.ts:11', 'call sproc INC_CNT on', e));
+  dbClient.execute(queries.callIncCnt('opt-in')).catch((e) => utils.commonLoggers.dbError('optIn.ts:11', 'call sproc INC_CNT on', e));
 
   const idIdx = ignoreList.indexOf(message.authorId);
   if (idIdx !== -1) {
