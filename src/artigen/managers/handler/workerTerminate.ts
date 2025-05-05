@@ -5,7 +5,7 @@ import { RollModifiers } from 'artigen/dice/dice.d.ts';
 import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
-import { generateRollEmbed } from 'embeds/artigen.ts';
+import { generateRollEmbed } from 'artigen/utils/embeds.ts';
 
 import stdResp from 'endpoints/stdResponses.ts';
 

@@ -6,7 +6,8 @@ import { getWorkerCnt } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 import { handleRollRequest } from 'artigen/managers/workerManager.ts';
 
-import { rollingEmbed } from 'embeds/artigen.ts';
+import { rollingEmbed } from 'artigen/utils/embeds.ts';
+
 import { infoColor2 } from 'embeds/colors.ts';
 
 import utils from 'utils/utils.ts';

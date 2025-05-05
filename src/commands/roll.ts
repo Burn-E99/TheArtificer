@@ -8,10 +8,11 @@ import { getModifiers } from 'artigen/dice/getModifiers.ts';
 
 import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
+import { generateRollError, rollingEmbed } from 'artigen/utils/embeds.ts';
+
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
-import { generateRollError, rollingEmbed } from 'embeds/artigen.ts';
 import { warnColor } from 'embeds/colors.ts';
 
 import utils from 'utils/utils.ts';

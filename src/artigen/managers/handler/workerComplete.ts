@@ -9,12 +9,11 @@ import { SolvedRoll } from 'artigen/artigen.d.ts';
 import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
+import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from 'artigen/utils/embeds.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
-
-import { generateCountDetailsEmbed, generateDMFailed, generateRollEmbed } from 'embeds/artigen.ts';
 
 import stdResp from 'endpoints/stdResponses.ts';
 
