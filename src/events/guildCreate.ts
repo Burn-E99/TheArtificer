@@ -31,8 +31,8 @@ setInterval(() => {
 export const guildCreateHandler = (guild: DiscordenoGuild) => {
   log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);
   guildsJoined.push({
-    name: `${guild.name}: (${guild.id})`,
-    value: `${guild.memberCount}`,
+    name: `${guild.name}: (${guild.memberCount})`,
+    value: `${guild.id}`,
   });
   if (guildsJoined.length === 25) {
     sendGuildJoinedBatch();
