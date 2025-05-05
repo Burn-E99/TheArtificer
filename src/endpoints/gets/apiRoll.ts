@@ -84,6 +84,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
         const modifiers: RollModifiers = {
           noDetails: query.has('nd'),
           superNoDetails: query.has('snd'),
+          hideRaw: query.has('hr'),
           spoiler: query.has('s') ? '||' : '',
           maxRoll: query.has('m') || query.has('max'),
           minRoll: query.has('min'),
@@ -93,8 +94,9 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           order: query.has('o') ? query.get('o')?.toLowerCase() || '' : '',
           count: query.has('c'),
           commaTotals: query.has('ct'),
-          valid: true,
           apiWarn: hideWarn ? '' : apiWarning,
+          valid: true,
+          error: new Error(),
         };
 
         return new Promise<Response>((resolve) => {

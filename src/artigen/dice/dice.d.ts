@@ -35,6 +35,7 @@ export interface RollFormat {
 export interface RollModifiers {
   noDetails: boolean;
   superNoDetails: boolean;
+  hideRaw: boolean;
   spoiler: string;
   maxRoll: boolean;
   minRoll: boolean;

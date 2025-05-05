@@ -6,6 +6,7 @@ export const getModifiers = (args: string[]): RollModifiers => {
   const modifiers: RollModifiers = {
     noDetails: false,
     superNoDetails: false,
+    hideRaw: false,
     spoiler: '',
     maxRoll: false,
     minRoll: false,
@@ -33,6 +34,9 @@ export const getModifiers = (args: string[]): RollModifiers => {
         break;
       case '-snd':
         modifiers.superNoDetails = true;
+        break;
+      case '-hr':
+        modifiers.hideRaw = true;
         break;
       case '-s':
         modifiers.spoiler = '||';

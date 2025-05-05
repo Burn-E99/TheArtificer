@@ -102,12 +102,13 @@ export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedR
       },
     };
   } else {
+    const line1Details = modifiers.hideRaw ? '' : `<@${authorId}>${returnDetails.line1}\n`;
     if (modifiers.gmRoll) {
       // Roll is a GM Roll, send this in the pub channel (this funciton will be ran again to get details for the GMs)
       return {
         embed: {
           color: infoColor2,
-          description: `<@${authorId}>${returnDetails.line1}\n\nResults have been messaged to the following GMs: ${
+          description: `${line1Details}${line1Details ? '\n' : ''}Results have been messaged to the following GMs: ${
             modifiers.gms
               .map((gm) => (gm.startsWith('<') ? gm : `<@${gm}>`))
               .join(' ')
@@ -129,7 +130,7 @@ export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedR
         loggingEnabled && log(LT.LOG, `${returnDetails.line3} |&| ${details}`);
       }
 
-      const baseDesc = `<@${authorId}>${returnDetails.line1}\n**${line2Details.shift()}:**\n${line2Details.join(': ')}`;
+      const baseDesc = `${line1Details}**${line2Details.shift()}:**\n${line2Details.join(': ')}`;
 
       // Embed desc limit is 4096
       if (baseDesc.length + details.length < 4090) {
