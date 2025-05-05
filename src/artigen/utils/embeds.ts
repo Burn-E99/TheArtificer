@@ -125,12 +125,8 @@ export const generateRollEmbed = async (authorId: bigint, returnDetails: SolvedR
       let details = '';
 
       if (!modifiers.superNoDetails) {
-        if (modifiers.noDetails) {
-          details = `**Details:**\nSuppressed by -nd flag`;
-        } else {
-          details = `**Details:**\n${modifiers.spoiler}${returnDetails.line3}${modifiers.spoiler}`;
-          loggingEnabled && log(LT.LOG, `${returnDetails.line3} |&| ${details}`);
-        }
+        details = `**Details:**\n${modifiers.spoiler}${returnDetails.line3}${modifiers.spoiler}`;
+        loggingEnabled && log(LT.LOG, `${returnDetails.line3} |&| ${details}`);
       }
 
       const baseDesc = `<@${authorId}>${returnDetails.line1}\n**${line2Details.shift()}:**\n${line2Details.join(': ')}`;

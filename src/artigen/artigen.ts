@@ -103,7 +103,8 @@ export const runCmd = (fullCmd: string, modifiers: RollModifiers): SolvedRoll =>
         line2 += `${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}, `;
       }
 
-      line3 += `\`${e.initConfig}\` = ${e.rollDetails} = ${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
+      const rollDetails = modifiers.noDetails ? ' = ' : ` = ${e.rollDetails} = `;
+      line3 += `\`${e.initConfig}\`${rollDetails}${preFormat}${modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
     });
 
     // If order is on, remove trailing ", "
