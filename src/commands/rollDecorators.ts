@@ -11,7 +11,7 @@ import utils from 'utils/utils.ts';
 
 export const rollDecorators = (message: DiscordenoMessage) => {
   // Light telemetry to see how many times a command is being run
-  dbClient.execute(queries.callIncCnt('rollDecorators')).catch((e) => utils.commonLoggers.dbError('rollHelp.ts:15', 'call sproc INC_CNT on', e));
+  dbClient.execute(queries.callIncCnt('rolldecorators')).catch((e) => utils.commonLoggers.dbError('rollHelp.ts:15', 'call sproc INC_CNT on', e));
 
   message
     .send({
