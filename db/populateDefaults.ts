@@ -11,24 +11,24 @@ console.log('Insertion done');
 
 console.log('Attempting to insert default commands into command_cnt');
 const commands = [
-  'ping',
-  'rip',
-  'rollhelp',
+  'api',
+  'audit',
+  'emojis',
+  'heatmap',
   'help',
   'info',
-  'version',
-  'report',
-  'stats',
-  'roll',
-  'emojis',
-  'api',
-  'privacy',
   'mention',
-  'audit',
-  'heatmap',
-  'rolldecorators',
-  'opt-out',
   'opt-in',
+  'opt-out',
+  'ping',
+  'privacy',
+  'rip',
+  'report',
+  'roll',
+  'rolldecorators',
+  'rollhelp',
+  'stats',
+  'version',
 ];
 for (const command of commands) {
   await dbClient.execute('INSERT INTO command_cnt(command) values(?)', [command]).catch((e) => {
