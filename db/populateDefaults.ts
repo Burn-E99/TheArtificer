@@ -26,7 +26,7 @@ const commands = [
   'mention',
   'audit',
   'heatmap',
-  'rollDecorators',
+  'rolldecorators',
   'opt-out',
   'opt-in',
 ];
