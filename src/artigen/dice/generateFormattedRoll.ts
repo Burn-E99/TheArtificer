@@ -3,6 +3,8 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import { RollFormat, RollModifiers } from 'artigen/dice/dice.d.ts';
 import { executeRoll } from 'artigen/dice/executeRoll.ts';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 import { rollCounter } from 'artigen/utils/counter.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
@@ -19,6 +21,8 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
 
   // Loop thru all parts of the roll to document everything that was done to create the total roll
   tempRollSet.forEach((e) => {
+    loopCountCheck();
+
     loggingEnabled && log(LT.LOG, `Formatting roll ${rollConf} | ${JSON.stringify(e)}`);
     let preFormat = '';
     let postFormat = '';

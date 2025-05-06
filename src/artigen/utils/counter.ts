@@ -1,5 +1,7 @@
 import { CountDetails, RollSet } from 'artigen/dice/dice.d.ts';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+
 export const rollCounter = (rollSet: RollSet[]): CountDetails => {
   const countDetails = {
     total: 0,
@@ -11,6 +13,7 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
   };
 
   rollSet.forEach((roll) => {
+    loopCountCheck();
     countDetails.total++;
     if (roll.critHit) countDetails.successful++;
     if (roll.critFail) countDetails.failed++;
@@ -24,14 +27,17 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
 
 export const reduceCountDetails = (counts: CountDetails[]): CountDetails => {
   return counts.reduce(
-    (acc, cnt) => ({
-      total: acc.total + cnt.total,
-      successful: acc.successful + cnt.successful,
-      failed: acc.failed + cnt.failed,
-      rerolled: acc.rerolled + cnt.rerolled,
-      dropped: acc.dropped + cnt.dropped,
-      exploded: acc.exploded + cnt.exploded,
-    }),
+    (acc, cnt) => {
+      loopCountCheck();
+      return {
+        total: acc.total + cnt.total,
+        successful: acc.successful + cnt.successful,
+        failed: acc.failed + cnt.failed,
+        rerolled: acc.rerolled + cnt.rerolled,
+        dropped: acc.dropped + cnt.dropped,
+        exploded: acc.exploded + cnt.exploded,
+      };
+    },
     {
       total: 0,
       successful: 0,

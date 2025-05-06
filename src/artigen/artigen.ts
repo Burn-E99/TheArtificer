@@ -3,6 +3,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import { SolvedRoll } from 'artigen/artigen.d.ts';
 import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
 
+import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
 import { cmdSplitRegex, escapeCharacters } from 'artigen/utils/escape.ts';
@@ -77,6 +78,8 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
 
     // Fill out all of the details and results now
     tempReturnData.forEach((e) => {
+      loopCountCheck();
+
       loggingEnabled && log(LT.LOG, `Parsing roll ${rollRequest.rollCmd} | Making return text ${JSON.stringify(e)}`);
       let preFormat = '';
       let postFormat = '';
