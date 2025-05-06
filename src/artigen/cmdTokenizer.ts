@@ -58,6 +58,8 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
       loggingEnabled && log(LT.LOG, `ConfirmCrit on ${JSON.stringify(currentCmd)}`);
       let done = false;
       while (!done) {
+        loopCountCheck();
+
         const [ccTempData, ccTempCounts] = tokenizeCmd(currentCmd, modifiers, false, topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults);
         const ccData = ccTempData[0];
         ccData.rollPreFormat = '\nAuto-Confirming Crit: ';
