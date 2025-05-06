@@ -25,17 +25,17 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
   return countDetails;
 };
 
-export const reduceCountDetails = (counts: CountDetails[]): CountDetails => {
-  return counts.reduce(
-    (acc, cnt) => {
+export const reduceCountDetails = (counts: CountDetails[]): CountDetails =>
+  counts.reduce(
+    (acc, cur) => {
       loopCountCheck();
       return {
-        total: acc.total + cnt.total,
-        successful: acc.successful + cnt.successful,
-        failed: acc.failed + cnt.failed,
-        rerolled: acc.rerolled + cnt.rerolled,
-        dropped: acc.dropped + cnt.dropped,
-        exploded: acc.exploded + cnt.exploded,
+        total: acc.total + cur.total,
+        successful: acc.successful + cur.successful,
+        failed: acc.failed + cur.failed,
+        rerolled: acc.rerolled + cur.rerolled,
+        dropped: acc.dropped + cur.dropped,
+        exploded: acc.exploded + cur.exploded,
       };
     },
     {
@@ -47,4 +47,3 @@ export const reduceCountDetails = (counts: CountDetails[]): CountDetails => {
       exploded: 0,
     },
   );
-};
