@@ -84,6 +84,6 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
       containsCrit: tempCrit,
       containsFail: tempFail,
     },
-    countDetails: rollCounter(tempRollSet),
+    countDetails: modifiers.count || modifiers.confirmCrit ? rollCounter(tempRollSet) : rollCounter([]),
   };
 };
