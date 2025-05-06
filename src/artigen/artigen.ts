@@ -10,6 +10,7 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
 import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
 import { translateError } from 'artigen/utils/translateError.ts';
+import { reduceCountDetails } from 'artigen/utils/counter.ts';
 
 // runCmd(rollRequest)
 // runCmd handles converting rollRequest into a computer readable format for processing, and finally executes the solving
@@ -115,24 +116,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     returnMsg.line3 = line3;
 
     // Reduce counts to a single object
-    returnMsg.counts = tempCountDetails.reduce(
-      (acc, cnt) => ({
-        total: acc.total + cnt.total,
-        successful: acc.successful + cnt.successful,
-        failed: acc.failed + cnt.failed,
-        rerolled: acc.rerolled + cnt.rerolled,
-        dropped: acc.dropped + cnt.dropped,
-        exploded: acc.exploded + cnt.exploded,
-      }),
-      {
-        total: 0,
-        successful: 0,
-        failed: 0,
-        rerolled: 0,
-        dropped: 0,
-        exploded: 0,
-      },
-    );
+    returnMsg.counts = reduceCountDetails(tempCountDetails);
   } catch (e) {
     // Fill in the return block
     const solverError = e as Error;

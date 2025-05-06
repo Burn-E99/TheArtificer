@@ -94,6 +94,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           order: query.has('o') ? query.get('o')?.toLowerCase() || '' : '',
           count: query.has('c'),
           commaTotals: query.has('ct'),
+          confirmCrit: query.has('cc'),
           apiWarn: hideWarn ? '' : apiWarning,
           valid: true,
           error: new Error(),

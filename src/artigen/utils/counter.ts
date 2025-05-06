@@ -21,3 +21,24 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
 
   return countDetails;
 };
+
+export const reduceCountDetails = (counts: CountDetails[]): CountDetails => {
+  return counts.reduce(
+    (acc, cnt) => ({
+      total: acc.total + cnt.total,
+      successful: acc.successful + cnt.successful,
+      failed: acc.failed + cnt.failed,
+      rerolled: acc.rerolled + cnt.rerolled,
+      dropped: acc.dropped + cnt.dropped,
+      exploded: acc.exploded + cnt.exploded,
+    }),
+    {
+      total: 0,
+      successful: 0,
+      failed: 0,
+      rerolled: 0,
+      dropped: 0,
+      exploded: 0,
+    },
+  );
+};

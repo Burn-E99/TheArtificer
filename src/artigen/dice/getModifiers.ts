@@ -15,6 +15,7 @@ export const Modifiers = Object.freeze({
   GM: '-gm',
   Order: '-o',
   CommaTotals: '-ct',
+  ConfirmCrit: '-cc',
 });
 
 export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
@@ -31,6 +32,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     order: '',
     count: false,
     commaTotals: false,
+    confirmCrit: false,
     apiWarn: '',
     valid: false,
     error: new Error(),
@@ -65,6 +67,9 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         break;
       case Modifiers.Nominal:
         modifiers.nominalRoll = true;
+        break;
+      case Modifiers.ConfirmCrit:
+        modifiers.confirmCrit = true;
         break;
       case Modifiers.GM:
         modifiers.gmRoll = true;

@@ -13,6 +13,7 @@ import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
+import { reduceCountDetails } from 'artigen/utils/counter.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
 export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean, previousResults: number[] = []): [ReturnData[], CountDetails[]] => {
@@ -28,15 +29,12 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     const openIdx = cmd.indexOf(config.prefix);
     const closeIdx = getMatchingPostfixIdx(cmd, openIdx);
 
+    const currentCmd = cmd.slice(openIdx + 1, closeIdx);
+
     loggingEnabled && log(LT.LOG, `Setting previous results: topLevel:${topLevel} ${topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults}`);
 
     // Handle any nested commands
-    const [tempData, tempCounts] = tokenizeCmd(
-      cmd.slice(openIdx + 1, closeIdx),
-      modifiers,
-      false,
-      topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults,
-    );
+    const [tempData, tempCounts] = tokenizeCmd(currentCmd, modifiers, false, topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults);
     const data = tempData[0];
 
     if (topLevel) {
@@ -55,6 +53,24 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     // Store results
     returnData.push(data);
     countDetails.push(...tempCounts);
+
+    if (topLevel && modifiers.confirmCrit && reduceCountDetails(tempCounts).successful) {
+      loggingEnabled && log(LT.LOG, `ConfirmCrit on ${JSON.stringify(currentCmd)}`);
+      let done = false;
+      while (!done) {
+        const [ccTempData, ccTempCounts] = tokenizeCmd(currentCmd, modifiers, false, topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults);
+        const ccData = ccTempData[0];
+        ccData.rollPreFormat = '\nAuto-Confirming Crit: ';
+
+        loggingEnabled && log(LT.LOG, `ConfirmCrit on ${JSON.stringify(currentCmd)} | Rolled again ${JSON.stringify(ccData)} ${JSON.stringify(ccTempCounts)}`);
+
+        // Store CC results
+        returnData.push(ccData);
+        countDetails.push(...ccTempCounts);
+
+        done = reduceCountDetails(ccTempCounts).successful === 0;
+      }
+    }
   }
 
   if (topLevel) {
