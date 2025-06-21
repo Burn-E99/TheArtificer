@@ -1,4 +1,6 @@
-import { CountDetails } from 'artigen/dice/dice.d.ts';
+import { Embed, FileContent } from '@discordeno';
+
+import { CountDetails, RollDistributionMap } from 'artigen/dice/dice.d.ts';
 
 // ReturnData is the temporary internal type used before getting turned into SolvedRoll
 export interface ReturnData {
@@ -20,4 +22,19 @@ export interface SolvedRoll {
   line2: string;
   line3: string;
   counts: CountDetails;
+  rollDistributions: RollDistributionMap;
+}
+
+interface basicArtigenEmbed {
+  charCount: number;
+  embed: Embed;
+}
+
+export interface ArtigenEmbedNoAttachment extends basicArtigenEmbed {
+  hasAttachment: false;
+}
+
+export interface ArtigenEmbedWithAttachment extends basicArtigenEmbed {
+  hasAttachment: true;
+  attachment: FileContent;
 }

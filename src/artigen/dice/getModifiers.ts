@@ -16,6 +16,7 @@ export const Modifiers = Object.freeze({
   Order: '-o',
   CommaTotals: '-ct',
   ConfirmCrit: '-cc',
+  RollDistribution: '-rd',
 });
 
 export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
@@ -33,6 +34,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     count: false,
     commaTotals: false,
     confirmCrit: false,
+    rollDist: false,
     apiWarn: '',
     valid: false,
     error: new Error(),
@@ -103,6 +105,9 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         break;
       case Modifiers.CommaTotals:
         modifiers.commaTotals = true;
+        break;
+      case Modifiers.RollDistribution:
+        modifiers.rollDist = true;
         break;
       default:
         // Default case should not mess with the array

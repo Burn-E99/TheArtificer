@@ -8,6 +8,7 @@ export interface RollSet {
   type: RollType;
   origIdx: number;
   roll: number;
+  size: number;
   dropped: boolean;
   rerolled: boolean;
   exploding: boolean;
@@ -25,10 +26,15 @@ export interface CountDetails {
   exploded: number;
 }
 
+// RollDistribution is used for storing the raw roll distribution
+// use rollDistKey to generate the key
+export type RollDistributionMap = Map<string, number[]>;
+
 // RollFormat is the return structure for the rollFormatter
-export interface RollFormat {
+export interface FormattedRoll {
   solvedStep: SolvedStep;
   countDetails: CountDetails;
+  rollDistributions: RollDistributionMap;
 }
 
 // RollModifiers is the structure to keep track of the decorators applied to a roll command
@@ -46,6 +52,7 @@ export interface RollModifiers {
   count: boolean;
   commaTotals: boolean;
   confirmCrit: boolean;
+  rollDist: boolean;
   apiWarn: string;
   valid: boolean;
   error: Error;

@@ -54,6 +54,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
     type: rollConf.type,
     origIdx: 0,
     roll: 0,
+    size: 0,
     dropped: false,
     rerolled: false,
     exploding: false,
@@ -71,6 +72,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
     const rolling = getTemplateRoll();
     // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
     rolling.roll = rollConf.type === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+    rolling.size = rollConf.dieSize;
     // Set origIdx of roll
     rolling.origIdx = i;
 
@@ -110,6 +112,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
 
         // Copy the template to fill out for this iteration
         const newReroll = getTemplateRoll();
+        newReroll.size = rollConf.dieSize;
         if (modifiers.maxRoll && !minMaxOverride) {
           // If maximizeRoll is on and we've entered the reroll code, dieSize is not allowed, determine the next best option and always return that
           mmMaxLoop: for (let m = rollConf.dieSize - 1; m > 0; m--) {
@@ -167,6 +170,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
         const newExplodingRoll = getTemplateRoll();
         // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
         newExplodingRoll.roll = genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+        newExplodingRoll.size = rollConf.dieSize;
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 

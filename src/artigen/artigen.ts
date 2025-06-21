@@ -6,12 +6,13 @@ import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
+import { reduceCountDetails } from 'artigen/utils/counter.ts';
 import { cmdSplitRegex, escapeCharacters } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
+import { reduceRollDistMaps } from 'artigen/utils/rollDist.ts';
 import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
 import { translateError } from 'artigen/utils/translateError.ts';
-import { reduceCountDetails } from 'artigen/utils/counter.ts';
 
 // runCmd(rollRequest)
 // runCmd handles converting rollRequest into a computer readable format for processing, and finally executes the solving
@@ -31,6 +32,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       dropped: 0,
       exploded: 0,
     },
+    rollDistributions: new Map<string, number[]>(),
   };
 
   // Whole processor lives in a try-catch to catch artigen's intentional error conditions
@@ -43,8 +45,8 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     assertPrePostBalance(sepCmds);
 
     // Send the split roll into the command tokenizer to get raw response data
-    const [tempReturnData, tempCountDetails] = tokenizeCmd(sepCmds, rollRequest.modifiers, true);
-    loggingEnabled && log(LT.LOG, `Return data is back ${JSON.stringify(tempReturnData)}`);
+    const [tempReturnData, tempCountDetails, tempRollDists] = tokenizeCmd(sepCmds, rollRequest.modifiers, true);
+    loggingEnabled && log(LT.LOG, `Return data is back ${JSON.stringify(tempReturnData)} ${JSON.stringify(tempCountDetails)} ${JSON.stringify(tempRollDists)}`);
 
     // Remove any floating spaces from originalCommand
     // Escape any | and ` chars in originalCommand to prevent spoilers and code blocks from acting up
@@ -120,6 +122,9 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
 
     // Reduce counts to a single object
     returnMsg.counts = reduceCountDetails(tempCountDetails);
+
+    // Reduce rollDist maps into a single map
+    returnMsg.rollDistributions = reduceRollDistMaps(tempRollDists);
   } catch (e) {
     // Fill in the return block
     const solverError = e as Error;

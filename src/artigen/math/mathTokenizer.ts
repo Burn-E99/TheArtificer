@@ -4,7 +4,7 @@ import { ReturnData } from 'artigen/artigen.d.ts';
 
 import { MathConf, SolvedStep } from 'artigen/math/math.d.ts';
 
-import { CountDetails, RollModifiers } from 'artigen/dice/dice.d.ts';
+import { CountDetails, RollDistributionMap, RollModifiers } from 'artigen/dice/dice.d.ts';
 import { generateFormattedRoll } from 'artigen/dice/generateFormattedRoll.ts';
 
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
@@ -20,8 +20,9 @@ import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
 const minusOps = ['(', '^', '*', '/', '%', '+', '-'];
 const allOps = [...minusOps, ')'];
 
-export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResults: number[]): [ReturnData[], CountDetails[]] => {
+export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResults: number[]): [ReturnData[], CountDetails[], RollDistributionMap[]] => {
   const countDetails: CountDetails[] = [];
+  const rollDists: RollDistributionMap[] = [];
 
   loggingEnabled && log(LT.LOG, `Parsing roll ${cmd} | ${JSON.stringify(modifiers)} | ${JSON.stringify(previousResults)}`);
 
@@ -146,6 +147,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
       const formattedRoll = generateFormattedRoll(curMathConfStr, modifiers);
       mathConf[i] = formattedRoll.solvedStep;
       countDetails.push(formattedRoll.countDetails);
+      rollDists.push(formattedRoll.rollDistributions);
     }
 
     // Identify if we are in a state where the current number is a negative number
@@ -185,5 +187,6 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
       },
     ],
     countDetails,
+    rollDists,
   ];
 };

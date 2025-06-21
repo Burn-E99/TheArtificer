@@ -132,6 +132,8 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-gm @user1 @user2 ... @userN` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
     * `-ct` - Comma Totals - Adds commas to totals for readability
+    * `-cc` - Confirm Critical Hits - Automatically rerolls whenever a crit hits
+    - `-rd` - Roll Distribution - Shows a raw roll distribution of all dice in roll
   * The results have some formatting applied on them to provide details on what happened during this roll.
     * Critical successes will be **bolded**
     * Critical fails will be <ins>underlined</ins>

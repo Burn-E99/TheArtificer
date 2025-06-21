@@ -1,16 +1,17 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollFormat, RollModifiers } from 'artigen/dice/dice.d.ts';
+import { FormattedRoll, RollModifiers } from 'artigen/dice/dice.d.ts';
 import { executeRoll } from 'artigen/dice/executeRoll.ts';
 
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { rollCounter } from 'artigen/utils/counter.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { createRollDistMap } from 'artigen/utils/rollDist.ts';
 
 // generateFormattedRoll(rollConf, modifiers) returns one SolvedStep
 // generateFormattedRoll handles creating and formatting the completed rolls into the SolvedStep format
-export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers): RollFormat => {
+export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers): FormattedRoll => {
   let tempTotal = 0;
   let tempDetails = '[';
   let tempCrit = false;
@@ -85,5 +86,6 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
       containsFail: tempFail,
     },
     countDetails: modifiers.count || modifiers.confirmCrit ? rollCounter(tempRollSet) : rollCounter([]),
+    rollDistributions: modifiers.rollDist ? createRollDistMap(tempRollSet) : new Map<string, number[]>(),
   };
 };

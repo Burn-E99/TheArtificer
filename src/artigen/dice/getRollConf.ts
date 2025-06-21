@@ -72,7 +72,7 @@ export const getRollConf = (rollStr: string): RollConf => {
   const rawDC = dPts.shift() || '1';
   if (rawDC.includes('.')) {
     throw new Error('WholeDieCountSizeOnly');
-  } else if (rawDC.match(/\D/)) {
+  } else if (!rawDC.endsWith('cwo') && !rawDC.endsWith('ova') && rawDC.match(/\D/)) {
     throw new Error(`CannotParseDieCount_${rawDC}`);
   }
   const tempDC = rawDC.replace(/\D/g, '');

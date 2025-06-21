@@ -4,23 +4,29 @@ import config from '~config';
 
 import { ReturnData } from 'artigen/artigen.d.ts';
 
-import { CountDetails, RollModifiers } from 'artigen/dice/dice.d.ts';
+import { CountDetails, RollDistributionMap, RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
+import { reduceCountDetails } from 'artigen/utils/counter.ts';
 import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
-import { reduceCountDetails } from 'artigen/utils/counter.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
-export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: boolean, previousResults: number[] = []): [ReturnData[], CountDetails[]] => {
+export const tokenizeCmd = (
+  cmd: string[],
+  modifiers: RollModifiers,
+  topLevel: boolean,
+  previousResults: number[] = [],
+): [ReturnData[], CountDetails[], RollDistributionMap[]] => {
   loggingEnabled && log(LT.LOG, `Tokenizing command ${JSON.stringify(cmd)}`);
 
   const returnData: ReturnData[] = [];
   const countDetails: CountDetails[] = [];
+  const rollDists: RollDistributionMap[] = [];
 
   // Wrapped commands still exist, unwrap them
   while (cmd.includes(config.prefix)) {
@@ -34,7 +40,7 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     loggingEnabled && log(LT.LOG, `Setting previous results: topLevel:${topLevel} ${topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults}`);
 
     // Handle any nested commands
-    const [tempData, tempCounts] = tokenizeCmd(currentCmd, modifiers, false, topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults);
+    const [tempData, tempCounts, tempDists] = tokenizeCmd(currentCmd, modifiers, false, topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults);
     const data = tempData[0];
 
     if (topLevel) {
@@ -53,14 +59,22 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     // Store results
     returnData.push(data);
     countDetails.push(...tempCounts);
+    rollDists.push(...tempDists);
 
+    // Handle ConfirmCrit if its on
     if (topLevel && modifiers.confirmCrit && reduceCountDetails(tempCounts).successful) {
       loggingEnabled && log(LT.LOG, `ConfirmCrit on ${JSON.stringify(currentCmd)}`);
       let done = false;
       while (!done) {
         loopCountCheck();
 
-        const [ccTempData, ccTempCounts] = tokenizeCmd(currentCmd, modifiers, false, topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults);
+        // Keep running the same roll again until its not successful
+        const [ccTempData, ccTempCounts, ccTempDists] = tokenizeCmd(
+          currentCmd,
+          modifiers,
+          false,
+          topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults,
+        );
         const ccData = ccTempData[0];
         ccData.rollPreFormat = '\nAuto-Confirming Crit: ';
 
@@ -69,6 +83,7 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
         // Store CC results
         returnData.push(ccData);
         countDetails.push(...ccTempCounts);
+        rollDists.push(...ccTempDists);
 
         done = reduceCountDetails(ccTempCounts).successful === 0;
       }
@@ -80,17 +95,19 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
       loggingEnabled && log(LT.LOG, `Adding leftover formatting to last returnData ${JSON.stringify(cmd)}`);
       returnData[returnData.length - 1].rollPostFormat = cmd.join('');
     }
-    return [returnData, countDetails];
+    return [returnData, countDetails, rollDists];
   } else {
     loggingEnabled && log(LT.LOG, `Tokenizing math ${JSON.stringify(cmd)}`);
 
     // Solve the math and rolls for this cmd
-    const [tempData, tempCounts] = tokenizeMath(cmd.join(''), modifiers, previousResults);
+    const [tempData, tempCounts, tempDists] = tokenizeMath(cmd.join(''), modifiers, previousResults);
     const data = tempData[0];
-    loggingEnabled && log(LT.LOG, `Solved math is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)}`);
+    loggingEnabled &&
+      log(LT.LOG, `Solved math is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)} ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
 
     // Merge counts
     countDetails.push(...tempCounts);
+    rollDists.push(...tempDists);
 
     // Handle merging returnData into tempData
     const initConf = data.initConfig.split(internalWrapRegex).filter((x) => x);
@@ -112,6 +129,6 @@ export const tokenizeCmd = (cmd: string[], modifiers: RollModifiers, topLevel: b
     // Join all parts/remainders
     data.initConfig = initConf.join('');
     loggingEnabled && log(LT.LOG, `ReturnData merged into solved math ${JSON.stringify(data)} | ${JSON.stringify(countDetails)}`);
-    return [[data], countDetails];
+    return [[data], countDetails, rollDists];
   }
 };

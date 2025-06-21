@@ -140,7 +140,7 @@ Please see attached file for audit details on cached guilds and members.`,
         },
       ],
       file: {
-        blob: b.size > 8388290 ? tooBig : b,
+        blob: b.size > config.maxFileSize ? tooBig : b,
         name: 'auditDetails.txt',
       },
     })
