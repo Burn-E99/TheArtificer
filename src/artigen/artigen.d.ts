@@ -11,6 +11,7 @@ export interface ReturnData {
   containsCrit: boolean;
   containsFail: boolean;
   initConfig: string;
+  isComplex: boolean;
 }
 
 // SolvedRoll is the complete solved and formatted roll, or the error said roll created

@@ -60,6 +60,13 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
     exploding: false,
     critHit: false,
     critFail: false,
+    isComplex: rollConf.drop.on ||
+      rollConf.keep.on ||
+      rollConf.dropHigh.on ||
+      rollConf.keepLow.on ||
+      rollConf.critScore.on ||
+      rollConf.critFail.on ||
+      rollConf.exploding.on,
   });
 
   // Initial rolling, not handling reroll or exploding here

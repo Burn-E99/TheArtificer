@@ -4,6 +4,7 @@ export interface SolvedStep {
   details: string;
   containsCrit: boolean;
   containsFail: boolean;
+  isComplex: boolean;
 }
 
 // Joined type for mathConf as its a "WIP" variable and moved everything from string->number->SolvedStep

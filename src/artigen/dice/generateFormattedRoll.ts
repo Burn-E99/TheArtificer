@@ -16,6 +16,7 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
   let tempDetails = '[';
   let tempCrit = false;
   let tempFail = false;
+  let tempComplex = false;
 
   // Generate the roll, passing flags thru
   const tempRollSet = executeRoll(rollConf, modifiers);
@@ -45,6 +46,9 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
       }
       if (e.critFail) {
         tempFail = true;
+      }
+      if (e.isComplex) {
+        tempComplex = true;
       }
     }
     // If the roll was a crit hit or fail, or dropped/rerolled, add the formatting needed
@@ -84,6 +88,7 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
       details: tempDetails,
       containsCrit: tempCrit,
       containsFail: tempFail,
+      isComplex: tempComplex,
     },
     countDetails: modifiers.count || modifiers.confirmCrit ? rollCounter(tempRollSet) : rollCounter([]),
     rollDistributions: modifiers.rollDist ? createRollDistMap(tempRollSet) : new Map<string, number[]>(),

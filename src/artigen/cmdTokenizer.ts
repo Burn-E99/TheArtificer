@@ -113,6 +113,7 @@ export const tokenizeCmd = (
         containsCrit: simulatedData.some((data) => data.containsCrit),
         containsFail: simulatedData.some((data) => data.containsFail),
         initConfig: simulatedData[0].initConfig,
+        isComplex: simulatedData[0].isComplex,
       });
       loggingEnabled && log(LT.LOG, `SN on, returnData updated ${JSON.stringify(returnData)}`);
     }

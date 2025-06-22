@@ -60,6 +60,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '*e*',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
     } else if (curMathConfStr.toLowerCase() === 'lemon' || curMathConfStr.toLowerCase() === '🍋') {
       mathConf[i] = {
@@ -67,6 +68,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '🍋',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
     } else if (curMathConfStr.toLowerCase() === 'fart' || curMathConfStr.toLowerCase() === '💩') {
       mathConf[i] = {
@@ -74,6 +76,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '💩',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
     } else if (curMathConfStr.toLowerCase() === 'sex' || curMathConfStr.toLowerCase() === '🍆🍑' || curMathConfStr.toLowerCase() === '🍑🍆') {
       mathConf[i] = {
@@ -81,6 +84,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '( ͡° ͜ʖ ͡°)',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
     } else if (curMathConfStr.toLowerCase() === 'inf' || curMathConfStr.toLowerCase() === 'infinity' || curMathConfStr.toLowerCase() === '∞') {
       // If the operand is the constant Infinity, create a SolvedStep for it
@@ -89,6 +93,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '∞',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
     } else if (curMathConfStr.toLowerCase() === 'pi' || curMathConfStr.toLowerCase() === '𝜋') {
       // If the operand is the constant pi, create a SolvedStep for it
@@ -97,6 +102,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '𝜋',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
     } else if (curMathConfStr.toLowerCase() === 'pie' || curMathConfStr.toLowerCase() === '🥧') {
       // If the operand is pie, pi*e, create a SolvedStep for e and pi (and the multiplication symbol between them)
@@ -105,6 +111,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         details: '𝜋',
         containsCrit: false,
         containsFail: false,
+        isComplex: false,
       };
       mathConf.splice(
         i + 1,
@@ -116,6 +123,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
             details: '*e*',
             containsCrit: false,
             containsFail: false,
+            isComplex: false,
           },
         ],
       );
@@ -184,6 +192,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         containsCrit: tempSolved.containsCrit,
         containsFail: tempSolved.containsFail,
         initConfig: cmd,
+        isComplex: tempSolved.isComplex,
       },
     ],
     countDetails,

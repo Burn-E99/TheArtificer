@@ -23,6 +23,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     details: '',
     containsCrit: false,
     containsFail: false,
+    isComplex: false,
   };
 
   // If entering with a single number, note it now
@@ -103,11 +104,12 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
         // Init temp math to NaN to catch bad parsing
         let oper1 = NaN;
         let oper2 = NaN;
-        const subStepSolve = {
+        const subStepSolve: SolvedStep = {
           total: NaN,
           details: '',
           containsCrit: false,
           containsFail: false,
+          isComplex: false,
         };
 
         // If operand1 is a SolvedStep, populate our subStepSolve with its details and crit/fail flags
@@ -116,6 +118,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
           subStepSolve.details = `${operand1.details}\\${conf[i]}`;
           subStepSolve.containsCrit = operand1.containsCrit;
           subStepSolve.containsFail = operand1.containsFail;
+          subStepSolve.isComplex = operand1.isComplex;
         } else {
           // else parse it as a number and add it to the subStep details
           if (operand1 || operand1 == 0) {
@@ -130,6 +133,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
           subStepSolve.details += operand2.details;
           subStepSolve.containsCrit = subStepSolve.containsCrit || operand2.containsCrit;
           subStepSolve.containsFail = subStepSolve.containsFail || operand2.containsFail;
+          subStepSolve.isComplex = subStepSolve.isComplex || operand2.isComplex;
         } else {
           // else parse it as a number and add it to the subStep details
           oper2 = parseFloat(operand2.toString());
@@ -193,6 +197,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     stepSolve.details = tempConf.details;
     stepSolve.containsCrit = tempConf.containsCrit;
     stepSolve.containsFail = tempConf.containsFail;
+    stepSolve.isComplex = tempConf.isComplex;
   }
 
   // If this was a nested call, add on parens around the details to show what math we've done

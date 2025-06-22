@@ -14,6 +14,7 @@ export interface RollSet {
   exploding: boolean;
   critHit: boolean;
   critFail: boolean;
+  isComplex: boolean;
 }
 
 // CountDetails is the object holding the count data for creating the Count Embed

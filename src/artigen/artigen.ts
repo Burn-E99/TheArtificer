@@ -83,7 +83,17 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       line1 = ` rolled:\n\`${rawCmd}\``;
     }
 
+    // List number of iterations on simulated nominals
     if (rollRequest.modifiers.simulatedNominal) line2 += `Iterations performed per roll: \`${rollRequest.modifiers.simulatedNominal}\`\n`;
+
+    // Reduce counts to a single object
+    returnMsg.counts = reduceCountDetails(tempCountDetails);
+
+    // If a regular nominal and roll looks somewhat complex, alert user simulatedNominal exists
+    if (rollRequest.modifiers.nominalRoll && tempReturnData.filter((data) => data.isComplex).length) {
+      line2 +=
+        "One or more of the rolls requested appear to be more complex than what the Nominal calculator is intended for.  For a better approximation of this roll's nominal value, please rerun this roll with the `-sn` flag.\n";
+    }
 
     // Fill out all of the details and results now
     tempReturnData.forEach((e) => {
@@ -128,9 +138,6 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     returnMsg.line1 = line1;
     returnMsg.line2 = line2;
     returnMsg.line3 = line3;
-
-    // Reduce counts to a single object
-    returnMsg.counts = reduceCountDetails(tempCountDetails);
 
     // Reduce rollDist maps into a single map
     returnMsg.rollDistributions = reduceRollDistMaps(tempRollDists);
