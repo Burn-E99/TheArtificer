@@ -46,6 +46,7 @@ export interface RollModifiers {
   maxRoll: boolean;
   minRoll: boolean;
   nominalRoll: boolean;
+  simulatedNominal: number;
   gmRoll: boolean;
   gms: string[];
   order: string;

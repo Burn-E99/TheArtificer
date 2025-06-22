@@ -81,6 +81,8 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
         // Clip off the leading prefix.  API calls must be formatted with a prefix at the start to match how commands are sent in Discord
         rollCmd = rollCmd.replace(/%20/g, ' ').trim();
 
+        const rawSimNom = parseInt(query.get('sn') ?? '0');
+        const simNom = rawSimNom || 10000;
         const modifiers: RollModifiers = {
           noDetails: query.has('nd'),
           superNoDetails: query.has('snd'),
@@ -89,6 +91,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           maxRoll: query.has('m') || query.has('max'),
           minRoll: query.has('min'),
           nominalRoll: query.has('n'),
+          simulatedNominal: query.has('sn') ? simNom : 0,
           gmRoll: query.has('gms'),
           gms: query.has('gms') ? (query.get('gms') || '').split(',') : [],
           order: query.has('o') ? query.get('o')?.toLowerCase() || '' : '',
@@ -100,6 +103,21 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           valid: true,
           error: new Error(),
         };
+
+        // maxRoll, minRoll, and nominalRoll cannot be on at same time, throw an error
+        if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll, modifiers.simulatedNominal].filter((b) => b).length > 1) {
+          return stdResp.BadRequest('Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`, `simulatedNominal`');
+        }
+
+        // simulatedNominal and confirmCrit cannot be used at same time, throw an error
+        if ([modifiers.confirmCrit, modifiers.simulatedNominal].filter((b) => b).length > 1) {
+          return stdResp.BadRequest('Cannot use the following at the same time:\n`confirmCrit`, `simulatedNominal`');
+        }
+
+        // simulatedNominal cannot be greater than config.limits.simulatedNominal
+        if (modifiers.simulatedNominal > config.limits.simulatedNominal) {
+          return stdResp.BadRequest(`Number of iterations for \`simulatedNominal\` cannot be greater than \`${config.limits.simulatedNominal}\``);
+        }
 
         return new Promise<Response>((resolve) => {
           sendRollRequest({
@@ -120,7 +138,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
     } else {
       // Alert API user that they messed up
       return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
       );
     }
   } else {

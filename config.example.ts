@@ -11,6 +11,7 @@ export const config = {
     maxLoops: 1000000, // Determines how long the bot will attempt a roll, number of loops before it kills a roll.  Increase this at your own risk.
     maxWorkers: 16, // Maximum number of worker threads to spawn at once (Set this to less than the number of threads your CPU has, Artificer will eat it all if too many rolls happen at once)
     workerTimeout: 300000, // Maximum time before the bot kills a worker thread in ms
+    simulatedNominal: 100000, // Number of loops to run for simulating a nominal
   },
   api: {
     // Setting for the built-in API

@@ -61,13 +61,18 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     line2 = resultStr;
 
     // If a theoretical roll is requested, mark the output as such, else use default formatting
-    if (rollRequest.modifiers.maxRoll || rollRequest.modifiers.minRoll || rollRequest.modifiers.nominalRoll) {
-      const theoreticalTexts = ['Maximum', 'Minimum', 'Nominal'];
-      const theoreticalBools = [rollRequest.modifiers.maxRoll, rollRequest.modifiers.minRoll, rollRequest.modifiers.nominalRoll];
+    const theoreticalBools = [
+      rollRequest.modifiers.maxRoll,
+      rollRequest.modifiers.minRoll,
+      rollRequest.modifiers.nominalRoll,
+      rollRequest.modifiers.simulatedNominal > 0,
+    ];
+    if (theoreticalBools.includes(true)) {
+      const theoreticalTexts = ['Theoretical Maximum', 'Theoretical Minimum', 'Theoretical Nominal', 'Simulated Nominal'];
       const theoreticalText = theoreticalTexts[theoreticalBools.indexOf(true)];
 
-      line1 = ` requested the Theoretical ${theoreticalText} of:\n\`${rawCmd}\``;
-      line2 = `Theoretical ${theoreticalText} ${resultStr}`;
+      line1 = ` requested the ${theoreticalText.toLowerCase()} of:\n\`${rawCmd}\``;
+      line2 = `${theoreticalText} ${resultStr}`;
     } else if (rollRequest.modifiers.order === 'a') {
       line1 = ` requested the following rolls to be ordered from least to greatest:\n\`${rawCmd}\``;
       tempReturnData.sort(compareTotalRolls);
@@ -78,6 +83,8 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       line1 = ` rolled:\n\`${rawCmd}\``;
     }
 
+    if (rollRequest.modifiers.simulatedNominal) line2 += `Iterations performed per roll: \`${rollRequest.modifiers.simulatedNominal}\`\n`;
+
     // Fill out all of the details and results now
     tempReturnData.forEach((e) => {
       loopCountCheck();
@@ -86,14 +93,16 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       let preFormat = '';
       let postFormat = '';
 
-      // If the roll contained a crit success or fail, set the formatting around it
-      if (e.containsCrit) {
-        preFormat = `**${preFormat}`;
-        postFormat = `${postFormat}**`;
-      }
-      if (e.containsFail) {
-        preFormat = `__${preFormat}`;
-        postFormat = `${postFormat}__`;
+      if (!rollRequest.modifiers.simulatedNominal) {
+        // If the roll contained a crit success or fail, set the formatting around it
+        if (e.containsCrit) {
+          preFormat = `**${preFormat}`;
+          postFormat = `${postFormat}**`;
+        }
+        if (e.containsFail) {
+          preFormat = `__${preFormat}`;
+          postFormat = `${postFormat}__`;
+        }
       }
 
       // Populate line2 (the results) and line3 (the details) with their data
@@ -106,7 +115,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
         line2 += `${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}, `;
       }
 
-      const rollDetails = rollRequest.modifiers.noDetails ? ' = ' : ` = ${e.rollDetails} = `;
+      const rollDetails = rollRequest.modifiers.noDetails || rollRequest.modifiers.simulatedNominal > 0 ? ' = ' : ` = ${e.rollDetails} = `;
       line3 += `\`${e.initConfig}\`${rollDetails}${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
     });
 

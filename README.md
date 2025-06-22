@@ -126,13 +126,14 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-nd` - No Details - Suppresses all details of the requested roll
     * `-snd` - Super No Details - Suppresses all details of the requested roll and hides no details message
     * `-s` - Spoiler - Spoilers all details of the requested roll
-    * `-m` or `-max` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with `-n` or `-min`
-    * `-min` - Minimize Roll - Rolls the theoretical minimum roll, cannot be used with `-m`, `-max`, or `-n`
-    * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with `-m`, `-max`, or `-min`
+    * `-m` or `-max` - Maximize Roll - Rolls the theoretical maximum roll, cannot be used with `-n`, `-min`, or `-sn`
+    * `-min` - Minimize Roll - Rolls the theoretical minimum roll, cannot be used with `-m`, `-max`, `-n`, or `-sn`
+    * `-n` - Nominal Roll - Rolls the theoretical nominal roll, cannot be used with `-m`, `-max`, `-min`, or `-sn`
+    * `-sn` or `-sn [number]` - Simulated Nominal - Rolls the requests roll many times to approximately simulate the nominal of complex rolls, can specify the amount or accept default amount by not specify the amount, cannot be used with `-m`, `-max`, `-min`, `-n`, or `-cc`
     * `-gm @user1 @user2 ... @userN` - GM Roll - Rolls the requested roll in GM mode, suppressing all publicly shown results and details and sending the results directly to the specified GMs
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
     * `-ct` - Comma Totals - Adds commas to totals for readability
-    * `-cc` - Confirm Critical Hits - Automatically rerolls whenever a crit hits
+    * `-cc` - Confirm Critical Hits - Automatically rerolls whenever a crit hits, cannot be used with `-sn`
     - `-rd` - Roll Distribution - Shows a raw roll distribution of all dice in roll
   * The results have some formatting applied on them to provide details on what happened during this roll.
     * Critical successes will be **bolded**

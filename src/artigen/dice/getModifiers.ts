@@ -1,6 +1,7 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import config from '~config';
 
 export const Modifiers = Object.freeze({
   Count: '-c',
@@ -12,6 +13,7 @@ export const Modifiers = Object.freeze({
   MaxShorthand: '-m',
   Min: '-min',
   Nominal: '-n',
+  SimulatedNominal: '-sn',
   GM: '-gm',
   Order: '-o',
   CommaTotals: '-ct',
@@ -28,6 +30,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     maxRoll: false,
     minRoll: false,
     nominalRoll: false,
+    simulatedNominal: 0,
     gmRoll: false,
     gms: [],
     order: '',
@@ -36,7 +39,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     confirmCrit: false,
     rollDist: false,
     apiWarn: '',
-    valid: false,
+    valid: true,
     error: new Error(),
   };
 
@@ -69,6 +72,16 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         break;
       case Modifiers.Nominal:
         modifiers.nominalRoll = true;
+        break;
+      case Modifiers.SimulatedNominal:
+        if (args[i + 1] && parseInt(args[i + 1]).toString() === args[i + 1]) {
+          // Shift the -sn out so the next item is the amount
+          args.splice(i, 1);
+
+          modifiers.simulatedNominal = parseInt(args[i]);
+        } else {
+          modifiers.simulatedNominal = 10000;
+        }
         break;
       case Modifiers.ConfirmCrit:
         modifiers.confirmCrit = true;
@@ -121,13 +134,26 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     }
   }
 
-  // maxRoll, minRoll, and nominalRoll cannot be on at same time, throw an error
-  if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll].filter((b) => b).length > 1) {
+  // maxRoll, minRoll, nominalRoll, simulatedNominal cannot be on at same time, throw an error
+  if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll, modifiers.simulatedNominal].filter((b) => b).length > 1) {
     modifiers.error.name = 'MaxAndNominal';
-    modifiers.error.message = 'Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`';
-    return [modifiers, args];
+    modifiers.error.message = 'Can only use one of the following at a time:\n`maximize`, `minimize`, `nominal`, `simulatedNominal`';
+    modifiers.valid = false;
   }
 
-  modifiers.valid = true;
+  // simulatedNominal and confirmCrit cannot be used at same time, throw an error
+  if ([modifiers.confirmCrit, modifiers.simulatedNominal].filter((b) => b).length > 1) {
+    modifiers.error.name = 'SimNominalAndCC';
+    modifiers.error.message = 'Cannot use the following at the same time:\n`confirmCrit`, `simulatedNominal`';
+    modifiers.valid = false;
+  }
+
+  // simulatedNominal cannot be greater than config.limits.simulatedNominal
+  if (modifiers.simulatedNominal > config.limits.simulatedNominal) {
+    modifiers.error.name = 'SimNominalTooBig';
+    modifiers.error.message = `Number of iterations for \`simulatedNominal\` cannot be greater than \`${config.limits.simulatedNominal}\``;
+    modifiers.valid = false;
+  }
+
   return [modifiers, args];
 };
