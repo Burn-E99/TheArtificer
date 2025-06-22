@@ -21,7 +21,7 @@ export const tokenizeCmd = (
   cmd: string[],
   modifiers: RollModifiers,
   topLevel: boolean,
-  previousResults: number[] = []
+  previousResults: number[] = [],
 ): [ReturnData[], CountDetails[], RollDistributionMap[]] => {
   loggingEnabled && log(LT.LOG, `Tokenizing command ${JSON.stringify(cmd)}`);
 
@@ -43,9 +43,7 @@ export const tokenizeCmd = (
     loggingEnabled &&
       log(
         LT.LOG,
-        `Setting previous results: topLevel:${topLevel} ${
-          topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults
-        } simulatedLoopCount:${simulatedLoopCount}`
+        `Setting previous results: topLevel:${topLevel} ${topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults} simulatedLoopCount:${simulatedLoopCount}`,
       );
 
     const simulatedData: ReturnData[] = [];
@@ -86,7 +84,7 @@ export const tokenizeCmd = (
             currentCmd,
             modifiers,
             false,
-            topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults
+            topLevel ? returnData.map((rd) => rd.rollTotal) : previousResults,
           );
           const ccData = ccTempData[0];
           ccData.rollPreFormat = '\nAuto-Confirming Crit: ';
