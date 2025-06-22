@@ -116,7 +116,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       }
 
       const rollDetails = rollRequest.modifiers.noDetails || rollRequest.modifiers.simulatedNominal > 0 ? ' = ' : ` = ${e.rollDetails} = `;
-      line3 += `\`${e.initConfig}\`${rollDetails}${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
+      line3 += `\`${e.initConfig.replaceAll(' ', '')}\`${rollDetails}${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
     });
 
     // If order is on, remove trailing ", "
