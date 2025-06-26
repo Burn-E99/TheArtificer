@@ -78,7 +78,9 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
   // After the looping is done, remove the extra " + " from the details and cap it with the closing ]
   tempDetails = tempDetails.substring(0, tempDetails.length - 3);
   if (tempRollSet[0]?.type === 'cwod') {
-    tempDetails += `, ${tempRollSet.filter((e) => e.critHit).length} Successes, ${tempRollSet.filter((e) => e.critFail).length} Fails`;
+    const successCnt = tempRollSet.filter((e) => e.critHit).length;
+    const failCnt = tempRollSet.filter((e) => e.critFail).length;
+    tempDetails += `, ${successCnt} Success${successCnt !== 1 ? 'es' : ''}, ${failCnt} Fail${failCnt !== 1 ? 's' : ''}`;
   }
   tempDetails += ']';
 
