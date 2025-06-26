@@ -3,7 +3,8 @@ import config from '~config';
 import { HelpContents, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
 
 const name = 'Roll20 Dice Options';
-const description = `\`${config.prefix}xdydzracsq!${config.postfix}\` Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`).`;
+const description =
+  `\`${config.prefix}xdydzracsq!${config.postfix}\` Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`).`;
 const dict = new Map<string, HelpContents>([
   [
     'dice',

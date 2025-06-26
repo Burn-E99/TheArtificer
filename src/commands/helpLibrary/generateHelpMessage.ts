@@ -25,7 +25,7 @@ const generateActionRowWithSelectMenu = (selected: string, helpDict: HelpDict, p
             label: page[1].name,
             value: parent ? `${parent}${InteractionValueSeparator}${page[0]}` : page[0],
             default: page[0] === selected,
-          })
+          }),
         ),
     },
   ],
@@ -38,15 +38,14 @@ const makeHelpEmbed = (helpDict: HelpContents | HelpPage, parentTitle?: string):
   },
   title: helpDict.name,
   description: helpDict.description,
-  fields:
-    !helpDict.isPage && helpDict.example
-      ? [
-          {
-            name: `Example${helpDict.example.length > 1 ? 's' : ''}:`,
-            value: helpDict.example.join('\n').replaceAll('@$', `<@${botId}>`).replaceAll('[[', config.prefix).replaceAll(']]', config.postfix),
-          },
-        ]
-      : [],
+  fields: !helpDict.isPage && helpDict.example
+    ? [
+      {
+        name: `Example${helpDict.example.length > 1 ? 's' : ''}:`,
+        value: helpDict.example.join('\n').replaceAll('@$', `<@${botId}>`).replaceAll('[[', config.prefix).replaceAll(']]', config.postfix),
+      },
+    ]
+    : [],
 });
 
 const defaultHelpMessage = (showError = ''): CreateMessage => ({

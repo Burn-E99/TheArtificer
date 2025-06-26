@@ -1,12 +1,4 @@
-import {
-  ButtonData,
-  DiscordMessageComponentTypes,
-  editMessage,
-  Interaction,
-  InteractionResponseTypes,
-  SelectMenuData,
-  sendInteractionResponse,
-} from '@discordeno';
+import { ButtonData, DiscordMessageComponentTypes, editMessage, Interaction, InteractionResponseTypes, SelectMenuData, sendInteractionResponse } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import { generateHelpMessage, helpCustomId } from 'commands/helpLibrary/generateHelpMessage.ts';

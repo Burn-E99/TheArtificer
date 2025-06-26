@@ -1,8 +1,7 @@
 import { HelpContents, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
 
 const name = 'Results Formatting';
-const description =
-  'The results have some formatting applied on them to provide details on what happened during this roll.  These options can be stacked on each other to show complicated results.';
+const description = 'The results have some formatting applied on them to provide details on what happened during this roll.  These options can be stacked on each other to show complicated results.';
 const dict = new Map<string, HelpContents>([
   [
     'bold',

@@ -41,7 +41,8 @@ Damage: 14`,
     'variable',
     {
       name: 'Variables',
-      description: `${config.name}'s variable system allows reusing results as a value inside one message.  This is useful when you want to use a result as a part of the final message, but also want to use that result in a follow-up roll.
+      description:
+        `${config.name}'s variable system allows reusing results as a value inside one message.  This is useful when you want to use a result as a part of the final message, but also want to use that result in a follow-up roll.
 
 This message must contain multiple roll commands in it (such as \`[[d4]] [[d8]]\`).  Nested dice rolls are not able to be used as a variable, but can use variables inside them.
 
