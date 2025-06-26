@@ -12,7 +12,6 @@ import { privacy } from 'commands/privacy.ts';
 import { rip } from 'commands/rip.ts';
 import { report } from 'commands/report.ts';
 import { roll } from 'commands/roll.ts';
-import { rollDecorators } from 'commands/rollDecorators.ts';
 import { rollHelp } from 'commands/rollHelp.ts';
 import { stats } from 'commands/stats.ts';
 import { version } from 'commands/version.ts';
@@ -32,7 +31,6 @@ export default {
   rip,
   report,
   roll,
-  rollDecorators,
   rollHelp,
   stats,
   version,

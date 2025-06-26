@@ -4,7 +4,7 @@
  * December 21, 2020
  */
 import { log, LogTypes as LT } from '@Log4Deno';
-import { DiscordenoMessage, sendMessage } from '@discordeno';
+import { DiscordenoMessage, Interaction, sendMessage } from '@discordeno';
 
 // ask(prompt) returns string
 // ask prompts the user at command line for message
@@ -87,7 +87,7 @@ Available Commands:
 };
 
 const genericLogger = (level: LT, message: string) => log(level, message);
-const messageEditError = (location: string, message: DiscordenoMessage | string, err: Error) =>
+const messageEditError = (location: string, message: DiscordenoMessage | Interaction | string, err: Error) =>
   genericLogger(LT.ERROR, `${location} | Failed to edit message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message}`);
 const messageSendError = (location: string, message: DiscordenoMessage | string, err: Error) =>
   genericLogger(LT.ERROR, `${location} | Failed to send message: ${JSON.stringify(message)} | Error: ${err.name} - ${err.message}`);

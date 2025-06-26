@@ -59,21 +59,18 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       // Displays a short message I wanted to include
       commands.rip(message);
       break;
-    case 'rollhelp':
-    case 'rh':
-    case 'hr':
-    case '??':
-      // [[rollhelp or [[rh or [[hr or [[??
-      // Help command specifically for the roll command
-      commands.rollHelp(message);
-      break;
     case 'rolldecorators':
     case 'rd':
     case 'dr':
     case '???':
-      // [[rollDecorators or [[rd or [[dr or [[???
-      // Help command specifically for the roll command decorators
-      commands.rollDecorators(message);
+    case 'rollhelp':
+    case 'rh':
+    case 'hr':
+    case '??':
+      // Legacy: [[rollDecorators or [[rd or [[dr or [[???
+      // [[rollhelp or [[rh or [[hr or [[??
+      // Help command specifically for the roll command
+      commands.rollHelp(message);
       break;
     case 'help':
     case 'h':

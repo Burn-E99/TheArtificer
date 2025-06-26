@@ -134,7 +134,8 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-o a` or `-o d` - Order Roll - Rolls the requested roll and orders the results in the requested direction
     * `-ct` - Comma Totals - Adds commas to totals for readability
     * `-cc` - Confirm Critical Hits - Automatically rerolls whenever a crit hits, cannot be used with `-sn`
-    - `-rd` - Roll Distribution - Shows a raw roll distribution of all dice in roll
+    * `-rd` - Roll Distribution - Shows a raw roll distribution of all dice in roll
+    * `-hr` - Hide Raw - Hide the raw input, showing only the results/details of the roll
   * The results have some formatting applied on them to provide details on what happened during this roll.
     * Critical successes will be **bolded**
     * Critical fails will be <ins>underlined</ins>

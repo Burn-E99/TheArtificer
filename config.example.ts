@@ -39,6 +39,7 @@ export const config = {
     sourceCode: 'https://github.com/Burn-E99/TheArtificer', // Link to the repository
     supportServer: '', // Invite link to the Discord support server
     roll20Formatting: 'https://help.roll20.net/hc/en-us/articles/360037773133-Dice-Reference', // Link to Roll20 Dice Reference
+    mathDocs: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math', // Link to the MDN docs for Math
     homePage: '', // Link to the bot's home/ad page
     privacyPolicy: '', // Link to the current Privacy Policy
     termsOfService: '', // Link to the current Terms of Service
