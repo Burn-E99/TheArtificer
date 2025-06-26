@@ -171,7 +171,7 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
 export const generateRollEmbed = (
   authorId: bigint,
   returnDetails: SolvedRoll,
-  modifiers: RollModifiers,
+  modifiers: RollModifiers
 ): ArtigenEmbedNoAttachment | ArtigenEmbedWithAttachment => {
   if (returnDetails.error) {
     // Roll had an error, send error embed
@@ -193,14 +193,12 @@ export const generateRollEmbed = (
     };
   }
 
-  const line1Details = modifiers.hideRaw ? '' : `<@${authorId}>${returnDetails.line1}\n`;
+  const line1Details = modifiers.hideRaw ? '' : `<@${authorId}>${returnDetails.line1}\n\n`;
   if (modifiers.gmRoll) {
     // Roll is a GM Roll, send this in the pub channel (this funciton will be ran again to get details for the GMs)
-    const desc = `${line1Details}${line1Details ? '\n' : ''}Results have been messaged to the following GMs: ${
-      modifiers.gms
-        .map((gm) => (gm.startsWith('<') ? gm : `<@${gm}>`))
-        .join(' ')
-    }`;
+    const desc = `${line1Details}${line1Details ? '\n' : ''}Results have been messaged to the following GMs: ${modifiers.gms
+      .map((gm) => (gm.startsWith('<') ? gm : `<@${gm}>`))
+      .join(' ')}`;
 
     return {
       charCount: desc.length,
