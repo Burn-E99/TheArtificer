@@ -65,7 +65,7 @@ export const getRollConf = (rollStr: string): RollConf => {
 
   // If the dPts is not long enough, throw error
   if (dPts.length < 2) {
-    throw new Error('YouNeedAD');
+    throw new Error(`YouNeedAD_${rollStr}`);
   }
 
   // Fill out the die count, first item will either be an int or empty string, short circuit execution will take care of replacing the empty string with a 1
@@ -153,7 +153,7 @@ export const getRollConf = (rollStr: string): RollConf => {
   }
 
   if (!rollConf.dieCount || !rollConf.dieSize) {
-    throw new Error('YouNeedAD');
+    throw new Error(`YouNeedAD_${rollStr}`);
   }
 
   loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);

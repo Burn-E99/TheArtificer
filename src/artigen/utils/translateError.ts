@@ -15,10 +15,15 @@ export const translateError = (solverError: Error): [string, string] => {
   // Translate the errorName to a specific errorMsg
   switch (errorName) {
     case 'WholeDieCountSizeOnly':
-      errorMsg = 'Error: Die Size and Die Count must be whole numbers';
+      errorMsg = 'Error: Die Size and Die Count must be positive whole numbers';
       break;
     case 'YouNeedAD':
-      errorMsg = 'Formatting Error: Missing die size and count config';
+      errorMsg = `Error: Attempted to parse \`${errorDetails}\` as a dice configuration, `;
+      if (errorDetails.includes('d')) {
+        errorMsg += '`d` was found, but the die size and/or count were missing or zero when they should be a positive whole number';
+      } else {
+        errorMsg += '`d` was not found in the dice config for specifying die size and/or count';
+      }
       break;
     case 'CannotParseDieCount':
       errorMsg = `Formatting Error: Cannot parse \`${errorDetails}\` as a number`;
