@@ -96,7 +96,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     }
 
     // Fill out all of the details and results now
-    tempReturnData.forEach((e) => {
+    tempReturnData.forEach((e, i) => {
       loopCountCheck();
 
       loggingEnabled && log(LT.LOG, `Parsing roll ${rollRequest.rollCmd} | Making return text ${JSON.stringify(e)}`);
@@ -125,8 +125,14 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
         line2 += `${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}, `;
       }
 
+      const varNum = `\`x${i}\`: `;
       const rollDetails = rollRequest.modifiers.noDetails || rollRequest.modifiers.simulatedNominal > 0 ? ' = ' : ` = ${e.rollDetails} = `;
-      line3 += `\`${e.initConfig.replaceAll(' ', '')}\`${rollDetails}${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
+      line3 += `${rollRequest.modifiers.numberVariables && i + 1 !== tempReturnData.length ? varNum : ''}\`${
+        e.initConfig.replaceAll(
+          ' ',
+          '',
+        )
+      }\`${rollDetails}${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}\n`;
     });
 
     // If order is on, remove trailing ", "

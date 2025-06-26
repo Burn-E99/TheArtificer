@@ -46,19 +46,20 @@ Damage: 14`,
 
 This message must contain multiple roll commands in it (such as \`[[d4]] [[d8]]\`).  Nested dice rolls are not able to be used as a variable, but can use variables inside them.
 
-Variables are numbered from \`x0\` to \`xN\`, where \`N\` equals two less than the total number of roll commands in the message.
+Variables are numbered from \`x0\` to \`xN\`, where \`N\` equals two less than the total number of roll commands in the message.  You can add the "Number Variables" flag (\`-nv\`) to your command to see what will be assigned to each roll command.
 
 **Notes about this example:**
 - The example below starts with \`[[0]]\` so that it is a valid roll command.  See the \`Miscellaneous Features>User Formatting\` help page for more details.
 - It is recommended to use the "Super No Details" flag (\`-snd\`) in combination with the "Hide Raw" flag (\`-hr\`) to only show the formatted results.  This example does not use it to show exactly what is happening.
 - The example makes use of Nested Roll Commands to use the "To Hit" as the number of dice to roll for the "Explosion".`,
       example: [
-        `\`\`\`[[0]]<=(this is x0) ${config.name} attacks the dragon with their Magical Sword of Extra Strength and Explosions!
+        `If you send:
+\`\`\`[[0]]<=(this is x0) ${config.name} attacks the dragon with their Magical Sword of Extra Strength and Explosions!
 Strength Check: [[d20 + 8 + 2 - 1]]<=(this is x1)
 To Hit: [[d20 + 4 - 1 + 8]]<=(this is x2)
 Damage: [[(d8 + 10) * x1]]<=(this is x3)
 Explosion: [[ [[x2]]d10! * x3 ]]\`\`\`
-The above results in the following:
+${config.name} will respond with:
 
 @$ rolled:
 \`[[0]] ${config.name} attacks the dragon with their Magical Sword of Extra Strength and Explosions! Strength Check: [[d20 + 8 + 2 - 1]] To Hit: [[d20 + 4 - 1 + 8]] Damage: [[(d8 + 10) * x1]] Explosion: [[ [[x2]]d10! * x3 ]]\`

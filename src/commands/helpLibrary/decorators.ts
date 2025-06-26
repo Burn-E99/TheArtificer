@@ -162,6 +162,16 @@ Shows a raw roll distribution of all dice in roll.`,
       example: ['`[[1000d20]] -rd`'],
     },
   ],
+  [
+    '-nv',
+    {
+      name: 'Number Variables',
+      description: `**Usage:** \`-nv\` or \`-vn\`
+
+Mainly a debug decorator, useful when creating complex rolls that will be reused.  Will not number the final roll command in the list as it will not be available for use.`,
+      example: ['`[[d20]] [[d20]] [[d20]] -vn`'],
+    },
+  ],
 ]);
 
 export const DecoratorsHelpPages: HelpPage = {

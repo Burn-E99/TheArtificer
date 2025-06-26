@@ -55,6 +55,7 @@ export interface RollModifiers {
   commaTotals: boolean;
   confirmCrit: boolean;
   rollDist: boolean;
+  numberVariables: boolean;
   apiWarn: string;
   valid: boolean;
   error: Error;

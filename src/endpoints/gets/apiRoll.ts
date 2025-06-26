@@ -99,6 +99,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           commaTotals: query.has('ct'),
           confirmCrit: query.has('cc'),
           rollDist: query.has('rd'),
+          numberVariables: query.has('nv') || query.has('vn'),
           apiWarn: hideWarn ? '' : apiWarning,
           valid: true,
           error: new Error(),

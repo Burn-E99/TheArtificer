@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:8166/api/roll?user=[discord-user-id]&channel=[discord-channel-id]&rollstr=[artificer-roll-cmd]&documentation=All items below are optional. Flags do not need values.&nd=[no-details-flag]&snd=[super-no-details-flag]&hr=[hide-raw-roll-details-flag]&s=[spoiler-results-flag]&m-or-max=[max-roll-flag, cannot be used with n flag]&min=[min-roll-flag, cannot be used with n, sn, or max]&n=[nominal-roll-flag, cannot be used with sn, max or min flag]&sn=[simulated-nominal-flag, cannot be used with max, min, n. or cc]&gms=[csv-of-discord-user-ids-to-be-dmed-results]&o=[order-rolls, must be a or d]&c=[count-flag]&cc=[confirm-crit-flag, cannot be used with sn]&rd=[roll-dist-flag]
+  url: http://localhost:8166/api/roll?user=[discord-user-id]&channel=[discord-channel-id]&rollstr=[artificer-roll-cmd]&documentation=All items below are optional. Flags do not need values.&nd=[no-details-flag]&snd=[super-no-details-flag]&hr=[hide-raw-roll-details-flag]&s=[spoiler-results-flag]&m-or-max=[max-roll-flag, cannot be used with n flag]&min=[min-roll-flag, cannot be used with n, sn, or max]&n=[nominal-roll-flag, cannot be used with sn, max or min flag]&sn=[simulated-nominal-flag, can pass number with it, cannot be used with max, min, n. or cc]&gms=[csv-of-discord-user-ids-to-be-dmed-results]&o=[order-rolls, must be a or d]&c=[count-flag]&cc=[confirm-crit-flag, cannot be used with sn]&rd=[roll-dist-flag]&nv-or-vn=[number-variables-flag]
   body: none
   auth: inherit
 }
@@ -28,4 +28,5 @@ params:query {
   c: [count-flag]
   cc: [confirm-crit-flag, cannot be used with sn]
   rd: [roll-dist-flag]
+  nv-or-vn: [number-variables-flag]
 }
