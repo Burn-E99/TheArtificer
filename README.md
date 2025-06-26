@@ -141,6 +141,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * Critical successes will be **bolded**
     * Critical fails will be <ins>underlined</ins>
     * Rolls that were dropped or rerolled ~~crossed out~~
+    * Rolls that exploded have an `!` added after them
 
 ## The Artificer API
 The Artificer features an API that allows authenticated users to roll dice into Discord from third party applications (such as Excel macros).  The API has a couple endpoints exposed to all authenticated users allowing management of channels that your API key can send rolls to.  APIs requiring administrative access are not listed below.
