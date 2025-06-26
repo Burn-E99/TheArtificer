@@ -32,7 +32,12 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
     .slice(config.prefix.length)
     .trim()
     .split(/[ \n]+/g);
+  const argSpaces = message.content
+    .slice(config.prefix.length)
+    .trim()
+    .split(new RegExp(/([ \n]+)/, 'g'));
   const command = args.shift()?.toLowerCase();
+  argSpaces.shift();
 
   // All commands below here
 
@@ -128,7 +133,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
     case 'r':
       // [[roll or [[r
       // Dice rolling commence!
-      commands.roll(message, args, args.join(''));
+      commands.roll(message, argSpaces, '');
       break;
     default:
       // Non-standard commands
@@ -139,7 +144,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       } else if (command && `${command}${args.join('')}`.includes(config.postfix)) {
         // [[roll]]
         // Dice rolling commence!
-        commands.roll(message, args, command);
+        commands.roll(message, argSpaces, command);
       } else if (command) {
         // [[emoji or [[emoji-alias
         // Check if the unhandled command is an emoji request

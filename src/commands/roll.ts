@@ -40,7 +40,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
   // Rest of this command is in a try-catch to protect all sends/edits from erroring out
   try {
-    const originalCommand = `${config.prefix}${command} ${args.join(' ')}`;
+    const originalCommand = `${config.prefix}${command}${command.length === 0 ? args.join('').trim() : args.join('')}`;
 
     const m = await message.reply(rollingEmbed);
 
@@ -60,14 +60,14 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       return;
     }
 
-    let rollCmd = message.content.startsWith(`${config.prefix}r`) ? remainingArgs.join(' ') : `${config.prefix}${command} ${remainingArgs.join(' ')}`;
+    let rollCmd = message.content.startsWith(`${config.prefix}r`) ? remainingArgs.join('') : `${config.prefix}${command}${remainingArgs.join('')}`;
 
     // Try to ensure the roll is wrapped
-    if (!rollCmd.includes(config.prefix)) {
-      rollCmd = `${config.prefix}${rollCmd}`;
-    }
     if (!rollCmd.includes(config.postfix)) {
-      rollCmd = `${rollCmd}${config.postfix}`;
+      rollCmd = `${rollCmd.trim()}${config.postfix}`;
+    }
+    if (!rollCmd.includes(config.prefix) || rollCmd.indexOf(config.prefix) > rollCmd.indexOf(config.postfix)) {
+      rollCmd = `${config.prefix}${rollCmd.trim()}`;
     }
 
     sendRollRequest({
