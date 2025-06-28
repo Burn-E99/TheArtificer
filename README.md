@@ -72,8 +72,8 @@ The Artificer comes with a few supplemental commands to the main rolling command
 
   |  Parameter    |  Required?  |  Repeatable?  |  Description                                                                                                                                                             |
   |---------------|-------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used, additionally, replace x with `F` to roll the dice as Fate dice                                                           |
-  |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die                                                                                                                                |
+  |  x            |  Optional   |      No       |  number of dice to roll, if omitted, 1 is used                                                                                                                           |
+  |  dy           |  Required   |      No       |  size of dice to roll, d20 = 20 sided die, replace y with `F` to roll the dice as Fate dice                                                                              |
   |  dz or dlz    |  Optional   |      No       |  drops the lowest z dice, cannot be used with any other drop or keep options                                                                                             |
   |  kz or khz    |  Optional   |      No       |  keeps the highest z dice, cannot be used with any other drop or keep options                                                                                            |
   |  dhz          |  Optional   |      No       |  drops the highest z dice, cannot be used with any other drop or keep options                                                                                            |
