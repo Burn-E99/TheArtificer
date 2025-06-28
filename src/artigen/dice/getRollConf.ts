@@ -61,6 +61,11 @@ export const getRollConf = (rollStr: string): RollConf => {
       penetrating: false,
       nums: [],
     },
+    match: {
+      on: false,
+      minCount: 2,
+      returnTotal: false,
+    },
   };
 
   // If the dPts is not long enough, throw error
@@ -380,12 +385,23 @@ export const getRollConf = (rollStr: string): RollConf => {
             !rollConf.exploding.nums.includes(i) && rollConf.exploding.nums.push(i);
           }
           break;
+        case 'm':
+        case 'mt':
+          rollConf.match.on = true;
+          if (afterNumIdx > 0) {
+            // User gave a number to explode on, save it
+            rollConf.match.minCount = tNum;
+          } else {
+            // User did not give number, use cs
+            afterNumIdx = 1;
+          }
+          break;
         default:
           // Throw error immediately if unknown op is encountered
           throw new Error(`UnknownOperation_${tSep}`);
       }
 
-      // Exploding flags get set in their own switch statement to avoid weird duplicated code
+      // Followup switch to avoid weird duplicated code
       switch (tSep) {
         case '!o':
         case '!o=':
@@ -404,6 +420,9 @@ export const getRollConf = (rollStr: string): RollConf => {
         case '!!>':
         case '!!<':
           rollConf.exploding.compounding = true;
+          break;
+        case 'mt':
+          rollConf.match.returnTotal = true;
           break;
       }
 

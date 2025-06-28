@@ -106,6 +106,10 @@ The Artificer comes with a few supplemental commands to the main rolling command
   |  !!=u         |  Optional   |      Yes      |  compounding explosion, rolls one dy for each die that lands on u, but adds the resulting explosion to the die that caused this explosion                                |
   |  !!>u         |  Optional   |      Yes      |  compounding explosion, rolls one dy for each die that lands on u or greater, but adds the resulting explosion to the die that caused this explosion                     |
   |  !!<u         |  Optional   |      Yes      |  compounding explosion, rolls one dy for each die that lands on u or under, but adds the resulting explosion to the die that caused this explosion                       |
+  |  m            |  Optional   |      No       |  matching dice, adds labels to any dice that match                                                                                                                       |
+  |  mz           |  Optional   |      No       |  matching dice, adds labels to any dice that have z or more matches                                                                                                      |
+  |  mt           |  Optional   |      No       |  matching dice, adds labels to any dice that match, changes result to be the count of labels added                                                                       |
+  |  mtz          |  Optional   |      No       |  matching dice, adds labels to any dice that have z or more matches, changes result to be the count of labels added                                                      |
 
   * If the parameter is Required, it must be provided at all times.
   * If the parameter is Repeatable, it may occur multiple times in the roll configuration.

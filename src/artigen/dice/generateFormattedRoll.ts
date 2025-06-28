@@ -19,7 +19,7 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
   let tempComplex = false;
 
   // Generate the roll, passing flags thru
-  const tempRollSet = executeRoll(rollConf, modifiers);
+  const [tempRollSet, sumOverride] = executeRoll(rollConf, modifiers);
 
   // Loop thru all parts of the roll to document everything that was done to create the total roll
   tempRollSet.forEach((e) => {
@@ -72,8 +72,13 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
       postFormat = `!${postFormat}`;
     }
 
+    let rollLabel = '';
+    if (e.matchLabel) {
+      rollLabel = `${e.matchLabel}:`;
+    }
+
     // Finally add this to the roll's details
-    tempDetails += `${preFormat}${e.roll}${postFormat} + `;
+    tempDetails += `${preFormat}${rollLabel}${e.roll}${postFormat} + `;
   });
   // After the looping is done, remove the extra " + " from the details and cap it with the closing ]
   tempDetails = tempDetails.substring(0, tempDetails.length - 3);
@@ -86,7 +91,7 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
 
   return {
     solvedStep: {
-      total: tempTotal,
+      total: sumOverride.on ? sumOverride.value : tempTotal,
       details: tempDetails,
       containsCrit: tempCrit,
       containsFail: tempFail,

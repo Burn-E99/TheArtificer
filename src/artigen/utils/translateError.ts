@@ -112,6 +112,9 @@ export const translateError = (solverError: Error): [string, string] => {
     case 'IllegalVariable':
       errorMsg = `Error: \`${errorDetails}\` is not a valid variable`;
       break;
+    case 'TooManyLabels':
+      errorMsg = `Error: ${config.name} can only support a maximum of \`${errorDetails}\` labels when using the dice matching options (\`m\` or \`mt\`)`;
+      break;
     default:
       log(LT.ERROR, `Unhandled Parser Error: ${errorName}, ${errorDetails}`);
       errorMsg = `Unhandled Error: ${solverError.message}\nCheck input and try again, if issue persists, please use \`${config.prefix}report\` to alert the devs of the issue`;

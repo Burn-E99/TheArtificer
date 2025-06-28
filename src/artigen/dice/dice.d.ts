@@ -15,6 +15,7 @@ export interface RollSet {
   critHit: boolean;
   critFail: boolean;
   isComplex: boolean;
+  matchLabel: string;
 }
 
 // CountDetails is the object holding the count data for creating the Count Embed
@@ -102,4 +103,14 @@ export interface RollConf {
     penetrating: boolean;
     nums: number[];
   };
+  match: {
+    on: boolean;
+    minCount: number;
+    returnTotal: boolean;
+  };
+}
+
+export interface SumOverride {
+  on: boolean;
+  value: number;
 }

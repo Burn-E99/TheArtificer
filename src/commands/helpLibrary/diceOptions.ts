@@ -230,6 +230,22 @@ Any time a Compounding Explosion happens, the formatting on the die will still s
       ],
     },
   ],
+  [
+    'dice-matching',
+    {
+      name: 'Dice Matching',
+      description: `**Usage:** \`xdym\`, \`xdymz\`, \`xdymt\`, or \`xdymtz\`
+\`z\` - Minimum count of matches for a label to be added
+
+The basic \`m\` option will only add labels without modifying the results, whereas the \`mt\` options will add labels and will change the result of the roll to be equal to the number of labels that have been added.`,
+      example: [
+        '`[[10d6m]]` => [**C:6** + B:2 + 4 + __C:1__ + __C:1__ + B:2 + **C:6** + B:2 + **C:6** + **C:6**] = 36',
+        '`[[10d6m4]]` => [**A:6** + 2 + 4 + __1__ + __1__ + 2 + **A:6** + 2 + **A:6** + **A:6**] = 36',
+        '`[[10d6mt]]` => [**C:6** + B:2 + ~~4~~ + __C:1__ + __C:1__ + B:2 + **C:6** + B:2 + **C:6** + **C:6**] = 3',
+        '`[[10d6mt4]]` => [**A:6** + ~~2~~ + ~~4~~ + ~~__1__~~ + ~~__1__~~ + ~~2~~ + **A:6** + ~~2~~ + **A:6** + **A:6**] = 1',
+      ],
+    },
+  ],
 ]);
 
 export const DiceOptionsHelpPages: HelpPage = {

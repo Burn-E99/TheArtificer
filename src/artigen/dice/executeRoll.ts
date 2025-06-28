@@ -1,6 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollModifiers, RollSet } from 'artigen/dice/dice.d.ts';
+import { RollModifiers, RollSet, SumOverride } from 'artigen/dice/dice.d.ts';
 import { genFateRoll, genRoll } from 'artigen/dice/randomRoll.ts';
 import { getRollConf } from 'artigen/dice/getRollConf.ts';
 
@@ -8,10 +8,11 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { compareOrigIdx, compareRolls } from 'artigen/utils/sortFuncs.ts';
 
 import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
+import { generateRollVals } from 'artigen/utils/rollValCounter.ts';
 
 // roll(rollStr, modifiers) returns RollSet
 // roll parses and executes the rollStr
-export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[] => {
+export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet[], SumOverride] => {
   /* Roll Capabilities
    * Deciphers and rolls a single dice roll set
    *
@@ -67,6 +68,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
       rollConf.critScore.on ||
       rollConf.critFail.on ||
       rollConf.exploding.on,
+    matchLabel: '',
   });
 
   // Initial rolling, not handling reroll or exploding here
@@ -307,18 +309,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
 
   // Handle OVA dropping/keeping
   if (rollConf.type === 'ova') {
-    // Make "empty" vals array to easily sum up which die value is the greatest
-    const rollVals: Array<number> = new Array(rollConf.dieSize).fill(0);
-
-    // Sum up all rolls
-    for (const ovaRoll of rollSet) {
-      loopCountCheck();
-
-      loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | incrementing rollVals for ${JSON.stringify(ovaRoll)}`);
-      if (!ovaRoll.dropped && !ovaRoll.rerolled) {
-        rollVals[ovaRoll.roll - 1] += ovaRoll.roll;
-      }
-    }
+    const rollVals: Array<number> = generateRollVals(rollConf, rollSet, rollStr, false);
 
     // Find max value, using lastIndexOf to use the greatest die size max in case of duplicate maximums
     const maxRoll = rollVals.lastIndexOf(Math.max(...rollVals)) + 1;
@@ -337,5 +328,47 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
     }
   }
 
-  return rollSet;
+  const sumOverride: SumOverride = {
+    on: rollConf.match.returnTotal,
+    value: 0,
+  };
+  if (rollConf.match.on) {
+    const rollVals: Array<number> = generateRollVals(rollConf, rollSet, rollStr, true).map((count) => (count >= rollConf.match.minCount ? count : 0));
+    const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let labelIdx = 0;
+    const rollLabels: Array<string> = rollVals.map((count) => {
+      loopCountCheck();
+
+      if (labelIdx >= labels.length) {
+        throw new Error(`TooManyLabels_${labels.length}`);
+      }
+
+      if (count) {
+        return labels[labelIdx++];
+      }
+      return '';
+    });
+
+    loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | current match state: ${rollVals} | ${rollLabels}`);
+
+    // Apply labels
+    for (const roll of rollSet) {
+      loopCountCheck();
+
+      loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | trying to add a label to ${JSON.stringify(roll)}`);
+      if (rollLabels[roll.roll - 1]) {
+        roll.matchLabel = rollLabels[roll.roll - 1];
+      } else if (rollConf.match.returnTotal) {
+        roll.dropped = true;
+      }
+    }
+
+    loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | labels added: ${JSON.stringify(rollSet)}`);
+
+    if (rollConf.match.returnTotal) {
+      sumOverride.value = rollVals.filter((count) => count !== 0).length;
+    }
+  }
+
+  return [rollSet, sumOverride];
 };
