@@ -79,12 +79,12 @@ export const getRollConf = (rollStr: string): RollConf => {
   // Rejoin all remaining parts
   let remains = dPts.join('d');
 
+  loggingEnabled && log(LT.LOG, `Initial breaking of rollStr ${rawDC} ${tempDC} ${dPts} ${remains}`);
+
   // Manual Parsing for custom roll types
-  let manualParse = false;
   if (rawDC.endsWith('cwo')) {
     // CWOD dice parsing
     rollConf.type = 'cwod';
-    manualParse = true;
 
     // Get CWOD parts, setting count and getting difficulty
     const cwodParts = rollStr.split('cwod');
@@ -93,26 +93,42 @@ export const getRollConf = (rollStr: string): RollConf => {
 
     // Use critScore to set the difficulty
     rollConf.critScore.on = true;
-    const difficulty = parseInt(cwodParts[1] || '10');
+    const tempDifficulty = (cwodParts[1] ?? '').search(/\d/) === 0 ? cwodParts[1] : '';
+    let afterDifficultyIdx = tempDifficulty.search(/[^\d]/);
+    if (afterDifficultyIdx === -1) {
+      afterDifficultyIdx = tempDifficulty.length;
+    }
+    const difficulty = parseInt(tempDifficulty.slice(0, afterDifficultyIdx) || '10');
+
     for (let i = difficulty; i <= rollConf.dieSize; i++) {
       loopCountCheck();
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling cwod ${rollStr} | Parsing difficulty ${i}`);
       rollConf.critScore.range.push(i);
     }
+
+    // Remove any garbage from the remains
+    remains = remains.slice(afterDifficultyIdx);
   } else if (rawDC.endsWith('ova')) {
     // OVA dice parsing
     rollConf.type = 'ova';
-    manualParse = true;
 
     // Get OVA parts, setting count and getting difficulty
     const ovaParts = rollStr.split('ovad');
-    const ovaPart1 = ovaParts[1] || '6';
-    if (ovaPart1.search(/\d+\.\d/) === 0) {
+    const tempOvaPart1 = (ovaParts[1] ?? '').search(/\d/) === 0 ? ovaParts[1] : '';
+    if (tempOvaPart1.search(/\d+\.\d/) === 0) {
       throw new Error('WholeDieCountSizeOnly');
     }
     rollConf.dieCount = parseInt(ovaParts[0] || '1');
-    rollConf.dieSize = parseInt(ovaPart1);
+
+    let afterOvaSizeIdx = tempOvaPart1.search(/[^\d]/);
+    if (afterOvaSizeIdx === -1) {
+      afterOvaSizeIdx = tempOvaPart1.length;
+    }
+    rollConf.dieSize = parseInt(tempOvaPart1.slice(0, afterOvaSizeIdx) || '6');
+
+    // Remove any garbage from the remains
+    remains = remains.slice(afterOvaSizeIdx);
   } else if (remains.startsWith('f')) {
     // fate dice setup
     rollConf.type = 'fate';
@@ -152,17 +168,18 @@ export const getRollConf = (rollStr: string): RollConf => {
     }
   }
 
+  loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);
+  loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
+  loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | remains: ${remains}`);
+
   if (!rollConf.dieCount || !rollConf.dieSize) {
     throw new Error(`YouNeedAD_${rollStr}`);
   }
 
-  loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsed Die Count: ${rollConf.dieCount}`);
-  loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsed Die Size: ${rollConf.dieSize}`);
-
   // Finish parsing the roll
-  if (!manualParse && remains.length > 0) {
+  if (remains.length > 0) {
     // Determine if the first item is a drop, and if it is, add the d back in
-    if (remains.search(/\D/) !== 0 || remains.indexOf('l') === 0 || remains.indexOf('h') === 0) {
+    if (remains.search(/\D/) > 0 || remains.indexOf('l') === 0 || remains.indexOf('h') === 0) {
       remains = `d${remains}`;
     }
 

@@ -314,8 +314,10 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): RollSet[
     for (const ovaRoll of rollSet) {
       loopCountCheck();
 
-      loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | incrementing rollVals for ${ovaRoll}`);
-      rollVals[ovaRoll.roll - 1] += ovaRoll.roll;
+      loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | incrementing rollVals for ${JSON.stringify(ovaRoll)}`);
+      if (!ovaRoll.dropped && !ovaRoll.rerolled) {
+        rollVals[ovaRoll.roll - 1] += ovaRoll.roll;
+      }
     }
 
     // Find max value, using lastIndexOf to use the greatest die size max in case of duplicate maximums
