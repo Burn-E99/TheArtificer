@@ -67,6 +67,10 @@ export const getRollConf = (rollStr: string): RollConf => {
       minCount: 2,
       returnTotal: false,
     },
+    sort: {
+      on: false,
+      direction: '',
+    },
   };
 
   // If the dPts is not long enough, throw error
@@ -403,6 +407,15 @@ export const getRollConf = (rollStr: string): RollConf => {
             // User gave a number to work with, save it
             rollConf.match.minCount = tNum;
           }
+          break;
+        case DiceOptions.Sort:
+        case DiceOptions.SortAsc:
+          rollConf.sort.on = true;
+          rollConf.sort.direction = 'a';
+          break;
+        case DiceOptions.SortDesc:
+          rollConf.sort.on = true;
+          rollConf.sort.direction = 'd';
           break;
         default:
           // Throw error immediately if unknown op is encountered

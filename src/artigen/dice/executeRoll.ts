@@ -5,7 +5,7 @@ import { genFateRoll, genRoll } from 'artigen/dice/randomRoll.ts';
 import { getRollConf } from 'artigen/dice/getRollConf.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { compareOrigIdx, compareRolls } from 'artigen/utils/sortFuncs.ts';
+import { compareOrigIdx, compareRolls, compareRollsReverse } from 'artigen/utils/sortFuncs.ts';
 
 import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { generateRollVals } from 'artigen/utils/rollValCounter.ts';
@@ -368,6 +368,10 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet
     if (rollConf.match.returnTotal) {
       sumOverride.value = rollVals.filter((count) => count !== 0).length;
     }
+  }
+
+  if (rollConf.sort.on) {
+    rollSet.sort(rollConf.sort.direction === 'a' ? compareRolls : compareRollsReverse);
   }
 
   return [rollSet, sumOverride];

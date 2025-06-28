@@ -39,10 +39,16 @@ export const DiceOptions = Object.freeze({
   CompoundingExplosionEqu: '!!=',
   Matching: 'm',
   MatchingTotal: 'mt',
+  Sort: 's',
+  SortAsc: 'sa',
+  SortDesc: 'sd',
 });
 
 // Should be ordered such that 'mt' will be encountered before 'm'
 export const NumberlessDiceOptions = [
+  DiceOptions.SortDesc,
+  DiceOptions.SortAsc,
+  DiceOptions.Sort,
   DiceOptions.MatchingTotal,
   DiceOptions.Matching,
   DiceOptions.CompoundingExplosion,

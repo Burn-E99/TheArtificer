@@ -72,6 +72,16 @@ interface RangeConf {
   range: number[];
 }
 
+// Sort interface
+interface SortDisabled {
+  on: false;
+  direction: '';
+}
+interface SortEnabled {
+  on: true;
+  direction: 'a' | 'd';
+}
+
 // D% configuration
 export interface DPercentConf {
   on: boolean;
@@ -108,6 +118,7 @@ export interface RollConf {
     minCount: number;
     returnTotal: boolean;
   };
+  sort: SortDisabled | SortEnabled;
 }
 
 export interface SumOverride {

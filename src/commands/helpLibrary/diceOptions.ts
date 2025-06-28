@@ -2,7 +2,7 @@ import config from '~config';
 
 import { HelpContents, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
 
-const name = 'Roll20 Dice Options';
+const name = 'Dice Options';
 const description =
   `\`${config.prefix}xdydzracsq!${config.postfix}\` Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`).`;
 const dict = new Map<string, HelpContents>([
@@ -243,6 +243,20 @@ The basic \`m\` option will only add labels without modifying the results, where
         '`[[10d6m4]]` => [**A:6** + 2 + 4 + __1__ + __1__ + 2 + **A:6** + 2 + **A:6** + **A:6**] = 36',
         '`[[10d6mt]]` => [**C:6** + B:2 + ~~4~~ + __C:1__ + __C:1__ + B:2 + **C:6** + B:2 + **C:6** + **C:6**] = 3',
         '`[[10d6mt4]]` => [**A:6** + ~~2~~ + ~~4~~ + ~~__1__~~ + ~~__1__~~ + ~~2~~ + **A:6** + ~~2~~ + **A:6** + **A:6**] = 1',
+      ],
+    },
+  ],
+  [
+    'sorting-dice',
+    {
+      name: 'Sorting Dice',
+      description: `**Usage:** \`xdys\`, \`xdysa\`, or \`xdysd\`
+\`s\` and \`sa\` will sort the dice in ascending order within the roll
+\`sd\` will sort the dice in descending order within the roll`,
+      example: [
+        '`[[10d6s]]` => [__1__ + __1__ + 2 + 2 + 3 + 3 + 3 + 5 + **6** + **6**] = **__32__**',
+        '`[[10d6sa]]` => [__1__ + __1__ + 2 + 2 + 3 + 3 + 3 + 5 + **6** + **6**] = **__32__**',
+        '`[[10d6sd]]` => [**6** + **6** + **6** + 5 + 4 + 4 + 2 + __1__ + __1__ + __1__] = **__36__**',
       ],
     },
   ],
