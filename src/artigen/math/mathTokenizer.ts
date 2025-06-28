@@ -17,7 +17,7 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
 
 // minusOps are operators that will cause a negative sign to collapse into a number (in cases like + - 1)
-const minusOps = ['(', '^', '*', '/', '%', '+', '-'];
+const minusOps = ['(', '^', '**', '*', '/', '%', '+', '-'];
 const allOps = [...minusOps, ')'];
 
 export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResults: number[]): [ReturnData[], CountDetails[], RollDistributionMap[]] => {
@@ -31,7 +31,7 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
     .replace(cmdSplitRegex, '')
     .replace(internalWrapRegex, '')
     .replace(/ /g, '')
-    .split(/([-+()*/^]|(?<![d%])%)|(x\d+(\.\d*)?)/g)
+    .split(/(\*\*)|([-+()*/^]|(?<![d%])%)|(x\d+(\.\d*)?)/g)
     .filter((x) => x);
   loggingEnabled && log(LT.LOG, `Split roll into mathConf ${JSON.stringify(mathConf)}`);
 

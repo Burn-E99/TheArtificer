@@ -17,7 +17,7 @@ import { getMatchingParenIdx } from 'artigen/utils/parenBalance.ts';
 // mathSolver is a function that recursively solves the full roll and math
 export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep => {
   // Initialize PEMDAS
-  const signs = ['^', '*', '/', '%', '+', '-'];
+  const signs = ['^', '**', '*', '/', '%', '+', '-'];
   const stepSolve: SolvedStep = {
     total: 0,
     details: '',
@@ -88,7 +88,11 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
   // At this point, conf should be [num, op, num, op, num, op, num, etc]
 
   // Evaluate all EMDAS by looping thru each tier of operators (exponential is the highest tier, addition/subtraction the lowest)
-  const allCurOps = [['^'], ['*', '/', '%'], ['+', '-']];
+  const allCurOps = [
+    ['^', '**'],
+    ['*', '/', '%'],
+    ['+', '-'],
+  ];
   allCurOps.forEach((curOps) => {
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
     // Iterate thru all operators/operands in the conf
@@ -150,6 +154,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
           // Finally do the operator on the operands, throw an error if the operator is not found
           switch (conf[i]) {
             case '^':
+            case '**':
               subStepSolve.total = Math.pow(oper1, oper2);
               break;
             case '*':
