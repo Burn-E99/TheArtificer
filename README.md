@@ -110,6 +110,8 @@ The Artificer comes with a few supplemental commands to the main rolling command
   |  mz           |  Optional   |      No       |  matching dice, adds labels to any dice that have z or more matches                                                                                                      |
   |  mt           |  Optional   |      No       |  matching dice, adds labels to any dice that match, changes result to be the count of labels added                                                                       |
   |  mtz          |  Optional   |      No       |  matching dice, adds labels to any dice that have z or more matches, changes result to be the count of labels added                                                      |
+  |  s or sa      |  Optional   |      No       |  sort dice, sorts the list of dice for a roll in ascending order                                                                                                         |
+  |  sd           |  Optional   |      No       |  sort dice, sorts the list of dice for a roll in descending order                                                                                                        |
 
   * If the parameter is Required, it must be provided at all times.
   * If the parameter is Repeatable, it may occur multiple times in the roll configuration.
