@@ -92,6 +92,8 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
 
     flagRoll(rollConf, rolling);
 
+    loggingEnabled && log(LT.LOG, `${getLoopCount()} Roll done ${JSON.stringify(rolling)}`);
+
     // Push the newly created roll and loop again
     rollSet.push(rolling);
   }
@@ -138,10 +140,12 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
           newReroll.roll = minMaxOverride;
         } else {
           // If nominalRoll is on, set the roll to the average roll of dieSize, otherwise generate a new random roll
-          newReroll.roll = genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+          newReroll.roll = rollConf.type === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
         }
 
         flagRoll(rollConf, newReroll);
+
+        loggingEnabled && log(LT.LOG, `${getLoopCount()} Roll done ${JSON.stringify(newReroll)}`);
 
         // Slot this new roll in after the current iteration so it can be processed in the next loop
         rollSet.splice(i + 1, 0, newReroll);
@@ -157,12 +161,14 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
         // Copy the template to fill out for this iteration
         const newExplodingRoll = getTemplateRoll();
         // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newExplodingRoll.roll = genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+        newExplodingRoll.roll = rollConf.type === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
         newExplodingRoll.size = rollConf.dieSize;
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 
         flagRoll(rollConf, newExplodingRoll);
+
+        loggingEnabled && log(LT.LOG, `${getLoopCount()} Roll done ${JSON.stringify(newExplodingRoll)}`);
 
         // Slot this new roll in after the current iteration so it can be processed in the next loop
         rollSet.splice(i + 1, 0, newExplodingRoll);

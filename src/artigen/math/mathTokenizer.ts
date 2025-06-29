@@ -31,7 +31,8 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
     .replace(cmdSplitRegex, '')
     .replace(internalWrapRegex, '')
     .replace(/ /g, '')
-    .split(/(\*\*)|([-+()*/^]|(?<![d%])%)|(x\d+(\.\d*)?)/g)
+    // breaks the string on the following: (\*\*) ** for exponents ([+()*/^] for basic algebra (?<![d%])% for breaking on d%%%% dice correctly (?<![rsfop!=<>])- for breaking on - correctly with fate dice) (x\d+(\.\d*)?) x# for variables
+    .split(/(\*\*)|([+()*/^]|(?<![d%])%|(?<![rsfop!=<>])-)|(x\d+(\.\d*)?)/g)
     .filter((x) => x);
   loggingEnabled && log(LT.LOG, `Split roll into mathConf ${JSON.stringify(mathConf)}`);
 

@@ -211,7 +211,7 @@ export const getRollConf = (rollStr: string): RollConf => {
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing remains ${remains}`);
       // Find the next number in the remains to be able to cut out the rule name
-      let afterSepIdx = remains.search(/\d/);
+      let afterSepIdx = remains.search(/[-\d]/);
       if (afterSepIdx < 0) {
         afterSepIdx = remains.length;
       }
@@ -220,6 +220,7 @@ export const getRollConf = (rollStr: string): RollConf => {
       const tempSep = remains.slice(0, afterSepIdx);
       let noNumberAfter = false;
       NumberlessDiceOptions.some((opt) => {
+        loopCountCheck();
         if (tempSep.startsWith(opt) && tempSep !== opt) {
           afterSepIdx = opt.length;
           noNumberAfter = true;
@@ -232,12 +233,14 @@ export const getRollConf = (rollStr: string): RollConf => {
       const tSep = remains.slice(0, afterSepIdx);
       remains = remains.slice(afterSepIdx);
       // Find the next non-number in the remains to be able to cut out the count/num
-      let afterNumIdx = noNumberAfter ? 0 : remains.search(/\D/);
+      let afterNumIdx = noNumberAfter ? 0 : remains.search(/(?![-\d])/);
       if (afterNumIdx < 0) {
         afterNumIdx = remains.length;
       }
       // Save the count/num to tNum leaving it in remains for the time being
       const tNum = parseInt(remains.slice(0, afterNumIdx));
+
+      loggingEnabled && log(LT.LOG, `${getLoopCount()} tSep: ${tSep} ${afterSepIdx}, tNum: ${tNum} ${afterNumIdx}`);
 
       // Switch on rule name
       switch (tSep) {
@@ -303,7 +306,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.RerollLt:
           // Configure reroll for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.reroll.on = true;
-          ltAddToRange(tSep, rollConf.reroll.nums, tNum);
+          ltAddToRange(tSep, rollConf.reroll.nums, tNum, rollConf.type);
           break;
         case DiceOptions.CritSuccess:
         case DiceOptions.CritSuccessEqu:
@@ -319,7 +322,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CritSuccessLt:
           // Configure CritScore for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.critScore.on = true;
-          ltAddToRange(tSep, rollConf.critScore.range, tNum);
+          ltAddToRange(tSep, rollConf.critScore.range, tNum, rollConf.type);
           break;
         case DiceOptions.CritFail:
         case DiceOptions.CritFailEqu:
@@ -335,7 +338,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CritFailLt:
           // Configure CritFail for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.critFail.on = true;
-          ltAddToRange(tSep, rollConf.critFail.range, tNum);
+          ltAddToRange(tSep, rollConf.critFail.range, tNum, rollConf.type);
           break;
         case DiceOptions.Exploding:
         case DiceOptions.ExplodeOnce:
@@ -370,7 +373,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CompoundingExplosionLt:
           // Configure Exploding for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.exploding.on = true;
-          ltAddToRange(tSep, rollConf.exploding.nums, tNum);
+          ltAddToRange(tSep, rollConf.exploding.nums, tNum, rollConf.type);
           break;
         case DiceOptions.MatchingTotal:
           rollConf.match.returnTotal = true;
@@ -416,7 +419,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.SuccessLt:
           // Configure success for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.success.on = true;
-          ltAddToRange(tSep, rollConf.success.range, tNum);
+          ltAddToRange(tSep, rollConf.success.range, tNum, rollConf.type);
           break;
         case DiceOptions.Fail:
         case DiceOptions.FailEqu:
@@ -432,7 +435,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.FailLt:
           // Configure fail for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.fail.on = true;
-          ltAddToRange(tSep, rollConf.fail.range, tNum);
+          ltAddToRange(tSep, rollConf.fail.range, tNum, rollConf.type);
           break;
         default:
           // Throw error immediately if unknown op is encountered
