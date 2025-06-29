@@ -4,7 +4,7 @@ import { RollConf } from 'artigen/dice/dice.d.ts';
 
 import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
 
-import { DiceOptions, NumberlessDiceOptions } from 'artigen/dice/diceOptions.ts';
+import { DiceOptions, NumberlessDiceOptions } from './rollOptions.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { addToRange, gtrAddToRange, ltAddToRange } from 'artigen/utils/rangeAdder.ts';

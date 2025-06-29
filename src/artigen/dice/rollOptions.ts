@@ -1,10 +1,21 @@
-export const DiceOptions = Object.freeze({
+export const GroupOptions = Object.freeze({
   Drop: 'd',
   DropLow: 'dl',
   DropHigh: 'dh',
   Keep: 'k',
   KeepLow: 'kl',
   KeepHigh: 'kh',
+  SuccessLt: '<',
+  SuccessGtr: '>',
+  SuccessEqu: '=',
+  Fail: 'f',
+  FailLt: 'f<',
+  FailGtr: 'f>',
+  FailEqu: 'f=',
+});
+
+export const DiceOptions = Object.freeze({
+  ...GroupOptions,
   Reroll: 'r',
   RerollLt: 'r<',
   RerollGtr: 'r>',
@@ -42,13 +53,6 @@ export const DiceOptions = Object.freeze({
   Sort: 's',
   SortAsc: 'sa',
   SortDesc: 'sd',
-  SuccessLt: '<',
-  SuccessGtr: '>',
-  SuccessEqu: '=',
-  Fail: 'f',
-  FailLt: 'f<',
-  FailGtr: 'f>',
-  FailEqu: 'f=',
 });
 
 // Should be ordered such that 'mt' will be encountered before 'm'
