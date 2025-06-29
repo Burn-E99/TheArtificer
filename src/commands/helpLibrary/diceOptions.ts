@@ -237,7 +237,10 @@ Any time a Compounding Explosion happens, the formatting on the die will still s
       description: `**Usage:** \`xdym\`, \`xdymz\`, \`xdymt\`, or \`xdymtz\`
 \`z\` - Minimum count of matches for a label to be added
 
-The basic \`m\` option will only add labels without modifying the results, whereas the \`mt\` options will add labels and will change the result of the roll to be equal to the number of labels that have been added.`,
+\`m\` will only add labels without modifying the results.
+\`mt\` will add labels and will change the result of the roll to be equal to the number of labels that have been added.
+
+**Notice:** Cannot be combined with Target Number/Successes or Target Failures`,
       example: [
         '`[[10d6m]]` => [**C:6** + B:2 + 4 + __C:1__ + __C:1__ + B:2 + **C:6** + B:2 + **C:6** + **C:6**] = 36',
         '`[[10d6m4]]` => [**A:6** + 2 + 4 + __1__ + __1__ + 2 + **A:6** + 2 + **A:6** + **A:6**] = 36',
@@ -257,6 +260,43 @@ The basic \`m\` option will only add labels without modifying the results, where
         '`[[10d6s]]` => [__1__ + __1__ + 2 + 2 + 3 + 3 + 3 + 5 + **6** + **6**] = **__32__**',
         '`[[10d6sa]]` => [__1__ + __1__ + 2 + 2 + 3 + 3 + 3 + 5 + **6** + **6**] = **__32__**',
         '`[[10d6sd]]` => [**6** + **6** + **6** + 5 + 4 + 4 + 2 + __1__ + __1__ + __1__] = **__36__**',
+      ],
+    },
+  ],
+  [
+    'target-success',
+    {
+      name: 'Target Number/Successes',
+      description: `**Usage:** \`xdy=z\`, \`xdy<z\`, or \`xdy>z\`
+\`z\` - Number to compare to for configuring the success target
+
+Will set the result to be the number of successes.  When combined with the Target Failures option, the failures will be subtracted from the result.
+
+**Notice:** Cannot be combined with the Dice Matching option`,
+      example: [
+        '`[[10d6=5]]` => [2 + 3 + 3 + __1__ + 2 + S:5 + S:5 + 2 + **6** + __1__, 2 Successes] = **__2__**',
+        '`[[10d6>5]]` => [__1__ + S:5 + 4 + 3 + **S:6** + 2 + 3 + S:5 + S:5 + 3, 4 Successes] = 4',
+        '`[[10d6<5]]` => [S:5 + S:2 + S:2 + **6** + S:2 + **6** + S:4 + S:4 + **6** + S:3, 7 Successes] = **7**',
+        '`[[10d6>5f<2]]` => [__F:1__ + **S:6** + __F:1__ + S:5 + S:5 + S:5 + 4 + **S:6** + 4 + __F:1__, 5 Successes, 3 Fails] = **__2__**',
+      ],
+    },
+  ],
+  [
+    'target-fail',
+    {
+      name: 'Target Failures',
+      description: `**Usage:** \`xdyfz\`, \`xdyf=z\`, \`xdyf<z\`, or \`xdyf>z\`
+\`z\` - Number to compare to for configuring the fail target
+
+Will set the result to be the number of fails (as a negative number).  When combined with the Target Number/Successes option, the successes will be added to the result.
+
+**Notice:** Cannot be combined with the Dice Matching option`,
+      example: [
+        '`[[10d6f5]]` => [**6** + 4 + **6** + 3 + F:5 + __1__ + **6** + F:5 + 4 + 2, 2 Fails] = **__-2__**',
+        '`[[10d6f=5]]` => [**6** + 4 + **6** + 3 + F:5 + __1__ + **6** + F:5 + 4 + 2, 2 Fails] = **__-2__**',
+        '`[[10d6f>5]]` => [2 + 3 + 3 + **F:6** + F:5 + 2 + __1__ + **F:6** + 2 + **F:6**, 4 Fails] = **__-4__**',
+        '`[[10d6f<5]]` => [F:4 + F:5 + **6** + F:4 + F:3 + F:5 + F:4 + F:2 + F:4 + **6**, 8 Fails] = **-8**',
+        '`[[10d6>5f<2]]` => [F:2 + 4 + __F:1__ + __F:1__ + __F:1__ + **S:6** + __F:1__ + **S:6** + __F:1__ + 3, 2 Successes, 6 Fails] = **__-4__**',
       ],
     },
   ],

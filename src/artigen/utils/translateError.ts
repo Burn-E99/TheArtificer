@@ -32,7 +32,18 @@ export const translateError = (solverError: Error): [string, string] => {
       errorMsg = `Formatting Error: \`${errorDetails}\` should only be specified once per roll, remove all but one and repeat roll`;
       break;
     case 'FormattingError':
-      errorMsg = 'Formatting Error: Cannot use Keep and Drop at the same time, remove all but one and repeat roll';
+      errorMsg = 'Formatting Error: ';
+      switch (errorDetails) {
+        case 'dk':
+          errorMsg += 'Cannot use Keep and Drop at the same time, remove all but one and repeat roll';
+          break;
+        case 'mtsf':
+          errorMsg += 'Cannot use Match with CWOD Dice, or the Success or Fail options, remove all but one and repeat roll';
+          break;
+        default:
+          errorMsg += `Unhandled - ${errorDetails}`;
+          break;
+      }
       break;
     case 'NoMaxWithDash':
       errorMsg = 'Formatting Error: CritScore range specified without a maximum, remove - or add maximum to correct';

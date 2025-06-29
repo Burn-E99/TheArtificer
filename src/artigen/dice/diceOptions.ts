@@ -42,6 +42,13 @@ export const DiceOptions = Object.freeze({
   Sort: 's',
   SortAsc: 'sa',
   SortDesc: 'sd',
+  SuccessLt: '<',
+  SuccessGtr: '>',
+  SuccessEqu: '=',
+  Fail: 'f',
+  FailLt: 'f<',
+  FailGtr: 'f>',
+  FailEqu: 'f=',
 });
 
 // Should be ordered such that 'mt' will be encountered before 'm'

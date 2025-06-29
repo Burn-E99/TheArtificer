@@ -1,18 +1,19 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollModifiers, RollSet, SumOverride } from 'artigen/dice/dice.d.ts';
+import { ExecutedRoll, RollModifiers, RollSet, SumOverride } from 'artigen/dice/dice.d.ts';
 import { genFateRoll, genRoll } from 'artigen/dice/randomRoll.ts';
 import { getRollConf } from 'artigen/dice/getRollConf.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { compareOrigIdx, compareRolls, compareRollsReverse } from 'artigen/utils/sortFuncs.ts';
 
+import { flagRoll } from 'artigen/utils/diceFlagger.ts';
 import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { generateRollVals } from 'artigen/utils/rollValCounter.ts';
 
 // roll(rollStr, modifiers) returns RollSet
 // roll parses and executes the rollStr
-export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet[], SumOverride] => {
+export const executeRoll = (rollStr: string, modifiers: RollModifiers): ExecutedRoll => {
   /* Roll Capabilities
    * Deciphers and rolls a single dice roll set
    *
@@ -67,8 +68,12 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet
       rollConf.keepLow.on ||
       rollConf.critScore.on ||
       rollConf.critFail.on ||
-      rollConf.exploding.on,
+      rollConf.exploding.on ||
+      rollConf.success.on ||
+      rollConf.fail.on,
     matchLabel: '',
+    success: false,
+    fail: false,
   });
 
   // Initial rolling, not handling reroll or exploding here
@@ -85,22 +90,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet
     // Set origIdx of roll
     rolling.origIdx = i;
 
-    // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-    if (rollConf.critScore.on && rollConf.critScore.range.includes(rolling.roll)) {
-      rolling.critHit = true;
-    } else if (!rollConf.critScore.on) {
-      rolling.critHit = rolling.roll === (rollConf.dPercent.on ? rollConf.dPercent.critVal : rollConf.dieSize);
-    }
-    // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-    if (rollConf.critFail.on && rollConf.critFail.range.includes(rolling.roll)) {
-      rolling.critFail = true;
-    } else if (!rollConf.critFail.on) {
-      if (rollConf.type === 'fate') {
-        rolling.critFail = rolling.roll === -1;
-      } else {
-        rolling.critFail = rolling.roll === (rollConf.dPercent.on ? 0 : 1);
-      }
-    }
+    flagRoll(rollConf, rolling);
 
     // Push the newly created roll and loop again
     rollSet.push(rolling);
@@ -151,18 +141,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet
           newReroll.roll = genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
         }
 
-        // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-        if (rollConf.critScore.on && rollConf.critScore.range.includes(newReroll.roll)) {
-          newReroll.critHit = true;
-        } else if (!rollConf.critScore.on) {
-          newReroll.critHit = newReroll.roll === (rollConf.dPercent.on ? rollConf.dPercent.critVal : rollConf.dieSize);
-        }
-        // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-        if (rollConf.critFail.on && rollConf.critFail.range.includes(newReroll.roll)) {
-          newReroll.critFail = true;
-        } else if (!rollConf.critFail.on) {
-          newReroll.critFail = newReroll.roll === (rollConf.dPercent.on ? 0 : 1);
-        }
+        flagRoll(rollConf, newReroll);
 
         // Slot this new roll in after the current iteration so it can be processed in the next loop
         rollSet.splice(i + 1, 0, newReroll);
@@ -183,18 +162,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 
-        // If critScore arg is on, check if the roll should be a crit, if its off, check if the roll matches the die size
-        if (rollConf.critScore.on && rollConf.critScore.range.includes(newExplodingRoll.roll)) {
-          newExplodingRoll.critHit = true;
-        } else if (!rollConf.critScore.on) {
-          newExplodingRoll.critHit = newExplodingRoll.roll === (rollConf.dPercent.on ? rollConf.dPercent.critVal : rollConf.dieSize);
-        }
-        // If critFail arg is on, check if the roll should be a fail, if its off, check if the roll matches 1
-        if (rollConf.critFail.on && rollConf.critFail.range.includes(newExplodingRoll.roll)) {
-          newExplodingRoll.critFail = true;
-        } else if (!rollConf.critFail.on) {
-          newExplodingRoll.critFail = newExplodingRoll.roll === (rollConf.dPercent.on ? 0 : 1);
-        }
+        flagRoll(rollConf, newExplodingRoll);
 
         // Slot this new roll in after the current iteration so it can be processed in the next loop
         rollSet.splice(i + 1, 0, newExplodingRoll);
@@ -374,5 +342,10 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): [RollSet
     rollSet.sort(rollConf.sort.direction === 'a' ? compareRolls : compareRollsReverse);
   }
 
-  return [rollSet, sumOverride];
+  return {
+    rollSet,
+    sumOverride,
+    countSuccessOverride: rollConf.success.on,
+    countFailOverride: rollConf.fail.on,
+  };
 };

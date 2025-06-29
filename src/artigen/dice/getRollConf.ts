@@ -4,8 +4,10 @@ import { RollConf } from 'artigen/dice/dice.d.ts';
 
 import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
 
-import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { DiceOptions, NumberlessDiceOptions } from 'artigen/dice/diceOptions.ts';
+
+import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { addToRange, gtrAddToRange, ltAddToRange } from 'artigen/utils/rangeAdder.ts';
 
 const throwDoubleSepError = (sep: string): void => {
   throw new Error(`DoubleSeparator_${sep}`);
@@ -71,6 +73,14 @@ export const getRollConf = (rollStr: string): RollConf => {
       on: false,
       direction: '',
     },
+    success: {
+      on: false,
+      range: [],
+    },
+    fail: {
+      on: false,
+      range: [],
+    },
   };
 
   // If the dPts is not long enough, throw error
@@ -101,8 +111,10 @@ export const getRollConf = (rollStr: string): RollConf => {
     rollConf.dieCount = parseInt(cwodParts[0] || '1');
     rollConf.dieSize = 10;
 
-    // Use critScore to set the difficulty
-    rollConf.critScore.on = true;
+    // Use success to set the difficulty
+    rollConf.success.on = true;
+    rollConf.fail.on = true;
+    addToRange('cwod', rollConf.fail.range, 1);
     const tempDifficulty = (cwodParts[1] ?? '').search(/\d/) === 0 ? cwodParts[1] : '';
     let afterDifficultyIdx = tempDifficulty.search(/[^\d]/);
     if (afterDifficultyIdx === -1) {
@@ -114,7 +126,7 @@ export const getRollConf = (rollStr: string): RollConf => {
       loopCountCheck();
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling cwod ${rollStr} | Parsing difficulty ${i}`);
-      rollConf.critScore.range.push(i);
+      rollConf.success.range.push(i);
     }
 
     // Remove any garbage from the remains
@@ -275,7 +287,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.RerollEqu:
           // Configure Reroll (this can happen multiple times)
           rollConf.reroll.on = true;
-          !rollConf.reroll.nums.includes(tNum) && rollConf.reroll.nums.push(tNum);
+          addToRange(tSep, rollConf.reroll.nums, tNum);
           break;
         case DiceOptions.RerollOnceGtr:
           rollConf.reroll.once = true;
@@ -283,12 +295,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.RerollGtr:
           // Configure reroll for all numbers greater than or equal to tNum (this could happen multiple times, but why)
           rollConf.reroll.on = true;
-          for (let i = tNum; i <= rollConf.dieSize; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing r> ${i}`);
-            !rollConf.reroll.nums.includes(i) && rollConf.reroll.nums.push(i);
-          }
+          gtrAddToRange(tSep, rollConf.reroll.nums, tNum, rollConf.dieSize);
           break;
         case DiceOptions.RerollOnceLt:
           rollConf.reroll.once = true;
@@ -296,64 +303,39 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.RerollLt:
           // Configure reroll for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.reroll.on = true;
-          for (let i = 1; i <= tNum; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing r< ${i}`);
-            !rollConf.reroll.nums.includes(i) && rollConf.reroll.nums.push(i);
-          }
+          ltAddToRange(tSep, rollConf.reroll.nums, tNum);
           break;
         case DiceOptions.CritSuccess:
         case DiceOptions.CritSuccessEqu:
           // Configure CritScore for one number (this can happen multiple times)
           rollConf.critScore.on = true;
-          !rollConf.critScore.range.includes(tNum) && rollConf.critScore.range.push(tNum);
+          addToRange(tSep, rollConf.critScore.range, tNum);
           break;
         case DiceOptions.CritSuccessGtr:
           // Configure CritScore for all numbers greater than or equal to tNum (this could happen multiple times, but why)
           rollConf.critScore.on = true;
-          for (let i = tNum; i <= rollConf.dieSize; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing cs> ${i}`);
-            !rollConf.critScore.range.includes(i) && rollConf.critScore.range.push(i);
-          }
+          gtrAddToRange(tSep, rollConf.critScore.range, tNum, rollConf.dieSize);
           break;
         case DiceOptions.CritSuccessLt:
           // Configure CritScore for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.critScore.on = true;
-          for (let i = 0; i <= tNum; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing cs< ${i}`);
-            !rollConf.critScore.range.includes(i) && rollConf.critScore.range.push(i);
-          }
+          ltAddToRange(tSep, rollConf.critScore.range, tNum);
           break;
         case DiceOptions.CritFail:
         case DiceOptions.CritFailEqu:
           // Configure CritFail for one number (this can happen multiple times)
           rollConf.critFail.on = true;
-          !rollConf.critFail.range.includes(tNum) && rollConf.critFail.range.push(tNum);
+          addToRange(tSep, rollConf.critFail.range, tNum);
           break;
         case DiceOptions.CritFailGtr:
           // Configure CritFail for all numbers greater than or equal to tNum (this could happen multiple times, but why)
           rollConf.critFail.on = true;
-          for (let i = tNum; i <= rollConf.dieSize; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing cf> ${i}`);
-            !rollConf.critFail.range.includes(i) && rollConf.critFail.range.push(i);
-          }
+          gtrAddToRange(tSep, rollConf.critFail.range, tNum, rollConf.dieSize);
           break;
         case DiceOptions.CritFailLt:
           // Configure CritFail for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.critFail.on = true;
-          for (let i = 0; i <= tNum; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing cf< ${i}`);
-            !rollConf.critFail.range.includes(i) && rollConf.critFail.range.push(i);
-          }
+          ltAddToRange(tSep, rollConf.critFail.range, tNum);
           break;
         case DiceOptions.Exploding:
         case DiceOptions.ExplodeOnce:
@@ -363,7 +345,7 @@ export const getRollConf = (rollStr: string): RollConf => {
           rollConf.exploding.on = true;
           if (afterNumIdx > 0) {
             // User gave a number to explode on, save it
-            !rollConf.exploding.nums.includes(tNum) && rollConf.exploding.nums.push(tNum);
+            addToRange(tSep, rollConf.exploding.nums, tNum);
           }
           break;
         case DiceOptions.ExplodingEqu:
@@ -372,7 +354,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CompoundingExplosionEqu:
           // Configure Exploding (this can happen multiple times)
           rollConf.exploding.on = true;
-          !rollConf.exploding.nums.includes(tNum) && rollConf.exploding.nums.push(tNum);
+          addToRange(tSep, rollConf.exploding.nums, tNum);
           break;
         case DiceOptions.ExplodingGtr:
         case DiceOptions.ExplodeOnceGtr:
@@ -380,12 +362,7 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CompoundingExplosionGtr:
           // Configure Exploding for all numbers greater than or equal to tNum (this could happen multiple times, but why)
           rollConf.exploding.on = true;
-          for (let i = tNum; i <= rollConf.dieSize; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing !> ${i}`);
-            !rollConf.exploding.nums.includes(i) && rollConf.exploding.nums.push(i);
-          }
+          gtrAddToRange(tSep, rollConf.exploding.nums, tNum, rollConf.dieSize);
           break;
         case DiceOptions.ExplodingLt:
         case DiceOptions.ExplodeOnceLt:
@@ -393,15 +370,16 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CompoundingExplosionLt:
           // Configure Exploding for all numbers less than or equal to tNum (this could happen multiple times, but why)
           rollConf.exploding.on = true;
-          for (let i = 1; i <= tNum; i++) {
-            loopCountCheck();
-
-            loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing !< ${i}`);
-            !rollConf.exploding.nums.includes(i) && rollConf.exploding.nums.push(i);
-          }
+          ltAddToRange(tSep, rollConf.exploding.nums, tNum);
           break;
-        case DiceOptions.Matching:
         case DiceOptions.MatchingTotal:
+          rollConf.match.returnTotal = true;
+        // falls through as mt functions the same as m in this context
+        case DiceOptions.Matching:
+          if (rollConf.match.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           rollConf.match.on = true;
           if (afterNumIdx > 0) {
             // User gave a number to work with, save it
@@ -410,12 +388,51 @@ export const getRollConf = (rollStr: string): RollConf => {
           break;
         case DiceOptions.Sort:
         case DiceOptions.SortAsc:
+          if (rollConf.sort.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           rollConf.sort.on = true;
           rollConf.sort.direction = 'a';
           break;
         case DiceOptions.SortDesc:
+          if (rollConf.sort.on) {
+            // Ensure we do not override existing settings
+            throwDoubleSepError(tSep);
+          }
           rollConf.sort.on = true;
           rollConf.sort.direction = 'd';
+          break;
+        case DiceOptions.SuccessEqu:
+          // Configure success (this can happen multiple times)
+          rollConf.success.on = true;
+          addToRange(tSep, rollConf.success.range, tNum);
+          break;
+        case DiceOptions.SuccessGtr:
+          // Configure success for all numbers greater than or equal to tNum (this could happen multiple times, but why)
+          rollConf.success.on = true;
+          gtrAddToRange(tSep, rollConf.success.range, tNum, rollConf.dieSize);
+          break;
+        case DiceOptions.SuccessLt:
+          // Configure success for all numbers less than or equal to tNum (this could happen multiple times, but why)
+          rollConf.success.on = true;
+          ltAddToRange(tSep, rollConf.success.range, tNum);
+          break;
+        case DiceOptions.Fail:
+        case DiceOptions.FailEqu:
+          // Configure fail (this can happen multiple times)
+          rollConf.fail.on = true;
+          addToRange(tSep, rollConf.fail.range, tNum);
+          break;
+        case DiceOptions.FailGtr:
+          // Configure fail for all numbers greater than or equal to tNum (this could happen multiple times, but why)
+          rollConf.fail.on = true;
+          gtrAddToRange(tSep, rollConf.fail.range, tNum, rollConf.dieSize);
+          break;
+        case DiceOptions.FailLt:
+          // Configure fail for all numbers less than or equal to tNum (this could happen multiple times, but why)
+          rollConf.fail.on = true;
+          ltAddToRange(tSep, rollConf.fail.range, tNum);
           break;
         default:
           // Throw error immediately if unknown op is encountered
@@ -442,9 +459,6 @@ export const getRollConf = (rollStr: string): RollConf => {
         case DiceOptions.CompoundingExplosionEqu:
           rollConf.exploding.compounding = true;
           break;
-        case DiceOptions.MatchingTotal:
-          rollConf.match.returnTotal = true;
-          break;
       }
 
       // Finally slice off everything else parsed this loop
@@ -470,6 +484,10 @@ export const getRollConf = (rollStr: string): RollConf => {
   });
   if (dkdkCnt > 1) {
     throw new Error('FormattingError_dk');
+  }
+
+  if (rollConf.match.on && (rollConf.success.on || rollConf.fail.on)) {
+    throw new Error('FormattingError_mtsf');
   }
 
   if (rollConf.drop.on && rollConf.drop.count === 0) {

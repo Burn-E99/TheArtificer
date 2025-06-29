@@ -19,10 +19,10 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
   let tempComplex = false;
 
   // Generate the roll, passing flags thru
-  const [tempRollSet, sumOverride] = executeRoll(rollConf, modifiers);
+  const executedRoll = executeRoll(rollConf, modifiers);
 
   // Loop thru all parts of the roll to document everything that was done to create the total roll
-  tempRollSet.forEach((e) => {
+  executedRoll.rollSet.forEach((e) => {
     loopCountCheck();
 
     loggingEnabled && log(LT.LOG, `Formatting roll ${rollConf} | ${JSON.stringify(e)}`);
@@ -38,7 +38,7 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
           tempTotal += e.roll;
           break;
         case 'cwod':
-          tempTotal += e.critHit ? 1 : 0;
+          tempTotal += e.success ? 1 : 0;
           break;
       }
       if (e.critHit) {
@@ -82,22 +82,33 @@ export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers
   });
   // After the looping is done, remove the extra " + " from the details and cap it with the closing ]
   tempDetails = tempDetails.substring(0, tempDetails.length - 3);
-  if (tempRollSet[0]?.type === 'cwod') {
-    const successCnt = tempRollSet.filter((e) => !e.dropped && !e.rerolled && e.critHit).length;
-    const failCnt = tempRollSet.filter((e) => !e.dropped && !e.rerolled && e.critFail).length;
-    tempDetails += `, ${successCnt} Success${successCnt !== 1 ? 'es' : ''}, ${failCnt} Fail${failCnt !== 1 ? 's' : ''}`;
+  if (executedRoll.countSuccessOverride) {
+    const successCnt = executedRoll.rollSet.filter((e) => !e.dropped && !e.rerolled && e.success).length;
+    tempDetails += `, ${successCnt} Success${successCnt !== 1 ? 'es' : ''}`;
+
+    executedRoll.sumOverride.on = true;
+    executedRoll.sumOverride.value += successCnt;
+  }
+  if (executedRoll.countFailOverride) {
+    const failCnt = executedRoll.rollSet.filter((e) => !e.dropped && !e.rerolled && e.fail).length;
+    tempDetails += `, ${failCnt} Fail${failCnt !== 1 ? 's' : ''}`;
+
+    executedRoll.sumOverride.on = true;
+    if (executedRoll.rollSet[0]?.type !== 'cwod') {
+      executedRoll.sumOverride.value -= failCnt;
+    }
   }
   tempDetails += ']';
 
   return {
     solvedStep: {
-      total: sumOverride.on ? sumOverride.value : tempTotal,
+      total: executedRoll.sumOverride.on ? executedRoll.sumOverride.value : tempTotal,
       details: tempDetails,
       containsCrit: tempCrit,
       containsFail: tempFail,
       isComplex: tempComplex,
     },
-    countDetails: modifiers.count || modifiers.confirmCrit ? rollCounter(tempRollSet) : rollCounter([]),
-    rollDistributions: modifiers.rollDist ? createRollDistMap(tempRollSet) : new Map<string, number[]>(),
+    countDetails: modifiers.count || modifiers.confirmCrit ? rollCounter(executedRoll.rollSet) : rollCounter([]),
+    rollDistributions: modifiers.rollDist ? createRollDistMap(executedRoll.rollSet) : new Map<string, number[]>(),
   };
 };

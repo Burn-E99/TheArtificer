@@ -16,6 +16,8 @@ export interface RollSet {
   critFail: boolean;
   isComplex: boolean;
   matchLabel: string;
+  success: boolean;
+  fail: boolean;
 }
 
 // CountDetails is the object holding the count data for creating the Count Embed
@@ -119,9 +121,18 @@ export interface RollConf {
     returnTotal: boolean;
   };
   sort: SortDisabled | SortEnabled;
+  success: RangeConf;
+  fail: RangeConf;
 }
 
 export interface SumOverride {
   on: boolean;
   value: number;
+}
+
+export interface ExecutedRoll {
+  rollSet: RollSet[];
+  countSuccessOverride: boolean;
+  countFailOverride: boolean;
+  sumOverride: SumOverride;
 }
