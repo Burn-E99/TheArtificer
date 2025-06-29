@@ -466,6 +466,8 @@ export const getRollConf = (rollStr: string): RollConf => {
     }
   }
 
+  loggingEnabled && log(LT.LOG, `RollConf before cleanup: ${JSON.stringify(rollConf)}`);
+
   // Verify the parse, throwing errors for every invalid config
   if (rollConf.dieCount < 0) {
     throw new Error('NoZerosAllowed_base');
@@ -502,20 +504,26 @@ export const getRollConf = (rollStr: string): RollConf => {
   if (rollConf.keepLow.on && rollConf.keepLow.count === 0) {
     throw new Error('NoZerosAllowed_keepLow');
   }
-  if (rollConf.reroll.on && !rollConf.dPercent.on && rollConf.reroll.nums.includes(0)) {
-    throw new Error('NoZerosAllowed_reroll');
-  }
 
   // Filter rollConf num lists to only include valid numbers
-  const validNumFilter = (curNum: number) => curNum <= rollConf.dieSize && curNum > (rollConf.dPercent.on ? -1 : 0);
+  const validNumFilter = (curNum: number) => {
+    if (rollConf.type === 'fate') {
+      return [-1, 0, 1].includes(curNum);
+    }
+    return curNum <= rollConf.dieSize && curNum > (rollConf.dPercent.on ? -1 : 0);
+  };
   rollConf.reroll.nums = rollConf.reroll.nums.filter(validNumFilter);
   rollConf.critScore.range = rollConf.critScore.range.filter(validNumFilter);
   rollConf.critFail.range = rollConf.critFail.range.filter(validNumFilter);
   rollConf.exploding.nums = rollConf.exploding.nums.filter(validNumFilter);
+  rollConf.success.range = rollConf.success.range.filter(validNumFilter);
+  rollConf.fail.range = rollConf.fail.range.filter(validNumFilter);
 
-  if (rollConf.reroll.on && rollConf.reroll.nums.length === rollConf.dieSize) {
+  if (rollConf.reroll.on && rollConf.reroll.nums.length === (rollConf.type === 'fate' ? 3 : rollConf.dieSize)) {
     throw new Error('NoRerollOnAllSides');
   }
+
+  loggingEnabled && log(LT.LOG, `RollConf after cleanup: ${JSON.stringify(rollConf)}`);
 
   return rollConf;
 };
