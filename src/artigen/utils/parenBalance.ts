@@ -53,10 +53,12 @@ const checkBalance = (conf: MathConf[], openStr: string, closeStr: string, error
 };
 
 // assertXBalance verifies the entire conf has balanced X
+export const assertGroupBalance = (conf: MathConf[]) => checkBalance(conf, '{', '}', 'Group', false, 0);
 export const assertParenBalance = (conf: MathConf[]) => checkBalance(conf, '(', ')', 'Paren', false, 0);
 export const assertPrePostBalance = (conf: MathConf[]) => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', false, 0);
 
 // getMatchingXIdx gets the matching X, also partially verifies the conf has balanced X
+export const getMatchingGroupId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '{', '}', 'Group', true, openIdx);
 export const getMatchingInternalId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternal, closeInternal, 'Internal', true, openIdx);
 export const getMatchingParenId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '(', ')', 'Paren', true, openIdx);
 export const getMatchingPostfixId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', true, openIdx);
