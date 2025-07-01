@@ -13,7 +13,7 @@ import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
 import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
+import { getMatchingInternalId, getMatchingPostfixId } from 'artigen/utils/parenBalance.ts';
 import { basicReducer } from 'artigen/utils/reducers.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
@@ -34,7 +34,7 @@ export const tokenizeCmd = (
     loopCountCheck();
 
     const openIdx = cmd.indexOf(config.prefix);
-    const closeIdx = getMatchingPostfixIdx(cmd, openIdx);
+    const closeIdx = getMatchingPostfixId(cmd, openIdx);
 
     const currentCmd = cmd.slice(openIdx + 1, closeIdx);
 
@@ -150,7 +150,7 @@ export const tokenizeCmd = (
       loopCountCheck();
 
       const openIdx = initConf.indexOf(openInternal);
-      const closeIdx = getMatchingInternalIdx(initConf, openIdx);
+      const closeIdx = getMatchingInternalId(initConf, openIdx);
 
       // Take first returnData out of array
       const dataToMerge = returnData.shift();
