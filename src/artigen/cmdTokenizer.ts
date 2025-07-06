@@ -11,9 +11,9 @@ import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
-import { closeInternal, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
+import { closeInternal, cmdSplitRegex, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { getMatchingInternalId, getMatchingPostfixId } from 'artigen/utils/parenBalance.ts';
+import { assertGroupBalance, getMatchingGroupIdx, getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
 import { basicReducer } from 'artigen/utils/reducers.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
@@ -34,7 +34,7 @@ export const tokenizeCmd = (
     loopCountCheck();
 
     const openIdx = cmd.indexOf(config.prefix);
-    const closeIdx = getMatchingPostfixId(cmd, openIdx);
+    const closeIdx = getMatchingPostfixIdx(cmd, openIdx);
 
     const currentCmd = cmd.slice(openIdx + 1, closeIdx);
 
@@ -131,10 +131,27 @@ export const tokenizeCmd = (
     }
     return [returnData, countDetails, rollDists];
   } else {
-    loggingEnabled && log(LT.LOG, `Tokenizing math ${JSON.stringify(cmd)}`);
+    // Check for any groups and handle them?
+    const groupParts = cmd
+      .join('')
+      .split(/([{,}])/g)
+      .filter((x) => x);
+    if (groupParts.includes('{')) {
+      assertGroupBalance(groupParts);
+    }
+    while (groupParts.includes('{')) {
+      loggingEnabled && log(LT.LOG, `Handling Groups | Current cmd: ${JSON.stringify(groupParts)}`);
+      const openIdx = groupParts.indexOf('}');
+      const closeIdx = getMatchingGroupIdx;
+      const temp = cmd.join('').replaceAll('{', '').replaceAll('}', '').replaceAll(',', '');
+      cmd = temp.split(cmdSplitRegex);
+    }
+
+    const cmdForMath = groupParts.join('');
+    loggingEnabled && log(LT.LOG, `Tokenizing math ${cmdForMath}`);
 
     // Solve the math and rolls for this cmd
-    const [tempData, tempCounts, tempDists] = tokenizeMath(cmd.join(''), modifiers, previousResults);
+    const [tempData, tempCounts, tempDists] = tokenizeMath(cmdForMath, modifiers, previousResults);
     const data = tempData[0];
     loggingEnabled &&
       log(LT.LOG, `Solved math is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)} ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
@@ -150,7 +167,7 @@ export const tokenizeCmd = (
       loopCountCheck();
 
       const openIdx = initConf.indexOf(openInternal);
-      const closeIdx = getMatchingInternalId(initConf, openIdx);
+      const closeIdx = getMatchingInternalIdx(initConf, openIdx);
 
       // Take first returnData out of array
       const dataToMerge = returnData.shift();

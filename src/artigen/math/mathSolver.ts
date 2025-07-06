@@ -11,7 +11,7 @@ import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { legalMath, legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { getMatchingParenId } from 'artigen/utils/parenBalance.ts';
+import { getMatchingParenIdx } from 'artigen/utils/parenBalance.ts';
 
 // mathSolver(conf, wrapDetails) returns one condensed SolvedStep
 // mathSolver is a function that recursively solves the full roll and math
@@ -39,7 +39,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
     let openParenIdx = conf.indexOf('(');
-    const closeParenIdx = getMatchingParenId(conf, openParenIdx);
+    const closeParenIdx = getMatchingParenIdx(conf, openParenIdx);
 
     // Call the solver on the items between openParenIdx and closeParenIdx (excluding the parens)
     const parenSolve = mathSolver(conf.slice(openParenIdx + 1, closeParenIdx), true);

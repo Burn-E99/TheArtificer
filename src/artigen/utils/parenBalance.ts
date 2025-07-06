@@ -58,7 +58,7 @@ export const assertParenBalance = (conf: MathConf[]) => checkBalance(conf, '(', 
 export const assertPrePostBalance = (conf: MathConf[]) => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', false, 0);
 
 // getMatchingXIdx gets the matching X, also partially verifies the conf has balanced X
-export const getMatchingGroupId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '{', '}', 'Group', true, openIdx);
-export const getMatchingInternalId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternal, closeInternal, 'Internal', true, openIdx);
-export const getMatchingParenId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '(', ')', 'Paren', true, openIdx);
-export const getMatchingPostfixId = (conf: MathConf[], openIdx: number): number => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', true, openIdx);
+export const getMatchingGroupIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '{', '}', 'Group', true, openIdx);
+export const getMatchingInternalIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternal, closeInternal, 'Internal', true, openIdx);
+export const getMatchingParenIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '(', ')', 'Paren', true, openIdx);
+export const getMatchingPostfixIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', true, openIdx);
