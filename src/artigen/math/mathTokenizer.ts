@@ -71,6 +71,14 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
         containsFail: false,
         isComplex: false,
       };
+    } else if (curMathConfStr.toLowerCase() === 'horse' || curMathConfStr.toLowerCase() === '🐴') {
+      mathConf[i] = {
+        total: Math.sqrt(3),
+        details: '🐴',
+        containsCrit: false,
+        containsFail: false,
+        isComplex: false,
+      };
     } else if (curMathConfStr.toLowerCase() === 'fart' || curMathConfStr.toLowerCase() === '💩') {
       mathConf[i] = {
         total: 7,
