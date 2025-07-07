@@ -216,7 +216,7 @@ export const handleGroup = (
     } else {
       // why did you put this in a group, that was entirely pointless
       loggingEnabled && log(LT.LOG, `Solving commaPart: ${commaParts[0]}`);
-      const [tempData, tempCounts, tempDists] = tokenizeMath(commaParts[0], modifiers, previousResults, []);
+      const [tempData, tempCounts, tempDists] = tokenizeMath(commaParts[0], modifiers, previousResults, prevGrpReturnData);
       const data = tempData[0];
 
       loggingEnabled && log(LT.LOG, `Solved Math for Group is back ${JSON.stringify(data)} | ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
