@@ -5,15 +5,16 @@ import config from '~config';
 import { ReturnData } from 'artigen/artigen.d.ts';
 
 import { CountDetails, RollDistributionMap, RollModifiers } from 'artigen/dice/dice.d.ts';
+import { handleGroup } from 'artigen/dice/groupHandler.ts';
 
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
-import { closeInternal, cmdSplitRegex, internalWrapRegex, openInternal } from 'artigen/utils/escape.ts';
+import { closeInternal, closeInternalGrp, internalGrpWrapRegex, internalWrapRegex, openInternal, openInternalGrp } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { assertGroupBalance, getMatchingGroupIdx, getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
+import { assertGroupBalance, getMatchingGroupIdx, getMatchingInternalGrpIdx, getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
 import { basicReducer } from 'artigen/utils/reducers.ts';
 
 // tokenizeCmd expects a string[] of items that are either config.prefix/config.postfix or some text that contains math and/or dice rolls
@@ -131,38 +132,78 @@ export const tokenizeCmd = (
     }
     return [returnData, countDetails, rollDists];
   } else {
-    // Check for any groups and handle them?
+    // Check for any groups and handle them
     const groupParts = cmd
       .join('')
-      .split(/([{,}])/g)
+      .split(/([{}])/g)
       .filter((x) => x);
+    const groupResults: ReturnData[] = [];
     if (groupParts.includes('{')) {
       assertGroupBalance(groupParts);
     }
     while (groupParts.includes('{')) {
       loggingEnabled && log(LT.LOG, `Handling Groups | Current cmd: ${JSON.stringify(groupParts)}`);
-      const openIdx = groupParts.indexOf('}');
-      const closeIdx = getMatchingGroupIdx;
-      const temp = cmd.join('').replaceAll('{', '').replaceAll('}', '').replaceAll(',', '');
-      cmd = temp.split(cmdSplitRegex);
+
+      const openIdx = groupParts.indexOf('{');
+      const closeIdx = getMatchingGroupIdx(groupParts, openIdx);
+
+      const currentGrp = groupParts.slice(openIdx + 1, closeIdx);
+
+      const [tempData, tempCounts, tempDists] = handleGroup(currentGrp, '', modifiers, previousResults);
+      const data = tempData[0];
+      log(LT.LOG, `Solved Group is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)} ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
+
+      countDetails.push(...tempCounts);
+      rollDists.push(...tempDists);
+
+      // Merge result back into groupParts
+      groupParts.splice(openIdx, closeIdx - openIdx + 1, `${openInternalGrp}${groupResults.length}${closeInternalGrp}`);
+      groupResults.push(data);
     }
 
     const cmdForMath = groupParts.join('');
     loggingEnabled && log(LT.LOG, `Tokenizing math ${cmdForMath}`);
 
     // Solve the math and rolls for this cmd
-    const [tempData, tempCounts, tempDists] = tokenizeMath(cmdForMath, modifiers, previousResults);
+    const [tempData, tempCounts, tempDists] = tokenizeMath(cmdForMath, modifiers, previousResults, groupResults);
     const data = tempData[0];
     loggingEnabled &&
-      log(LT.LOG, `Solved math is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)} ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
+      log(
+        LT.LOG,
+        `Solved math is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)} ${JSON.stringify(groupResults)} ${
+          JSON.stringify(
+            tempCounts,
+          )
+        } ${JSON.stringify(tempDists)}`,
+      );
 
     // Merge counts
     countDetails.push(...tempCounts);
     rollDists.push(...tempDists);
 
+    // Handle merging group data into initConfig first since a group could "smuggle" a returnData in it
+    const tempInitConf = data.initConfig.split(internalGrpWrapRegex).filter((x) => x);
+    loggingEnabled && log(LT.LOG, `Split solved math into tempInitConf ${JSON.stringify(tempInitConf)}`);
+    while (tempInitConf.includes(openInternalGrp)) {
+      loopCountCheck();
+
+      const openIdx = tempInitConf.indexOf(openInternalGrp);
+      const closeIdx = getMatchingInternalGrpIdx(tempInitConf, openIdx);
+
+      // Take first groupResult out of array
+      const dataToMerge = groupResults.shift();
+
+      // Replace the found pair with the nested tempInitConfig and result
+      tempInitConf.splice(openIdx, closeIdx - openIdx + 1, `${dataToMerge?.initConfig}`);
+      loggingEnabled && log(LT.LOG, `Current tempInitConf state ${JSON.stringify(tempInitConf)}`);
+    }
+
     // Handle merging returnData into tempData
-    const initConf = data.initConfig.split(internalWrapRegex).filter((x) => x);
-    loggingEnabled && log(LT.LOG, `Split solved math initConfig ${JSON.stringify(initConf)}`);
+    const initConf = tempInitConf
+      .join('')
+      .split(internalWrapRegex)
+      .filter((x) => x);
+    loggingEnabled && log(LT.LOG, `Split tempInitConfig into initConf ${JSON.stringify(initConf)}`);
     while (initConf.includes(openInternal)) {
       loopCountCheck();
 

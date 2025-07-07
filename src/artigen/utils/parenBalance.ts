@@ -6,7 +6,7 @@ import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { MathConf } from 'artigen/math/math.d.ts';
 
-import { closeInternal, openInternal } from 'artigen/utils/escape.ts';
+import { closeInternal, closeInternalGrp, openInternal, openInternalGrp } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 const checkBalance = (conf: MathConf[], openStr: string, closeStr: string, errorType: string, getMatching: boolean, openIdx: number): number => {
@@ -60,5 +60,6 @@ export const assertPrePostBalance = (conf: MathConf[]) => checkBalance(conf, con
 // getMatchingXIdx gets the matching X, also partially verifies the conf has balanced X
 export const getMatchingGroupIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '{', '}', 'Group', true, openIdx);
 export const getMatchingInternalIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternal, closeInternal, 'Internal', true, openIdx);
+export const getMatchingInternalGrpIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternalGrp, closeInternalGrp, 'InternalGrp', true, openIdx);
 export const getMatchingParenIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '(', ')', 'Paren', true, openIdx);
 export const getMatchingPostfixIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', true, openIdx);

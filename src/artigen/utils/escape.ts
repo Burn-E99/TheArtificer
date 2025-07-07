@@ -30,3 +30,8 @@ export const cmdSplitRegex = new RegExp(`(${escapePrefixPostfix(config.prefix)})
 export const openInternal = '\u2045';
 export const closeInternal = '\u2046';
 export const internalWrapRegex = new RegExp(`([${openInternal}${closeInternal}])`, 'g');
+
+// Internal Group is used for marking handled groups
+export const openInternalGrp = '\u2e20';
+export const closeInternalGrp = '\u2e21';
+export const internalGrpWrapRegex = new RegExp(`([${openInternalGrp}${closeInternalGrp}])`, 'g');

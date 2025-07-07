@@ -11,7 +11,7 @@ import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { mathSolver } from 'artigen/math/mathSolver.ts';
 
-import { cmdSplitRegex, internalWrapRegex } from 'artigen/utils/escape.ts';
+import { closeInternalGrp, cmdSplitRegex, internalWrapRegex, openInternalGrp } from 'artigen/utils/escape.ts';
 import { legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
@@ -20,7 +20,12 @@ import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
 const minusOps = ['(', '^', '**', '*', '/', '%', '+', '-'];
 const allOps = [...minusOps, ')'];
 
-export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResults: number[]): [ReturnData[], CountDetails[], RollDistributionMap[]] => {
+export const tokenizeMath = (
+  cmd: string,
+  modifiers: RollModifiers,
+  previousResults: number[],
+  groupResults: ReturnData[],
+): [ReturnData[], CountDetails[], RollDistributionMap[]] => {
   const countDetails: CountDetails[] = [];
   const rollDists: RollDistributionMap[] = [];
 
@@ -54,6 +59,18 @@ export const tokenizeMath = (cmd: string, modifiers: RollModifiers, previousResu
     } else if (mathConf[i] == parseFloat(curMathConfStr)) {
       // If its a number, parse the number out
       mathConf[i] = parseFloat(curMathConfStr);
+    } else if (curMathConfStr.startsWith(openInternalGrp)) {
+      const groupIdx = parseInt(curMathConfStr.substring(1, curMathConfStr.indexOf(closeInternalGrp)));
+      if (groupIdx >= groupResults.length) {
+        throw new Error('InternalGroupMachineBroke');
+      }
+      mathConf[i] = {
+        total: groupResults[groupIdx].rollTotal,
+        details: groupResults[groupIdx].rollDetails,
+        containsCrit: groupResults[groupIdx].containsCrit,
+        containsFail: groupResults[groupIdx].containsFail,
+        isComplex: groupResults[groupIdx].isComplex,
+      };
     } else if (curMathConfStr.toLowerCase() === 'e') {
       // If the operand is the constant e, create a SolvedStep for it
       mathConf[i] = {
