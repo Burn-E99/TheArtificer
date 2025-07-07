@@ -4,6 +4,7 @@ import { CountDetails, RollDistributionMap } from 'artigen/dice/dice.d.ts';
 
 // ReturnData is the temporary internal type used before getting turned into SolvedRoll
 export interface ReturnData {
+  origIdx?: number;
   rollTotal: number;
   rollPreFormat: string;
   rollPostFormat: string;

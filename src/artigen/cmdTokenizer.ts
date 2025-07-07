@@ -12,7 +12,7 @@ import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { tokenizeMath } from 'artigen/math/mathTokenizer.ts';
 
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
-import { closeInternal, closeInternalGrp, internalGrpWrapRegex, internalWrapRegex, openInternal, openInternalGrp } from 'artigen/utils/escape.ts';
+import { closeInternal, closeInternalGrp, internalGrpWrapRegex, internalWrapRegex, mathSplitRegex, openInternal, openInternalGrp } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertGroupBalance, getMatchingGroupIdx, getMatchingInternalGrpIdx, getMatchingInternalIdx, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
 import { basicReducer } from 'artigen/utils/reducers.ts';
@@ -149,7 +149,16 @@ export const tokenizeCmd = (
 
       const currentGrp = groupParts.slice(openIdx + 1, closeIdx);
 
-      const [tempData, tempCounts, tempDists] = handleGroup(currentGrp, '', modifiers, previousResults);
+      // Try to find and "eat" any modifiers from the next groupPart
+      let thisGrpMods = '';
+      const possibleMods = groupParts[closeIdx + 1]?.trim() ?? '';
+      if (possibleMods.match(/^[dk<>=f].*/g)) {
+        const items = groupParts[closeIdx + 1].split(mathSplitRegex).filter((x) => x);
+        thisGrpMods = items.shift() ?? '';
+        groupParts[closeIdx + 1] = items.join('');
+      }
+
+      const [tempData, tempCounts, tempDists] = handleGroup(currentGrp, thisGrpMods, modifiers, previousResults);
       const data = tempData[0];
       log(LT.LOG, `Solved Group is back ${JSON.stringify(data)} | ${JSON.stringify(returnData)} ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
 

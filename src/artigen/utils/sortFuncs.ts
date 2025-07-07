@@ -39,12 +39,12 @@ export const compareTotalRolls = (a: ReturnData, b: ReturnData): number => inter
 export const compareTotalRollsReverse = (a: ReturnData, b: ReturnData): number => internalCompareTotalRolls(a, b, -1);
 
 // compareRolls(a, b) returns -1|0|1
-// compareRolls is used to order an array of RollSets by RollSet.origIdx
-export const compareOrigIdx = (a: RollSet, b: RollSet): number => {
-  if (a.origIdx < b.origIdx) {
+// compareRolls is used to order an array of RollSet or ReturnData by X.origIdx
+export const compareOrigIdx = (a: RollSet | ReturnData, b: RollSet | ReturnData): number => {
+  if ((a.origIdx ?? 0) < (b.origIdx ?? 0)) {
     return -1;
   }
-  if (a.origIdx > b.origIdx) {
+  if ((a.origIdx ?? 0) > (b.origIdx ?? 0)) {
     return 1;
   }
   return 0;

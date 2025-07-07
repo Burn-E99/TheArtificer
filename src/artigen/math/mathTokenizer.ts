@@ -11,7 +11,7 @@ import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 import { mathSolver } from 'artigen/math/mathSolver.ts';
 
-import { closeInternalGrp, cmdSplitRegex, internalWrapRegex, openInternalGrp } from 'artigen/utils/escape.ts';
+import { closeInternalGrp, cmdSplitRegex, internalWrapRegex, mathSplitRegex, openInternalGrp } from 'artigen/utils/escape.ts';
 import { legalMathOperators } from 'artigen/utils/legalMath.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertParenBalance } from 'artigen/utils/parenBalance.ts';
@@ -36,8 +36,7 @@ export const tokenizeMath = (
     .replace(cmdSplitRegex, '')
     .replace(internalWrapRegex, '')
     .replace(/ /g, '')
-    // breaks the string on the following: (\*\*) ** for exponents ([+()*/^] for basic algebra (?<![d%])% for breaking on d%%%% dice correctly (?<![rsfop!=<>])- for breaking on - correctly with fate dice) (x\d+(\.\d*)?) x# for variables
-    .split(/(\*\*)|([+()*/^]|(?<![d%])%|(?<![rsfop!=<>])-)|(x\d+(\.\d*)?)/g)
+    .split(mathSplitRegex)
     .filter((x) => x);
   loggingEnabled && log(LT.LOG, `Split roll into mathConf ${JSON.stringify(mathConf)}`);
 

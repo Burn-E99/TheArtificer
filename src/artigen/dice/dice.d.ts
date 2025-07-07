@@ -91,16 +91,22 @@ export interface DPercentConf {
   critVal: number;
 }
 
-// RollConf is used by the roll20 setup
-export interface RollConf {
-  type: RollType;
-  dieCount: number;
-  dieSize: number;
-  dPercent: DPercentConf;
+// GroupConf carries the machine readable group configuration the user specified
+export interface GroupConf {
   drop: CountConf;
   keep: CountConf;
   dropHigh: CountConf;
   keepLow: CountConf;
+  success: RangeConf;
+  fail: RangeConf;
+}
+
+// RollConf carries the machine readable roll configuration the user specified
+export interface RollConf extends GroupConf {
+  type: RollType;
+  dieCount: number;
+  dieSize: number;
+  dPercent: DPercentConf;
   reroll: {
     on: boolean;
     once: boolean;
@@ -121,8 +127,6 @@ export interface RollConf {
     returnTotal: boolean;
   };
   sort: SortDisabled | SortEnabled;
-  success: RangeConf;
-  fail: RangeConf;
 }
 
 export interface SumOverride {
@@ -135,4 +139,10 @@ export interface ExecutedRoll {
   countSuccessOverride: boolean;
   countFailOverride: boolean;
   sumOverride: SumOverride;
+}
+
+export interface GroupResultFlags {
+  dropped: boolean;
+  success: boolean;
+  failed: boolean;
 }
