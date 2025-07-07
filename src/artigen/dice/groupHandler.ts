@@ -174,7 +174,7 @@ export const handleGroup = (
         initConfig: `${prev.initConfig}, ${cur.initConfig}`,
         isComplex: prev.isComplex || cur.isComplex,
       }));
-      data.initConfig = `{${data.initConfig}}`;
+      data.initConfig = `{${data.initConfig}}${groupModifiers.replaceAll(' ', '')}`;
 
       if (groupConf.success.on || groupConf.fail.on) {
         data.rollTotal = 0;
@@ -211,6 +211,7 @@ export const handleGroup = (
     if (groupModifiers.trim()) {
       // Handle special case where the group modifiers are applied across the dice rolled
       // ex from roll20 docs: {4d6+3d8}k4 - Roll 4 d6's and 3 d8's, out of those 7 dice the highest 4 are kept and summed up.
+      // TODO AAAAAAAAAAAAAAAAA
       retData = <ReturnData> {};
     } else {
       // why did you put this in a group, that was entirely pointless
