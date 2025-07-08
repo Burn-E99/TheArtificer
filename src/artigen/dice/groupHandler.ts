@@ -163,17 +163,30 @@ export const handleGroup = (
         });
       }
 
+      loggingEnabled && log(LT.LOG, `Current Group Results: ${JSON.stringify(groupResults)}`);
       loggingEnabled && log(LT.LOG, `Applying group flags: ${JSON.stringify(resultFlags)}`);
-      const data = groupResults.reduce((prev, cur, idx) => ({
-        rollTotal: resultFlags[idx].dropped ? prev.rollTotal : prev.rollTotal + cur.rollTotal,
-        rollPreFormat: '',
-        rollPostFormat: '',
-        rollDetails: `${prev.rollDetails}, ${applyFlags(cur.rollDetails, resultFlags[idx])}`,
-        containsCrit: resultFlags[idx].dropped ? prev.containsCrit : prev.containsCrit || cur.containsCrit,
-        containsFail: resultFlags[idx].dropped ? prev.containsFail : prev.containsFail || cur.containsFail,
-        initConfig: `${prev.initConfig}, ${cur.initConfig}`,
-        isComplex: prev.isComplex || cur.isComplex,
-      }));
+      const data = groupResults.reduce(
+        (prev, cur, idx) => ({
+          rollTotal: resultFlags[idx].dropped ? prev.rollTotal : prev.rollTotal + cur.rollTotal,
+          rollPreFormat: '',
+          rollPostFormat: '',
+          rollDetails: `${prev.rollDetails}, ${applyFlags(cur.rollDetails, resultFlags[idx])}`,
+          containsCrit: resultFlags[idx].dropped ? prev.containsCrit : prev.containsCrit || cur.containsCrit,
+          containsFail: resultFlags[idx].dropped ? prev.containsFail : prev.containsFail || cur.containsFail,
+          initConfig: `${prev.initConfig}, ${cur.initConfig}`,
+          isComplex: prev.isComplex || cur.isComplex,
+        }),
+        {
+          rollTotal: 0,
+          rollPreFormat: '',
+          rollPostFormat: '',
+          rollDetails: '',
+          containsCrit: false,
+          containsFail: false,
+          initConfig: '',
+          isComplex: false,
+        },
+      );
       data.initConfig = `{${data.initConfig}}${groupModifiers.replaceAll(' ', '')}`;
 
       if (groupConf.success.on || groupConf.fail.on) {
@@ -192,16 +205,28 @@ export const handleGroup = (
       retData = data;
     } else {
       // Sum mode
-      const data = groupResults.reduce((prev, cur) => ({
-        rollTotal: prev.rollTotal + cur.rollTotal,
-        rollPreFormat: '',
-        rollPostFormat: '',
-        rollDetails: `${prev.rollDetails} + ${cur.rollDetails}`,
-        containsCrit: prev.containsCrit || cur.containsCrit,
-        containsFail: prev.containsFail || cur.containsFail,
-        initConfig: `${prev.initConfig}, ${cur.initConfig}`,
-        isComplex: prev.isComplex || cur.isComplex,
-      }));
+      const data = groupResults.reduce(
+        (prev, cur) => ({
+          rollTotal: prev.rollTotal + cur.rollTotal,
+          rollPreFormat: '',
+          rollPostFormat: '',
+          rollDetails: `${prev.rollDetails} + ${cur.rollDetails}`,
+          containsCrit: prev.containsCrit || cur.containsCrit,
+          containsFail: prev.containsFail || cur.containsFail,
+          initConfig: `${prev.initConfig}, ${cur.initConfig}`,
+          isComplex: prev.isComplex || cur.isComplex,
+        }),
+        {
+          rollTotal: 0,
+          rollPreFormat: '',
+          rollPostFormat: '',
+          rollDetails: '',
+          containsCrit: false,
+          containsFail: false,
+          initConfig: '',
+          isComplex: false,
+        },
+      );
       data.initConfig = `{${data.initConfig}}`;
       data.rollDetails = `{${data.rollDetails}}`;
       retData = data;

@@ -173,7 +173,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
           },
         ];
 
-        if (pubAttachments.map((file) => file.blob.size).reduce(basicReducer) < config.maxFileSize) {
+        if (pubAttachments.map((file) => file.blob.size).reduce(basicReducer, 0) < config.maxFileSize) {
           // All attachments will fit in one message
           newMsg.reply({
             embeds: respMessage,

@@ -84,7 +84,7 @@ export const generateCountDetailsEmbed = (counts: CountDetails): ArtigenEmbedNoA
   ];
 
   return {
-    charCount: title.length + fields.map((field) => field.name.length + field.value.length).reduce(basicReducer),
+    charCount: title.length + fields.map((field) => field.name.length + field.value.length).reduce(basicReducer, 0),
     embed: {
       color: infoColor1,
       title,
@@ -115,7 +115,7 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
     .toArray()
     .slice(0, 25)
     .map(([key, distArr]) => {
-      const total = distArr.reduce(basicReducer);
+      const total = distArr.reduce(basicReducer, 0);
       return {
         name: `${getDistName(key)} (Total rolls: ${total}):`,
         value: distArr.map((cnt, dieIdx) => `${key.startsWith('fate') ? dieIdx - 1 : dieIdx + 1}: ${cnt} (${((cnt / total) * 100).toFixed(1)}%)`).join('\n'),
@@ -124,7 +124,7 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
     });
   const rollDistTitle = 'Roll Distributions:';
 
-  const totalSize = fields.map((field) => field.name.length + field.value.length).reduce(basicReducer);
+  const totalSize = fields.map((field) => field.name.length + field.value.length).reduce(basicReducer, 0);
   if (totalSize > 4000 || fields.some((field) => field.name.length > 256 || field.value.length > 1024)) {
     const rollDistBlob = new Blob([fields.map((field) => `# ${field.name}\n${field.value}`).join('\n\n') as BlobPart], { type: 'text' });
     if (rollDistBlob.size > config.maxFileSize) {

@@ -107,7 +107,7 @@ export const tokenizeCmd = (
     if (modifiers.simulatedNominal) {
       loggingEnabled && log(LT.LOG, `SN on, condensing array into single item ${JSON.stringify(simulatedData)}`);
       returnData.push({
-        rollTotal: simulatedData.map((data) => data.rollTotal).reduce(basicReducer) / simulatedData.length,
+        rollTotal: simulatedData.map((data) => data.rollTotal).reduce(basicReducer, 0) / simulatedData.length,
         rollPreFormat: simulatedData[0].rollPreFormat,
         rollPostFormat: simulatedData[0].rollPostFormat,
         rollDetails: simulatedData[0].rollDetails,
