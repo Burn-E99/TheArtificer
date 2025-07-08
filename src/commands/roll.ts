@@ -45,7 +45,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     const m = await message.reply(rollingEmbed);
 
     // Get modifiers from command
-    const [modifiers, remainingArgs] = getModifiers(args);
+    const [modifiers, remainingArgs] = getModifiers(args.join('').split(' '));
 
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
