@@ -208,25 +208,22 @@ export const handleGroup = (
     }
   } else {
     loggingEnabled && log(LT.LOG, `In single-mode ${JSON.stringify(commaParts)} ${groupModifiers} ${JSON.stringify(groupConf)}`);
-    if (groupModifiers.trim()) {
-      // Handle special case where the group modifiers are applied across the dice rolled
-      // ex from roll20 docs: {4d6+3d8}k4 - Roll 4 d6's and 3 d8's, out of those 7 dice the highest 4 are kept and summed up.
-      // TODO AAAAAAAAAAAAAAAAA
-      retData = <ReturnData> {};
-    } else {
-      // why did you put this in a group, that was entirely pointless
-      loggingEnabled && log(LT.LOG, `Solving commaPart: ${commaParts[0]}`);
-      const [tempData, tempCounts, tempDists] = tokenizeMath(commaParts[0], modifiers, previousResults, prevGrpReturnData);
-      const data = tempData[0];
+    const [tempData, tempCounts, tempDists] = tokenizeMath(
+      commaParts[0],
+      modifiers,
+      previousResults,
+      prevGrpReturnData,
+      groupModifiers.trim() ? groupConf : null,
+    );
+    const data = tempData[0];
 
-      loggingEnabled && log(LT.LOG, `Solved Math for Group is back ${JSON.stringify(data)} | ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
+    loggingEnabled && log(LT.LOG, `Solved Math for Group is back ${JSON.stringify(data)} | ${JSON.stringify(tempCounts)} ${JSON.stringify(tempDists)}`);
 
-      countDetails.push(...tempCounts);
-      rollDists.push(...tempDists);
-      data.initConfig = `{${data.initConfig}}`;
-      data.rollDetails = `{${data.rollDetails}}`;
-      retData = data;
-    }
+    countDetails.push(...tempCounts);
+    rollDists.push(...tempDists);
+    data.initConfig = `{${data.initConfig}}${groupModifiers.trim() ? groupModifiers.replaceAll(' ', '') : ''}`;
+    data.rollDetails = `{${data.rollDetails}}`;
+    retData = data;
   }
 
   // Handle merging back any nested groups to prevent an internalGrp marker from sneaking out

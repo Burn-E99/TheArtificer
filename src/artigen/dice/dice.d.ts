@@ -6,6 +6,7 @@ type RollType = '' | 'roll20' | 'fate' | 'cwod' | 'ova';
 // RollSet is used to preserve all information about a calculated roll
 export interface RollSet {
   type: RollType;
+  rollGrpIdx?: number;
   origIdx: number;
   roll: number;
   size: number;

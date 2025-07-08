@@ -1,7 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { FormattedRoll, RollModifiers } from 'artigen/dice/dice.d.ts';
-import { executeRoll } from 'artigen/dice/executeRoll.ts';
+import { ExecutedRoll, FormattedRoll, RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
@@ -9,23 +8,21 @@ import { rollCounter } from 'artigen/utils/counter.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { createRollDistMap } from 'artigen/utils/rollDist.ts';
 
-// generateFormattedRoll(rollConf, modifiers) returns one SolvedStep
+// generateFormattedRoll(executedRoll, modifiers) returns one SolvedStep
 // generateFormattedRoll handles creating and formatting the completed rolls into the SolvedStep format
-export const generateFormattedRoll = (rollConf: string, modifiers: RollModifiers): FormattedRoll => {
+export const formatRoll = (executedRoll: ExecutedRoll, modifiers: RollModifiers): FormattedRoll => {
   let tempTotal = 0;
   let tempDetails = '[';
   let tempCrit = false;
   let tempFail = false;
   let tempComplex = false;
 
-  // Generate the roll, passing flags thru
-  const executedRoll = executeRoll(rollConf, modifiers);
-
   // Loop thru all parts of the roll to document everything that was done to create the total roll
+  loggingEnabled && log(LT.LOG, `Formatting roll ${JSON.stringify(executedRoll)}`);
   executedRoll.rollSet.forEach((e) => {
     loopCountCheck();
 
-    loggingEnabled && log(LT.LOG, `Formatting roll ${rollConf} | ${JSON.stringify(e)}`);
+    loggingEnabled && log(LT.LOG, `At ${JSON.stringify(e)}`);
     let preFormat = '';
     let postFormat = '';
 
