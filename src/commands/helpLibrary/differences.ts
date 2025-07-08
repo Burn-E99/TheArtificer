@@ -10,8 +10,8 @@ const dict = new Map<string, HelpContents>([
     {
       name: 'Features Differences',
       description: `The following features are implemented slightly different in ${config.name}:
-- **GM Rolls:** Instead of doing \`/gmroll\`, use the regular inline syntax, but tack on \`-gm @user\`.  More details can be found on the \`Roll Command Decorators/GM Roll\` page.
-- **Computed Dice Rolls:** As ${config.name} supports implicit multiplication, computed dice rolls use the Nested Rolls syntax.  More details can be found on the \`Miscellaneous Features/Nested Rolls\` page.`,
+- **GM Rolls:** Instead of doing \`/gmroll\`, use the regular inline syntax, but tack on \`-gm @user\`.  More details can be found on the \`Roll Command Decorators>GM Roll\` page.
+- **Computed Dice Rolls:** As ${config.name} supports implicit multiplication, computed dice rolls use the Nested Rolls syntax.  More details can be found on the \`Miscellaneous Features>Nested Rolls\` page.`,
     },
   ],
   [

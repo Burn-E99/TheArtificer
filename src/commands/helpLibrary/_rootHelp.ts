@@ -16,7 +16,7 @@ import { MiscFeaturesHelpPages } from 'commands/helpLibrary/miscFeatures.ts';
 const name = `${config.name}'s Roll Command Details`;
 const description = `You can chain as many of these options as you want, as long as the option does not disallow it.  This command also can fully solve math equations with parenthesis.
 
-The help options in this group use the notation \`xdy\` to indicate the basic/required dice notation for die count and size as detailed in the \`Dice Options/Basic Dice Options\` page.
+The help options in this group use the notation \`xdy\` to indicate the basic/required dice notation for die count and size as detailed in the \`Dice Options>Basic Dice Options\` page.
 
 As this supports the [Roll20 formatting](${config.links.roll20Formatting}) syntax fully, more details and examples can be found [here](${config.links.roll20Formatting}).
 
