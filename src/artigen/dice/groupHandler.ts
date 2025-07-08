@@ -151,11 +151,21 @@ export const handleGroup = (
           loopCountCheck();
 
           if (!resultFlags[idx].dropped) {
-            if (groupConf.success.on && groupConf.success.range.includes(rd.rollTotal)) {
+            if (
+              groupConf.success.on &&
+              (groupConf.success.range.includes(rd.rollTotal) ||
+                (groupConf.success.minValue !== null && rd.rollTotal >= groupConf.success.minValue) ||
+                (groupConf.success.maxValue !== null && rd.rollTotal <= groupConf.success.maxValue))
+            ) {
               successCnt++;
               resultFlags[idx].success = true;
             }
-            if (groupConf.fail.on && groupConf.fail.range.includes(rd.rollTotal)) {
+            if (
+              groupConf.fail.on &&
+              (groupConf.fail.range.includes(rd.rollTotal) ||
+                (groupConf.fail.minValue !== null && rd.rollTotal >= groupConf.fail.minValue) ||
+                (groupConf.fail.maxValue !== null && rd.rollTotal <= groupConf.fail.maxValue))
+            ) {
               failCnt++;
               resultFlags[idx].failed = true;
             }

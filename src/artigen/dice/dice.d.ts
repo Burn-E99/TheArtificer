@@ -74,6 +74,14 @@ interface RangeConf {
   on: boolean;
   range: number[];
 }
+interface GroupRangeConf extends RangeConf {
+  // minValue carries the minimum number for the specified option to trigger
+  // ex: if set to 4, 4 and greater will trigger the option
+  minValue: number | null;
+  // maxValue carries the minimum number for the specified option to trigger
+  // ex: if set to 4, 4 and less will trigger the option
+  maxValue: number | null;
+}
 
 // Sort interface
 interface SortDisabled {
@@ -92,18 +100,20 @@ export interface DPercentConf {
   critVal: number;
 }
 
-// GroupConf carries the machine readable group configuration the user specified
-export interface GroupConf {
+interface BaseConf {
   drop: CountConf;
   keep: CountConf;
   dropHigh: CountConf;
   keepLow: CountConf;
-  success: RangeConf;
-  fail: RangeConf;
+}
+// GroupConf carries the machine readable group configuration the user specified
+export interface GroupConf extends BaseConf {
+  success: GroupRangeConf;
+  fail: GroupRangeConf;
 }
 
 // RollConf carries the machine readable roll configuration the user specified
-export interface RollConf extends GroupConf {
+export interface RollConf extends BaseConf {
   type: RollType;
   dieCount: number;
   dieSize: number;
@@ -128,6 +138,8 @@ export interface RollConf extends GroupConf {
     returnTotal: boolean;
   };
   sort: SortDisabled | SortEnabled;
+  success: RangeConf;
+  fail: RangeConf;
 }
 
 export interface SumOverride {
