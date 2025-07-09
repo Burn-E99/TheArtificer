@@ -168,9 +168,11 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
 
           if (reservedCharacters.some((char) => name.includes(char))) {
             modifiers.error.name = 'InvalidCharacterInCDName';
-            modifiers.error.message = `Custom dice names cannot include any of the following characters:\n${JSON.stringify(
-              reservedCharacters
-            )}\n\n${cdSyntaxMessage}`;
+            modifiers.error.message = `Custom dice names cannot include any of the following characters:\n${
+              JSON.stringify(
+                reservedCharacters,
+              )
+            }\n\n${cdSyntaxMessage}`;
             modifiers.valid = false;
             return [modifiers, args];
           }
@@ -180,7 +182,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
             .replaceAll(']', '')
             .split(',')
             .filter((x) => x)
-            .map((side) => parseInt(side));
+            .map((side) => parseFloat(side));
           if (!sides.length) {
             modifiers.error.name = 'NoCustomSidesSpecified';
             modifiers.error.message = `No sides found for \`${name}\`.\n\n${cdSyntaxMessage}`;
