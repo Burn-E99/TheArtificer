@@ -37,6 +37,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
 
   // Whole processor lives in a try-catch to catch artigen's intentional error conditions
   try {
+    loggingEnabled && log(LT.LOG, `rollRequest received! ${JSON.stringify(rollRequest)}`);
     // filter removes all null/empty strings since we don't care about them
     const sepCmds = rollRequest.rollCmd.split(cmdSplitRegex).filter((x) => x);
     loggingEnabled && log(LT.LOG, `Split cmd into parts ${JSON.stringify(sepCmds)}`);
