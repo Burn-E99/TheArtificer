@@ -14,6 +14,7 @@ import { report } from 'commands/report.ts';
 import { roll } from 'commands/roll.ts';
 import { rollHelp } from 'commands/rollHelp.ts';
 import { stats } from 'commands/stats.ts';
+import { toggleInline } from 'commands/toggleInline.ts';
 import { version } from 'commands/version.ts';
 
 export default {
@@ -33,5 +34,6 @@ export default {
   roll,
   rollHelp,
   stats,
+  toggleInline,
   version,
 };

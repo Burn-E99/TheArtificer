@@ -5,7 +5,7 @@ import config from '~config';
 
 import commands from 'commands/_index.ts';
 
-import { ignoreList } from 'db/common.ts';
+import { ignoreList, inlineList } from 'db/common.ts';
 
 export const messageCreateHandler = (message: DiscordenoMessage) => {
   // Ignore all other bots
@@ -21,21 +21,22 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       commands.handleMentions(message);
     }
 
-    // return as we are done handling this command
-    return;
+    // return as we are done handling this command, unless the guild allows inline rolls
+    if (!inlineList.includes(message.guildId)) return;
   }
 
   log(LT.LOG, `Handling ${config.prefix}command message: ${JSON.stringify(message)}`);
 
+  const sliceLength = message.content.startsWith(config.prefix) ? config.prefix.length : 0;
   // Split into standard command + args format
   const args = message.content
-    .slice(config.prefix.length)
+    .slice(sliceLength)
     .trim()
     .split(/[ \n]+/g);
   const argSpaces = message.content
-    .slice(config.prefix.length)
+    .slice(sliceLength)
     .trim()
-    .split(new RegExp(/([ \n]+)/, 'g'));
+    .split(/([ \n]+)/g);
   const command = args.shift()?.toLowerCase();
   argSpaces.shift();
 
@@ -128,6 +129,11 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       // [[heatmap or [[hm
       // Audit sub commands
       commands.heatmap(message);
+      break;
+    case 'inline':
+      // [[inline arg
+      // Enable or Disable inline rolling
+      commands.toggleInline(message, args);
       break;
     case 'roll':
     case 'r':

@@ -17,6 +17,7 @@ const commands = [
   'heatmap',
   'help',
   'info',
+  'inline',
   'mention',
   'opt-in',
   'opt-out',

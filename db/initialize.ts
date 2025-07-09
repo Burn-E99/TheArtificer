@@ -21,7 +21,19 @@ await dbClient.execute(`DROP TABLE IF EXISTS roll_time_heatmap;`);
 await dbClient.execute(`DROP PROCEDURE IF EXISTS INC_CNT;`);
 await dbClient.execute(`DROP TABLE IF EXISTS command_cnt;`);
 await dbClient.execute(`DROP TABLE IF EXISTS ignore_list;`);
+await dbClient.execute(`DROP TABLE IF EXISTS allow_inline;`);
 console.log('Tables dropped');
+
+// Holds guilds that have explicitly allowed inline rolls
+console.log('Attempting to create table allow_inline');
+await dbClient.execute(`
+	CREATE TABLE allow_inline (
+		guildid bigint unsigned NOT NULL,
+		PRIMARY KEY (guildid),
+		UNIQUE KEY allow_inline_guildid_UNIQUE (guildid)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+`);
+console.log('Table created');
 
 // Table to hold list of users who want to be ignored by the bot
 console.log('Attempting to create table ignore_list');
