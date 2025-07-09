@@ -35,6 +35,19 @@ const dict = new Map<string, HelpContents>([
       example: ['`[[4d6!]]` => [3 + 4 + **6** + 4! + 5] = **22**'],
     },
   ],
+  [
+    'labels',
+    {
+      name: 'Labels',
+      description:
+        'When rolling in Dice Matching (`Dice Options>Dice Matching`) or Success/Failure mode (`Dice Options>Target Number/Successes`/`Dice Options>Target Failures`), some dies will get labels added to them to indicate what group they are in, or if they were a success or failure.',
+      example: [
+        'Dice Matching Example:\n`[[10d6m]]` => [**C:6** + B:2 + 4 + __C:1__ + __C:1__ + B:2 + **C:6** + B:2 + **C:6** + **C:6**] = 36',
+        '',
+        'Success/Failure mode example:\n`[[10d6>5f<2]]` => [__F:1__ + **S:6** + __F:1__ + S:5 + S:5 + S:5 + 4 + **S:6** + 4 + __F:1__, 5 Successes, 3 Fails] = **__2__**',
+      ],
+    },
+  ],
 ]);
 
 export const FormattingHelpPages: HelpPage = {
