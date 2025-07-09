@@ -23,9 +23,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
 * `[[help` or `[[h` or `[[?`
   * Provides a message similar to this available commands block.
 * `[[rollhelp` or `[[??` or `[[rh` or `[[hr`
-  * Details on how to use the roll command, listed as `[[xdy...]]` below.
-* `[[rolldecorators` or `[[???` or `[[rd` or `[[dr`
-  * Details on how to use decorators on the roll command.
+  * Opens the new help library.
 * `[[api [subcommand]`
   * Administrative tools for the bots's API.  These commands may only be used by the Owner or Admins of your guild.
   * Available Subcommands:
