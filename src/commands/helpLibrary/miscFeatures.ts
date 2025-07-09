@@ -11,7 +11,9 @@ const dict = new Map<string, HelpContents>([
       name: 'User Formatting',
       description: `Any formatting/characters outside of roll commands will be preserved in the output.
 
-The first characters in a message must be a valid roll command, you can pad your message with something like \`[[0]]\` as shown in the example.  The example uses the "Super No Details" flag (\`-snd\`) in combination with the "Hide Raw" flag (\`-hr\`) to only show the formatted results.`,
+By default, the first characters in a message must be a valid roll command, you can pad your message with something like \`${config.prefix}0${config.postfix}\` as shown in the example.  If you enable inline mode using \`${config.prefix}inline enable\`, you do not need to start the message with \`${config.prefix}\`, giving a more flexible formatting experience.
+
+The example uses the "Super No Details" flag (\`-snd\`) in combination with the "Hide Raw" flag (\`-hr\`) to only show the formatted results.`,
       example: [
         `\`\`\`[[0]] ${config.name} attacks the dragon with their Sword!
 To Hit: [[d20 + 4 - 1 + 8]]
