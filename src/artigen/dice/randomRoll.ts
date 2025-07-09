@@ -26,7 +26,7 @@ const getRollFromArray = (sides: number[], modifiers: RollModifiers): number => 
     return Math.min(...sides);
   }
 
-  return sides[genBasicRoll(sides.length, modifiers, <DPercentConf>{ on: false }) - 1];
+  return sides[genBasicRoll(sides.length, modifiers, <DPercentConf> { on: false }) - 1];
 };
 
 export const generateRoll = (rollConf: RollConf, modifiers: RollModifiers): number => {
