@@ -40,7 +40,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
   // Rest of this command is in a try-catch to protect all sends/edits from erroring out
   try {
-    const originalCommand = `${config.prefix}${command}${command.length === 0 ? args.join('').trim() : args.join('')}`;
+    const originalCommand = `${command ? config.prefix : ''}${command}${command.length === 0 ? args.join('').trim() : args.join('')}`;
 
     const m = await message.reply(rollingEmbed);
 
