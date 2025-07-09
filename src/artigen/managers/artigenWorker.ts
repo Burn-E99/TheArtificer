@@ -8,6 +8,15 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 loggingEnabled && initLog('logs/worker', loggingEnabled);
 
+// Extend the BigInt prototype to support JSON.stringify
+interface BigIntX extends BigInt {
+  // Convert to BigInt to string form in JSON.stringify
+  toJSON: () => string;
+}
+(BigInt.prototype as BigIntX).toJSON = function () {
+  return this.toString();
+};
+
 // Alert rollQueue that this worker is ready
 self.postMessage('ready');
 
