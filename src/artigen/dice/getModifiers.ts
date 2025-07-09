@@ -26,6 +26,7 @@ export const Modifiers = Object.freeze({
   CustomDiceShapes: '-cd',
 });
 
+// args will look like this: ['-sn', ' ', '10'] as spaces/newlines are split on their own
 export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
   const modifiers: RollModifiers = {
     noDetails: false,
@@ -81,9 +82,9 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         modifiers.nominalRoll = true;
         break;
       case Modifiers.SimulatedNominal:
-        if (args[i + 1] && parseInt(args[i + 1]).toString() === args[i + 1]) {
-          // Shift the -sn out so the next item is the amount
-          args.splice(i, 1);
+        if (args[i + 2] && parseInt(args[i + 2]).toString() === args[i + 2]) {
+          // Shift the ["-sn", " "] out so the next item is the amount
+          args.splice(i, 2);
 
           modifiers.simulatedNominal = parseInt(args[i]);
         } else {
@@ -97,11 +98,11 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         modifiers.gmRoll = true;
 
         // -gm is a little more complex, as we must get all of the GMs that need to be DMd
-        while (i + 1 < args.length && args[i + 1].startsWith('<@')) {
-          log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
+        log(LT.LOG, `Finding all GMs, checking args ${JSON.stringify(args)}`);
+        while (i + 2 < args.length && args[i + 2].startsWith('<@')) {
           // Keep looping thru the rest of the args until one does not start with the discord mention code
-          modifiers.gms.push(args[i + 1].replace(/!/g, ''));
-          args.splice(i + 1, 1);
+          modifiers.gms.push(args[i + 2].replace(/!/g, ''));
+          args.splice(i + 1, 2);
         }
         if (modifiers.gms.length < 1) {
           // If -gm is on and none were found, throw an error
@@ -110,10 +111,11 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
           modifiers.valid = false;
           return [modifiers, args];
         }
+        log(LT.LOG, `Found all GMs, ${modifiers.gms}`);
         break;
       case Modifiers.Order:
         // Shift the -o out of the array so the next item is the direction
-        args.splice(i, 1);
+        args.splice(i, 2);
 
         if (!args[i] || (args[i].toLowerCase()[0] !== 'd' && args[i].toLowerCase()[0] !== 'a')) {
           // If -o is on and asc or desc was not specified, error out
@@ -137,7 +139,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         break;
       case Modifiers.CustomDiceShapes: {
         // Shift the -cd out of the array so the dice shapes are next
-        args.splice(i, 1);
+        args.splice(i, 2);
 
         const cdSyntaxMessage =
           'Must specify at least one custom dice shape using the `name:[side1,side2,...,sideN]` syntax.  If multiple custom dice shapes are needed, use a `;` to separate the list.';

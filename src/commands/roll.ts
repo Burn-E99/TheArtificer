@@ -40,12 +40,19 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
   // Rest of this command is in a try-catch to protect all sends/edits from erroring out
   try {
-    const originalCommand = `${command ? config.prefix : ''}${command}${command.length === 0 ? args.join('').trim() : args.join('')}`;
+    let originalCommand = `${command}${command.length === 0 ? args.join('').trim() : args.join('')}`;
+    // Try to ensure the command is wrapped
+    if (!originalCommand.includes(config.postfix)) {
+      originalCommand = `${originalCommand.trim()}${config.postfix}`;
+    }
+    if (!originalCommand.includes(config.prefix) || originalCommand.indexOf(config.prefix) > originalCommand.indexOf(config.postfix)) {
+      originalCommand = `${config.prefix}${originalCommand.trim()}`;
+    }
 
     const m = await message.reply(rollingEmbed);
 
     // Get modifiers from command
-    const [modifiers, remainingArgs] = getModifiers(args.join('').split(' '));
+    const [modifiers, remainingArgs] = getModifiers(args);
 
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
