@@ -61,6 +61,18 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * Adds you to an ignore list so the bot will never respond to you
 * `[[opt-in` **Available via DM ONLY**
   * Removes you from the ignore list
+* `[[inline [subcommand]`
+  * Controls whether or not inline rolls can be done in a guild, defaults off.  These commands may only be used by the Owner or Admins of your guild.
+  * An inline roll is a roll that does not immediately start with `[[`, such as `test [[d20]]`.
+  * Available subcommands:
+    * `[[api help`
+      * Provides a message similar to this subcommand description.
+    * `[[inline status`
+      * Shows the current status of inline rolls for this guild.
+    * `[[inline allow` or `[[inline enable`
+      * Allows inline rolls in the guild.
+    * `[[inline block` or `[[inline disable` or `[[inline delete`
+      * Blocks inline rolls in the guild.
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
   * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will no different.

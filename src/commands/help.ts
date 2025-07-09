@@ -86,6 +86,11 @@ export const help = (message: DiscordenoMessage) => {
               inline: true,
             },
             {
+              name: `\`${config.prefix}inline [subcommand]\``,
+              value: `Controls whether or not inline rolls can be done in a guild, run \`${config.prefix}inline help\` for more details`,
+              inline: true,
+            },
+            {
               name: `\`${config.prefix}xdydzracsq!${config.postfix}\` ...`,
               value:
                 `Rolls all configs requested, you may repeat the command multiple times in the same message (just ensure you close each roll with \`${config.postfix}\`), run \`${config.prefix}??\` for more details`,
