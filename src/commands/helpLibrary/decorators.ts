@@ -1,5 +1,7 @@
 import config from '~config';
 
+import { reservedCharacters } from 'artigen/dice/getModifiers.ts';
+
 import { HelpContents, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
 
 const name = 'Roll Command Decorators';
@@ -170,6 +172,26 @@ Shows a raw roll distribution of all dice in roll.`,
 
 Mainly a debug decorator, useful when creating complex rolls that will be reused.  Will not number the final roll command in the list as it will not be available for use.`,
       example: ['`[[d20]] [[d20]] [[d20]] -vn`'],
+    },
+  ],
+  [
+    '-cd',
+    {
+      name: 'Custom Dice',
+      description: `**Usage:** \`-cd name:[side1,side2,...,sideN]\` or \`-cd nameA:[side1,side2,...,sideN];nameB:[side1,side2,...,sideN]\`
+\`name\` - The name you want to use for the custom die.  Cannot include any of the following characters: \`${reservedCharacters.join(', ')}\`
+\`sideN\` - Any number.  Decimals are allowed, but may not work with some dice options.
+
+Allows a user specified die to be used, allowing weird numbers or combinations of numbers to be used as dice.  If Crit Success/Fail are not specified, they will be determined automatically.
+
+To use the user specified die in rolling, simply put the name of the custom die before the \`d\` in the dice config.
+
+If multiple custom dice are needed, separate their configurations with a \`;\`.  Do not include any spaces in the configuration.`,
+      example: [
+        '`[[10testd]] -cd test:[5,20,400,60]` => [**400** + 60 + **400** + __5__ + 60 + 20 + 60 + **400** + __5__ + 60] = **__1470__**',
+        '`[[5testd + 5named]] -cd test:[5,20,400,60];name:[4,5,6]` => [60 + __5__ + 20 + __5__ + **400**]+[__4__ + __4__ + 5 + 5 + **6**] = **__514__**',
+        '`[[5testdr20!]] -cd test:[5,20,400,60]` => [**400** + 60! + __5__ + __5__ + 60 + ~~20~~ + 60] = **__590__**',
+      ],
     },
   ],
 ]);
