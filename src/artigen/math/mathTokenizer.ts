@@ -310,7 +310,9 @@ export const tokenizeMath = (
   }
 
   // Now that mathConf is parsed, send it into the solver
+  loggingEnabled && log(LT.LOG, `Sending mathConf to solver ${JSON.stringify(mathConf)}`);
   const tempSolved = mathSolver(mathConf);
+  loggingEnabled && log(LT.LOG, `SolvedStep back from mathSolver ${JSON.stringify(tempSolved)}`);
 
   // Push all of this step's solved data into the temp array
   return [

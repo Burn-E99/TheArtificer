@@ -28,16 +28,7 @@ export const formatRoll = (executedRoll: ExecutedRoll, modifiers: RollModifiers)
 
     if (!e.dropped && !e.rerolled) {
       // If the roll was not dropped or rerolled, add it to the stepTotal and flag the critHit/critFail
-      switch (e.type) {
-        case 'ova':
-        case 'roll20':
-        case 'fate':
-          tempTotal += e.roll;
-          break;
-        case 'cwod':
-          tempTotal += e.success ? 1 : 0;
-          break;
-      }
+      tempTotal += e.roll;
       if (e.critHit) {
         tempCrit = true;
       }

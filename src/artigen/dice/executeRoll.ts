@@ -1,7 +1,7 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import { ExecutedRoll, RollModifiers, RollSet, SumOverride } from 'artigen/dice/dice.d.ts';
-import { genFateRoll, genRoll } from 'artigen/dice/randomRoll.ts';
+import { generateRoll } from 'artigen/dice/randomRoll.ts';
 import { getRollConf } from 'artigen/dice/getRollConf.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
@@ -24,7 +24,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
   rollStr = rollStr.toLowerCase();
 
   // Turn the rollStr into a machine readable rollConf
-  const rollConf = getRollConf(rollStr);
+  const rollConf = getRollConf(rollStr, modifiers.customDiceShapes);
 
   // Roll the roll
   const rollSet: RollSet[] = [];
@@ -85,12 +85,12 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     // Copy the template to fill out for this iteration
     const rolling = getTemplateRoll();
     // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-    rolling.roll = rollConf.type === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+    rolling.roll = generateRoll(rollConf, modifiers);
     rolling.size = rollConf.dieSize;
     // Set origIdx of roll
     rolling.origIdx = i;
 
-    flagRoll(rollConf, rolling);
+    flagRoll(rollConf, rolling, modifiers.customDiceShapes);
 
     loggingEnabled && log(LT.LOG, `${getLoopCount()} Roll done ${JSON.stringify(rolling)}`);
 
@@ -140,10 +140,10 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
           newReroll.roll = minMaxOverride;
         } else {
           // If nominalRoll is on, set the roll to the average roll of dieSize, otherwise generate a new random roll
-          newReroll.roll = rollConf.type === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+          newReroll.roll = generateRoll(rollConf, modifiers);
         }
 
-        flagRoll(rollConf, newReroll);
+        flagRoll(rollConf, newReroll, modifiers.customDiceShapes);
 
         loggingEnabled && log(LT.LOG, `${getLoopCount()} Roll done ${JSON.stringify(newReroll)}`);
 
@@ -161,12 +161,12 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
         // Copy the template to fill out for this iteration
         const newExplodingRoll = getTemplateRoll();
         // If maximizeRoll is on, set the roll to the dieSize, else if nominalRoll is on, set the roll to the average roll of dieSize, else generate a new random roll
-        newExplodingRoll.roll = rollConf.type === 'fate' ? genFateRoll(modifiers) : genRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
+        newExplodingRoll.roll = generateRoll(rollConf, modifiers);
         newExplodingRoll.size = rollConf.dieSize;
         // Always mark this roll as exploding
         newExplodingRoll.exploding = true;
 
-        flagRoll(rollConf, newExplodingRoll);
+        flagRoll(rollConf, newExplodingRoll, modifiers.customDiceShapes);
 
         loggingEnabled && log(LT.LOG, `${getLoopCount()} Roll done ${JSON.stringify(newExplodingRoll)}`);
 

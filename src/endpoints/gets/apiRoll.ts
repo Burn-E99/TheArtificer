@@ -4,6 +4,7 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import config from '~config';
 
 import { RollModifiers } from 'artigen/dice/dice.d.ts';
+import { reservedCharacters } from 'artigen/dice/getModifiers.ts';
 
 import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
@@ -100,10 +101,47 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           confirmCrit: query.has('cc'),
           rollDist: query.has('rd'),
           numberVariables: query.has('nv') || query.has('vn'),
+          customDiceShapes: new Map<string, number[]>(),
           apiWarn: hideWarn ? '' : apiWarning,
           valid: true,
           error: new Error(),
         };
+
+        // Handle adding all sides into the cds array
+        if (query.has('cd')) {
+          const shapes = (query.get('cd') ?? '').split(';').filter((x) => x);
+          if (!shapes.length) {
+            return stdResp.BadRequest('cd specified without any shapes provided');
+          }
+          for (const shape of shapes) {
+            const [name, rawSides] = shape.split(':').filter((x) => x);
+            if (!name || !rawSides) {
+              return stdResp.BadRequest(
+                'cd specified with invalid pattern.  Must be in format of `name:[side1,side2,...,sideN]`.  If multiple custom dice shapes are needed, use a `;` to separate the list'
+              );
+            }
+
+            if (modifiers.customDiceShapes.has(name)) {
+              return stdResp.BadRequest('cd specified, cannot repeat names');
+            }
+
+            if (reservedCharacters.some((char) => name.includes(char))) {
+              return stdResp.BadRequest('cd specified, die name includes invalid characters.  Reserved Character List: ' + JSON.stringify(reservedCharacters));
+            }
+
+            const sides = rawSides
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .split(',')
+              .filter((x) => x)
+              .map((side) => parseInt(side));
+            if (!sides.length) {
+              return stdResp.BadRequest('cd specified without any sides provided');
+            }
+
+            modifiers.customDiceShapes.set(name, sides);
+          }
+        }
 
         // maxRoll, minRoll, and nominalRoll cannot be on at same time, throw an error
         if ([modifiers.maxRoll, modifiers.minRoll, modifiers.nominalRoll, modifiers.simulatedNominal].filter((b) => b).length > 1) {
@@ -139,7 +177,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
     } else {
       // Alert API user that they messed up
       return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
+        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`
       );
     }
   } else {

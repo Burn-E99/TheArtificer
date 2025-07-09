@@ -1,8 +1,10 @@
-import { DPercentConf, RollModifiers } from 'artigen/dice/dice.d.ts';
+import { DPercentConf, RollConf, RollModifiers } from 'artigen/dice/dice.d.ts';
 
-// genRoll(size) returns number
-// genRoll rolls a die of size size and returns the result
-export const genRoll = (size: number, modifiers: RollModifiers, dPercent: DPercentConf): number => {
+import { basicReducer } from 'artigen/utils/reducers.ts';
+
+// genBasicRoll(size, modifiers, dPercent) returns number
+// genBasicRoll rolls a die of size size and returns the result
+const genBasicRoll = (size: number, modifiers: RollModifiers, dPercent: DPercentConf): number => {
   let result;
   if (modifiers.maxRoll) {
     result = size;
@@ -15,13 +17,25 @@ export const genRoll = (size: number, modifiers: RollModifiers, dPercent: DPerce
   return dPercent.on ? (result - 1) * dPercent.sizeAdjustment : result;
 };
 
-// genFateRoll returns -1|0|1
-// genFateRoll turns a d6 into a fate die, with sides: -1, -1, 0, 0, 1, 1
-export const genFateRoll = (modifiers: RollModifiers): number => {
+const getRollFromArray = (sides: number[], modifiers: RollModifiers): number => {
   if (modifiers.nominalRoll) {
-    return 0;
-  } else {
-    const sides = [-1, -1, 0, 0, 1, 1];
-    return sides[genRoll(6, modifiers, <DPercentConf> { on: false }) - 1];
+    return sides.reduce(basicReducer, 0) / sides.length;
+  } else if (modifiers.maxRoll) {
+    return Math.max(...sides);
+  } else if (modifiers.minRoll) {
+    return Math.min(...sides);
+  }
+
+  return sides[genBasicRoll(sides.length, modifiers, <DPercentConf>{ on: false }) - 1];
+};
+
+export const generateRoll = (rollConf: RollConf, modifiers: RollModifiers): number => {
+  switch (rollConf.type) {
+    case 'fate':
+      return getRollFromArray([-1, -1, 0, 0, 1, 1], modifiers);
+    case 'custom':
+      return getRollFromArray(modifiers.customDiceShapes.get(rollConf.customType ?? '') ?? [], modifiers);
+    default:
+      return genBasicRoll(rollConf.dieSize, modifiers, rollConf.dPercent);
   }
 };

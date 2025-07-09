@@ -1,6 +1,6 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollConf } from 'artigen/dice/dice.d.ts';
+import { CustomDiceShapes, RollConf } from 'artigen/dice/dice.d.ts';
 
 import { DiceOptions, NumberlessDiceOptions } from 'artigen/dice/rollOptions.ts';
 
@@ -14,13 +14,14 @@ const throwDoubleSepError = (sep: string): void => {
 };
 
 // Converts a rollStr into a machine readable rollConf
-export const getRollConf = (rollStr: string): RollConf => {
+export const getRollConf = (rollStr: string, customTypes: CustomDiceShapes = new Map<string, number[]>()): RollConf => {
   // Split the roll on the die size (and the drop if its there)
   const dPts = rollStr.split('d');
 
   // Initialize the configuration to store the parsed data
   const rollConf: RollConf = {
     type: '',
+    customType: null,
     dieCount: 0,
     dieSize: 0,
     dPercent: {
@@ -92,10 +93,12 @@ export const getRollConf = (rollStr: string): RollConf => {
   const rawDC = dPts.shift() || '1';
   if (rawDC.includes('.')) {
     throw new Error('WholeDieCountSizeOnly');
-  } else if (!rawDC.endsWith('cwo') && !rawDC.endsWith('ova') && rawDC.match(/\D/)) {
-    throw new Error(`CannotParseDieCount_${rawDC}`);
   }
   const tempDC = rawDC.replace(/\D/g, '');
+  const numberlessRawDC = rawDC.replace(/\d/g, '');
+  if (!tempDC && !numberlessRawDC) {
+    throw new Error(`CannotParseDieCount_${rawDC}`);
+  }
   // Rejoin all remaining parts
   let remains = dPts.join('d');
 
@@ -160,6 +163,12 @@ export const getRollConf = (rollStr: string): RollConf => {
 
     // remove F from the remains
     remains = remains.slice(1);
+  } else if (customTypes.has(numberlessRawDC)) {
+    // custom dice setup
+    rollConf.type = 'custom';
+    rollConf.customType = numberlessRawDC;
+    rollConf.dieCount = isNaN(parseInt(tempDC ?? '1')) ? 1 : parseInt(tempDC ?? '1');
+    rollConf.dieSize = Math.max(...(customTypes.get(numberlessRawDC) ?? []));
   } else {
     // roll20 dice setup
     rollConf.type = 'roll20';

@@ -1,8 +1,10 @@
 import { log, LogTypes as LT } from '@Log4Deno';
 
-import { RollModifiers } from 'artigen/dice/dice.d.ts';
 import config from '~config';
 
+import { RollModifiers } from 'artigen/dice/dice.d.ts';
+
+export const reservedCharacters = ['d', '%', '^', '*', '(', ')', '{', '}', '/', '+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 export const Modifiers = Object.freeze({
   Count: '-c',
   NoDetails: '-nd',
@@ -21,6 +23,7 @@ export const Modifiers = Object.freeze({
   RollDistribution: '-rd',
   NumberVariables: '-nv',
   VariablesNumber: '-vn',
+  CustomDiceShapes: '-cd',
 });
 
 export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
@@ -41,6 +44,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     confirmCrit: false,
     rollDist: false,
     numberVariables: false,
+    customDiceShapes: new Map<string, number[]>(),
     apiWarn: '',
     valid: true,
     error: new Error(),
@@ -48,7 +52,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
 
   // Check if any of the args are command flags and pull those out into the modifiers object
   for (let i = 0; i < args.length; i++) {
-    log(LT.LOG, `Checking ${args.join(' ')} for command modifiers ${i}`);
+    log(LT.LOG, `Checking ${args.join(' ')} for command modifiers ${i} | ${args[i]}`);
     let defaultCase = false;
     switch (args[i].toLowerCase()) {
       case Modifiers.Count:
@@ -103,6 +107,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
           // If -gm is on and none were found, throw an error
           modifiers.error.name = 'NoGMsFound';
           modifiers.error.message = 'Must specify at least one GM by @mentioning them';
+          modifiers.valid = false;
           return [modifiers, args];
         }
         break;
@@ -114,6 +119,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
           // If -o is on and asc or desc was not specified, error out
           modifiers.error.name = 'NoOrderFound';
           modifiers.error.message = 'Must specify `a` or `d` to order the rolls ascending or descending';
+          modifiers.valid = false;
           return [modifiers, args];
         }
 
@@ -129,6 +135,65 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
       case Modifiers.VariablesNumber:
         modifiers.numberVariables = true;
         break;
+      case Modifiers.CustomDiceShapes: {
+        // Shift the -cd out of the array so the dice shapes are next
+        args.splice(i, 1);
+
+        const cdSyntaxMessage =
+          'Must specify at least one custom dice shape using the `name:[side1,side2,...,sideN]` syntax.  If multiple custom dice shapes are needed, use a `;` to separate the list.';
+
+        const shapes = (args[i] ?? '').split(';').filter((x) => x);
+        if (!shapes.length) {
+          modifiers.error.name = 'NoShapesSpecified';
+          modifiers.error.message = `No custom shaped dice found.\n\n${cdSyntaxMessage}`;
+          modifiers.valid = false;
+          return [modifiers, args];
+        }
+
+        for (const shape of shapes) {
+          const [name, rawSides] = shape.split(':').filter((x) => x);
+          if (!name || !rawSides || !rawSides.includes('[') || !rawSides.includes(']')) {
+            modifiers.error.name = 'InvalidShapeSpecified';
+            modifiers.error.message = `One of the custom dice is not formatted correctly.\n\n${cdSyntaxMessage}`;
+            modifiers.valid = false;
+            return [modifiers, args];
+          }
+
+          if (modifiers.customDiceShapes.has(name)) {
+            modifiers.error.name = 'ShapeAlreadySpecified';
+            modifiers.error.message = `Shape \`${name}\` is already specified, please give it a different name.\n\n${cdSyntaxMessage}`;
+            modifiers.valid = false;
+            return [modifiers, args];
+          }
+
+          if (reservedCharacters.some((char) => name.includes(char))) {
+            modifiers.error.name = 'InvalidCharacterInCDName';
+            modifiers.error.message = `Custom dice names cannot include any of the following characters:\n${JSON.stringify(
+              reservedCharacters
+            )}\n\n${cdSyntaxMessage}`;
+            modifiers.valid = false;
+            return [modifiers, args];
+          }
+
+          const sides = rawSides
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .split(',')
+            .filter((x) => x)
+            .map((side) => parseInt(side));
+          if (!sides.length) {
+            modifiers.error.name = 'NoCustomSidesSpecified';
+            modifiers.error.message = `No sides found for \`${name}\`.\n\n${cdSyntaxMessage}`;
+            modifiers.valid = false;
+            return [modifiers, args];
+          }
+
+          modifiers.customDiceShapes.set(name, sides);
+        }
+
+        log(LT.LOG, `Generated Custom Dice: ${JSON.stringify(modifiers.customDiceShapes.entries().toArray())}`);
+        break;
+      }
       default:
         // Default case should not mess with the array
         defaultCase = true;

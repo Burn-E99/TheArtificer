@@ -103,7 +103,8 @@ const getDistName = (key: string) => {
       return `CWOD d${size}`;
     case 'ova':
       return `OVA d${size}`;
-    case 'roll20':
+    case 'custom':
+      return `Custom d${size}`;
     default:
       return `d${size}`;
   }
@@ -113,19 +114,21 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
   const fields = rollDists
     .entries()
     .toArray()
-    .slice(0, 25)
     .map(([key, distArr]) => {
       const total = distArr.reduce(basicReducer, 0);
       return {
         name: `${getDistName(key)} (Total rolls: ${total}):`,
-        value: distArr.map((cnt, dieIdx) => `${key.startsWith('fate') ? dieIdx - 1 : dieIdx + 1}: ${cnt} (${((cnt / total) * 100).toFixed(1)}%)`).join('\n'),
+        value: distArr
+          .map((cnt, dieIdx) => key.startsWith('custom') && cnt === 0 ? '' : `${key.startsWith('fate') ? dieIdx - 1 : dieIdx + 1}: ${cnt} (${((cnt / total) * 100).toFixed(1)}%)`)
+          .filter((x) => x)
+          .join('\n'),
         inline: true,
       };
     });
   const rollDistTitle = 'Roll Distributions:';
 
   const totalSize = fields.map((field) => field.name.length + field.value.length).reduce(basicReducer, 0);
-  if (totalSize > 4000 || fields.some((field) => field.name.length > 256 || field.value.length > 1024)) {
+  if (totalSize > 4000 || fields.length > 25 || fields.some((field) => field.name.length > 256 || field.value.length > 1024)) {
     const rollDistBlob = new Blob([fields.map((field) => `# ${field.name}\n${field.value}`).join('\n\n') as BlobPart], { type: 'text' });
     if (rollDistBlob.size > config.maxFileSize) {
       const rollDistErrDesc =

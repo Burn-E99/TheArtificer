@@ -1,7 +1,7 @@
 import { SolvedStep } from 'artigen/math/math.d.ts';
 
 // Available Roll Types
-type RollType = '' | 'roll20' | 'fate' | 'cwod' | 'ova';
+type RollType = '' | 'custom' | 'roll20' | 'fate' | 'cwod' | 'ova';
 
 // RollSet is used to preserve all information about a calculated roll
 export interface RollSet {
@@ -35,6 +35,8 @@ export interface CountDetails {
 // use rollDistKey to generate the key
 export type RollDistributionMap = Map<string, number[]>;
 
+export type CustomDiceShapes = Map<string, number[]>;
+
 // RollFormat is the return structure for the rollFormatter
 export interface FormattedRoll {
   solvedStep: SolvedStep;
@@ -60,6 +62,7 @@ export interface RollModifiers {
   confirmCrit: boolean;
   rollDist: boolean;
   numberVariables: boolean;
+  customDiceShapes: CustomDiceShapes;
   apiWarn: string;
   valid: boolean;
   error: Error;
@@ -115,6 +118,7 @@ export interface GroupConf extends BaseConf {
 // RollConf carries the machine readable roll configuration the user specified
 export interface RollConf extends BaseConf {
   type: RollType;
+  customType: string | null;
   dieCount: number;
   dieSize: number;
   dPercent: DPercentConf;
