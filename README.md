@@ -65,7 +65,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * Controls whether or not inline rolls can be done in a guild, defaults off.  These commands may only be used by the Owner or Admins of your guild.
   * An inline roll is a roll that does not immediately start with `[[`, such as `test [[d20]]`.
   * Available subcommands:
-    * `[[api help`
+    * `[[inline help`
       * Provides a message similar to this subcommand description.
     * `[[inline status`
       * Shows the current status of inline rolls for this guild.
@@ -75,7 +75,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
       * Blocks inline rolls in the guild.
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
-  * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will no different.
+  * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will be no different.
   * Any math (limited to exponential, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
   * PI and e are available for use.
   * Parameters for rolling:
