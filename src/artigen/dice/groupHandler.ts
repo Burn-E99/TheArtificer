@@ -13,7 +13,7 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { getMatchingGroupIdx, getMatchingInternalGrpIdx } from 'artigen/utils/parenBalance.ts';
 import { getGroupConf } from 'artigen/dice/getGroupConf.ts';
 import { compareOrigIdx, compareTotalRolls } from 'artigen/utils/sortFuncs.ts';
-import { applyFlags } from '../utils/groupResultFlagger.ts';
+import { applyFlags } from 'artigen/utils/groupResultFlagger.ts';
 
 export const handleGroup = (
   groupParts: string[],
