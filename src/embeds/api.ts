@@ -1,8 +1,10 @@
+import { CreateMessage } from '@discordeno';
+
 import config from '~config';
 
 import { failColor, infoColor1, successColor } from 'embeds/colors.ts';
 
-export const generateApiFailed = (args: string) => ({
+export const generateApiFailed = (args: string): CreateMessage => ({
   embeds: [
     {
       color: failColor,
@@ -12,7 +14,7 @@ export const generateApiFailed = (args: string) => ({
   ],
 });
 
-export const generateApiStatus = (banned: boolean, active: boolean) => {
+export const generateApiStatus = (banned: boolean, active: boolean): CreateMessage => {
   const apiStatus = active ? 'allowed' : 'blocked from being used';
   return {
     embeds: [
@@ -25,7 +27,7 @@ export const generateApiStatus = (banned: boolean, active: boolean) => {
   };
 };
 
-export const generateApiSuccess = (args: string) => ({
+export const generateApiSuccess = (args: string): CreateMessage => ({
   embeds: [
     {
       color: successColor,
@@ -34,7 +36,7 @@ export const generateApiSuccess = (args: string) => ({
   ],
 });
 
-export const generateApiKeyEmail = (email: string, key: string) => ({
+export const generateApiKeyEmail = (email: string, key: string): CreateMessage => ({
   content: `<@${config.api.admin}> A USER HAS REQUESTED AN API KEY`,
   embeds: [
     {
@@ -66,7 +68,7 @@ ${config.name} Developer - Ean Milligan`,
   ],
 });
 
-export const generateApiDeleteEmail = (email: string, deleteCode: string) => ({
+export const generateApiDeleteEmail = (email: string, deleteCode: string): CreateMessage => ({
   content: `<@${config.api.admin}> A USER HAS REQUESTED A DELETE CODE`,
   embeds: [
     {
