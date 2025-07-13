@@ -9,6 +9,7 @@ const dbClient = await new Client().connect({
   db: config.db.name,
   username: config.db.username,
   password: config.db.password,
+  charset: 'utf8mb4',
 });
 
 export default dbClient;

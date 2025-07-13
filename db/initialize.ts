@@ -36,7 +36,7 @@ await dbClient.execute(`
     premium tinyint(1) NOT NULL,
     createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (guildid, userid, aliasName)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -47,7 +47,7 @@ await dbClient.execute(`
     guildid bigint unsigned NOT NULL,
     PRIMARY KEY (guildid),
     UNIQUE KEY allow_inline_guildid_UNIQUE (guildid)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -58,7 +58,7 @@ await dbClient.execute(`
     userid bigint unsigned NOT NULL,
     PRIMARY KEY (userid),
     UNIQUE KEY ignore_list_userid_UNIQUE (userid)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -71,7 +71,7 @@ await dbClient.execute(`
     hourlyRate float unsigned NOT NULL DEFAULT 0,
     PRIMARY KEY (command),
     UNIQUE KEY command_cnt_command_UNIQUE (command)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -102,7 +102,7 @@ await dbClient.execute(`
     saturday bigint unsigned NOT NULL DEFAULT 0,
     PRIMARY KEY (hour),
     UNIQUE KEY roll_time_heatmap_hour_UNIQUE (hour)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -140,7 +140,7 @@ await dbClient.execute(`
     PRIMARY KEY (id),
     UNIQUE KEY roll_log_id_UNIQUE (id),
     UNIQUE KEY roll_log_resultid_UNIQUE (resultid)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -155,7 +155,7 @@ await dbClient.execute(`
     banned tinyint(1) NOT NULL DEFAULT 0,
     hidewarn tinyint(1) NOT NULL DEFAULT 0,
     PRIMARY KEY (guildid, channelid)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -174,7 +174,7 @@ await dbClient.execute(`
     UNIQUE KEY all_keys_userid_UNIQUE (userid),
     UNIQUE KEY all_keys_apiKey_UNIQUE (apiKey),
     UNIQUE KEY all_keys_email_UNIQUE (email)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
@@ -189,7 +189,7 @@ await dbClient.execute(`
     banned tinyint(1) NOT NULL DEFAULT 0,
     PRIMARY KEY (userid, channelid),
     CONSTRAINT allowed_channels_userid_FK FOREIGN KEY (userid) REFERENCES all_keys (userid) ON DELETE RESTRICT ON UPDATE RESTRICT
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 `);
 console.log('Table created');
 
