@@ -221,14 +221,14 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
             JSON.stringify(
               rollRequest.modifiers.count
                 ? {
-                    counts: returnMsg.counts,
-                    details: pubEmbedDetails,
-                  }
+                  counts: returnMsg.counts,
+                  details: pubEmbedDetails,
+                }
                 : {
-                    details: pubEmbedDetails,
-                  }
-            )
-          )
+                  details: pubEmbedDetails,
+                },
+            ),
+          ),
         );
     }
   } catch (e) {
@@ -239,12 +239,13 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
           (
             await generateRollEmbed(
               rollRequest.dd.originalMessage.authorId,
-              <SolvedRoll>{
+              <SolvedRoll> {
                 error: true,
-                errorMsg: `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
+                errorMsg:
+                  `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
                 errorCode: 'UnhandledWorkerComplete',
               },
-              <RollModifiers>{}
+              <RollModifiers> {},
             )
           ).embed,
         ],
