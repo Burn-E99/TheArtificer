@@ -325,8 +325,8 @@ If you are trying to update an existing alias, but forgot the name, please run t
         errorOut = true;
       });
   } else {
-    const currentAliases = await dbClient
-      .query('SELECT aliasName as count FROM aliases WHERE guildid = ? AND userid = ?', guildMode ? [message.guildId, 0n] : [0n, message.authorId])
+    const currentAliases: QueryShape[] = await dbClient
+      .query('SELECT aliasName FROM aliases WHERE guildid = ? AND userid = ?', guildMode ? [message.guildId, 0n] : [0n, message.authorId])
       .catch((e0) => {
         utils.commonLoggers.dbError('add.ts:266', 'get count', e0);
         newMsg
@@ -336,7 +336,7 @@ If you are trying to update an existing alias, but forgot the name, please run t
       });
     if (errorOut) return;
 
-    if (currentAliases.length < guildMode ? config.limits.alias.free.guild : config.limits.alias.free.user) {
+    if (currentAliases.length < (guildMode ? config.limits.alias.free.guild : config.limits.alias.free.user)) {
       await dbClient
         .execute('INSERT INTO aliases(guildid,userid,aliasName,rollStr,yVarCnt,premium) values(?,?,?,?,?,?)', [
           guildMode ? message.guildId : 0n,
