@@ -128,7 +128,7 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
   const rollDistTitle = 'Roll Distributions:';
 
   const totalSize = fields.map((field) => field.name.length + field.value.length).reduce(basicReducer, 0);
-  if (totalSize > 4000 || fields.length > 25 || fields.some((field) => field.name.length > 256 || field.value.length > 1024)) {
+  if (totalSize > 4_000 || fields.length > 25 || fields.some((field) => field.name.length > 256 || field.value.length > 1024)) {
     const rollDistBlob = new Blob([fields.map((field) => `# ${field.name}\n${field.value}`).join('\n\n') as BlobPart], { type: 'text' });
     if (rollDistBlob.size > config.maxFileSize) {
       const rollDistErrDesc =
@@ -227,7 +227,7 @@ export const generateRollEmbed = (
   const baseDesc = `${line1Details}**${line2Details.shift()}:**\n${line2Details.join(': ')}`;
 
   // Embed desc limit is 4096
-  if (baseDesc.length + details.length < 4000) {
+  if (baseDesc.length + details.length < 4_000) {
     // Response is valid size
     const desc = `${baseDesc}\n\n${details}`;
     return {

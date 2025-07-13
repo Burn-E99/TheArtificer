@@ -123,6 +123,9 @@ export const translateError = (solverError: Error): [string, string] => {
     case 'IllegalVariable':
       errorMsg = `Error: \`${errorDetails}\` is not a valid variable`;
       break;
+    case 'VariableMissingValue':
+      errorMsg = `Error: \`${errorDetails}\` is missing a valid value`;
+      break;
     case 'TooManyLabels':
       errorMsg = `Error: ${config.name} can only support a maximum of \`${errorDetails}\` labels when using the dice matching options (\`m\` or \`mt\`)`;
       break;

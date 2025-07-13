@@ -2,7 +2,6 @@ import { botId, DiscordenoMessage, Embed, FileContent, sendDirectMessage, sendMe
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
-import { DEVMODE } from '~flags';
 
 import { SolvedRoll } from 'artigen/artigen.d.ts';
 
@@ -23,6 +22,12 @@ import utils from 'utils/utils.ts';
 import { infoColor1 } from 'embeds/colors.ts';
 import { basicReducer } from 'artigen/utils/reducers.ts';
 
+const getUserIdForEmbed = (rollRequest: QueuedRoll): bigint => {
+  if (rollRequest.apiRoll) return rollRequest.api.userId;
+  if (rollRequest.ddRoll) return rollRequest.dd.originalMessage.authorId;
+  return 0n;
+};
+
 export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, workerTimeout: number, rollRequest: QueuedRoll) => {
   let apiErroredOut = false;
   try {
@@ -32,12 +37,8 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     const returnMsg = workerMessage.data;
     loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnMsg.line1.length} |&| ${returnMsg.line2.length} |&| ${returnMsg.line3.length} `);
     loggingEnabled && log(LT.LOG, `Roll came back from worker: ${returnMsg.line1} |&| ${returnMsg.line2} |&| ${returnMsg.line3} `);
-    const pubEmbedDetails = generateRollEmbed(
-      rollRequest.apiRoll ? rollRequest.api.userId : rollRequest.dd.originalMessage.authorId,
-      returnMsg,
-      rollRequest.modifiers,
-    );
-    const gmEmbedDetails = generateRollEmbed(rollRequest.apiRoll ? rollRequest.api.userId : rollRequest.dd.originalMessage.authorId, returnMsg, {
+    const pubEmbedDetails = generateRollEmbed(getUserIdForEmbed(rollRequest), returnMsg, rollRequest.modifiers);
+    const gmEmbedDetails = generateRollEmbed(getUserIdForEmbed(rollRequest), returnMsg, {
       ...rollRequest.modifiers,
       gmRoll: false,
     });
@@ -81,21 +82,31 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     if (returnMsg.error) {
       if (rollRequest.apiRoll) {
         rollRequest.api.resolve(stdResp.InternalServerError(returnMsg.errorMsg));
-      } else {
+      } else if (rollRequest.ddRoll) {
         rollRequest.dd.myResponse.edit({ embeds: pubEmbeds });
+      } else if (rollRequest.testRoll) {
+        rollRequest.test.resolve({
+          error: true,
+          errorMsg: returnMsg.errorMsg,
+          errorCode: returnMsg.errorCode,
+        });
       }
 
-      if (rollRequest.apiRoll || (DEVMODE && config.logRolls)) {
+      if (rollRequest.apiRoll) {
         // If enabled, log rolls so we can see what went wrong
         dbClient
-          .execute(queries.insertRollLogCmd(rollRequest.apiRoll ? 1 : 0, 1), [
-            rollRequest.originalCommand,
-            returnMsg.errorCode,
-            rollRequest.apiRoll ? null : rollRequest.dd.myResponse.id,
-          ])
+          .execute(queries.insertRollLogCmd(rollRequest.apiRoll ? 1 : 0, 1), [rollRequest.originalCommand, returnMsg.errorCode, null])
           .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:82', 'insert into', e));
       }
 
+      return;
+    }
+
+    // Test roll will assume that messages send successfully
+    if (rollRequest.testRoll) {
+      rollRequest.test.resolve({
+        error: false,
+      });
       return;
     }
 
@@ -213,7 +224,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     }
   } catch (e) {
     log(LT.ERROR, `Unhandled rollRequest Error: ${JSON.stringify(e)}`);
-    if (!rollRequest.apiRoll) {
+    if (rollRequest.ddRoll) {
       rollRequest.dd.myResponse.edit({
         embeds: [
           (
@@ -230,9 +241,14 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
           ).embed,
         ],
       });
-    }
-    if (rollRequest.apiRoll && !apiErroredOut) {
+    } else if (rollRequest.apiRoll && !apiErroredOut) {
       rollRequest.api.resolve(stdResp.InternalServerError(JSON.stringify(e)));
+    } else if (rollRequest.testRoll) {
+      rollRequest.test.resolve({
+        error: true,
+        errorMsg: 'Something weird went wrong.',
+        errorCode: 'UnhandledWorkerComplete',
+      });
     }
   }
 };

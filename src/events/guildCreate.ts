@@ -26,7 +26,7 @@ const sendGuildJoinedBatch = () => {
 
 setInterval(() => {
   sendGuildJoinedBatch();
-}, 60 * 1000);
+}, 60_000);
 
 export const guildCreateHandler = (guild: DiscordenoGuild) => {
   log(LT.LOG, `Handling joining guild ${JSON.stringify(guild)}`);

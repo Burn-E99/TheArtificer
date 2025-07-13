@@ -36,9 +36,12 @@
         "oper",
         "ovad",
         "PEMDAS",
+        "ralias",
         "Rehost",
         "Rehosts",
         "resultid",
+        "rolla",
+        "rollalias",
         "rolldecorators",
         "rollhelp",
         "rollstr",
@@ -46,11 +49,13 @@
         "sproc",
         "Tarantallegra",
         "tinyint",
+        "tinytext",
         "unauthorised",
         "unban",
         "xcwody",
         "xdydz",
         "xdydzracsq",
-        "xovady"
+        "xovady",
+        "yvar"
     ]
 }

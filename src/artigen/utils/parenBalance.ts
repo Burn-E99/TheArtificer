@@ -9,12 +9,20 @@ import { MathConf } from 'artigen/math/math.d.ts';
 import { closeInternal, closeInternalGrp, openInternal, openInternalGrp } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
-const checkBalance = (conf: MathConf[], openStr: string, closeStr: string, errorType: string, getMatching: boolean, openIdx: number): number => {
+const checkBalance = (
+  conf: MathConf[],
+  openStr: string,
+  closeStr: string,
+  errorType: string,
+  getMatching: boolean,
+  openIdx: number,
+  countLoops = true,
+): number => {
   let parenCnt = 0;
 
   // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
   for (let i = openIdx; i < conf.length; i++) {
-    loopCountCheck();
+    countLoops && loopCountCheck();
     loggingEnabled &&
       log(
         LT.LOG,
@@ -55,11 +63,11 @@ const checkBalance = (conf: MathConf[], openStr: string, closeStr: string, error
 // assertXBalance verifies the entire conf has balanced X
 export const assertGroupBalance = (conf: MathConf[]) => checkBalance(conf, '{', '}', 'Group', false, 0);
 export const assertParenBalance = (conf: MathConf[]) => checkBalance(conf, '(', ')', 'Paren', false, 0);
-export const assertPrePostBalance = (conf: MathConf[]) => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', false, 0);
+export const assertPrePostBalance = (conf: MathConf[], countLoops = true) => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', false, 0, countLoops);
 
 // getMatchingXIdx gets the matching X, also partially verifies the conf has balanced X
 export const getMatchingGroupIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '{', '}', 'Group', true, openIdx);
 export const getMatchingInternalIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternal, closeInternal, 'Internal', true, openIdx);
 export const getMatchingInternalGrpIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, openInternalGrp, closeInternalGrp, 'InternalGrp', true, openIdx);
 export const getMatchingParenIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, '(', ')', 'Paren', true, openIdx);
-export const getMatchingPostfixIdx = (conf: MathConf[], openIdx: number): number => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', true, openIdx);
+export const getMatchingPostfixIdx = (conf: MathConf[], openIdx: number, countLoops = true): number => checkBalance(conf, config.prefix, config.postfix, 'PrefixPostfix', true, openIdx, countLoops);

@@ -46,6 +46,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     rollDist: false,
     numberVariables: false,
     customDiceShapes: new Map<string, number[]>(),
+    yVars: new Map<string, number>(),
     apiWarn: '',
     valid: true,
     error: new Error(),
@@ -88,7 +89,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
 
           modifiers.simulatedNominal = parseInt(args[i]);
         } else {
-          modifiers.simulatedNominal = 10000;
+          modifiers.simulatedNominal = config.limits.defaultSimulatedNominal;
         }
         break;
       case Modifiers.ConfirmCrit:
@@ -225,9 +226,9 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
   }
 
   // simulatedNominal cannot be greater than config.limits.simulatedNominal
-  if (modifiers.simulatedNominal > config.limits.simulatedNominal) {
+  if (modifiers.simulatedNominal > config.limits.maxSimulatedNominal) {
     modifiers.error.name = 'SimNominalTooBig';
-    modifiers.error.message = `Number of iterations for \`simulatedNominal\` cannot be greater than \`${config.limits.simulatedNominal}\``;
+    modifiers.error.message = `Number of iterations for \`simulatedNominal\` cannot be greater than \`${config.limits.maxSimulatedNominal}\``;
     modifiers.valid = false;
   }
 

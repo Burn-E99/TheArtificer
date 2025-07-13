@@ -17,7 +17,7 @@ export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRol
 
   if (rollRequest.apiRoll) {
     rollRequest.api.resolve(stdResp.RequestTimeout('Roll took too long to process, try breaking roll down into simpler parts'));
-  } else {
+  } else if (rollRequest.ddRoll) {
     rollRequest.dd.myResponse
       .edit({
         embeds: [
@@ -35,5 +35,11 @@ export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRol
         ],
       })
       .catch((e) => utils.commonLoggers.messageEditError('rollQueue.ts:51', rollRequest.dd.myResponse, e));
+  } else if (rollRequest.testRoll) {
+    rollRequest.test.resolve({
+      error: true,
+      errorCode: 'TooComplex',
+      errorMsg: 'Error: Roll took too long to process, try breaking roll down into simpler parts',
+    });
   }
 };

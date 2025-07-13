@@ -40,25 +40,25 @@ export const readyHandler = () => {
     } catch (e) {
       log(LT.ERROR, `Failed to update status: ${JSON.stringify(e)}`);
     }
-  }, 30000);
+  }, 30_000);
 
   // Interval to update bot list stats every 24 hours
   LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : setInterval(() => {
     log(LT.LOG, 'Updating all bot lists statistics');
     intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
-  }, 86400000);
+  }, 86_400_000);
 
   // Interval to update hourlyRates every hour
   setInterval(() => {
     log(LT.LOG, 'Updating all command hourlyRates');
     intervals.updateHourlyRates();
-  }, 3600000);
+  }, 3_600_000);
 
   // Interval to update heatmap.png every hour
   setInterval(() => {
     log(LT.LOG, 'Updating heatmap.png');
     intervals.updateHeatmapPng();
-  }, 3600000);
+  }, 3_600_000);
 
   // setTimeout added to make sure the startup message does not error out
   setTimeout(() => {
@@ -91,5 +91,5 @@ export const readyHandler = () => {
         },
       ],
     }).catch((e: Error) => utils.commonLoggers.messageSendError('ready.ts:93', 'Startup', e));
-  }, 1000);
+  }, 1_000);
 };

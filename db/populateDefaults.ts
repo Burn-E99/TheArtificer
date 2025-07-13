@@ -11,6 +11,7 @@ console.log('Insertion done');
 
 console.log('Attempting to insert default commands into command_cnt');
 const commands = [
+  'alias',
   'api',
   'audit',
   'emojis',

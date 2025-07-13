@@ -179,6 +179,19 @@ export const tokenizeMath = (
       } else {
         throw new Error(`IllegalVariable_${curMathConfStr}`);
       }
+    } else if (/(y\d+(\.\d*)?)/.test(curMathConfStr)) {
+      // Identify when someone is using a variable from alias input
+      if (curMathConfStr.includes('.')) {
+        // Verify someone did not enter y1.1 as a variable
+        throw new Error(`IllegalVariable_${curMathConfStr}`);
+      }
+
+      const yValue = modifiers.yVars.get(curMathConfStr);
+      if (typeof yValue === 'number') {
+        mathConf[i] = yValue;
+      } else {
+        throw new Error(`VariableMissingValue_${curMathConfStr}`);
+      }
     } else if (![...allOps, ...legalMathOperators].includes(curMathConfStr)) {
       // If nothing else has handled it by now, try it as a roll
       const executedRoll = executeRoll(curMathConfStr, modifiers);

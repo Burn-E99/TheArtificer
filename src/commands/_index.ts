@@ -1,3 +1,4 @@
+import { alias } from 'commands/aliasCmd.ts';
 import { api } from 'commands/apiCmd.ts';
 import { audit } from 'commands/audit.ts';
 import { emoji } from 'commands/emoji.ts';
@@ -18,6 +19,7 @@ import { toggleInline } from 'commands/toggleInline.ts';
 import { version } from 'commands/version.ts';
 
 export default {
+  alias,
   api,
   audit,
   emoji,

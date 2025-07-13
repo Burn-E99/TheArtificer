@@ -19,7 +19,7 @@ const sortGuildByMemberCount = (a: DiscordenoGuild, b: DiscordenoGuild) => {
 export const auditGuilds = async (message: DiscordenoMessage) => {
   const cachedGuilds = await cacheHandlers.size('guilds');
   const guildOwnerCounts = new Map<bigint, number>();
-  const sizeCats = [10000, 5000, 1000, 500, 100, 50, 25, 10, 1];
+  const sizeCats = [10_000, 5_000, 1_000, 500, 100, 50, 25, 10, 1];
   const guildSizeDist = new Map<number, number>(sizeCats.map((size) => [size, 0]));
 
   let totalCount = 0;

@@ -16,25 +16,24 @@ const rollQueue: Array<QueuedRoll> = [];
 
 // Runs the roll or queues it depending on how many workers are currently running
 export const sendRollRequest = (rollRequest: QueuedRoll) => {
-  if (rollRequest.apiRoll) {
-    handleRollRequest(rollRequest);
-  } else if (!rollQueue.length && getWorkerCnt() < config.limits.maxWorkers) {
+  if (!rollQueue.length && getWorkerCnt() < config.limits.maxWorkers) {
     handleRollRequest(rollRequest);
   } else {
     rollQueue.push(rollRequest);
-    rollRequest.dd.myResponse
-      .edit({
-        embeds: [
-          {
-            color: infoColor2,
-            title: `${config.name} currently has its hands full and has queued your roll.`,
-            description: `There are currently ${getWorkerCnt() + rollQueue.length} rolls ahead of this roll.
+    rollRequest.ddRoll &&
+      rollRequest.dd.myResponse
+        .edit({
+          embeds: [
+            {
+              color: infoColor2,
+              title: `${config.name} currently has its hands full and has queued your roll.`,
+              description: `There are currently ${getWorkerCnt() + rollQueue.length} rolls ahead of this roll.
 
 The results for this roll will replace this message when it is done.`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:197', rollRequest.dd.myResponse, e));
+            },
+          ],
+        })
+        .catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:197', rollRequest.dd.myResponse, e));
   }
 };
 
@@ -46,11 +45,12 @@ setInterval(() => {
   );
   if (rollQueue.length && getWorkerCnt() < config.limits.maxWorkers) {
     const rollRequest = rollQueue.shift();
-    if (rollRequest && !rollRequest.apiRoll) {
-      rollRequest.dd.myResponse.edit(rollingEmbed).catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:208', rollRequest.dd.myResponse, e));
-      handleRollRequest(rollRequest);
-    } else if (rollRequest && rollRequest.apiRoll) {
+    if (rollRequest) {
+      rollRequest.ddRoll &&
+        rollRequest.dd.myResponse
+          .edit(rollingEmbed)
+          .catch((e: Error) => utils.commonLoggers.messageEditError('rollQueue.ts:208', rollRequest.dd.myResponse, e));
       handleRollRequest(rollRequest);
     }
   }
-}, 1000);
+}, 1_000);

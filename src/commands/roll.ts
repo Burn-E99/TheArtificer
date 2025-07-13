@@ -79,6 +79,8 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
 
     sendRollRequest({
       apiRoll: false,
+      ddRoll: true,
+      testRoll: false,
       dd: { myResponse: m, originalMessage: message },
       rollCmd,
       modifiers,

@@ -83,7 +83,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
         rollCmd = rollCmd.replace(/%20/g, ' ').trim();
 
         const rawSimNom = parseInt(query.get('sn') ?? '0');
-        const simNom = rawSimNom || 10000;
+        const simNom = rawSimNom || config.limits.defaultSimulatedNominal;
         const modifiers: RollModifiers = {
           noDetails: query.has('nd'),
           superNoDetails: query.has('snd'),
@@ -102,6 +102,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           rollDist: query.has('rd'),
           numberVariables: query.has('nv') || query.has('vn'),
           customDiceShapes: new Map<string, number[]>(),
+          yVars: new Map<string, number>(),
           apiWarn: hideWarn ? '' : apiWarning,
           valid: true,
           error: new Error(),
@@ -154,13 +155,15 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
         }
 
         // simulatedNominal cannot be greater than config.limits.simulatedNominal
-        if (modifiers.simulatedNominal > config.limits.simulatedNominal) {
-          return stdResp.BadRequest(`Number of iterations for \`simulatedNominal\` cannot be greater than \`${config.limits.simulatedNominal}\``);
+        if (modifiers.simulatedNominal > config.limits.maxSimulatedNominal) {
+          return stdResp.BadRequest(`Number of iterations for \`simulatedNominal\` cannot be greater than \`${config.limits.maxSimulatedNominal}\``);
         }
 
         return new Promise<Response>((resolve) => {
           sendRollRequest({
             apiRoll: true,
+            ddRoll: false,
+            testRoll: false,
             api: { resolve, channelId: BigInt(query.get('channel') || '0'), userId: BigInt(query.get('user') || '') },
             rollCmd,
             modifiers,

@@ -135,6 +135,15 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       // Enable or Disable inline rolling
       commands.toggleInline(message, args);
       break;
+    case 'rollalias':
+    case 'ralias':
+    case 'alias':
+    case 'rolla':
+    case 'ra':
+      // [[rollalias, [[ralias, [[rolla, or [[ra args
+      // Manage and roll using aliases
+      commands.alias(message, argSpaces);
+      break;
     case 'roll':
     case 'r':
       // [[roll or [[r
