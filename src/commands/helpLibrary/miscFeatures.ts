@@ -99,6 +99,7 @@ When in Multi Sub-Roll mode, the group options are applied to the results of eac
 This message must contain multiple roll commands in it (such as \`[[d4]] [[d8]]\`).  Nested dice rolls are not able to be used as a variable, but can use variables inside them.
 
 Variables are numbered from \`x0\` to \`xN\`, where \`N\` equals two less than the total number of roll commands in the message.  You can add the "Number Variables" flag (\`-nv\`) to your command to see what will be assigned to each roll command.
+When using the Roll Alias System (\`[[ra help\` for details), \`y\` variables are available, numbered from \`y0\` to \`yN\`, where \`N\` is the max desired variable.  These will be required when using a Roll Alias, and should be specified by the user like this: \`[[ra aliasName 0 1 2\`.
 
 **Notes about this example:**
 - The example below starts with \`[[0]]\` so that it is a valid roll command.  See the \`Miscellaneous Features>User Formatting\` help page for more details.

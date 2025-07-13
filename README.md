@@ -73,6 +73,39 @@ The Artificer comes with a few supplemental commands to the main rolling command
       * Allows inline rolls in the guild.
     * `[[inline block` or `[[inline disable` or `[[inline delete`
       * Blocks inline rolls in the guild.
+* `[[rollalias [subcommand]` or `[[ralias [subcommand]` or `[[alias [subcommand]` or `[[rolla [subcommand]` or `[[ra [subcommand]`
+  * Custom Roll Alias System
+  * Allows anyone to store a roll string as a shortcut/alias for later use/reuse.
+  * Supports full roll syntax, plus y variables that are set every time the alias is called.
+  * Every command has a matching "Guild Mode" command that modifies aliases linked to a guild instead of linked to a user account.
+  * Available subcommands:
+    * `[[ra help`
+    * `[[ra guild help`
+      * Provides a message similar to this subcommand description.
+    * `[[ra list`
+    * `[[ra guild list`
+      * Lists all aliases currently set for your account or the guild you are in.
+    * `[[ra add [aliasName] [rollString...]`
+    * `[[ra guild add [aliasName] [rollString...]`
+      * Creates the desired alias, saving the roll string to your account or the guild you are in.
+    * `[[ra update [aliasName] [rollString...]`
+    * `[[ra guild update [aliasName] [rollString...]`
+      * Updates the desired alias, replacing the old roll string in your account or the guild you are in with the newly provided roll string.
+    * `[[ra view [aliasName]`
+    * `[[ra guild view [aliasName]`
+      * View the saved roll string and how many yVars are needed for it.
+    * `[[ra delete [aliasName] [verificationCode?]`
+    * `[[ra guild delete [aliasName] [verificationCode?]`
+      * Deletes the desired alias from your account or the guild you are in.  Can be run without a verification code to get the needed code for deletion.
+    * `[[ra delete-all [aliasName] [verificationCode?]`
+    * `[[ra guild delete-all [aliasName] [verificationCode?]`
+      * Deletes all aliases from your account or the guild you are in.  Can be run without a verification code to get the needed code for deletion.
+    * `[[ra [aliasName] [yVars?...]`
+    * `[[ra run [aliasName] [yVars?...]`
+      * Runs the desired personal alias with the specified yVars (if any are needed).  If the alias is not found on your account, it will check the guild aliases and use a match from there if one exists.
+    * `[[ra guild [aliasName] [yVars?...]`
+    * `[[ra guild run [aliasName] [yVars?...]`
+      * Runs the desired guild alias with the specified yVars (if any are needed).
 * `[[xdydzracsq!]]`
   * This is the command the bot was built specifically for.
   * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will be no different.

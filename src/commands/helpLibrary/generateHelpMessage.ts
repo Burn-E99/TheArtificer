@@ -37,7 +37,7 @@ const makeHelpEmbed = (helpDict: HelpContents | HelpPage, parentTitle?: string):
     name: `Roll Command Help${parentTitle ? ' - ' : ''}${parentTitle}`,
   },
   title: helpDict.name,
-  description: helpDict.description,
+  description: helpDict.description.replaceAll('[[', config.prefix).replaceAll(']]', config.postfix),
   fields: !helpDict.isPage && helpDict.example
     ? [
       {
