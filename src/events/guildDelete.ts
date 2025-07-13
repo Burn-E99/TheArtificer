@@ -36,7 +36,13 @@ export const guildDeleteHandler = (guild: DiscordenoGuild) => {
       },
     ],
   }).catch((e: Error) => utils.commonLoggers.messageSendError('guildDelete.ts:38', 'Leave Guild', e));
+
+  // Clean up any guild based data
   dbClient
     .execute('DELETE FROM allowed_guilds WHERE guildid = ? AND banned = 0', [guild.id])
     .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:41', 'delete from', e));
+  dbClient.execute('DELETE FROM allow_inline WHERE guildid = ?', [guild.id]).catch((e) => utils.commonLoggers.dbError('guildDelete.ts:42', 'delete from', e));
+  dbClient
+    .execute('DELETE FROM aliases WHERE guildid = ? AND userid = ?', [guild.id, 0n])
+    .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:45', 'delete from', e));
 };
