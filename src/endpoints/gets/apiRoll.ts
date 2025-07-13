@@ -102,6 +102,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
           rollDist: query.has('rd'),
           numberVariables: query.has('nv') || query.has('vn'),
           customDiceShapes: new Map<string, number[]>(),
+          noSpaces: query.has('ns'),
           yVars: new Map<string, number>(),
           apiWarn: hideWarn ? '' : apiWarning,
           valid: true,

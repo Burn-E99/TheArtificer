@@ -63,6 +63,7 @@ export interface RollModifiers {
   rollDist: boolean;
   numberVariables: boolean;
   customDiceShapes: CustomDiceShapes;
+  noSpaces: boolean;
   yVars: Map<string, number>;
   apiWarn: string;
   valid: boolean;

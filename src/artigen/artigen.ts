@@ -96,6 +96,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
         "One or more of the rolls requested appear to be more complex than what the Nominal calculator is intended for.  For a better approximation of this roll's nominal value, please rerun this roll with the `-sn` flag.\n";
     }
 
+    const line2Space = rollRequest.modifiers.noSpaces ? '' : ' ';
     // Fill out all of the details and results now
     tempReturnData.forEach((e, i) => {
       loopCountCheck();
@@ -118,9 +119,9 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
 
       // Populate line2 (the results) and line3 (the details) with their data
       if (rollRequest.modifiers.order === '') {
-        line2 += `${e.rollPreFormat ? escapeCharacters(e.rollPreFormat, '|*_~`') : ' '}${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}${
-          e.rollPostFormat ? escapeCharacters(e.rollPostFormat, '|*_~`') : ''
-        }`;
+        line2 += `${e.rollPreFormat ? escapeCharacters(e.rollPreFormat, '|*_~`') : line2Space}${preFormat}${
+          rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal
+        }${postFormat}${e.rollPostFormat ? escapeCharacters(e.rollPostFormat, '|*_~`') : ''}`;
       } else {
         // If order is on, turn rolls into csv without formatting
         line2 += `${preFormat}${rollRequest.modifiers.commaTotals ? e.rollTotal.toLocaleString() : e.rollTotal}${postFormat}, `;

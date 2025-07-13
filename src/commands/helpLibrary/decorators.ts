@@ -194,6 +194,19 @@ If multiple custom dice are needed, separate their configurations with a \`;\`. 
       ],
     },
   ],
+  [
+    '-ns',
+    {
+      name: 'No Spaces',
+      description: `**Usage:** \`-ns\`
+
+Removes the default padding added space between rolls.`,
+      example: [
+        '`[[d4]][[d4]]` will normally return as `2 2` for readability',
+        '`[[d4]][[d4]] -ns` will remove the added padding to follow the exact input format and return as `22`',
+      ],
+    },
+  ],
 ]);
 
 export const DecoratorsHelpPages: HelpPage = {

@@ -193,6 +193,7 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `-hr` - Hide Raw - Hide the raw input, showing only the results/details of the roll
     * `-nv` or `-vn` - Number Variables - Adds `xN` before each roll command in the details section for debug reasons
     * `-cd` - Custom Dice shapes - Allows a list of `name:[side1,side2,...,sideN]` separated by `;` to be passed to create special shaped dice
+    * `-ns` - No Spaces - Removes the default padding added space between rolls (`[[d4]][[d4]]` will output `22` instead of `2 2`)
   * The results have some formatting applied on them to provide details on what happened during this roll.
     * Critical successes will be **bolded**
     * Critical fails will be <ins>underlined</ins>

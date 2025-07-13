@@ -24,6 +24,7 @@ export const Modifiers = Object.freeze({
   NumberVariables: '-nv',
   VariablesNumber: '-vn',
   CustomDiceShapes: '-cd',
+  NoSpaces: '-ns',
 });
 
 // args will look like this: ['-sn', ' ', '10'] as spaces/newlines are split on their own
@@ -46,6 +47,7 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     rollDist: false,
     numberVariables: false,
     customDiceShapes: new Map<string, number[]>(),
+    noSpaces: false,
     yVars: new Map<string, number>(),
     apiWarn: '',
     valid: true,
@@ -199,6 +201,9 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
         log(LT.LOG, `Generated Custom Dice: ${JSON.stringify(modifiers.customDiceShapes.entries().toArray())}`);
         break;
       }
+      case Modifiers.NoSpaces:
+        modifiers.noSpaces = true;
+        break;
       default:
         // Default case should not mess with the array
         defaultCase = true;
