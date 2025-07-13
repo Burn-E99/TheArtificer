@@ -30,7 +30,7 @@ await dbClient.execute(`
   CREATE TABLE aliases (
     guildid bigint unsigned NOT NULL,
     userid bigint unsigned NOT NULL,
-    aliasName varchar(100) NOT NULL,
+    aliasName varchar(200) NOT NULL,
     rollStr varchar(4000) NOT NULL,
     yVarCnt tinyint unsigned NOT NULL,
     premium tinyint(1) NOT NULL,

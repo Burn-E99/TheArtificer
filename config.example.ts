@@ -10,6 +10,7 @@ export const config = {
     // Limits for the bot functions
     alias: {
       // Roll Alias system
+      maxNameLength: 200, // Max alias name length allowed in DB
       free: {
         user: 100, // Allows users to have 100 aliased rolls for free
         guild: 1_000, // Allows guilds to have 1000 aliased rolls for free

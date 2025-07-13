@@ -16,10 +16,8 @@ export const help = (message: DiscordenoMessage, guildMode: boolean) => {
 
 Currently, you may create up to \`${config.limits.alias.free.guild.toLocaleString()}\` per guild and \`${config.limits.alias.free.user.toLocaleString()}\` per user account.  This limit may increase or decrease in the future.
 
-Aliases are case-insensitive (\`tEsT\` is stored as \`test\`, but can still be called as \`tEsT\`), and are not allowed to be named any of the following: \`${
-          ReservedWords.join(
-            '`, `',
-          )
+Aliases are case-insensitive (\`tEsT\` is stored as \`test\`, but can still be called as \`tEsT\`), have a max allowed length of \`${config.limits.alias.maxNameLength}\`, cannot include any spaces, and are not allowed to be named any of the following: \`${
+          ReservedWords.join('`, `')
         }\``,
       },
       {

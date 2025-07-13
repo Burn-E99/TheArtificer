@@ -49,14 +49,15 @@ const handleAddUpdate = async (message: DiscordenoMessage, guildMode: boolean, a
   const aliasName = (argSpaces.shift() || '').trim();
   argSpaces.shift();
 
-  if (aliasName.length > 100) {
+  if (aliasName.length > config.limits.alias.maxNameLength) {
     message
       .send({
         embeds: [
           {
             color: failColor,
             title: 'Error: Alias Name is too long',
-            description: `\`${aliasName}\` (\`${aliasName.length}\` characters) is longer than the allowed max length of \`100\` characters.  Please choose a shorter alias name.`,
+            description:
+              `\`${aliasName}\` (\`${aliasName.length}\` characters) is longer than the allowed max length of \`${config.limits.alias.maxNameLength}\` characters.  Please choose a shorter alias name.`,
           },
         ],
       })
