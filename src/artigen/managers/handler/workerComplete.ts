@@ -9,6 +9,7 @@ import { RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
+import { ApiResolveMap, TestResolveMap } from 'artigen/managers/resolveManager.ts';
 
 import { generateCountDetailsEmbed, generateDMFailed, generateRollDistsEmbed, generateRollEmbed } from 'artigen/utils/embeds.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
@@ -29,6 +30,11 @@ const getUserIdForEmbed = (rollRequest: QueuedRoll): bigint => {
 };
 
 export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, workerTimeout: number, rollRequest: QueuedRoll) => {
+  const apiResolve = rollRequest.apiRoll ? ApiResolveMap.get(rollRequest.resolve as string) : undefined;
+  const testResolve = rollRequest.testRoll ? TestResolveMap.get(rollRequest.resolve as string) : undefined;
+  rollRequest.apiRoll && ApiResolveMap.delete(rollRequest.resolve as string);
+  rollRequest.testRoll && TestResolveMap.delete(rollRequest.resolve as string);
+
   let apiErroredOut = false;
   try {
     removeWorker();
@@ -81,15 +87,16 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     // If there was an error, report it to the user in hopes that they can determine what they did wrong
     if (returnMsg.error) {
       if (rollRequest.apiRoll) {
-        rollRequest.api.resolve(stdResp.InternalServerError(returnMsg.errorMsg));
+        apiResolve && apiResolve(stdResp.InternalServerError(returnMsg.errorMsg));
       } else if (rollRequest.ddRoll) {
         rollRequest.dd.myResponse.edit({ embeds: pubEmbeds });
       } else if (rollRequest.testRoll) {
-        rollRequest.test.resolve({
-          error: true,
-          errorMsg: returnMsg.errorMsg,
-          errorCode: returnMsg.errorCode,
-        });
+        testResolve &&
+          testResolve({
+            error: true,
+            errorMsg: returnMsg.errorMsg,
+            errorCode: returnMsg.errorCode,
+          });
       }
 
       if (rollRequest.apiRoll) {
@@ -104,9 +111,10 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
 
     // Test roll will assume that messages send successfully
     if (rollRequest.testRoll) {
-      rollRequest.test.resolve({
-        error: false,
-      });
+      testResolve &&
+        testResolve({
+          error: false,
+        });
       return;
     }
 
@@ -119,7 +127,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
           embeds: pubEmbeds,
         }).catch(() => {
           apiErroredOut = true;
-          rollRequest.api.resolve(stdResp.InternalServerError('Message failed to send - location 0.'));
+          apiResolve && apiResolve(stdResp.InternalServerError('Message failed to send - location 0.'));
         });
       } else {
         // Send the public embed to correct channel
@@ -167,7 +175,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
           embeds: pubEmbeds,
         }).catch(() => {
           apiErroredOut = true;
-          rollRequest.api.resolve(stdResp.InternalServerError('Message failed to send - location 1.'));
+          apiResolve && apiResolve(stdResp.InternalServerError('Message failed to send - location 1.'));
         });
       } else {
         newMsg = await rollRequest.dd.myResponse.edit({
@@ -207,20 +215,21 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         .execute(queries.insertRollLogCmd(1, 0), [rollRequest.originalCommand, returnMsg.errorCode, newMsg ? newMsg.id : null])
         .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:155', 'insert into', e));
 
-      rollRequest.api.resolve(
-        stdResp.OK(
-          JSON.stringify(
-            rollRequest.modifiers.count
-              ? {
-                counts: returnMsg.counts,
-                details: pubEmbedDetails,
-              }
-              : {
-                details: pubEmbedDetails,
-              },
-          ),
-        ),
-      );
+      apiResolve &&
+        apiResolve(
+          stdResp.OK(
+            JSON.stringify(
+              rollRequest.modifiers.count
+                ? {
+                    counts: returnMsg.counts,
+                    details: pubEmbedDetails,
+                  }
+                : {
+                    details: pubEmbedDetails,
+                  }
+            )
+          )
+        );
     }
   } catch (e) {
     log(LT.ERROR, `Unhandled rollRequest Error: ${JSON.stringify(e)}`);
@@ -230,25 +239,25 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
           (
             await generateRollEmbed(
               rollRequest.dd.originalMessage.authorId,
-              <SolvedRoll> {
+              <SolvedRoll>{
                 error: true,
-                errorMsg:
-                  `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
+                errorMsg: `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
                 errorCode: 'UnhandledWorkerComplete',
               },
-              <RollModifiers> {},
+              <RollModifiers>{}
             )
           ).embed,
         ],
       });
     } else if (rollRequest.apiRoll && !apiErroredOut) {
-      rollRequest.api.resolve(stdResp.InternalServerError(JSON.stringify(e)));
+      apiResolve && apiResolve(stdResp.InternalServerError(JSON.stringify(e)));
     } else if (rollRequest.testRoll) {
-      rollRequest.test.resolve({
-        error: true,
-        errorMsg: 'Something weird went wrong.',
-        errorCode: 'UnhandledWorkerComplete',
-      });
+      testResolve &&
+        testResolve({
+          error: true,
+          errorMsg: 'Something weird went wrong.',
+          errorCode: 'UnhandledWorkerComplete',
+        });
     }
   }
 };

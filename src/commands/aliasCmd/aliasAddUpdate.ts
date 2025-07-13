@@ -264,7 +264,7 @@ If you are trying to update an existing alias, but forgot the name, please run t
       apiRoll: false,
       ddRoll: false,
       testRoll: true,
-      test: { resolve },
+      resolve,
       rollCmd,
       modifiers,
       originalCommand: rawRollStr,

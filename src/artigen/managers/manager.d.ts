@@ -8,12 +8,13 @@ interface BaseQueuedRoll {
   modifiers: RollModifiers;
   originalCommand: string;
 }
+export type ApiResolve = (value: Response | PromiseLike<Response>) => void;
 interface ApiQueuedRoll extends BaseQueuedRoll {
   apiRoll: true;
   ddRoll: false;
   testRoll: false;
+  resolve: string | ApiResolve;
   api: {
-    resolve: (value: Response | PromiseLike<Response>) => void;
     channelId: bigint;
     userId: bigint;
   };
@@ -36,12 +37,11 @@ interface TestResultSuccess {
   error: false;
 }
 export type TestResults = TestResultFail | TestResultSuccess;
+export type TestResolve = (value: TestResults) => void;
 interface TestQueuedRoll extends BaseQueuedRoll {
   apiRoll: false;
   ddRoll: false;
   testRoll: true;
-  test: {
-    resolve: (value: TestResults) => void;
-  };
+  resolve: string | TestResolve;
 }
 export type QueuedRoll = ApiQueuedRoll | DDQueuedRoll | TestQueuedRoll;
