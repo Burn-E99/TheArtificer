@@ -192,7 +192,7 @@ If you are trying to update an existing alias, but forgot the name, please run t
         .slice(openIdx + 1, closeIdx)
         .join('')
         .split(/(y\d+(\.\d*)?)/g)
-        .filter((y) => y.startsWith('y'));
+        .filter((y) => y && y.startsWith('y'));
       for (const yVar of possibleYVars) {
         if (yVar.includes('.')) {
           newMsg
@@ -224,6 +224,7 @@ If you are trying to update an existing alias, but forgot the name, please run t
       openIdx = testCmdConf.indexOf(config.prefix, closeIdx);
     }
   } catch (e) {
+    const err = e as Error;
     newMsg
       .edit({
         embeds: [
@@ -238,7 +239,7 @@ If you are trying to update an existing alias, but forgot the name, please run t
               },
               {
                 name: 'Raw Error:',
-                value: `\`${JSON.stringify(e)}\``,
+                value: `${err.name}: ${err.message}`,
               },
             ],
             footer: {

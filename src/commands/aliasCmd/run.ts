@@ -63,7 +63,7 @@ export const run = async (message: DiscordenoMessage, guildMode: boolean, comman
   }
 
   const details = query.shift();
-  if (!query.length || !details) {
+  if (!details) {
     message
       .send({
         embeds: [
