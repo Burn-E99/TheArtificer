@@ -2,8 +2,9 @@ import { ActionRow, botId, CreateMessage, Embed, MessageComponentTypes, SelectOp
 
 import config from '~config';
 
-import { RootHelpPages } from 'commands/helpLibrary/_rootHelp.ts';
 import { HelpContents, HelpDict, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
+
+import { RootHelpPages } from 'commands/helpLibrary/rollHelp/_rootHelp.ts';
 
 import { infoColor1 } from 'embeds/colors.ts';
 
