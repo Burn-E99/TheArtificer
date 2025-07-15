@@ -32,7 +32,7 @@ const sortYVars = (a: string, b: string) => {
 };
 
 const handleAddUpdate = async (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[], replaceAlias: boolean) => {
-  if (guildMode && !(await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR']))) {
+  if (guildMode && !(await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR']))) {
     message
       .send({
         embeds: [

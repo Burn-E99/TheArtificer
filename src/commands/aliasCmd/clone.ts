@@ -16,7 +16,7 @@ interface QueryShape {
 }
 
 export const clone = async (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[]) => {
-  if (!guildMode && !(await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR']))) {
+  if (!guildMode && !(await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR']))) {
     message
       .send({
         embeds: [

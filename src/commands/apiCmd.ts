@@ -36,7 +36,7 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
   }
 
   // Makes sure the user is authenticated to run the API command
-  if (await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR'])) {
+  if (await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR'])) {
     switch (apiArg) {
       case 'help':
       case 'h':

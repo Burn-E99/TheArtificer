@@ -51,8 +51,7 @@ export const toggleInline = async (message: DiscordenoMessage, args: string[]) =
   });
   if (errorOut) return;
 
-  // Makes sure the user is authenticated to run the API command
-  if (await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR'])) {
+  if (await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR'])) {
     let enable = false;
     switch (apiArg) {
       case 'allow':

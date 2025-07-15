@@ -10,7 +10,7 @@ import { failColor, successColor, warnColor } from 'embeds/colors.ts';
 import utils from 'utils/utils.ts';
 
 const handleDelete = async (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[], deleteAll: boolean) => {
-  if (guildMode && !(await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR']))) {
+  if (guildMode && !(await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR']))) {
     message
       .send({
         embeds: [
