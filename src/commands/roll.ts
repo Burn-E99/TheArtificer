@@ -57,14 +57,6 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
       m.edit(generateRollError('Modifiers invalid:', modifiers.error.name, modifiers.error.message)).catch((e) => utils.commonLoggers.messageEditError('roll.ts:50', m, e));
-
-      if (DEVMODE && config.logRolls) {
-        // If enabled, log rolls so we can verify the bots math
-        dbClient
-          .execute(queries.insertRollLogCmd(0, 1), [originalCommand, modifiers.error.name, m.id])
-          .catch((e) => utils.commonLoggers.dbError('roll.ts:57', 'insert into', e));
-      }
-      return;
     }
 
     let rollCmd = message.content.startsWith(`${config.prefix}r`) ? remainingArgs.join('') : `${command}${remainingArgs.join('')}`;
