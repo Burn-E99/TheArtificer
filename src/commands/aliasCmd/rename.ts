@@ -14,7 +14,7 @@ interface QueryShape {
 }
 
 export const rename = async (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[]) => {
-  if (!guildMode && !(await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR']))) {
+  if (guildMode && !(await hasGuildPermissions(message.authorId, message.guildId, ['ADMINISTRATOR']))) {
     message
       .send({
         embeds: [
