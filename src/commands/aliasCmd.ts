@@ -72,6 +72,10 @@ export const alias = (message: DiscordenoMessage, argSpaces: string[]) => {
     case 'remove-all':
       aliasCommands.deleteAll(message, guildMode, argSpaces);
       break;
+    case 'clone':
+    case 'copy':
+      aliasCommands.clone(message, guildMode, argSpaces);
+      break;
     case 'run':
     case 'execute':
     default:
