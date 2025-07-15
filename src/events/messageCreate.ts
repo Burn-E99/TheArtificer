@@ -69,11 +69,14 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
     case 'rd':
     case 'dr':
     case '???':
+      // [[rollDecorators or [[rd or [[dr or [[???
+      // Opens help library specifically to decorators page for legacy command support
+      commands.rollHelp(message, 'decorators');
+      break;
     case 'rollhelp':
     case 'rh':
     case 'hr':
     case '??':
-      // Legacy: [[rollDecorators or [[rd or [[dr or [[???
       // [[rollhelp or [[rh or [[hr or [[??
       // Help command specifically for the roll command
       commands.rollHelp(message);
@@ -92,6 +95,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       commands.info(message);
       break;
     case 'privacy':
+    case 'tos':
       // [[privacy
       // Privacy command, prints short desc on bot's privacy policy
       commands.privacy(message);

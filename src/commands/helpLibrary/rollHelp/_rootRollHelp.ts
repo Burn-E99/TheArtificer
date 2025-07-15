@@ -14,7 +14,7 @@ import { LegalMathOperators } from 'commands/helpLibrary/rollHelp/legalMathOpera
 import { LegalMathTrigFuncsHelpPages } from 'commands/helpLibrary/rollHelp/legalMathTrigFuncs.ts';
 import { MiscFeaturesHelpPages } from 'commands/helpLibrary/rollHelp/miscFeatures.ts';
 
-const name = `${config.name}'s Roll Command Details`;
+const name = 'Dice/Roll/Math Command';
 const description = `You can chain as many of these options as you want, as long as the option does not disallow it.  This command also can fully solve math equations with parenthesis.
 
 The help options in this group use the notation \`xdy\` to indicate the basic/required dice notation for die count and size as detailed in the \`Dice Options>Basic Dice Options\` page.
@@ -36,7 +36,7 @@ const dict = new Map<string, HelpPage>([
   ['legal-math-complex-funcs', LegalMathComplexFuncsHelpPages],
 ]);
 
-export const RootHelpPages: HelpPage = {
+export const RootRollHelpPages: HelpPage = {
   name,
   description,
   isPage: true,

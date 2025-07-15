@@ -2,10 +2,12 @@ import { DiscordenoMessage, hasGuildPermissions } from '@discordeno';
 
 import config from '~config';
 
+import { generateHelpMessage } from 'commands/helpLibrary/generateHelpMessage.ts';
+
 import dbClient from 'db/client.ts';
 import { inlineList, queries } from 'db/common.ts';
 
-import { failColor, infoColor1, infoColor2, successColor } from 'embeds/colors.ts';
+import { failColor, infoColor1, successColor } from 'embeds/colors.ts';
 
 import utils from 'utils/utils.ts';
 
@@ -89,46 +91,7 @@ export const toggleInline = async (message: DiscordenoMessage, args: string[]) =
       case 'h':
       case 'help':
       default:
-        message
-          .send({
-            embeds: [
-              {
-                color: infoColor2,
-                title: `${config.name}'s Inline Roll Details:`,
-                description:
-                  `${config.name} has an option to allow inline rolls in your guild.  An inline roll is a roll that does not immediately start with \`${config.prefix}\`, such as \`test ${config.prefix}d20${config.postfix}\`.
-
-By default, inline rolls are blocked from being sent in your guild.  These commands may only be used by the Owner or Admins of your guild.`,
-              },
-              {
-                color: infoColor1,
-                title: 'Available Inline Commands:',
-                fields: [
-                  {
-                    name: `\`${config.prefix}inline help\``,
-                    value: 'This command',
-                    inline: true,
-                  },
-                  {
-                    name: `\`${config.prefix}inline status\``,
-                    value: 'Shows the current status of inline rolls for this guild',
-                    inline: true,
-                  },
-                  {
-                    name: `\`${config.prefix}inline allow/enable\``,
-                    value: 'Allows inline rolls in the guild',
-                    inline: true,
-                  },
-                  {
-                    name: `\`${config.prefix}inline block/disable/delete\``,
-                    value: 'Blocks inline rolls in the guild',
-                    inline: true,
-                  },
-                ],
-              },
-            ],
-          })
-          .catch((e: Error) => utils.commonLoggers.messageSendError('apiHelp.ts:67', message, e));
+        message.send(generateHelpMessage('inline')).catch((e: Error) => utils.commonLoggers.messageSendError('apiHelp.ts:67', message, e));
         return;
     }
     if (errorOut) {

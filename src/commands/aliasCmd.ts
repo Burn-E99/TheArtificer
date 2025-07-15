@@ -2,6 +2,8 @@ import { DiscordenoMessage } from '@discordeno';
 
 import aliasCommands from 'commands/aliasCmd/_index.ts';
 
+import { generateHelpMessage } from 'commands/helpLibrary/generateHelpMessage.ts';
+
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
@@ -44,7 +46,7 @@ export const alias = (message: DiscordenoMessage, argSpaces: string[]) => {
     case 'h':
     case '?':
     case '':
-      aliasCommands.help(message, guildMode);
+      message.send(generateHelpMessage('alias')).catch((e: Error) => utils.commonLoggers.messageSendError('aliasCmd.ts:47', message, e));
       break;
     case 'list':
     case 'list-all':

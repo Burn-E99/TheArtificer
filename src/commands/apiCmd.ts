@@ -4,6 +4,8 @@ import config from '~config';
 
 import apiCommands from 'commands/apiCmd/_index.ts';
 
+import { generateHelpMessage } from 'commands/helpLibrary/generateHelpMessage.ts';
+
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
@@ -40,7 +42,7 @@ export const api = async (message: DiscordenoMessage, args: string[]) => {
       case 'h':
         // [[api help
         // Shows API help details
-        apiCommands.help(message);
+        message.send(generateHelpMessage('api')).catch((e: Error) => utils.commonLoggers.messageSendError('apiCmd.ts:44', message, e));
         break;
       case 'allow':
       case 'block':
