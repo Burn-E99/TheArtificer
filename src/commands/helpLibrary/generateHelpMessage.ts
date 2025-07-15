@@ -4,7 +4,7 @@ import config from '~config';
 
 import { HelpContents, HelpDict, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
 
-import { RootHelpPages } from 'commands/helpLibrary/rollHelp/_rootHelp.ts';
+import { RootHelpPages } from 'commands/helpLibrary/rollHelp/_rootRollHelp.ts';
 
 import { infoColor1 } from 'embeds/colors.ts';
 
