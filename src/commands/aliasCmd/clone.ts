@@ -1,9 +1,13 @@
 import { DiscordenoMessage, hasGuildPermissions } from '@discordeno';
-import { failColor, successColor } from 'embeds/colors.ts';
-import utils from 'utils/utils.ts';
-import dbClient from 'db/client.ts';
-import { generateAliasError } from 'embeds/alias.ts';
+
 import config from '~config';
+
+import dbClient from 'db/client.ts';
+
+import { generateAliasError } from 'embeds/alias.ts';
+import { failColor, successColor } from 'embeds/colors.ts';
+
+import utils from 'utils/utils.ts';
 
 interface QueryShape {
   aliasName: string;

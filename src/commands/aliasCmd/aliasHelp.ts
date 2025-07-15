@@ -73,6 +73,11 @@ To view ${guildMode ? '' : 'non-'}guild mode commands, please run \`${config.pre
             inline: true,
           },
           {
+            name: `\`${config.prefix}ra ${guildMode ? 'guild ' : ''}rename [oldAliasName] [newAliasName]`,
+            value: `Renames the specified alias in ${guildMode ? 'this guild' : 'your account'}.`,
+            inline: true,
+          },
+          {
             name: `\`${config.prefix}ra ${guildMode ? 'guild ' : ''}[alias] [yVars...?]\` or \`${config.prefix}ra ${guildMode ? 'guild ' : ''}run/execute [alias] [yVars...?]\``,
             value: `Runs the specified ${guildMode ? 'guild ' : ''}alias with the provided yVars.  yVars are only required if the alias specified requires them.`,
             inline: false,

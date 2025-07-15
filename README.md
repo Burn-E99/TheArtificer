@@ -100,6 +100,13 @@ The Artificer comes with a few supplemental commands to the main rolling command
     * `[[ra delete-all [aliasName] [verificationCode?]`
     * `[[ra guild delete-all [aliasName] [verificationCode?]`
       * Deletes all aliases from your account or the guild you are in.  Can be run without a verification code to get the needed code for deletion.
+    * `[[ra clone [aliasName]`
+      * Copies the specified alias from your account to the guild you are in.
+    * `[[ra guild clone [aliasName]`
+      * Copies the specified alias from the guild you are in to your account.
+    * `[[ra rename [oldAliasName] [newAliasName]`
+    * `[[ra guild rename [oldAliasName] [newAliasName]`
+      * Renames the specified alias for your account or the guild you are in.
     * `[[ra [aliasName] [yVars?...]`
     * `[[ra run [aliasName] [yVars?...]`
       * Runs the desired personal alias with the specified yVars (if any are needed).  If the alias is not found on your account, it will check the guild aliases and use a match from there if one exists.

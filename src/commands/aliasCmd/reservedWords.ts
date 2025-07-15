@@ -18,4 +18,7 @@ export const ReservedWords = Object.freeze([
   'remove-all',
   'run',
   'execute',
+  'clone',
+  'copy',
+  'rename',
 ]);

@@ -39,7 +39,6 @@ export const alias = (message: DiscordenoMessage, argSpaces: string[]) => {
     return;
   }
 
-  // Makes sure the user is authenticated to run the API command
   switch (aliasArg) {
     case 'help':
     case 'h':
@@ -75,6 +74,9 @@ export const alias = (message: DiscordenoMessage, argSpaces: string[]) => {
     case 'clone':
     case 'copy':
       aliasCommands.clone(message, guildMode, argSpaces);
+      break;
+    case 'rename':
+      aliasCommands.rename(message, guildMode, argSpaces);
       break;
     case 'run':
     case 'execute':
