@@ -1,4 +1,4 @@
-import { botId, DiscordenoMessage, Embed, FileContent, sendDirectMessage, sendMessage } from '@discordeno';
+import { botId, ButtonStyles, DiscordenoMessage, Embed, FileContent, MessageComponentTypes, sendDirectMessage, sendMessage } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
@@ -13,21 +13,26 @@ import { ApiResolveMap, TestResolveMap } from 'artigen/managers/resolveManager.t
 
 import { generateCountDetailsEmbed, generateDMFailed, generateRollDistsEmbed, generateRollEmbed, toggleWebView } from 'artigen/utils/embeds.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { basicReducer } from 'artigen/utils/reducers.ts';
 
 import dbClient from 'db/client.ts';
 import { queries } from 'db/common.ts';
 
+import { infoColor1 } from 'embeds/colors.ts';
+
 import stdResp from 'endpoints/stdResponses.ts';
 
+import { InteractionValueSeparator } from 'events/interactionCreate.ts';
+
 import utils from 'utils/utils.ts';
-import { infoColor1 } from 'embeds/colors.ts';
-import { basicReducer } from 'artigen/utils/reducers.ts';
 
 const getUserIdForEmbed = (rollRequest: QueuedRoll): bigint => {
   if (rollRequest.apiRoll) return rollRequest.api.userId;
   if (rollRequest.ddRoll) return rollRequest.dd.originalMessage.authorId;
   return 0n;
 };
+
+export const repeatRollCustomId = 'repeatRoll';
 
 export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, workerTimeout: number, rollRequest: QueuedRoll) => {
   const apiResolve = rollRequest.apiRoll ? ApiResolveMap.get(rollRequest.resolve as string) : undefined;
@@ -183,6 +188,20 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
       } else {
         newMsg = await rollRequest.dd.myResponse.edit({
           embeds: pubEmbeds,
+          components: [
+            {
+              type: MessageComponentTypes.ActionRow,
+              components: [
+                {
+                  type: MessageComponentTypes.Button,
+                  label: 'Repeat Roll',
+                  customId: `${repeatRollCustomId}${InteractionValueSeparator}${getUserIdForEmbed(rollRequest).toString()}`,
+                  style: ButtonStyles.Secondary,
+                  emoji: '🎲',
+                },
+              ],
+            },
+          ],
         });
       }
 
@@ -235,14 +254,14 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
             JSON.stringify(
               rollRequest.modifiers.count
                 ? {
-                  counts: returnMsg.counts,
-                  details: pubEmbedDetails,
-                }
+                    counts: returnMsg.counts,
+                    details: pubEmbedDetails,
+                  }
                 : {
-                  details: pubEmbedDetails,
-                },
-            ),
-          ),
+                    details: pubEmbedDetails,
+                  }
+            )
+          )
         );
     }
   } catch (e) {
@@ -253,13 +272,12 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
           (
             await generateRollEmbed(
               rollRequest.dd.originalMessage.authorId,
-              <SolvedRoll> {
+              <SolvedRoll>{
                 error: true,
-                errorMsg:
-                  `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
+                errorMsg: `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
                 errorCode: 'UnhandledWorkerComplete',
               },
-              <RollModifiers> {},
+              <RollModifiers>{}
             )
           ).embed,
         ],

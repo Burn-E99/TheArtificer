@@ -3,6 +3,7 @@ import {
   DiscordenoMessage,
   DiscordMessageComponentTypes,
   editMessage,
+  getMessage,
   Interaction,
   InteractionResponseTypes,
   MessageFlags,
@@ -12,11 +13,15 @@ import {
 } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
+import { repeatRollCustomId } from 'artigen/managers/handler/workerComplete.ts';
+
 import { toggleWebView, webViewCustomId } from 'artigen/utils/embeds.ts';
 
 import { generateHelpMessage, helpCustomId } from 'commands/helpLibrary/generateHelpMessage.ts';
 
 import { failColor } from 'embeds/colors.ts';
+
+import { messageCreateHandler } from 'events/messageCreate.ts';
 
 import utils from 'utils/utils.ts';
 
@@ -43,7 +48,7 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
         return;
       }
 
-      if (parsedData.customId.startsWith(webViewCustomId) && parsedData.componentType === DiscordMessageComponentTypes.Button && interaction.message) {
+      if (parsedData.customId.startsWith(webViewCustomId) && interaction.message) {
         const ownerId = parsedData.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
         const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? 'missingUserId';
         if (ownerId === userInteractingId) {
@@ -66,6 +71,35 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
               ],
             },
           }).catch((e) => utils.commonLoggers.messageSendError('interactionCreate.ts:57', interaction, e));
+        }
+        return;
+      }
+
+      if (parsedData.customId.startsWith(repeatRollCustomId) && interaction.message) {
+        const ownerId = parsedData.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
+        const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? 'missingUserId';
+        if (ownerId === userInteractingId) {
+          ackInteraction(interaction);
+          const botMsg: DiscordenoMessage = await structures.createDiscordenoMessage(interaction.message);
+          const rollMsg: DiscordenoMessage = await getMessage(
+            BigInt(botMsg.messageReference?.channelId ?? '0'),
+            BigInt(botMsg.messageReference?.messageId ?? '0'),
+          );
+          messageCreateHandler(rollMsg);
+        } else {
+          sendInteractionResponse(interaction.id, interaction.token, {
+            type: InteractionResponseTypes.ChannelMessageWithSource,
+            data: {
+              flags: MessageFlags.Empheral,
+              embeds: [
+                {
+                  color: failColor,
+                  title: 'Not Allowed!',
+                  description: 'Only the original user that requested this roll can repeat it.',
+                },
+              ],
+            },
+          }).catch((e) => utils.commonLoggers.messageSendError('interactionCreate.ts:96', interaction, e));
         }
         return;
       }

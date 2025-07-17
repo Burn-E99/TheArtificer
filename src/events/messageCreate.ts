@@ -23,8 +23,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
 
     // Handle inline guilds if allowed
     if (inlineList.includes(message.guildId) && message.content.includes(config.prefix) && message.content.includes(config.prefix)) {
-      const argSpaces = message.content.trim().split(/([ \n]+)/g);
-      commands.roll(message, argSpaces, '');
+      commands.roll(message, message.content.trim().split(/([ \n]+)/g), '');
     }
     // return as we are done handling this message
     return;
