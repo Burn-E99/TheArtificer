@@ -292,8 +292,22 @@ export const toggleWebView = (attachmentMessage: DiscordenoMessage, ownerId: str
           ...attachmentMessage.embeds[0],
           fields: [
             {
-              name: 'Web View:',
-              value: enableWebView ? `[Open Web View](${config.api.publicDomain}api/webview?c=${attachmentMessage.channelId}&m=${attachmentMessage.id})` : `Web View is ${disabledStr}.`,
+              name: 'Web View Link:',
+              value: enableWebView
+                ? `[Open Web View](${config.api.publicDomain}api/webview?c=${attachmentMessage.channelId}&m=${attachmentMessage.id}#${new Date().getTime()}#${ownerId})`
+                : `Web View is ${disabledStr}.\n- Click the button below to enable Web View and generate a link for this roll.`,
+              inline: true,
+            },
+            {
+              name: enableWebView ? 'Web View Status:' : 'What is Web View?',
+              value: enableWebView
+                ? `For privacy, Web View will automatically time out on this roll <t:${
+                  Math.floor(
+                    (new Date().getTime() + 1_000 * 60 * 60) / 1000,
+                  )
+                }:R>.  The link will still show on this message after it has timed out, so clicking on the link after it has been timed out will show an error and remove the link.`
+                : '- Web View is a system for viewing extremely large or complex rolls with full formatting.\n- As anyone with the Web View link can view the roll, Web View is disabled by default for privacy.',
+              inline: true,
             },
           ],
         },

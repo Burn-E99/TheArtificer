@@ -194,9 +194,8 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         const respMessage: Embed[] = [
           {
             color: infoColor1,
-            description: `This message contains information for a previous roll.\nPlease click on "<@${botId}> *Click to see attachment*" above this message to see the previous roll.
-
-As anyone with the Web View link can view the roll, Web View is disabled by default for privacy.  Click the button below to enable Web View and generate a link for this roll.`,
+            description: `**This message contains information for a previous roll.**
+Please click on "<@${botId}> *Click to see attachment*" above this message to see the previous roll.`,
           },
         ];
 

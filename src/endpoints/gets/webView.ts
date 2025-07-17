@@ -5,7 +5,7 @@ import { STATUS_CODE, STATUS_TEXT } from '@std/http/status';
 
 import config from '~config';
 
-import { disabledStr } from 'artigen/utils/embeds.ts';
+import { disabledStr, toggleWebView } from 'artigen/utils/embeds.ts';
 
 import utils from 'utils/utils.ts';
 
@@ -21,6 +21,7 @@ interface ModernUserHOTFIX extends User {
 const converter = new showdown.Converter({
   emoji: true,
   underline: true,
+  openLinksInNewWindow: true,
 });
 
 // Utilize the pre-existing stylesheets, do a little tweaking to make it ours
@@ -71,13 +72,39 @@ font-weight: 900;
 ${str}
 </body>
 </html>`;
+
+const headerHeight = '3rem';
+const wrapHeader = (
+  str: string,
+) =>
+  `<header id="fileBtns" style="display: flex; align-items: center; height: ${headerHeight}; line-height: ${headerHeight}; font-size: 1.5rem;">
+<a href="https://discord.burne99.com/TheArtificer/" target="_blank" rel="noopener">${config.name} Roll Web View</a>
+${str}
+</header>`;
 const centerHTML = (str: string) => `<center>${str}</center>`;
 
-const badRequestMD = '# Invalid URL for Web View!';
-const badRequestHTML = wrapBasic(centerHTML(converter.makeHtml(badRequestMD)));
+const badRequestHTML = wrapBasic(`${wrapHeader('')}${centerHTML(converter.makeHtml('# Invalid URL for Web View!'))}`);
+const badMessageHTML = wrapBasic(
+  `${wrapHeader('')}${
+    centerHTML(
+      converter.makeHtml(`# Discord Attachment message malformed or corrupt!
+Not sure how this happened, but Web View was unable to read the required data to generate the formatted output.`),
+    )
+  }`,
+);
+const notAuthorizedHTML = wrapBasic(`${wrapHeader('')}${centerHTML(converter.makeHtml('# Web View is Disabled for this roll!'))}`);
 
-const notAuthorizedMD = '# Web View is Disabled for this roll!';
-const notAuthorizedHTML = wrapBasic(centerHTML(converter.makeHtml(notAuthorizedMD)));
+const oldHTML = (guildId: bigint | string, channelId: bigint, messageId: bigint) =>
+  wrapBasic(
+    `${wrapHeader('')}${
+      centerHTML(
+        converter.makeHtml(`# Web View has been Disabled for this roll!
+For privacy, Web View automatically disables itself 1 hour after being enabled.
+
+Need to see this roll in Web View again?  Head back to [this message](https://discord.com/channels/${guildId}/${channelId}/${messageId}) and click the \`Enable Web View\` button.`),
+      )
+    }`,
+  );
 
 const failedToGetAttachmentMD = '# Failed to get attachment from Discord!';
 const failedToGetAttachmentHTML = wrapBasic(centerHTML(converter.makeHtml(failedToGetAttachmentMD)));
@@ -87,23 +114,21 @@ interface HtmlResp {
   html: string;
 }
 
-const headerHeight = '3rem';
 const generatePage = (files: HtmlResp[]): string =>
-  wrapBasic(`<header id="fileBtns" style="display: flex; align-items: center; height: ${headerHeight}; line-height: ${headerHeight}; font-size: 1.5rem;">
-<a href="https://discord.burne99.com/TheArtificer/" target="_blank" rel="noopener">${config.name} Roll Web View</a>
-<span style="margin-left: auto; font-family: 'Play', sans-serif; font-size: 1rem;">Available Files:</span>
+  wrapBasic(`${
+    wrapHeader(`<span style="margin-left: auto; font-family: 'Play', sans-serif; font-size: 1rem;">Available Files:</span>
 ${
-    files
-      .map(
-        (f, idx) =>
-          `<button style="margin-left: 1rem;" id="${f.name}-btn" class="${
-            idx === 0 ? 'selected' : ''
-          }" onclick="for (var child of document.getElementById('fileBody').children) {child.style.display = 'none'} document.getElementById('${f.name}').style.display = 'block'; for (var child of document.getElementById('fileBtns').children) {child.className = ''} document.getElementById('${f.name}-btn').className = 'selected';">${f.name}</button>`,
-      )
-      .join('')
+      files
+        .map(
+          (f, idx) =>
+            `<button style="margin-left: 1rem;" id="${f.name}-btn" class="${
+              idx === 0 ? 'selected' : ''
+            }" onclick="for (var child of document.getElementById('fileBody').children) {child.style.display = 'none'} document.getElementById('${f.name}').style.display = 'block'; for (var child of document.getElementById('fileBtns').children) {child.className = ''} document.getElementById('${f.name}-btn').className = 'selected';">${f.name}</button>`,
+        )
+        .join('')
+    }
+<button style="margin-left: auto;" onclick="document.getElementById('fileBody').style.whiteSpace = (document.getElementById('fileBody').style.whiteSpace === 'pre' ? 'pre-wrap' : 'pre')">Toggle Word Wrap</button>`)
   }
-<button style="margin-left: auto;" onclick="document.getElementById('fileBody').style.whiteSpace = (document.getElementById('fileBody').style.whiteSpace === 'pre' ? 'pre-wrap' : 'pre')">Toggle Word Wrap</button>
-</header>
 <div id="fileBody" style="height: calc(100vh - ${headerHeight}); margin: 0 0.5rem; overflow: auto; white-space: pre-wrap; font-family: 'Roboto', sans-serif; font-weight: 300;">
 ${files.map((f, idx) => `<div id="${f.name}" style="display: ${idx === 0 ? 'block' : 'none'};">${f.html}</div>`).join('')}
 </div>`);
@@ -149,11 +174,19 @@ export const generateWebView = async (query: Map<string, string>): Promise<Respo
 
   const attachmentMessage = await getMessage(channelId, messageId).catch((e) => utils.commonLoggers.messageGetError('webView.ts:23', channelId, messageId, e));
   const discordAttachments = attachmentMessage?.attachments ?? [];
-  const embed = attachmentMessage?.embeds.shift();
-  const webViewField = embed?.fields?.shift();
+  const embed = attachmentMessage?.embeds[0];
 
-  if (!attachmentMessage || discordAttachments.length === 0 || !embed || !webViewField) {
-    return new Response(badRequestHTML, {
+  if (!attachmentMessage || discordAttachments.length === 0 || !embed || !embed.fields?.length) {
+    return new Response(badMessageHTML, {
+      status: STATUS_CODE.BadRequest,
+      statusText: STATUS_TEXT[STATUS_CODE.BadRequest],
+      headers,
+    });
+  }
+
+  const webViewField = embed.fields[0];
+  if (!webViewField.value) {
+    return new Response(badMessageHTML, {
       status: STATUS_CODE.BadRequest,
       statusText: STATUS_TEXT[STATUS_CODE.BadRequest],
       headers,
@@ -164,6 +197,27 @@ export const generateWebView = async (query: Map<string, string>): Promise<Respo
     return new Response(notAuthorizedHTML, {
       status: STATUS_CODE.Forbidden,
       statusText: STATUS_TEXT[STATUS_CODE.Forbidden],
+      headers,
+    });
+  }
+
+  const hashParts = webViewField.value.replaceAll(')', '').split('#');
+  const webViewAge = parseInt(hashParts[1] ?? '0');
+  const ownerId = hashParts[2];
+  if (!ownerId || !webViewAge) {
+    return new Response(badMessageHTML, {
+      status: STATUS_CODE.BadRequest,
+      statusText: STATUS_TEXT[STATUS_CODE.BadRequest],
+      headers,
+    });
+  }
+
+  const allowedAge = new Date().getTime() - 1_000 * 60 * 60;
+  if (webViewAge < allowedAge) {
+    toggleWebView(attachmentMessage, ownerId, false);
+    return new Response(oldHTML(attachmentMessage.guildId || '@me', attachmentMessage.channelId, attachmentMessage.id), {
+      status: STATUS_CODE.Gone,
+      statusText: STATUS_TEXT[STATUS_CODE.Gone],
       headers,
     });
   }
