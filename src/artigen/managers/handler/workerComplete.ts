@@ -11,7 +11,7 @@ import { removeWorker } from 'artigen/managers/countManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 import { ApiResolveMap, TestResolveMap } from 'artigen/managers/resolveManager.ts';
 
-import { generateCountDetailsEmbed, generateDMFailed, generateRollDistsEmbed, generateRollEmbed } from 'artigen/utils/embeds.ts';
+import { generateCountDetailsEmbed, generateDMFailed, generateRollDistsEmbed, generateRollEmbed, toggleWebView } from 'artigen/utils/embeds.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 
 import dbClient from 'db/client.ts';
@@ -188,23 +188,29 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         const respMessage: Embed[] = [
           {
             color: infoColor1,
-            description: `This message contains information for a previous roll.\nPlease click on "<@${botId}> *Click to see attachment*" above this message to see the previous roll.`,
+            description: `This message contains information for a previous roll.\nPlease click on "<@${botId}> *Click to see attachment*" above this message to see the previous roll.
+
+As anyone with the Web View link can view the roll, Web View is disabled by default for privacy.  Click the button below to enable Web View and generate a link for this roll.`,
           },
         ];
 
         if (pubAttachments.map((file) => file.blob.size).reduce(basicReducer, 0) < config.maxFileSize) {
           // All attachments will fit in one message
-          newMsg.reply({
-            embeds: respMessage,
-            file: pubAttachments,
-          });
+          newMsg
+            .reply({
+              embeds: respMessage,
+              file: pubAttachments,
+            })
+            .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false));
         } else {
           pubAttachments.forEach((file) => {
             newMsg &&
-              newMsg.reply({
-                embeds: respMessage,
-                file,
-              });
+              newMsg
+                .reply({
+                  embeds: respMessage,
+                  file,
+                })
+                .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false));
           });
         }
       }

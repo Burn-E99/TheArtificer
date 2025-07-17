@@ -10,7 +10,8 @@
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@^1.0.9": "1.0.9",
-    "jsr:@std/streams@^1.0.9": "1.0.9"
+    "jsr:@std/streams@^1.0.9": "1.0.9",
+    "npm:showdown@2.1.0": "2.1.0"
   },
   "jsr": {
     "@std/cli@1.0.17": {
@@ -52,6 +53,17 @@
     },
     "@std/streams@1.0.9": {
       "integrity": "a9d26b1988cdd7aa7b1f4b51e1c36c1557f3f252880fa6cc5b9f37078b1a5035"
+    }
+  },
+  "npm": {
+    "commander@9.5.0": {
+      "integrity": "sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ=="
+    },
+    "showdown@2.1.0": {
+      "integrity": "sha512-/6NVYu4U819R2pUIk79n67SYgJHWCce0a5xTP979WbNp0FL9MN1I1QK662IDU1b6JzKTvmhgI7T7JYIxBi3kMQ==",
+      "dependencies": [
+        "commander"
+      ]
     }
   },
   "redirects": {
@@ -837,7 +849,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/http@1.0.15"
+      "jsr:@std/http@1.0.15",
+      "npm:showdown@2.1.0"
     ]
   }
 }

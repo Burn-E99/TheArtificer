@@ -172,6 +172,8 @@ const start = () => {
                   return endpoints.get.apiKey(query);
                 case '/heatmap.png':
                   return endpoints.get.heatmapPng();
+                case '/webview':
+                  return endpoints.get.generateWebView(query);
                 default:
                   // Alert API user that they messed up
                   return stdResp.NotFound('NoAuth Get');

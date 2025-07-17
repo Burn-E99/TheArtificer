@@ -2,50 +2,55 @@
  * https://paletton.com/#uid=5000p0kw8dLmVn9rgiuHN93Sj4E
  */
 :root {
-	--header-font-color: rgb(238, 237, 226);
-	--header-bg-color: rgb(110, 0, 0);
+  --header-font-color: rgb(238, 237, 226);
+  --header-bg-color: rgb(110, 0, 0);
 
-	--page-font-color: white;
-	--page-bg-color: rgb(32, 34, 37);
+  --page-font-color: white;
+  --page-bg-color: rgb(32, 34, 37);
 
-	--footer-bg-color: rgb(54, 57, 63);
+  --footer-bg-color: rgb(54, 57, 63);
 
-	--link-new-color: rgb(147, 22, 22);
-	--link-hover-color: rgb(255, 94, 94);
-	--link-visited-color: rgb(184, 52, 52);
+  --link-new-color: rgb(147, 22, 22);
+  --link-hover-color: rgb(255, 94, 94);
+  --link-visited-color: rgb(184, 52, 52);
 
-	--code-bg: rgb(47, 49, 54);
+  --code-bg: rgb(47, 49, 54);
 
-	--slug-bg: rgb(15, 16, 17);
-	--slug-border: rgb(0, 0, 0);
+  --slug-bg: rgb(15, 16, 17);
+  --slug-border: rgb(0, 0, 0);
 }
 
-#header a {
-	color: var(--header-font-color);
-	text-decoration: none;
+header a,
+header a:visited,
+#header a,
+#header a:visited {
+  color: var(--header-font-color);
+  text-decoration: none;
 }
 
 a {
-	color: var(--link-new-color);
+  color: var(--link-new-color);
 }
 
-a:active, a:visited {
-	color: var(--link-visited-color);
+a:active,
+a:visited {
+  color: var(--link-visited-color);
 }
 
 a:hover,
+header a:hover,
 #header a:hover {
-	cursor: pointer;
-	color: var(--link-hover-color);
+  cursor: pointer;
+  color: var(--link-hover-color);
 }
 
 code {
-	background-color: var(--code-bg);
+  background-color: var(--code-bg);
 }
 
 .slug {
-	padding: 0.5rem;
-	background-color: var(--slug-bg);
-	border: 4px solid var(--slug-border);
-	border-radius: 1.5rem;
+  padding: 0.5rem;
+  background-color: var(--slug-bg);
+  border: 4px solid var(--slug-border);
+  border-radius: 1.5rem;
 }

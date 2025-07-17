@@ -1,4 +1,4 @@
-import { CreateMessage, EmbedField } from '@discordeno';
+import { ButtonStyles, CreateMessage, DiscordenoMessage, EmbedField, MessageComponentTypes } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
@@ -8,8 +8,13 @@ import { ArtigenEmbedNoAttachment, ArtigenEmbedWithAttachment, SolvedRoll } from
 import { CountDetails, RollDistributionMap, RollModifiers } from 'artigen/dice/dice.d.ts';
 
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
-import { failColor, infoColor1, infoColor2 } from 'embeds/colors.ts';
 import { basicReducer } from 'artigen/utils/reducers.ts';
+
+import { failColor, infoColor1, infoColor2 } from 'embeds/colors.ts';
+
+import { InteractionValueSeparator } from 'events/interactionCreate.ts';
+
+import utils from 'utils/utils.ts';
 
 export const rollingEmbed: CreateMessage = {
   embeds: [
@@ -130,9 +135,10 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
   const totalSize = fields.map((field) => field.name.length + field.value.length).reduce(basicReducer, 0);
   if (totalSize > 4_000 || fields.length > 25 || fields.some((field) => field.name.length > 256 || field.value.length > 1024)) {
     const rollDistBlob = new Blob([fields.map((field) => `# ${field.name}\n${field.value}`).join('\n\n') as BlobPart], { type: 'text' });
+    let rollDistErrDesc = 'The roll distribution was omitted from this message as it was over 4,000 characters, ';
     if (rollDistBlob.size > config.maxFileSize) {
-      const rollDistErrDesc =
-        'The roll distribution was too large to be included and could not be attached below.  If you would like to see the roll distribution details, please send the rolls in multiple messages.';
+      rollDistErrDesc +=
+        'and was too large to be attached as the file would be too large for Discord to handle.  If you would like to see the roll distribution details, please simplify or send the rolls in multiple messages.';
       return {
         charCount: rollDistTitle.length + rollDistErrDesc.length,
         embed: {
@@ -143,7 +149,7 @@ export const generateRollDistsEmbed = (rollDists: RollDistributionMap): ArtigenE
         hasAttachment: false,
       };
     } else {
-      const rollDistErrDesc = 'The roll distribution was too large to be included and has been attached below.';
+      rollDistErrDesc += 'and has been attached to a followup message as a formatted `.md` file.';
       return {
         charCount: rollDistTitle.length + rollDistErrDesc.length,
         embed: {
@@ -225,28 +231,31 @@ export const generateRollEmbed = (
   }
 
   const baseDesc = `${line1Details}**${line2Details.shift()}:**\n${line2Details.join(': ')}`;
+  const fullDesc = `${baseDesc}\n\n${details}`;
+
+  const formattingCount = (fullDesc.match(/(\*\*)|(__)|(~~)|(`)/g) ?? []).length / 2 + (fullDesc.match(/(<@)|(<#)/g) ?? []).length;
 
   // Embed desc limit is 4096
-  if (baseDesc.length + details.length < 4_000) {
+  // Discord only formats 200 items per message
+  if (fullDesc.length < 4_000 && formattingCount <= 200) {
     // Response is valid size
-    const desc = `${baseDesc}\n\n${details}`;
     return {
-      charCount: desc.length,
+      charCount: fullDesc.length,
       embed: {
         color: infoColor2,
-        description: desc,
+        description: fullDesc,
       },
       hasAttachment: false,
     };
   }
 
-  // Response is too big, collapse it into a .txt file and send that instead.
-  const b = new Blob([`${baseDesc}\n\n${details}` as BlobPart], { type: 'text' });
-  details = `${baseDesc}\n\nDetails have been omitted from this message for being over 4000 characters.`;
+  // Response is too big, collapse it into a .md file and send that instead.
+  const b = new Blob([fullDesc as BlobPart], { type: 'text' });
+  details = `${baseDesc}\n\nDetails have been omitted from this message for ${fullDesc.length < 4_000 ? 'being over 4,000 characters' : 'having over 200 formatted items'}.`;
   if (b.size > config.maxFileSize) {
     // blob is too big, don't attach it
     details +=
-      '\n\nFull details could not be attached to this messaged as a `.txt` file as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please send the rolls in multiple messages.';
+      '\n\nFull details could not be attached as the file would be too large for Discord to handle.  If you would like to see the details of rolls, please simplify or send the rolls in multiple messages.';
     return {
       charCount: details.length,
       embed: {
@@ -258,7 +267,7 @@ export const generateRollEmbed = (
   }
 
   // blob is small enough, attach it
-  details += '\n\nFull details have been attached to this messaged as a `.txt` file for verification purposes.';
+  details += '\n\nFull details have been attached to a followup message as a formatted `.md` file for verification purposes.';
   return {
     charCount: details.length,
     embed: {
@@ -268,7 +277,40 @@ export const generateRollEmbed = (
     hasAttachment: true,
     attachment: {
       blob: b,
-      name: 'rollDetails.txt',
+      name: 'rollDetails.md',
     },
   };
+};
+
+export const webViewCustomId = 'webview';
+export const disabledStr = 'disabled';
+export const toggleWebView = (attachmentMessage: DiscordenoMessage, ownerId: string, enableWebView: boolean) => {
+  attachmentMessage
+    .edit({
+      embeds: [
+        {
+          ...attachmentMessage.embeds[0],
+          fields: [
+            {
+              name: 'Web View:',
+              value: enableWebView ? `[Open Web View](${config.api.publicDomain}api/webview?c=${attachmentMessage.channelId}&m=${attachmentMessage.id})` : `Web View is ${disabledStr}.`,
+            },
+          ],
+        },
+      ],
+      components: [
+        {
+          type: MessageComponentTypes.ActionRow,
+          components: [
+            {
+              type: MessageComponentTypes.Button,
+              label: enableWebView ? 'Disable Web View' : 'Enable Web View',
+              customId: `${webViewCustomId}${InteractionValueSeparator}${ownerId}${InteractionValueSeparator}${enableWebView ? 'disable' : 'enable'}`,
+              style: ButtonStyles.Secondary,
+            },
+          ],
+        },
+      ],
+    })
+    .catch((e) => utils.commonLoggers.messageEditError('embeds.ts:304', attachmentMessage, e));
 };

@@ -1,31 +1,76 @@
-import { ButtonData, DiscordMessageComponentTypes, editMessage, Interaction, InteractionResponseTypes, SelectMenuData, sendInteractionResponse } from '@discordeno';
+import {
+  ButtonData,
+  DiscordenoMessage,
+  DiscordMessageComponentTypes,
+  editMessage,
+  Interaction,
+  InteractionResponseTypes,
+  MessageFlags,
+  SelectMenuData,
+  sendInteractionResponse,
+  structures,
+} from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
+import { toggleWebView, webViewCustomId } from 'artigen/utils/embeds.ts';
+
 import { generateHelpMessage, helpCustomId } from 'commands/helpLibrary/generateHelpMessage.ts';
+
+import { failColor } from 'embeds/colors.ts';
 
 import utils from 'utils/utils.ts';
 
 export const InteractionValueSeparator = '\u205a';
 
-export const interactionCreateHandler = (interaction: Interaction) => {
+const ackInteraction = (interaction: Interaction) =>
+  sendInteractionResponse(interaction.id, interaction.token, {
+    type: InteractionResponseTypes.DeferredUpdateMessage,
+  }).catch((e: Error) => utils.commonLoggers.messageSendError('interactionCreate.ts:26', interaction, e));
+
+export const interactionCreateHandler = async (interaction: Interaction) => {
   try {
     if (interaction.data) {
       const parsedData = JSON.parse(JSON.stringify(interaction.data)) as SelectMenuData | ButtonData;
 
       if (parsedData.customId.startsWith(helpCustomId) && parsedData.componentType === DiscordMessageComponentTypes.SelectMenu) {
         // Acknowledge the request since we're editing the original message
-        sendInteractionResponse(interaction.id, interaction.token, {
-          type: InteractionResponseTypes.DeferredUpdateMessage,
-        }).catch((e: Error) => utils.commonLoggers.messageEditError('interactionCreate.ts:26', interaction, e));
+        ackInteraction(interaction);
 
         // Edit original message
-        editMessage(BigInt(interaction.channelId ?? '0'), BigInt(interaction.message?.id ?? '0'), generateHelpMessage(parsedData.values[0])).catch((e: Error) =>
+        editMessage(BigInt(interaction.channelId ?? '0'), BigInt(interaction.message?.id ?? '0'), generateHelpMessage(parsedData.values[0])).catch((e) =>
           utils.commonLoggers.messageEditError('interactionCreate.ts:30', interaction, e)
         );
         return;
       }
 
-      log(LT.WARN, `UNHANDLED INTERACTION!!! data: ${JSON.stringify(interaction.data)}`);
+      if (parsedData.customId.startsWith(webViewCustomId) && parsedData.componentType === DiscordMessageComponentTypes.Button && interaction.message) {
+        const ownerId = parsedData.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
+        const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? 'missingUserId';
+        if (ownerId === userInteractingId) {
+          ackInteraction(interaction);
+          const enableWebView = parsedData.customId.split(InteractionValueSeparator)[2] === 'enable';
+          const ddMsg: DiscordenoMessage = await structures.createDiscordenoMessage(interaction.message);
+
+          toggleWebView(ddMsg, ownerId, enableWebView);
+        } else {
+          sendInteractionResponse(interaction.id, interaction.token, {
+            type: InteractionResponseTypes.ChannelMessageWithSource,
+            data: {
+              flags: MessageFlags.Empheral,
+              embeds: [
+                {
+                  color: failColor,
+                  title: 'Not Allowed!',
+                  description: 'Only the original user that requested this roll can disable/enable Web View.',
+                },
+              ],
+            },
+          }).catch((e) => utils.commonLoggers.messageSendError('interactionCreate.ts:57', interaction, e));
+        }
+        return;
+      }
+
+      log(LT.WARN, `UNHANDLED INTERACTION!!! data: ${JSON.stringify(interaction.data)} | Full Interaction: ${JSON.stringify(interaction)}`);
     } else {
       log(LT.WARN, `UNHANDLED INTERACTION!!! Missing data! ${JSON.stringify(interaction)}`);
     }

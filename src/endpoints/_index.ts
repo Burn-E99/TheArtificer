@@ -4,6 +4,7 @@ import { apiChannel } from 'endpoints/gets/apiChannel.ts';
 import { apiKey } from 'endpoints/gets/apiKey.ts';
 import { apiKeyAdmin } from 'endpoints/gets/apiKeyAdmin.ts';
 import { apiRoll } from 'endpoints/gets/apiRoll.ts';
+import { generateWebView } from 'endpoints/gets/webView.ts';
 import { heatmapPng } from 'endpoints/gets/heatmapPng.ts';
 
 import { apiChannelAdd } from 'endpoints/posts/apiChannelAdd.ts';
@@ -21,6 +22,7 @@ export default {
     apiRoll,
     apiKeyAdmin,
     apiChannel,
+    generateWebView,
     heatmapPng,
   },
   post: {
