@@ -194,14 +194,18 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
           },
         ];
 
+        // HOTFIX: makes discordeno actually be able to reply to any message (user or bot) while in dms
+        newMsg.guildId = 1n;
         if (pubAttachments.map((file) => file.blob.size).reduce(basicReducer, 0) < config.maxFileSize) {
           // All attachments will fit in one message
-          newMsg
-            .reply({
-              embeds: respMessage,
-              file: pubAttachments,
-            })
-            .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false));
+          newMsg &&
+            newMsg
+              .reply({
+                embeds: respMessage,
+                file: pubAttachments,
+              })
+              .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false))
+              .catch((e) => console.log(e));
         } else {
           pubAttachments.forEach((file) => {
             newMsg &&
@@ -210,7 +214,8 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
                   embeds: respMessage,
                   file,
                 })
-                .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false));
+                .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false))
+                .catch((e) => console.log(e));
           });
         }
       }
