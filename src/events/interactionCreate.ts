@@ -1,13 +1,12 @@
 import {
-  ButtonData,
   DiscordenoMessage,
   DiscordMessageComponentTypes,
   editMessage,
   getMessage,
   Interaction,
   InteractionResponseTypes,
+  InteractionTypes,
   MessageFlags,
-  SelectMenuData,
   sendInteractionResponse,
   structures,
 } from '@discordeno';
@@ -34,26 +33,24 @@ const ackInteraction = (interaction: Interaction) =>
 
 export const interactionCreateHandler = async (interaction: Interaction) => {
   try {
-    if (interaction.data) {
-      const parsedData = JSON.parse(JSON.stringify(interaction.data)) as SelectMenuData | ButtonData;
-
-      if (parsedData.customId.startsWith(helpCustomId) && parsedData.componentType === DiscordMessageComponentTypes.SelectMenu) {
+    if (interaction.type === InteractionTypes.MessageComponent && interaction.data) {
+      if (interaction.data.customId.startsWith(helpCustomId) && interaction.data.componentType === DiscordMessageComponentTypes.SelectMenu) {
         // Acknowledge the request since we're editing the original message
         ackInteraction(interaction);
 
         // Edit original message
-        editMessage(BigInt(interaction.channelId ?? '0'), BigInt(interaction.message?.id ?? '0'), generateHelpMessage(parsedData.values[0])).catch((e) =>
+        editMessage(BigInt(interaction.channelId ?? '0'), BigInt(interaction.message?.id ?? '0'), generateHelpMessage(interaction.data.values[0])).catch((e) =>
           utils.commonLoggers.messageEditError('interactionCreate.ts:30', interaction, e)
         );
         return;
       }
 
-      if (parsedData.customId.startsWith(webViewCustomId) && interaction.message) {
-        const ownerId = parsedData.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
+      if (interaction.data.customId.startsWith(webViewCustomId) && interaction.message) {
+        const ownerId = interaction.data.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
         const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? 'missingUserId';
         if (ownerId === userInteractingId) {
           ackInteraction(interaction);
-          const enableWebView = parsedData.customId.split(InteractionValueSeparator)[2] === 'enable';
+          const enableWebView = interaction.data.customId.split(InteractionValueSeparator)[2] === 'enable';
           const ddMsg: DiscordenoMessage = await structures.createDiscordenoMessage(interaction.message);
 
           toggleWebView(ddMsg, ownerId, enableWebView);
@@ -75,8 +72,8 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
         return;
       }
 
-      if (parsedData.customId.startsWith(repeatRollCustomId) && interaction.message) {
-        const ownerId = parsedData.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
+      if (interaction.data.customId.startsWith(repeatRollCustomId) && interaction.message) {
+        const ownerId = interaction.data.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
         const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? 'missingUserId';
         if (ownerId === userInteractingId) {
           ackInteraction(interaction);
@@ -104,9 +101,11 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
         return;
       }
 
-      log(LT.WARN, `UNHANDLED INTERACTION!!! data: ${JSON.stringify(interaction.data)} | Full Interaction: ${JSON.stringify(interaction)}`);
+      log(LT.WARN, `UNHANDLED COMPONENT!!! data: ${JSON.stringify(interaction.data)} | Full Interaction: ${JSON.stringify(interaction)}`);
+    } else if (interaction.type === InteractionTypes.ApplicationCommand && interaction.data) {
+      log(LT.WARN, `UNHANDLED APPLICATION COMMAND!!! data: ${JSON.stringify(interaction.data)} | Full Interaction: ${JSON.stringify(interaction)}`);
     } else {
-      log(LT.WARN, `UNHANDLED INTERACTION!!! Missing data! ${JSON.stringify(interaction)}`);
+      log(LT.WARN, `UNHANDLED INTERACTION!!! Missing data! ${JSON.stringify(interaction)} | Full Interaction: ${JSON.stringify(interaction)}`);
     }
   } catch (e) {
     log(LT.ERROR, `UNHANDLED INTERACTION!!! ERR! interaction: ${JSON.stringify(interaction)} error: ${JSON.stringify(e)}`);
