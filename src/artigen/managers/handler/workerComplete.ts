@@ -134,6 +134,9 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         rollRequest.dd.myResponse.edit({ embeds: pubEmbeds });
       }
 
+      // HOTFIX: makes discordeno actually be able to reply to any message (user or bot) while in dms
+      if (newMsg && !newMsg.guildId) newMsg.guildId = -1n;
+
       if (!apiErroredOut) {
         // And message the full details to each of the GMs, alerting roller of every GM that could not be messaged
         rollRequest.modifiers.gms.forEach(async (gm) => {
@@ -183,6 +186,9 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         });
       }
 
+      // HOTFIX: makes discordeno actually be able to reply to any message (user or bot) while in dms
+      if (newMsg && !newMsg.guildId) newMsg.guildId = -1n;
+
       if (pubAttachments.length && newMsg) {
         // Attachment requires you to send a new message
         const respMessage: Embed[] = [
@@ -194,8 +200,6 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
           },
         ];
 
-        // HOTFIX: makes discordeno actually be able to reply to any message (user or bot) while in dms
-        newMsg.guildId = 1n;
         if (pubAttachments.map((file) => file.blob.size).reduce(basicReducer, 0) < config.maxFileSize) {
           // All attachments will fit in one message
           newMsg &&
@@ -232,14 +236,14 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
             JSON.stringify(
               rollRequest.modifiers.count
                 ? {
-                  counts: returnMsg.counts,
-                  details: pubEmbedDetails,
-                }
+                    counts: returnMsg.counts,
+                    details: pubEmbedDetails,
+                  }
                 : {
-                  details: pubEmbedDetails,
-                },
-            ),
-          ),
+                    details: pubEmbedDetails,
+                  }
+            )
+          )
         );
     }
   } catch (e) {
@@ -250,13 +254,12 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
           (
             await generateRollEmbed(
               rollRequest.dd.originalMessage.authorId,
-              <SolvedRoll> {
+              <SolvedRoll>{
                 error: true,
-                errorMsg:
-                  `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
+                errorMsg: `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
                 errorCode: 'UnhandledWorkerComplete',
               },
-              <RollModifiers> {},
+              <RollModifiers>{}
             )
           ).embed,
         ],
