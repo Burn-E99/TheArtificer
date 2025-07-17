@@ -1,4 +1,4 @@
-import { DiscordenoMember, getChannel, getMember, getMessage, getRoles } from '@discordeno';
+import { DiscordenoMember, getChannel, getMember, getMessage, getRoles, getUser, User } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 import showdown from '@showdown';
 import { STATUS_CODE, STATUS_TEXT } from '@std/http/status';
@@ -12,6 +12,10 @@ import utils from 'utils/utils.ts';
 // globalName is added with discord's new username system
 interface ModernMemberHOTFIX extends DiscordenoMember {
   globalName: string;
+}
+interface ModernUserHOTFIX extends User {
+  globalName: string;
+  name: (_gId: bigint) => string;
 }
 
 const converter = new showdown.Converter({
@@ -178,14 +182,16 @@ export const generateWebView = async (query: Map<string, string>): Promise<Respo
   let fullPage = generatePage(htmlArr);
 
   if (fullPage.indexOf('<@&')) {
-    const guildRoles = (await getRoles(attachmentMessage.guildId).catch((e) => log(LT.LOG, `Failed to get Guild Roles: ${attachmentMessage.guildId}`, e))) ?? [];
-    const rolesToReplace = fullPage.matchAll(/<@&(\d+)>/g);
-    for (const roleToReplace of rolesToReplace) {
-      const role = guildRoles.filter((r) => r.id === BigInt(roleToReplace[1] ?? '-1')).shift() ?? { name: 'unknown-role', color: 4211819 };
-      fullPage = fullPage.replaceAll(
-        roleToReplace[0],
-        makeMention('@', role.name, colorShade(`#${role.color.toString(16)}`, -100), colorShade(`#${role.color.toString(16)}`, 50)),
-      );
+    const guildRoles = attachmentMessage.guildId ? (await getRoles(attachmentMessage.guildId).catch((e) => log(LT.LOG, `Failed to get Guild Roles: ${attachmentMessage.guildId}`, e))) ?? [] : [];
+    if (guildRoles.length) {
+      const rolesToReplace = fullPage.matchAll(/<@&(\d+)>/g);
+      for (const roleToReplace of rolesToReplace) {
+        const role = guildRoles.filter((r) => r.id === BigInt(roleToReplace[1] ?? '-1')).shift() ?? { name: 'unknown-role', color: 4211819 };
+        fullPage = fullPage.replaceAll(
+          roleToReplace[0],
+          makeMention('@', role.name, colorShade(`#${role.color.toString(16)}`, -100), colorShade(`#${role.color.toString(16)}`, 50)),
+        );
+      }
     }
   }
 
@@ -202,13 +208,16 @@ export const generateWebView = async (query: Map<string, string>): Promise<Respo
   if (fullPage.indexOf('<@')) {
     const usersToReplace = fullPage.matchAll(/<@(\d+)>/g);
     for (const userToReplace of usersToReplace) {
-      const rawUser = await getMember(attachmentMessage.guildId, BigInt(userToReplace[1] ?? '-1')).catch((e) => log(LT.LOG, `Failed to get Channel: ${userToReplace[1]}`, e));
-      const user = rawUser ? (rawUser as ModernMemberHOTFIX) : {
+      const rawUser = attachmentMessage.guildId
+        ? await getMember(attachmentMessage.guildId, BigInt(userToReplace[1] ?? '-1')).catch((e) => log(LT.LOG, `Failed to get Channel: ${userToReplace[1]}`, e))
+        : await getUser(BigInt(userToReplace[1] ?? '-1')).catch((e) => log(LT.LOG, `Failed to get Channel: ${userToReplace[1]}`, e));
+      const oldUserShape = rawUser ? rawUser : {
         name: (_gId: bigint) => 'unknown-user',
         username: 'unknown-user',
         globalName: 'unknown-user',
       };
-      const nickName = user.name(attachmentMessage.guildId);
+      const user = attachmentMessage.guildId ? (oldUserShape as ModernMemberHOTFIX) : (oldUserShape as ModernUserHOTFIX);
+      const nickName = attachmentMessage.guildId ? user.name(attachmentMessage.guildId) : null;
       const name = nickName === user.username ? user.globalName : nickName ?? user.globalName;
       fullPage = fullPage.replaceAll(userToReplace[0], makeMention('@', name ?? user.username, '#40446b'));
     }

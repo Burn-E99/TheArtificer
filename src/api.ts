@@ -80,7 +80,7 @@ const start = () => {
       const query = new Map<string, string>();
       if (tempQ !== undefined) {
         tempQ.split('&').forEach((e: string) => {
-          log(LT.LOG, `Parsing request query ${request} ${e}`);
+          log(LT.LOG, `Parsing request query ${JSON.stringify(request)} ${e}`);
           const [option, params] = e.split('=');
           query.set(option.toLowerCase(), params);
         });
