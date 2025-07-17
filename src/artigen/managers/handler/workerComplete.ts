@@ -236,14 +236,14 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
             JSON.stringify(
               rollRequest.modifiers.count
                 ? {
-                    counts: returnMsg.counts,
-                    details: pubEmbedDetails,
-                  }
+                  counts: returnMsg.counts,
+                  details: pubEmbedDetails,
+                }
                 : {
-                    details: pubEmbedDetails,
-                  }
-            )
-          )
+                  details: pubEmbedDetails,
+                },
+            ),
+          ),
         );
     }
   } catch (e) {
@@ -254,12 +254,13 @@ As anyone with the Web View link can view the roll, Web View is disabled by defa
           (
             await generateRollEmbed(
               rollRequest.dd.originalMessage.authorId,
-              <SolvedRoll>{
+              <SolvedRoll> {
                 error: true,
-                errorMsg: `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
+                errorMsg:
+                  `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
                 errorCode: 'UnhandledWorkerComplete',
               },
-              <RollModifiers>{}
+              <RollModifiers> {},
             )
           ).embed,
         ],
