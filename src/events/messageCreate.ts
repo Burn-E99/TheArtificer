@@ -21,8 +21,13 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       commands.handleMentions(message);
     }
 
-    // return as we are done handling this command, unless the guild allows inline rolls
-    if (!inlineList.includes(message.guildId)) return;
+    // Handle inline guilds if allowed
+    if (inlineList.includes(message.guildId) && message.content.includes(config.prefix) && message.content.includes(config.prefix)) {
+      const argSpaces = message.content.trim().split(/([ \n]+)/g);
+      commands.roll(message, argSpaces, '');
+    }
+    // return as we are done handling this message
+    return;
   }
 
   log(LT.LOG, `Handling ${config.prefix}command message: ${JSON.stringify(message)}`);
@@ -41,7 +46,6 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
   argSpaces.shift();
 
   // All commands below here
-
   switch (command) {
     case 'opt-out':
     case 'ignore-me':
