@@ -102,6 +102,9 @@ const start = () => {
                 case '/ping':
                 case '/ping/':
                   return endpoints.get.apiPing();
+                case '/stats':
+                case '/stats/':
+                  return endpoints.get.apiStats();
                 case '/key':
                 case '/key/':
                   return endpoints.get.apiKeyAdmin(query, apiUserid);

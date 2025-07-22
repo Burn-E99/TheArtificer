@@ -5,6 +5,7 @@ import { apiKey } from 'endpoints/gets/apiKey.ts';
 import { apiKeyAdmin } from 'endpoints/gets/apiKeyAdmin.ts';
 import { apiPing } from 'endpoints/gets/apiPing.ts';
 import { apiRoll } from 'endpoints/gets/apiRoll.ts';
+import { apiStats } from 'endpoints/gets/apiStats.ts';
 import { generateWebView } from 'endpoints/gets/webView.ts';
 import { heatmapPng } from 'endpoints/gets/heatmapPng.ts';
 
@@ -24,6 +25,7 @@ export default {
     apiKeyAdmin,
     apiPing,
     apiRoll,
+    apiStats,
     generateWebView,
     heatmapPng,
   },
