@@ -1,4 +1,5 @@
 import { DiscordenoMessage, EmbedField, hasGuildPermissions } from '@discordeno';
+import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
@@ -17,6 +18,8 @@ import dbClient from 'db/client.ts';
 import { generateAliasError } from 'embeds/alias.ts';
 import { failColor, infoColor1, successColor } from 'embeds/colors.ts';
 
+import { SlashCommandInteractionWithGuildId } from 'src/mod.d.ts';
+
 import utils from 'utils/utils.ts';
 
 interface QueryShape {
@@ -31,18 +34,21 @@ const sortYVars = (a: string, b: string) => {
   return 0;
 };
 
-const handleAddUpdate = async (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[], replaceAlias: boolean) => {
-  if (guildMode && !(await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR']))) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `Error: Only Guild Owners and Admins can add/update guild aliases`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:45', message, e));
+const handleAddUpdate = async (
+  msgOrInt: DiscordenoMessage | SlashCommandInteractionWithGuildId,
+  guildMode: boolean,
+  argSpaces: string[],
+  replaceAlias: boolean,
+) => {
+  if (guildMode && !(await hasGuildPermissions(BigInt(msgOrInt.guildId), utils.getAuthorIdFromMessageOrInteraction(msgOrInt), ['ADMINISTRATOR']))) {
+    utils.sendOrInteract(msgOrInt, 'aliasAddUpdate.ts:43', {
+      embeds: [
+        {
+          color: failColor,
+          title: `Error: Only Guild Owners and Admins can add/update guild aliases`,
+        },
+      ],
+    });
     return;
   }
 
@@ -50,35 +56,31 @@ const handleAddUpdate = async (message: DiscordenoMessage, guildMode: boolean, a
   argSpaces.shift();
 
   if (aliasName.length > config.limits.alias.maxNameLength) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: 'Error: Alias Name is too long',
-            description:
-              `\`${aliasName}\` (\`${aliasName.length}\` characters) is longer than the allowed max length of \`${config.limits.alias.maxNameLength}\` characters.  Please choose a shorter alias name.`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:64', message, e));
+    utils.sendOrInteract(msgOrInt, 'aliasAddUpdate.ts:59', {
+      embeds: [
+        {
+          color: failColor,
+          title: 'Error: Alias Name is too long',
+          description:
+            `\`${aliasName}\` (\`${aliasName.length}\` characters) is longer than the allowed max length of \`${config.limits.alias.maxNameLength}\` characters.  Please choose a shorter alias name.`,
+        },
+      ],
+    });
     return;
   }
 
   if (ReservedWords.includes(aliasName?.toLowerCase())) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `Error: \`${aliasName}\` is a reserved word`,
-            description: `Please choose a different name for this alias.
+    utils.sendOrInteract(msgOrInt, 'aliasAddUpdate.ts:74', {
+      embeds: [
+        {
+          color: failColor,
+          title: `Error: \`${aliasName}\` is a reserved word`,
+          description: `Please choose a different name for this alias.
 
 You cannot use any of the following reserved words: \`${ReservedWords.join('`, `')}\`.`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:33', message, e));
+        },
+      ],
+    });
     return;
   }
 
@@ -86,52 +88,55 @@ You cannot use any of the following reserved words: \`${ReservedWords.join('`, `
   const query: QueryShape[] = await dbClient
     .query(
       `SELECT aliasName FROM aliases WHERE guildid = ? AND userid = ? AND aliasName = ?`,
-      guildMode ? [message.guildId, 0n, aliasName.toLowerCase()] : [0n, message.authorId, aliasName.toLowerCase()],
+      guildMode ? [BigInt(msgOrInt.guildId), 0n, aliasName.toLowerCase()] : [0n, utils.getAuthorIdFromMessageOrInteraction(msgOrInt), aliasName.toLowerCase()],
     )
     .catch((e0) => {
       utils.commonLoggers.dbError('add.ts:44', 'query', e0);
-      message
-        .send(generateAliasError('DB Query Failed.', `add-q0-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? message.guildId : message.authorId}`))
-        .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:47', message, e));
+      utils.sendOrInteract(
+        msgOrInt,
+        'aliasAddUpdate.ts:97',
+        generateAliasError(
+          'DB Query Failed.',
+          `add-q0-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+        ),
+      );
       errorOut = true;
     });
   if (errorOut) return;
 
   if (!replaceAlias && query.length) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `Error: \`${aliasName}\` already exists as a ${guildMode ? 'guild' : 'personal'} alias`,
-            description: 'Please choose a different name for this alias.',
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:63', message, e));
+    utils.sendOrInteract(msgOrInt, 'aliasAddUpdate.ts:109', {
+      embeds: [
+        {
+          color: failColor,
+          title: `Error: \`${aliasName}\` already exists as a ${guildMode ? 'guild' : 'personal'} alias`,
+          description: 'Please choose a different name for this alias.',
+        },
+      ],
+    });
     return;
   } else if (replaceAlias && !query.length) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `Error: \`${aliasName}\` does not exist as a ${guildMode ? 'guild' : 'personal'} alias`,
-            description: `If you are trying to create a new ${guildMode ? 'guild' : 'personal'} alias, please run the following command:
+    utils.sendOrInteract(msgOrInt, 'aliasAddUpdate.ts:121', {
+      embeds: [
+        {
+          color: failColor,
+          title: `Error: \`${aliasName}\` does not exist as a ${guildMode ? 'guild' : 'personal'} alias`,
+          description: `If you are trying to create a new ${guildMode ? 'guild' : 'personal'} alias, please run the following command:
 \`${config.prefix}ra ${guildMode ? 'guild ' : ''}add\` followed by the desired alias name and roll string.
 
 If you are trying to update an existing alias, but forgot the name, please run the following command to view all your ${guildMode ? 'guild ' : ''}aliases:
 \`${config.prefix}ra ${guildMode ? 'guild ' : ''}list\``,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:63', message, e));
+        },
+      ],
+    });
     return;
   }
 
   const rawRollStr = argSpaces.join('').trim();
-  const newMsg: DiscordenoMessage | void = await message
-    .send({
+  const newMsg: DiscordenoMessage | void = await utils.sendOrInteract(
+    msgOrInt,
+    'aliasAddUpdate.ts:139',
+    {
       embeds: [
         {
           color: infoColor1,
@@ -141,13 +146,14 @@ If you are trying to update an existing alias, but forgot the name, please run t
 \`${rawRollStr}\``,
         },
       ],
-    })
-    .catch((e) => {
-      utils.commonLoggers.dbError('add.ts:78', 'query', e);
-      errorOut = true;
-    });
+    },
+    true,
+  );
 
-  if (errorOut || !newMsg) return;
+  if (!newMsg) {
+    log(LT.ERROR, `My message didn't send! ${msgOrInt}`);
+    return;
+  }
 
   const [modifiers, remainingArgs] = getModifiers(argSpaces);
   const failedRollMsg = `The provided roll string (listed below) encountered an error.  Please try this roll outside the roll alias system and resolve the error before trying again.
@@ -313,25 +319,38 @@ If you are trying to update an existing alias, but forgot the name, please run t
       .execute('UPDATE aliases SET rollStr = ?, yVarCnt = ? WHERE guildid = ? AND userid = ? AND aliasName = ?', [
         rawRollStr,
         modifiers.yVars.size,
-        guildMode ? message.guildId : 0n,
-        guildMode ? 0n : message.authorId,
+        guildMode ? BigInt(msgOrInt.guildId) : 0n,
+        guildMode ? 0n : utils.getAuthorIdFromMessageOrInteraction(msgOrInt),
         aliasName.toLowerCase(),
       ])
       .catch((e0) => {
         utils.commonLoggers.dbError('add.ts:169', 'update', e0);
         newMsg
-          .edit(generateAliasError('DB Update Failed.', `add-q1-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? message.guildId : message.authorId}`))
-          .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:170', message, e));
+          .edit(
+            generateAliasError(
+              'DB Update Failed.',
+              `add-q1-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+            ),
+          )
+          .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:170', msgOrInt, e));
         errorOut = true;
       });
   } else {
     const currentAliases: QueryShape[] = await dbClient
-      .query('SELECT aliasName FROM aliases WHERE guildid = ? AND userid = ?', guildMode ? [message.guildId, 0n] : [0n, message.authorId])
+      .query(
+        'SELECT aliasName FROM aliases WHERE guildid = ? AND userid = ?',
+        guildMode ? [BigInt(msgOrInt.guildId), 0n] : [0n, utils.getAuthorIdFromMessageOrInteraction(msgOrInt)],
+      )
       .catch((e0) => {
         utils.commonLoggers.dbError('add.ts:266', 'get count', e0);
         newMsg
-          .edit(generateAliasError('DB Query Failed.', `add-q2-${guildMode ? 't' : 'f'}-${guildMode ? message.guildId : message.authorId}`))
-          .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:269', message, e));
+          .edit(
+            generateAliasError(
+              'DB Query Failed.',
+              `add-q2-${guildMode ? 't' : 'f'}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+            ),
+          )
+          .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:269', msgOrInt, e));
         errorOut = true;
       });
     if (errorOut) return;
@@ -339,8 +358,8 @@ If you are trying to update an existing alias, but forgot the name, please run t
     if (currentAliases.length < (guildMode ? config.limits.alias.free.guild : config.limits.alias.free.user)) {
       await dbClient
         .execute('INSERT INTO aliases(guildid,userid,aliasName,rollStr,yVarCnt,premium) values(?,?,?,?,?,?)', [
-          guildMode ? message.guildId : 0n,
-          guildMode ? 0n : message.authorId,
+          guildMode ? BigInt(msgOrInt.guildId) : 0n,
+          guildMode ? 0n : utils.getAuthorIdFromMessageOrInteraction(msgOrInt),
           aliasName.toLowerCase(),
           rawRollStr,
           modifiers.yVars.size,
@@ -349,8 +368,13 @@ If you are trying to update an existing alias, but forgot the name, please run t
         .catch((e0) => {
           utils.commonLoggers.dbError('add.ts:169', 'insert into', e0);
           newMsg
-            .edit(generateAliasError('DB Insert Failed.', `add-q3-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? message.guildId : message.authorId}`))
-            .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:187', message, e));
+            .edit(
+              generateAliasError(
+                'DB Insert Failed.',
+                `add-q3-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+              ),
+            )
+            .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:187', msgOrInt, e));
           errorOut = true;
         });
     } else {
@@ -386,9 +410,9 @@ If you need this limit raised, please join the [support server](${config.links.s
         },
       ],
     })
-    .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:321', message, e));
+    .catch((e: Error) => utils.commonLoggers.messageSendError('add.ts:321', msgOrInt, e));
 };
 
 // Using wrappers to limit "magic" booleans
-export const add = (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[]) => handleAddUpdate(message, guildMode, argSpaces, false);
-export const update = (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[]) => handleAddUpdate(message, guildMode, argSpaces, true);
+export const add = (msgOrInt: DiscordenoMessage | SlashCommandInteractionWithGuildId, guildMode: boolean, argSpaces: string[]) => handleAddUpdate(msgOrInt, guildMode, argSpaces, false);
+export const update = (msgOrInt: DiscordenoMessage | SlashCommandInteractionWithGuildId, guildMode: boolean, argSpaces: string[]) => handleAddUpdate(msgOrInt, guildMode, argSpaces, true);

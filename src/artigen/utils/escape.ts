@@ -29,6 +29,9 @@ export const cmdSplitRegex = new RegExp(`(${escapePrefixPostfix(config.prefix)})
 // breaks the string on the following: (\*\*) ** for exponents ([+()*/^] for basic algebra (?<![d%])% for breaking on d%%%% dice correctly (?<![rsfop!=<>])- for breaking on - correctly with fate dice) (x\d+(\.\d*)?) x# for variables
 export const mathSplitRegex = /(\*\*)|([+()*/^]|(?<![d%])%|(?<![rsfop!=<>])-)|([xy]\d+(\.\d*)?)/g;
 
+// breaks the string on spaces and newlines, but keeps them in the array to allow for recreating the input correctly
+export const argSpacesSplitRegex = /([ \n]+)/g;
+
 // Internal is used for recursive text replacement, these will always be the top level as they get replaced with config.prefix/postfix when exiting each level
 export const openInternal = '\u2045';
 export const closeInternal = '\u2046';

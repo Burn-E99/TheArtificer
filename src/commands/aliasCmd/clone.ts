@@ -7,6 +7,8 @@ import dbClient from 'db/client.ts';
 import { generateAliasError } from 'embeds/alias.ts';
 import { failColor, successColor } from 'embeds/colors.ts';
 
+import { SlashCommandInteractionWithGuildId } from 'src/mod.d.ts';
+
 import utils from 'utils/utils.ts';
 
 interface QueryShape {
@@ -15,34 +17,30 @@ interface QueryShape {
   rollStr: string;
 }
 
-export const clone = async (message: DiscordenoMessage, guildMode: boolean, argSpaces: string[]) => {
-  if (!guildMode && !(await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR']))) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `Error: Only Guild Owners and Admins can copy a personal alias to a guild aliases`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:16', message, e));
+export const clone = async (msgOrInt: DiscordenoMessage | SlashCommandInteractionWithGuildId, guildMode: boolean, argSpaces: string[]) => {
+  if (!guildMode && !(await hasGuildPermissions(BigInt(msgOrInt.guildId), utils.getAuthorIdFromMessageOrInteraction(msgOrInt), ['ADMINISTRATOR']))) {
+    utils.sendOrInteract(msgOrInt, 'clone.ts:22', {
+      embeds: [
+        {
+          color: failColor,
+          title: `Error: Only Guild Owners and Admins can copy a personal alias to a guild aliases`,
+        },
+      ],
+    });
     return;
   }
 
   const aliasName = (argSpaces.shift() || '').trim().toLowerCase();
 
   if (!aliasName) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `Error: Please specify an alias to copy to ${guildMode ? 'your account' : 'this guild'}`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:32', message, e));
+    utils.sendOrInteract(msgOrInt, 'clone.ts:37', {
+      embeds: [
+        {
+          color: failColor,
+          title: `Error: Please specify an alias to copy to ${guildMode ? 'your account' : 'this guild'}`,
+        },
+      ],
+    });
     return;
   }
 
@@ -50,13 +48,18 @@ export const clone = async (message: DiscordenoMessage, guildMode: boolean, argS
   const query: QueryShape[] = await dbClient
     .query(
       `SELECT aliasName, yVarCnt, rollStr FROM aliases WHERE guildid = ? AND userid = ? AND aliasName = ?`,
-      guildMode ? [message.guildId, 0n, aliasName] : [0n, message.authorId, aliasName],
+      guildMode ? [BigInt(msgOrInt.guildId), 0n, aliasName] : [0n, utils.getAuthorIdFromMessageOrInteraction(msgOrInt), aliasName],
     )
     .catch((e0) => {
       utils.commonLoggers.dbError('clone.ts:51', 'query', e0);
-      message
-        .send(generateAliasError('DB Query Failed.', `clone-q0-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? message.guildId : message.authorId}`))
-        .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:54', message, e));
+      utils.sendOrInteract(
+        msgOrInt,
+        'clone.ts:57',
+        generateAliasError(
+          'DB Query Failed.',
+          `clone-q0-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+        ),
+      );
       errorOut = true;
     });
   if (errorOut) return;
@@ -64,52 +67,53 @@ export const clone = async (message: DiscordenoMessage, guildMode: boolean, argS
   const details = query[0];
 
   if (!details) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `\`${aliasName}\` does not exist as a${guildMode ? ' guild alias' : 'n alias on your account'}.`,
-            description: `Did you mean to run \`${config.prefix}ra ${guildMode ? '' : 'guild '}clone ${aliasName}\`?`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:73', message, e));
+    utils.sendOrInteract(msgOrInt, 'clone.ts:71', {
+      embeds: [
+        {
+          color: failColor,
+          title: `\`${aliasName}\` does not exist as a${guildMode ? ' guild alias' : 'n alias on your account'}.`,
+          description: `Did you mean to run \`${config.prefix}ra ${guildMode ? '' : 'guild '}clone ${aliasName}\`?`,
+        },
+      ],
+    });
   }
 
   const targetQuery: QueryShape[] = await dbClient
     .query(
       `SELECT aliasName, yVarCnt, rollStr FROM aliases WHERE guildid = ? AND userid = ? AND aliasName = ?`,
-      guildMode ? [0n, message.authorId, aliasName] : [message.guildId, 0n, aliasName],
+      guildMode ? [0n, utils.getAuthorIdFromMessageOrInteraction(msgOrInt), aliasName] : [BigInt(msgOrInt.guildId), 0n, aliasName],
     )
     .catch((e0) => {
       utils.commonLoggers.dbError('clone.ts:82', 'query', e0);
-      message
-        .send(generateAliasError('DB Query Failed.', `clone-q1-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? message.guildId : message.authorId}`))
-        .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:85', message, e));
+      utils.sendOrInteract(
+        msgOrInt,
+        'clone.ts:90',
+        generateAliasError(
+          'DB Query Failed.',
+          `clone-q1-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+        ),
+      );
       errorOut = true;
     });
   if (errorOut) return;
 
   if (targetQuery.length) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: `\`${aliasName}\` already exists as an alias ${guildMode ? 'on your account' : 'in this guild'}.`,
-            description: `Please delete or rename the ${guildMode ? 'personal' : 'guild'} alias \`${aliasName}\` and try again.`,
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:101', message, e));
+    utils.sendOrInteract(msgOrInt, 'clone.ts:102', {
+      embeds: [
+        {
+          color: failColor,
+          title: `\`${aliasName}\` already exists as an alias ${guildMode ? 'on your account' : 'in this guild'}.`,
+          description: `Please delete or rename the ${guildMode ? 'personal' : 'guild'} alias \`${aliasName}\` and try again.`,
+        },
+      ],
+    });
     return;
   }
 
   await dbClient
     .execute(`INSERT INTO aliases(guildid,userid,aliasName,rollStr,yVarCnt,premium) values(?,?,?,?,?,?)`, [
-      guildMode ? 0n : message.guildId,
-      guildMode ? message.authorId : 0n,
+      guildMode ? 0n : BigInt(msgOrInt.guildId),
+      guildMode ? utils.getAuthorIdFromMessageOrInteraction(msgOrInt) : 0n,
       aliasName,
       details.rollStr,
       details.yVarCnt,
@@ -117,22 +121,25 @@ export const clone = async (message: DiscordenoMessage, guildMode: boolean, argS
     ])
     .catch((e0) => {
       utils.commonLoggers.dbError('clone.ts:110', 'query', e0);
-      message
-        .send(generateAliasError('DB Insert Failed.', `clone-q2-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? message.guildId : message.authorId}`))
-        .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:113', message, e));
+      utils.sendOrInteract(
+        msgOrInt,
+        'clone.ts:126',
+        generateAliasError(
+          'DB Insert Failed.',
+          `clone-q2-${guildMode ? 't' : 'f'}-${aliasName}-${guildMode ? BigInt(msgOrInt.guildId) : utils.getAuthorIdFromMessageOrInteraction(msgOrInt)}`,
+        ),
+      );
       errorOut = true;
     });
   if (errorOut) return;
 
-  message
-    .send({
-      embeds: [
-        {
-          color: successColor,
-          title: `Successfully copied the ${guildMode ? 'guild' : 'personal'} alias \`${aliasName}\`!`,
-          description: `\`${aliasName}\` is now available as an alias ${guildMode ? 'on your account' : 'in this guild'}.`,
-        },
-      ],
-    })
-    .catch((e: Error) => utils.commonLoggers.messageSendError('clone.ts:132', message, e));
+  utils.sendOrInteract(msgOrInt, 'clone.ts:137', {
+    embeds: [
+      {
+        color: successColor,
+        title: `Successfully copied the ${guildMode ? 'guild' : 'personal'} alias \`${aliasName}\`!`,
+        description: `\`${aliasName}\` is now available as an alias ${guildMode ? 'on your account' : 'in this guild'}.`,
+      },
+    ],
+  });
 };

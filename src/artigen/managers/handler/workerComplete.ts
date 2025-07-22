@@ -28,7 +28,7 @@ import utils from 'utils/utils.ts';
 
 const getUserIdForEmbed = (rollRequest: QueuedRoll): bigint => {
   if (rollRequest.apiRoll) return rollRequest.api.userId;
-  if (rollRequest.ddRoll) return rollRequest.dd.originalMessage.authorId;
+  if (rollRequest.ddRoll) return rollRequest.dd.authorId;
   return 0n;
 };
 
@@ -227,7 +227,7 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
                 file: pubAttachments,
               })
               .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false))
-              .catch((e) => console.log(e));
+              .catch((e) => utils.commonLoggers.messageSendError('workerComplete.ts:230', newMsg as DiscordenoMessage, e));
         } else {
           pubAttachments.forEach((file) => {
             newMsg &&
@@ -237,7 +237,7 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
                   file,
                 })
                 .then((attachmentMsg) => toggleWebView(attachmentMsg, getUserIdForEmbed(rollRequest).toString(), false))
-                .catch((e) => console.log(e));
+                .catch((e) => utils.commonLoggers.messageSendError('workerComplete.ts:240', newMsg as DiscordenoMessage, e));
           });
         }
       }
@@ -271,7 +271,7 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
         embeds: [
           (
             await generateRollEmbed(
-              rollRequest.dd.originalMessage.authorId,
+              rollRequest.dd.authorId,
               <SolvedRoll> {
                 error: true,
                 errorMsg:

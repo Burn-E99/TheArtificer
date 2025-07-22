@@ -1,4 +1,4 @@
-import { cache, cacheHandlers, DiscordenoMessage } from '@discordeno';
+import { cache, cacheHandlers, CreateGlobalApplicationCommand, DiscordenoMessage, Interaction } from '@discordeno';
 
 import config from '~config';
 
@@ -10,12 +10,17 @@ import { compilingStats } from 'embeds/common.ts';
 
 import utils from 'utils/utils.ts';
 
-export const stats = async (message: DiscordenoMessage) => {
+export const statsSC: CreateGlobalApplicationCommand = {
+  name: 'stats',
+  description: 'Shows general statistics on how much the bot is being used.',
+};
+
+export const stats = async (msgOrInt: DiscordenoMessage | Interaction) => {
   // Light telemetry to see how many times a command is being run
   dbClient.execute(queries.callIncCnt('stats')).catch((e) => utils.commonLoggers.dbError('stats.ts:14', 'call sproc INC_CNT on', e));
 
   try {
-    const m = await message.send(compilingStats);
+    const m = await utils.sendOrInteract(msgOrInt, 'stats.ts:23', compilingStats, true);
 
     const startTime = new Date().getTime();
     // Calculate how many times commands have been run
@@ -36,7 +41,7 @@ export const stats = async (message: DiscordenoMessage) => {
 
     const endTime = new Date().getTime();
 
-    m.edit({
+    m?.edit({
       embeds: [
         {
           color: infoColor2,
@@ -74,8 +79,8 @@ export const stats = async (message: DiscordenoMessage) => {
           },
         },
       ],
-    }).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:38', m, e));
+    }).catch((e: Error) => utils.commonLoggers.messageEditError('stats.ts:82', m, e));
   } catch (e) {
-    utils.commonLoggers.messageSendError('stats.ts:41', message, e as Error);
+    utils.commonLoggers.messageSendError('stats.ts:84', msgOrInt, e as Error);
   }
 };

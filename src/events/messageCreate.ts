@@ -3,9 +3,10 @@ import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
 
-import commands from 'commands/_index.ts';
+import { commands } from 'commands/_index.ts';
 
 import { ignoreList, inlineList } from 'db/common.ts';
+import { argSpacesSplitRegex } from 'artigen/utils/escape.ts';
 
 export const messageCreateHandler = (message: DiscordenoMessage) => {
   // Ignore all other bots
@@ -23,7 +24,14 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
 
     // Handle inline guilds if allowed
     if (inlineList.includes(message.guildId) && message.content.includes(config.prefix) && message.content.includes(config.prefix)) {
-      commands.roll(message, message.content.trim().split(/([ \n]+)/g), '');
+      commands.roll(
+        message,
+        message.content
+          .trim()
+          .split(argSpacesSplitRegex)
+          .filter((x) => x),
+        '',
+      );
     }
     // return as we are done handling this message
     return;
@@ -40,7 +48,8 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
   const argSpaces = message.content
     .slice(sliceLength)
     .trim()
-    .split(/([ \n]+)/g);
+    .split(argSpacesSplitRegex)
+    .filter((x) => x);
   const command = args.shift()?.toLowerCase();
   argSpaces.shift();
 

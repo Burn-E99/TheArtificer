@@ -1,4 +1,4 @@
-import { DiscordenoMessage } from '@discordeno';
+import { CreateGlobalApplicationCommand, DiscordApplicationCommandOptionTypes, DiscordenoMessage, hasOwnProperty, Interaction } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
 import config from '~config';
@@ -14,7 +14,20 @@ import { queries } from 'db/common.ts';
 
 import utils from 'utils/utils.ts';
 
-export const roll = async (message: DiscordenoMessage, args: string[], command: string) => {
+export const rollSC: CreateGlobalApplicationCommand = {
+  name: 'roll',
+  description: 'Rolls dice and does math! For help, see the "Dice/Roll/Math Command" section in the /help library.',
+  options: [
+    {
+      type: DiscordApplicationCommandOptionTypes.String,
+      name: 'roll-string',
+      description: 'The full roll string to execute.',
+      required: true,
+    },
+  ],
+};
+
+export const roll = async (msgOrInt: DiscordenoMessage | Interaction, args: string[], command: string) => {
   // Light telemetry to see how many times a command is being run
   const currDateTime = new Date();
   dbClient.execute(queries.callIncCnt('roll')).catch((e) => utils.commonLoggers.dbError('roll.ts:20', 'call sproc INC_CNT on', e));
@@ -31,7 +44,10 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       originalCommand = `${config.prefix}${originalCommand.trim()}`;
     }
 
-    const m = await message.reply(rollingEmbed);
+    const m = await utils.sendOrInteract(msgOrInt, 'roll.ts:47', rollingEmbed, true);
+    if (!m) {
+      throw new Error("My message didn't send!");
+    }
 
     // Get modifiers from command
     const [modifiers, remainingArgs] = getModifiers(args);
@@ -41,7 +57,7 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       m.edit(generateRollError('Modifiers invalid:', modifiers.error.name, modifiers.error.message)).catch((e) => utils.commonLoggers.messageEditError('roll.ts:50', m, e));
     }
 
-    let rollCmd = message.content.startsWith(`${config.prefix}r`) ? remainingArgs.join('') : `${command}${remainingArgs.join('')}`;
+    let rollCmd = (hasOwnProperty(msgOrInt, 'token') ? args.join('') : msgOrInt.content).startsWith(`${config.prefix}r`) ? remainingArgs.join('') : `${command}${remainingArgs.join('')}`;
 
     // Try to ensure the roll is wrapped
     if (!rollCmd.includes(config.postfix)) {
@@ -55,12 +71,16 @@ export const roll = async (message: DiscordenoMessage, args: string[], command: 
       apiRoll: false,
       ddRoll: true,
       testRoll: false,
-      dd: { myResponse: m, originalMessage: message },
+      dd: {
+        authorId: utils.getAuthorIdFromMessageOrInteraction(msgOrInt),
+        myResponse: m,
+        originalMessage: hasOwnProperty(msgOrInt, 'token') ? m : msgOrInt,
+      },
       rollCmd,
       modifiers,
       originalCommand,
     });
   } catch (e) {
-    log(LT.ERROR, `Unhandled Error: ${JSON.stringify(e)}`);
+    log(LT.ERROR, `Unhandled Roll Error: ${JSON.stringify(e)} | msgOrInt: ${JSON.stringify(msgOrInt)} | args: ${JSON.stringify(args)} | command: ${command}`);
   }
 };

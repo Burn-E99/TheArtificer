@@ -1,24 +1,30 @@
-import { alias } from 'commands/aliasCmd.ts';
+import { upsertSlashCommands } from '@discordeno';
+
+import { alias, aliasSC } from 'commands/aliasCmd.ts';
 import { api } from 'commands/apiCmd.ts';
 import { audit } from 'commands/audit.ts';
 import { emoji } from 'commands/emoji.ts';
 import { handleMentions } from 'commands/handleMentions.ts';
-import { heatmap } from 'commands/heatmap.ts';
-import { help } from 'commands/help.ts';
-import { info } from 'commands/info.ts';
+import { heatmap, heatmapSC } from 'commands/heatmap.ts';
+import { help, helpSC } from 'commands/help.ts';
+import { info, infoSC } from 'commands/info.ts';
 import { optIn } from 'commands/optIn.ts';
 import { optOut } from 'commands/optOut.ts';
 import { ping } from 'commands/ping.ts';
-import { privacy } from 'commands/privacy.ts';
-import { rip } from 'commands/rip.ts';
-import { report } from 'commands/report.ts';
-import { roll } from 'commands/roll.ts';
+import { privacy, privacySC } from 'commands/privacy.ts';
+import { report, reportSC } from 'commands/report.ts';
+import { rip, ripSC } from 'commands/rip.ts';
+import { roll, rollSC } from 'commands/roll.ts';
 import { rollHelp } from 'commands/rollHelp.ts';
-import { stats } from 'commands/stats.ts';
-import { toggleInline } from 'commands/toggleInline.ts';
-import { version } from 'commands/version.ts';
+import { stats, statsSC } from 'commands/stats.ts';
+import { toggleInline, toggleInlineSC } from 'commands/toggleInline.ts';
+import { version, versionSC } from 'commands/version.ts';
 
-export default {
+export const announceSlashCommands = () => {
+  upsertSlashCommands([aliasSC, heatmapSC, helpSC, infoSC, privacySC, reportSC, ripSC, rollSC, statsSC, toggleInlineSC, versionSC]);
+};
+
+export const commands = {
   alias,
   api,
   audit,
@@ -31,11 +37,25 @@ export default {
   optOut,
   ping,
   privacy,
-  rip,
   report,
+  rip,
   roll,
   rollHelp,
   stats,
   toggleInline,
   version,
+};
+
+export const slashCommandDetails = {
+  aliasSC,
+  heatmapSC,
+  helpSC,
+  infoSC,
+  privacySC,
+  ripSC,
+  reportSC,
+  rollSC,
+  statsSC,
+  toggleInlineSC,
+  versionSC,
 };

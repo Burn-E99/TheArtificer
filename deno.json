@@ -39,6 +39,7 @@
     "events/": "./src/events/",
     "utils/": "./src/utils/",
     "src/api.ts": "./src/api.ts",
-    "src/events.ts": "./src/events.ts"
+    "src/events.ts": "./src/events.ts",
+    "src/mod.d.ts": "./src/mod.d.ts"
   }
 }

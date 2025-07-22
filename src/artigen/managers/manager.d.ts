@@ -26,6 +26,7 @@ interface DDQueuedRoll extends BaseQueuedRoll {
   dd: {
     myResponse: DiscordenoMessage;
     originalMessage: DiscordenoMessage;
+    authorId: bigint;
   };
 }
 interface TestResultFail {

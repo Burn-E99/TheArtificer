@@ -14,6 +14,7 @@ export const ReservedWords = Object.freeze([
   'view',
   'delete',
   'remove',
+  'delete-one',
   'delete-all',
   'remove-all',
   'run',

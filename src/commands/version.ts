@@ -1,4 +1,4 @@
-import { DiscordenoMessage } from '@discordeno';
+import { CreateGlobalApplicationCommand, DiscordenoMessage, Interaction } from '@discordeno';
 
 import config from '~config';
 
@@ -9,18 +9,21 @@ import { infoColor1 } from 'embeds/colors.ts';
 
 import utils from 'utils/utils.ts';
 
-export const version = (message: DiscordenoMessage) => {
-  // Light telemetry to see how many times a command is being run
-  dbClient.execute(queries.callIncCnt('version')).catch((e) => utils.commonLoggers.dbError('version.ts:15', 'call sproc INC_CNT on', e));
+export const versionSC: CreateGlobalApplicationCommand = {
+  name: 'version',
+  description: `Gets ${config.name}'s current version`,
+};
 
-  message
-    .send({
-      embeds: [
-        {
-          color: infoColor1,
-          title: `My current version is ${config.version}`,
-        },
-      ],
-    })
-    .catch((e: Error) => utils.commonLoggers.messageSendError('version.ts:24', message, e));
+export const version = (msgOrInt: DiscordenoMessage | Interaction) => {
+  // Light telemetry to see how many times a command is being run
+  dbClient.execute(queries.callIncCnt('version')).catch((e) => utils.commonLoggers.dbError('version.ts:14', 'call sproc INC_CNT on', e));
+
+  utils.sendOrInteract(msgOrInt, 'version.ts:16', {
+    embeds: [
+      {
+        color: infoColor1,
+        title: `My current version is ${config.version}`,
+      },
+    ],
+  });
 };

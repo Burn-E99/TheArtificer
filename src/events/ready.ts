@@ -8,6 +8,7 @@ import { successColor } from 'embeds/colors.ts';
 
 import intervals from 'utils/intervals.ts';
 import utils from 'utils/utils.ts';
+import { announceSlashCommands } from 'commands/_index.ts';
 
 export const readyHandler = () => {
   log(LT.INFO, `${config.name} Logged in!`);
@@ -66,6 +67,7 @@ export const readyHandler = () => {
     LOCALMODE ? log(LT.INFO, 'updateListStatistics not running') : intervals.updateListStatistics(botId, cache.guilds.size + cache.dispatchedGuildIds.size);
     intervals.updateHourlyRates();
     intervals.updateHeatmapPng();
+    announceSlashCommands();
     editBotStatus({
       activities: [
         {

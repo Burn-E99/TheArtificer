@@ -1,4 +1,4 @@
-import { DiscordenoMessage, hasGuildPermissions } from '@discordeno';
+import { CreateGlobalApplicationCommand, DiscordApplicationCommandOptionTypes, DiscordenoMessage, hasGuildPermissions, Interaction } from '@discordeno';
 
 import config from '~config';
 
@@ -11,73 +11,100 @@ import { failColor, infoColor1, successColor } from 'embeds/colors.ts';
 
 import utils from 'utils/utils.ts';
 
-export const toggleInline = async (message: DiscordenoMessage, args: string[]) => {
+export const toggleInlineSC: CreateGlobalApplicationCommand = {
+  name: 'toggle-inline-rolls',
+  description: 'Enable or disable inline rolling for this guild.',
+  options: [
+    {
+      type: DiscordApplicationCommandOptionTypes.SubCommand,
+      name: 'enable',
+      description: 'Enables/Allows inline rolling in this guild.',
+    },
+    {
+      type: DiscordApplicationCommandOptionTypes.SubCommand,
+      name: 'disable',
+      description: 'Disables/Blocks inline rolling in this guild.',
+    },
+    {
+      type: DiscordApplicationCommandOptionTypes.SubCommand,
+      name: 'status',
+      description: 'Gets the current status of inline rolling for this guild.',
+    },
+    {
+      type: DiscordApplicationCommandOptionTypes.SubCommand,
+      name: 'help',
+      description: 'Opens the help library to the Toggle Inline help page.',
+    },
+  ],
+};
+
+export const toggleInline = async (msgOrInt: DiscordenoMessage | Interaction, args: string[]) => {
   // Light telemetry to see how many times a command is being run
   dbClient.execute(queries.callIncCnt('inline')).catch((e) => utils.commonLoggers.dbError('toggleInline.ts:16', 'call sproc INC_CNT on', e));
 
   // Local apiArg in lowercase
   const apiArg = (args[0] || '').toLowerCase();
 
+  const guildId = BigInt(msgOrInt.guildId ?? '0');
+
   // Alert users who DM the bot that this command is for guilds only
-  if (message.guildId === 0n) {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: 'Toggle Inline commands are only available in guilds.',
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('toggleInline.ts:30', message, e));
+  if (guildId === 0n) {
+    utils.sendOrInteract(msgOrInt, 'toggleInline.ts:45', {
+      embeds: [
+        {
+          color: failColor,
+          title: 'Toggle Inline commands are only available in guilds.',
+        },
+      ],
+    });
     return;
   }
 
   let errorOut = false;
-  const guildQuery = await dbClient.query(`SELECT guildid FROM allow_inline WHERE guildid = ?`, [message.guildId]).catch((e0) => {
+  const guildQuery = await dbClient.query(`SELECT guildid FROM allow_inline WHERE guildid = ?`, [guildId]).catch((e0) => {
     utils.commonLoggers.dbError('toggleInline.ts:36', 'query', e0);
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: 'Failed to check Inline roll status for this guild.',
-            description: 'If this issue persists, please report this to the developers.',
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('toggleInline.ts:47', message, e));
+    utils.sendOrInteract(msgOrInt, 'toggleInline.ts:59', {
+      embeds: [
+        {
+          color: failColor,
+          title: 'Failed to check Inline roll status for this guild.',
+          description: 'If this issue persists, please report this to the developers.',
+        },
+      ],
+    });
     errorOut = true;
   });
   if (errorOut) return;
 
-  if (await hasGuildPermissions(message.guildId, message.authorId, ['ADMINISTRATOR'])) {
+  if (await hasGuildPermissions(guildId, utils.getAuthorIdFromMessageOrInteraction(msgOrInt), ['ADMINISTRATOR'])) {
     let enable = false;
     switch (apiArg) {
       case 'allow':
       case 'enable':
         enable = true;
-        await dbClient.execute('INSERT INTO allow_inline(guildid) values(?)', [message.guildId]).catch((e) => {
-          utils.commonLoggers.dbError('toggleInline.ts:58', 'insert into allow_inline', e);
-          errorOut = true;
-        });
-        if (!errorOut) {
-          inlineList.push(message.guildId);
+        if (!inlineList.includes(guildId)) {
+          await dbClient.execute('INSERT INTO allow_inline(guildid) values(?)', [guildId]).catch((e) => {
+            utils.commonLoggers.dbError('toggleInline.ts:58', 'insert into allow_inline', e);
+            errorOut = true;
+          });
+          if (!errorOut) {
+            inlineList.push(guildId);
+          }
         }
         break;
       case 'block':
       case 'disable':
       case 'delete':
-        await dbClient.execute('DELETE FROM allow_inline WHERE guildid = ?', [message.guildId]).catch((e) => {
+        await dbClient.execute('DELETE FROM allow_inline WHERE guildid = ?', [guildId]).catch((e) => {
           utils.commonLoggers.dbError('toggleInline.ts:65', 'delete from allow_inline', e);
           errorOut = true;
         });
-        if (!errorOut && inlineList.indexOf(message.guildId) !== -1) {
-          inlineList.splice(inlineList.indexOf(message.guildId), 1);
+        if (!errorOut && inlineList.includes(guildId)) {
+          inlineList.splice(inlineList.indexOf(guildId), 1);
         }
         break;
       case 'status':
-        message.send({
+        utils.sendOrInteract(msgOrInt, 'toggleInline.ts:98', {
           embeds: [
             {
               color: infoColor1,
@@ -90,11 +117,11 @@ export const toggleInline = async (message: DiscordenoMessage, args: string[]) =
       case 'h':
       case 'help':
       default:
-        message.send(generateHelpMessage('inline')).catch((e: Error) => utils.commonLoggers.messageSendError('apiHelp.ts:67', message, e));
+        utils.sendOrInteract(msgOrInt, 'toggleInline.ts:113', generateHelpMessage('inline'));
         return;
     }
     if (errorOut) {
-      message.send({
+      utils.sendOrInteract(msgOrInt, 'toggleInline.ts:117', {
         embeds: [
           {
             color: failColor,
@@ -105,7 +132,7 @@ export const toggleInline = async (message: DiscordenoMessage, args: string[]) =
       });
       return;
     }
-    message.send({
+    utils.sendOrInteract(msgOrInt, 'toggleInline.ts:128', {
       embeds: [
         {
           color: successColor,
@@ -114,15 +141,13 @@ export const toggleInline = async (message: DiscordenoMessage, args: string[]) =
       ],
     });
   } else {
-    message
-      .send({
-        embeds: [
-          {
-            color: failColor,
-            title: 'Toggle Inline commands are powerful and can only be used by guild Owners and Admins.',
-          },
-        ],
-      })
-      .catch((e: Error) => utils.commonLoggers.messageSendError('toggleInline.ts:77', message, e));
+    utils.sendOrInteract(msgOrInt, 'toggleInline.ts:137', {
+      embeds: [
+        {
+          color: failColor,
+          title: 'Toggle Inline commands are powerful and can only be used by guild Owners and Admins.',
+        },
+      ],
+    });
   }
 };
