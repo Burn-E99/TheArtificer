@@ -1,7 +1,14 @@
 meta {
   name: Authenticated
+  seq: 1
 }
 
-headers {
-  X-Api-Key: [YOUR-API-KEY-HERE]
+auth {
+  mode: apikey
+}
+
+auth:apikey {
+  key: X-Api-Key
+  value: [YOUR-API-KEY-HERE]
+  placement: header
 }
