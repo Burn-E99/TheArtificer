@@ -86,11 +86,15 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
         if (ownerId === userInteractingId) {
           const botMsg: DiscordenoMessage = await structures.createDiscordenoMessage(interaction.message);
           if (botMsg && botMsg.messageReference) {
-            const rollMsg: DiscordenoMessage = await getMessage(
-              BigInt(botMsg.messageReference.channelId ?? '0'),
-              BigInt(botMsg.messageReference.messageId ?? '0'),
+            const rollMsg = await getMessage(BigInt(botMsg.messageReference.channelId ?? '0'), BigInt(botMsg.messageReference.messageId ?? '0')).catch((e) =>
+              utils.commonLoggers.messageGetError(
+                'interactionCreate.ts:92',
+                botMsg.messageReference?.channelId ?? '0',
+                botMsg.messageReference?.messageId ?? '0',
+                e,
+              )
             );
-            if (!rollMsg.isBot) {
+            if (rollMsg && !rollMsg.isBot) {
               ackInteraction(interaction);
               messageCreateHandler(rollMsg);
               return;
