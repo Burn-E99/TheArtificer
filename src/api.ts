@@ -87,6 +87,7 @@ const start = () => {
       }
 
       if (path) {
+        const lowerCasePath = path.toLowerCase().trim();
         if (authenticated) {
           // Update rate limit details
           if (updateRateLimitTime) {
@@ -97,7 +98,10 @@ const start = () => {
           // Handle the authenticated request
           switch (request.method) {
             case 'GET':
-              switch (path.toLowerCase()) {
+              switch (lowerCasePath) {
+                case '/ping':
+                case '/ping/':
+                  return endpoints.get.apiPing();
                 case '/key':
                 case '/key/':
                   return endpoints.get.apiKeyAdmin(query, apiUserid);
@@ -113,7 +117,7 @@ const start = () => {
               }
               break;
             case 'POST':
-              switch (path.toLowerCase()) {
+              switch (lowerCasePath) {
                 case '/channel/add':
                 case '/channel/add/':
                   return endpoints.post.apiChannelAdd(query, apiUserid);
@@ -123,7 +127,7 @@ const start = () => {
               }
               break;
             case 'PUT':
-              switch (path.toLowerCase()) {
+              switch (lowerCasePath) {
                 case '/key/ban':
                 case '/key/ban/':
                 case '/key/unban':
@@ -149,7 +153,7 @@ const start = () => {
               }
               break;
             case 'DELETE':
-              switch (path.toLowerCase()) {
+              switch (lowerCasePath) {
                 case '/key/delete':
                 case '/key/delete/':
                   return endpoints.delete.apiKeyDelete(query, apiUserid, apiUserEmail, apiUserDelCode);
@@ -166,7 +170,7 @@ const start = () => {
           // Handle the unauthenticated request
           switch (request.method) {
             case 'GET':
-              switch (path.toLowerCase()) {
+              switch (lowerCasePath) {
                 case '/key':
                 case '/key/':
                   return endpoints.get.apiKey(query);
