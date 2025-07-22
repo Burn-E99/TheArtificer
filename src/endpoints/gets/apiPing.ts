@@ -11,6 +11,6 @@ export const apiPing = (): Response => {
       status: STATUS_CODE.OK,
       statusText: STATUS_TEXT[STATUS_CODE.OK],
       headers,
-    }
+    },
   );
 };
