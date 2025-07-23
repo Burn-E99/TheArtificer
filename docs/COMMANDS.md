@@ -1,7 +1,9 @@
 ## Available Commands
 The Artificer comes with a few supplemental commands to the main rolling command.
 
-* `[[help` or `[[h` or `[[?`
+This document uses the default prefix (`[[`) on all commands listed.  If a command starts with `/` (such as `/help`), this means the command is available as a Discord Slash Command.
+
+* `/help` or `[[help` or `[[h` or `[[?`
   * Provides a message similar to this available commands block.
 * `[[rollhelp` or `[[??` or `[[rh` or `[[hr`
   * Opens the new help library.
@@ -20,20 +22,20 @@ The Artificer comes with a few supplemental commands to the main rolling command
       * Deletes this guild from The Artificer's database.
 * `[[ping`
   * Tests the latency between you, Discord, and the bot.
-* `[[info` or `[[i`
+* `/info` or `[[info` or `[[i`
   * Outputs some information and links relating to the bot.
-* `[[privacy`
+* `/privacy` or `[[privacy` or `[[tos`
   * Prints some information about the Privacy Policy, found in `PRIVACY.md`.
-* `[[version` or `[[v`
+* `/version` or `[[version` or `[[v`
   * Prints out the current version of the bot.
 * `[[popcat` or `[[pop` or `[[p`
   * Sends the animated popcat emote for those who do not have Discord Nitro.
   * If bot is given the permission `Manage Messages`, the bot will remove the message requesting the emote.
-* `[[stats` or `[[s`
+* `/stats` or `[[stats` or `[[s`
   * Prints out how many users, channels, and servers the bot is currently serving.
-* `[[heatmap` or `[[hm`
+* `/heatmap` or `[[heatmap` or `[[hm`
   * Heatmap of when the roll command is run the most.
-* `[[report [issue-or-feature]`
+* `/report report-text:[issue-or-feature]` or `[[report [issue-or-feature]`
   * People aren't perfect, but this bot is trying to be.
   * If you encounter a command that errors out or returns something unexpected, please use this command to alert the developers of the problem.
   * Example:
@@ -42,59 +44,83 @@ The Artificer comes with a few supplemental commands to the main rolling command
   * Adds you to an ignore list so the bot will never respond to you
 * `[[opt-in` **Available via DM ONLY**
   * Removes you from the ignore list
-* `[[inline [subcommand]`
+* `/toggle-inline-rolls [subcommand]` or `[[inline [subcommand]`
   * Controls whether or not inline rolls can be done in a guild, defaults off.  These commands may only be used by the Owner or Admins of your guild.
   * An inline roll is a roll that does not immediately start with `[[`, such as `test [[d20]]`.
   * Available subcommands:
+    * `/toggle-inline-rolls help`
     * `[[inline help`
       * Provides a message similar to this subcommand description.
+    * `/toggle-inline-rolls status`
     * `[[inline status`
       * Shows the current status of inline rolls for this guild.
+    * `/toggle-inline-rolls enable`
     * `[[inline allow` or `[[inline enable`
       * Allows inline rolls in the guild.
+    * `/toggle-inline-rolls disable`
     * `[[inline block` or `[[inline disable` or `[[inline delete`
       * Blocks inline rolls in the guild.
-* `[[rollalias [subcommand]` or `[[ralias [subcommand]` or `[[alias [subcommand]` or `[[rolla [subcommand]` or `[[ra [subcommand]`
+* `/alias [subcommand]` or `[[rollalias [subcommand]` or `[[ralias [subcommand]` or `[[alias [subcommand]` or `[[rolla [subcommand]` or `[[ra [subcommand]`
   * Custom Roll Alias System
   * Allows anyone to store a roll string as a shortcut/alias for later use/reuse.
   * Supports full roll syntax, plus y variables that are set every time the alias is called.
   * Every command has a matching "Guild Mode" command that modifies aliases linked to a guild instead of linked to a user account.
   * Available subcommands:
+    * `/alias personal help`
+    * `/alias guild help`
     * `[[ra help`
     * `[[ra guild help`
       * Provides a message similar to this subcommand description.
+    * `/alias personal list-all`
+    * `/alias guild list-all`
     * `[[ra list`
     * `[[ra guild list`
       * Lists all aliases currently set for your account or the guild you are in.
+    * `/alias personal create alias-name:[aliasName] roll-string:[rollString...]`
+    * `/alias guild create alias-name:[aliasName] roll-string:[rollString...]`
     * `[[ra add [aliasName] [rollString...]`
     * `[[ra guild add [aliasName] [rollString...]`
       * Creates the desired alias, saving the roll string to your account or the guild you are in.
+    * `/alias personal replace alias-name:[aliasName] roll-string:[rollString...]`
+    * `/alias guild replace alias-name:[aliasName] roll-string:[rollString...]`
     * `[[ra update [aliasName] [rollString...]`
     * `[[ra guild update [aliasName] [rollString...]`
       * Updates the desired alias, replacing the old roll string in your account or the guild you are in with the newly provided roll string.
+    * `/alias personal view alias-name:[aliasName]`
+    * `/alias guild view alias-name:[aliasName]`
     * `[[ra view [aliasName]`
     * `[[ra guild view [aliasName]`
       * View the saved roll string and how many yVars are needed for it.
+    * `/alias personal delete-one alias-name:[aliasName] [verification-code:[verificationCode]?]`
+    * `/alias guild delete-one alias-name:[aliasName] [verification-code:[verificationCode]?]`
     * `[[ra delete [aliasName] [verificationCode?]`
     * `[[ra guild delete [aliasName] [verificationCode?]`
       * Deletes the desired alias from your account or the guild you are in.  Can be run without a verification code to get the needed code for deletion.
+    * `/alias personal delete-all alias-name:[aliasName] [verification-code:[verificationCode]?]`
+    * `/alias guild delete-all alias-name:[aliasName] [verification-code:[verificationCode]?]`
     * `[[ra delete-all [aliasName] [verificationCode?]`
     * `[[ra guild delete-all [aliasName] [verificationCode?]`
       * Deletes all aliases from your account or the guild you are in.  Can be run without a verification code to get the needed code for deletion.
+    * `/alias personal copy alias-name:[aliasName]`
     * `[[ra clone [aliasName]`
       * Copies the specified alias from your account to the guild you are in.
+    * `/alias guild copy alias-name:[aliasName]`
     * `[[ra guild clone [aliasName]`
       * Copies the specified alias from the guild you are in to your account.
+    * `/alias personal rename alias-name:[oldAliasName] alias-name-new:[newAliasName]`
+    * `/alias guild rename alias-name:[oldAliasName] alias-name-new:[newAliasName]`
     * `[[ra rename [oldAliasName] [newAliasName]`
     * `[[ra guild rename [oldAliasName] [newAliasName]`
       * Renames the specified alias for your account or the guild you are in.
+    * `/alias personal run alias-name:[aliasName] [y-variables:[yVars...]?]`
     * `[[ra [aliasName] [yVars?...]`
     * `[[ra run [aliasName] [yVars?...]`
       * Runs the desired personal alias with the specified yVars (if any are needed).  If the alias is not found on your account, it will check the guild aliases and use a match from there if one exists.
+    * `/alias guild run alias-name:[aliasName] [y-variables:[yVars...]?]`
     * `[[ra guild [aliasName] [yVars?...]`
     * `[[ra guild run [aliasName] [yVars?...]`
       * Runs the desired guild alias with the specified yVars (if any are needed).
-* `[[xdydzracsq!]]`
+* `/roll roll-string:[rollString...]` or `[[xdydzracsq!]]` AKA Roll Command
   * This is the command the bot was built specifically for.
   * It looks a little complicated at first, but if you are familiar with the [Roll20 formatting](https://artificer.eanm.dev/roll20), this will be no different.
   * Any math (limited to exponential, multiplication, division, modulus, addition, and subtraction) will be correctly handled in PEMDAS order, so use parenthesis as needed.
