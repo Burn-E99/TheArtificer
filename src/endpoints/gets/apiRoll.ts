@@ -119,7 +119,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
             const [name, rawSides] = shape.split(':').filter((x) => x);
             if (!name || !rawSides) {
               return stdResp.BadRequest(
-                'cd specified with invalid pattern.  Must be in format of `name:[side1,side2,...,sideN]`.  If multiple custom dice shapes are needed, use a `;` to separate the list'
+                'cd specified with invalid pattern.  Must be in format of `name:[side1,side2,...,sideN]`.  If multiple custom dice shapes are needed, use a `;` to separate the list',
               );
             }
 
