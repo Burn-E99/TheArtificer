@@ -10,6 +10,7 @@ import { sendRollRequest } from 'artigen/managers/queueManager.ts';
 
 import { cmdSplitRegex } from 'artigen/utils/escape.ts';
 import { assertPrePostBalance, getMatchingPostfixIdx } from 'artigen/utils/parenBalance.ts';
+import { sortYVars } from 'artigen/utils/sortFuncs.ts';
 
 import { ReservedWords } from 'commands/aliasCmd/reservedWords.ts';
 
@@ -25,14 +26,6 @@ import utils from 'utils/utils.ts';
 interface QueryShape {
   aliasName: string;
 }
-
-const sortYVars = (a: string, b: string) => {
-  if (a.length < b.length) return -1;
-  if (a.length > b.length) return 1;
-  if (a < b) return -1;
-  if (a > b) return 1;
-  return 0;
-};
 
 const handleAddUpdate = async (
   msgOrInt: DiscordenoMessage | SlashCommandInteractionWithGuildId,

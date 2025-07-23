@@ -41,3 +41,6 @@ export const internalWrapRegex = new RegExp(`([${openInternal}${closeInternal}])
 export const openInternalGrp = '\u2e20';
 export const closeInternalGrp = '\u2e21';
 export const internalGrpWrapRegex = new RegExp(`([${openInternalGrp}${closeInternalGrp}])`, 'g');
+
+// Marker to look for when repeating a roll AND it was from a SLASH COMMAND alias run command
+export const withYVarsDash = '\u2043';

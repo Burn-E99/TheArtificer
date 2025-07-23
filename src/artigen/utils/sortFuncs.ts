@@ -49,3 +49,12 @@ export const compareOrigIdx = (a: RollSet | ReturnData, b: RollSet | ReturnData)
   }
   return 0;
 };
+
+// Sort yVars by their name
+export const sortYVars = (a: string, b: string) => {
+  if (a.length < b.length) return -1;
+  if (a.length > b.length) return 1;
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+};

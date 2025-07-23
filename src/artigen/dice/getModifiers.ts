@@ -25,6 +25,7 @@ export const Modifiers = Object.freeze({
   VariablesNumber: '-vn',
   CustomDiceShapes: '-cd',
   NoSpaces: '-ns',
+  YVars: '-yvariables',
 });
 
 // args will look like this: ['-sn', ' ', '10'] as spaces/newlines are split on their own
@@ -204,6 +205,15 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
       case Modifiers.NoSpaces:
         modifiers.noSpaces = true;
         break;
+      case Modifiers.YVars: {
+        // Shift the -yvariables out of the array so the next item is the first yVar
+        args.splice(i, 2);
+        const yVars = args[i].split(',');
+        yVars.forEach((yVar, idx) => {
+          modifiers.yVars.set(`y${idx}`, parseFloat(yVar));
+        });
+        break;
+      }
       default:
         // Default case should not mess with the array
         defaultCase = true;

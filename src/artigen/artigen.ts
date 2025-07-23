@@ -3,15 +3,17 @@ import { log, LogTypes as LT } from '@Log4Deno';
 import { SolvedRoll } from 'artigen/artigen.d.ts';
 import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
 
+import { Modifiers } from 'artigen/dice/getModifiers.ts';
+
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
-import { cmdSplitRegex, escapeCharacters } from 'artigen/utils/escape.ts';
+import { cmdSplitRegex, escapeCharacters, withYVarsDash } from 'artigen/utils/escape.ts';
 import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
 import { reduceRollDistMaps } from 'artigen/utils/rollDist.ts';
-import { compareTotalRolls, compareTotalRollsReverse } from 'artigen/utils/sortFuncs.ts';
+import { compareTotalRolls, compareTotalRollsReverse, sortYVars } from 'artigen/utils/sortFuncs.ts';
 import { translateError } from 'artigen/utils/translateError.ts';
 
 // runCmd(rollRequest)
@@ -51,7 +53,12 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
 
     // Remove any floating spaces from originalCommand
     // Escape any | and ` chars in originalCommand to prevent spoilers and code blocks from acting up
-    const rawCmd = escapeCharacters(rollRequest.originalCommand.trim(), '|').replace(/`/g, '');
+    let rawCmd = escapeCharacters(rollRequest.originalCommand.trim(), '|').replace(/`/g, '');
+
+    // Remove yvariables from the rawCmd since this is intended for internal use only
+    if (rawCmd.includes(Modifiers.YVars)) {
+      rawCmd = rawCmd.replaceAll(new RegExp(`( ${Modifiers.YVars} (\\d+,)+\\d+)`, 'g'), '');
+    }
 
     let line1 = '';
     let line2 = '';
@@ -82,6 +89,17 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       tempReturnData.sort(compareTotalRollsReverse);
     } else {
       line1 = ` rolled:\n\`${rawCmd}\``;
+    }
+
+    if (rollRequest.modifiers.yVars.size) {
+      line1 += `\n${withYVarsDash} With yVars: ${
+        rollRequest.modifiers.yVars
+          .entries()
+          .toArray()
+          .sort((a, b) => sortYVars(a[0], b[0]))
+          .map((yVar) => `\`${yVar[0]}=${yVar[1]}\``)
+          .join(' ')
+      }`;
     }
 
     // List number of iterations on simulated nominals

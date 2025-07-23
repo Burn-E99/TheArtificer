@@ -207,6 +207,20 @@ Removes the default padding added space between rolls.`,
       ],
     },
   ],
+  [
+    '-yvariables',
+    {
+      name: 'Y Variables',
+      description: `**Usage:** \`-yvariables y0,y1,...,yN\`
+
+Intended for internal use only, but it's implementation makes it accessible publicly, so this documentation explains what its for and why it exists.
+
+Allows a comma separated list of number to be passed in for y variables, see \`Miscellaneous Features>Variables\` and \`Roll Alias System>Add New Alias\` for what y variables are.
+
+This decorator exists to allow for the Repeat Roll button to work consistently.`,
+      example: ['`[[d20+y0+y1]] -yvariables 10,37` => `[[d20+10+37]]` => [15]+10+37 = 62'],
+    },
+  ],
 ]);
 
 export const DecoratorsHelpPages: HelpPage = {

@@ -15,10 +15,12 @@ import {
 } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
+import { Modifiers } from 'artigen/dice/getModifiers.ts';
+
 import { repeatRollCustomId } from 'artigen/managers/handler/workerComplete.ts';
 
 import { toggleWebView, webViewCustomId } from 'artigen/utils/embeds.ts';
-import { argSpacesSplitRegex } from 'artigen/utils/escape.ts';
+import { argSpacesSplitRegex, withYVarsDash } from 'artigen/utils/escape.ts';
 
 import { commands, slashCommandDetails } from 'commands/_index.ts';
 
@@ -104,7 +106,20 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
           if (botMsg && botMsg.embeds.length) {
             const rollEmbed = botMsg.embeds[0].description ?? '';
             const rollStrStartIdx = rollEmbed.indexOf('`') + 1;
-            const rollStr = rollEmbed.substring(rollStrStartIdx, rollEmbed.indexOf('`', rollStrStartIdx));
+            let rollStr = rollEmbed.substring(rollStrStartIdx, rollEmbed.indexOf('`', rollStrStartIdx));
+
+            // Since we're dealing with a slash command, we can't get the original command (as far as I know), so rebuild the yVars for an alias using what is in the response message
+            if (rollEmbed.includes(withYVarsDash)) {
+              const yVarStartIdx = rollEmbed.indexOf(withYVarsDash) + 1;
+              const yVarStr = rollEmbed.substring(rollEmbed.indexOf(':', yVarStartIdx) + 1, rollEmbed.indexOf('\n', yVarStartIdx)).trim();
+              const yVars = yVarStr.split(' ').filter((x) => x);
+              const yVarVals: string[] = [];
+              for (const yVar of yVars) {
+                const [_yVarName, yVarVal] = yVar.split('=');
+                yVarVals.push(yVarVal);
+              }
+              rollStr += ` ${Modifiers.YVars} ${yVarVals.join(',')}`;
+            }
             commands.roll(interaction, rollStr.split(argSpacesSplitRegex), '');
             return;
           }
