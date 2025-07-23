@@ -1,6 +1,6 @@
 export const config = {
   name: 'The Artificer', // Name of the bot
-  maxFileSize: 8388290, // Max file size bot can send
+  maxFileSize: 8_388_290, // Max file size bot can send
   version: '3.0.0', // Version of the bot
   token: 'the_bot_token', // Discord API Token for this bot
   localtoken: 'local_testing_token', // Discord API Token for a secondary OPTIONAL testing bot, THIS MUST BE DIFFERENT FROM "token"
