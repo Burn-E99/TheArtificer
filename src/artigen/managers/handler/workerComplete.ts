@@ -25,6 +25,7 @@ import stdResp from 'endpoints/stdResponses.ts';
 import { InteractionValueSeparator } from 'events/interactionCreate.ts';
 
 import utils from 'utils/utils.ts';
+import { STATUS_CODE, STATUS_TEXT } from '@std/http/status';
 
 const getUserIdForEmbed = (rollRequest: QueuedRoll): bigint => {
   if (rollRequest.apiRoll) return rollRequest.api.userId;
@@ -60,10 +61,11 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
     const gmEmbeds: Embed[] = [gmEmbedDetails.embed];
     const pubAttachments: FileContent[] = pubEmbedDetails.hasAttachment ? [pubEmbedDetails.attachment] : [];
     const gmAttachments: FileContent[] = gmEmbedDetails.hasAttachment ? [gmEmbedDetails.attachment] : [];
+    let countEmbed, rollDistEmbed;
 
     // Handle adding count embed to correct list
     if (rollRequest.modifiers.count) {
-      const countEmbed = generateCountDetailsEmbed(returnMsg.counts);
+      countEmbed = generateCountDetailsEmbed(returnMsg.counts);
       if (rollRequest.modifiers.gmRoll) {
         gmEmbeds.push(countEmbed.embed);
         gmRespCharCount += countEmbed.charCount;
@@ -75,7 +77,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
 
     // Handle adding rollDist embed to correct list
     if (rollRequest.modifiers.rollDist) {
-      const rollDistEmbed = generateRollDistsEmbed(returnMsg.rollDistributions);
+      rollDistEmbed = generateRollDistsEmbed(returnMsg.rollDistributions);
       if (rollRequest.modifiers.gmRoll) {
         gmEmbeds.push(rollDistEmbed.embed);
         rollDistEmbed.hasAttachment && gmAttachments.push(rollDistEmbed.attachment);
@@ -248,20 +250,33 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
         .execute(queries.insertRollLogCmd(1, 0), [rollRequest.originalCommand, returnMsg.errorCode, newMsg ? newMsg.id : null])
         .catch((e) => utils.commonLoggers.dbError('rollQueue.ts:155', 'insert into', e));
 
+      const headers = new Headers();
+      headers.append('Content-Type', 'text/json');
       apiResolve &&
         apiResolve(
-          stdResp.OK(
-            JSON.stringify(
-              rollRequest.modifiers.count
-                ? {
-                  counts: returnMsg.counts,
-                  details: pubEmbedDetails,
-                }
-                : {
-                  details: pubEmbedDetails,
+          new Response(
+            JSON.stringify({
+              discordEmbeds: {
+                rollResponse: pubEmbedDetails,
+                countsResponse: countEmbed ?? null,
+                rollDistResponse: rollDistEmbed ?? null,
+              },
+              rawData: {
+                roll: {
+                  raw: returnMsg.line1,
+                  results: returnMsg.line2,
+                  details: returnMsg.line3,
                 },
-            ),
-          ),
+                counts: rollRequest.modifiers.count ? returnMsg.counts : null,
+                rollDistributions: returnMsg.rollDistributions.entries().toArray(),
+              },
+            }),
+            {
+              status: STATUS_CODE.OK,
+              statusText: STATUS_TEXT[STATUS_CODE.OK],
+              headers,
+            }
+          )
         );
     }
   } catch (e) {
@@ -272,13 +287,12 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
           (
             await generateRollEmbed(
               rollRequest.dd.authorId,
-              <SolvedRoll> {
+              <SolvedRoll>{
                 error: true,
-                errorMsg:
-                  `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
+                errorMsg: `Something weird went wrong, likely the requested roll is too complex and caused the response to be too large for Discord.  Try breaking the request down into smaller messages and try again.\n\nIf this error continues to come up, please \`${config.prefix}report\` this to my developer.`,
                 errorCode: 'UnhandledWorkerComplete',
               },
-              <RollModifiers> {},
+              <RollModifiers>{}
             )
           ).embed,
         ],

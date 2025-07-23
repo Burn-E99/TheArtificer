@@ -119,7 +119,7 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
             const [name, rawSides] = shape.split(':').filter((x) => x);
             if (!name || !rawSides) {
               return stdResp.BadRequest(
-                'cd specified with invalid pattern.  Must be in format of `name:[side1,side2,...,sideN]`.  If multiple custom dice shapes are needed, use a `;` to separate the list',
+                'cd specified with invalid pattern.  Must be in format of `name:[side1,side2,...,sideN]`.  If multiple custom dice shapes are needed, use a `;` to separate the list'
               );
             }
 
@@ -181,9 +181,13 @@ export const apiRoll = async (query: Map<string, string>, apiUserid: bigint): Pr
       }
     } else {
       // Alert API user that they messed up
-      return stdResp.Forbidden(
-        `Verify you are a member of the guild you are sending this roll to.  If you are, the ${config.name} may not have that registered, please send a message in the guild so ${config.name} can register this.  This registration is temporary, so if you see this error again, just poke your server again.`,
-      );
+      return stdResp.Forbidden(`Verify you are a member of the guild you are sending this roll to.
+
+If you are, ${config.name} may not have that guild actively cached.
+
+Please send a message in the guild so ${config.name} can cache this guild.  ${config.name}'s cache will clear out inactive guilds after some time, so if you see this error again, just poke the guild again.
+
+If you still see this error after "poking" your guild, please verify the channel allows API Rolls (${config.prefix}api status).`);
     }
   } else {
     // Alert API user that they shouldn't be doing this
