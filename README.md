@@ -33,7 +33,14 @@ API details are listed [here](https://github.com/Burn-E99/TheArtificer/blob/mast
 ## Privacy Policy and Terms of Service
 The Artificer has a Privacy Policy and Terms of Service to detail expectations of what user data is stored and how users should use The Artificer.  The following Privacy Policy and Terms of Service only apply to the officially hosted version of The Artificer (`The Artificer#8166`, Discord ID: `789045930011656223`).
 
-Privacy Policy TL;DR: Only report command data is stored if you do not use the API, if you use the API, submitted Discord Ids will be stored linked to your email.  For more detailed information, please check out the full [PRIVACY POLICY](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
+Privacy Policy TL;DR:
+- If you use the report command, the text submitted will be stored for a short period of time.
+- If you use the Roll Alias System, any data submitted to it will be stored until you delete it.
+- If you use the API, submitted Discord Ids will be stored linked to your email.
+- If you use the Inline Roll System, Discord Guild Ids will be stored.
+- If you use the Opt Out System, Discord User Ids will be stored.
+
+For more detailed information, please check out the full [PRIVACY POLICY](https://github.com/Burn-E99/TheArtificer/blob/master/PRIVACY.md).
 
 Terms of Service TL;DR: Don't abuse or attempt to hack/damage The Artificer or its API.  If you do, you may be banned from use.  For more detailed information, please check out the full [TERMS OF SERVICE](https://github.com/Burn-E99/TheArtificer/blob/master/TERMS.md).
 

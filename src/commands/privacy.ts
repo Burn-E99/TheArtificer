@@ -26,8 +26,7 @@ export const privacy = (msgOrInt: DiscordenoMessage | Interaction) => {
         fields: [
           {
             name: `${config.name} does not track or collect user information via Discord.`,
-            value:
-              `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command.  This information is only stored for a short period of time in a location that only the Developer of ${config.name} can see.
+            value: `The only user submitted information that is stored is submitted via the \`${config.prefix}report\` command or the \`${config.prefix}rollalias\`/\`/alias\` commands.
 
 For more details, please check out the Privacy Policy on the GitHub [here](${config.links.privacyPolicy}).
 
