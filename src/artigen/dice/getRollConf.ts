@@ -227,20 +227,27 @@ export const getRollConf = (rollStr: string, customTypes: CustomDiceShapes = new
 
       // Determine if afterSepIdx needs to be moved up (cases like mt! or !mt)
       const tempSep = remains.slice(0, afterSepIdx);
+      loggingEnabled && log(LT.LOG, `tempSep: ${tempSep}`);
+
       let noNumberAfter = false;
-      NumberlessDiceOptions.some((opt) => {
-        loopCountCheck();
-        if (tempSep.startsWith(opt) && tempSep !== opt) {
-          afterSepIdx = opt.length;
-          noNumberAfter = true;
-          return true;
-        }
-        return tempSep === opt;
-      });
+      if (!(Object.values(DiceOptions) as string[]).includes(tempSep)) {
+        NumberlessDiceOptions.some((opt) => {
+          loopCountCheck();
+          loggingEnabled && log(LT.LOG, `In NumberlessDiceOptions ${opt} ${tempSep.startsWith(opt) && tempSep !== opt}`);
+          if (tempSep.startsWith(opt) && tempSep !== opt) {
+            afterSepIdx = opt.length;
+            noNumberAfter = true;
+            return true;
+          }
+          return tempSep === opt;
+        });
+      }
 
       // Save the rule name to tSep and remove it from remains
       const tSep = remains.slice(0, afterSepIdx);
       remains = remains.slice(afterSepIdx);
+      loggingEnabled && log(LT.LOG, `tSep: ${tSep}, remains: ${remains}`);
+
       // Find the next non-number in the remains to be able to cut out the count/num
       let afterNumIdx = noNumberAfter ? 0 : remains.search(/(?![-\d])/);
       if (afterNumIdx < 0) {
