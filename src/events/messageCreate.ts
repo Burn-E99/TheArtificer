@@ -175,7 +175,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       } else if (command && `${command}${args.join('')}`.includes(config.postfix)) {
         // [[roll]]
         // Dice rolling commence!
-        commands.roll(message, argSpaces, command);
+        commands.roll(message, argSpaces, `${config.prefix}${command}`);
       } else if (command) {
         // [[emoji or [[emoji-alias
         // Check if the unhandled command is an emoji request
