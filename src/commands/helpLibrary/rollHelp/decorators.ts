@@ -108,7 +108,7 @@ Rolls the requested roll and orders the results in the requested direction.`,
       name: 'Count Rolls',
       description: `**Usage:** \`-c\`
 
-Shows the Count Embed, containing the count of successful rolls, failed rolls, rerolls, drops, and explosions.`,
+Shows the Count Embed, containing the count of critically successful rolls, critically failed rolls, rerolls, drops, explosions, successes, fails, and matches.`,
       example: ['`[[40d20]] -c`'],
     },
   ],
