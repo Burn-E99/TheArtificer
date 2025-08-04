@@ -33,12 +33,12 @@ export const apiStats = async (): Promise<Response> => {
     JSON.stringify({
       guildCount: cachedGuilds + cache.dispatchedGuildIds.size,
       memberCount,
-      rollCount,
+      rollCount: Number(rollCount),
     }),
     {
       status: STATUS_CODE.OK,
       statusText: STATUS_TEXT[STATUS_CODE.OK],
       headers,
-    },
+    }
   );
 };
