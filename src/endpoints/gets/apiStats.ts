@@ -39,6 +39,6 @@ export const apiStats = async (): Promise<Response> => {
       status: STATUS_CODE.OK,
       statusText: STATUS_TEXT[STATUS_CODE.OK],
       headers,
-    }
+    },
   );
 };
