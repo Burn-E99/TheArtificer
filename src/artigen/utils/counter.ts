@@ -3,13 +3,16 @@ import { CountDetails, RollSet } from 'artigen/dice/dice.d.ts';
 import { loopCountCheck } from 'artigen/managers/loopManager.ts';
 
 export const rollCounter = (rollSet: RollSet[]): CountDetails => {
-  const countDetails = {
+  const countDetails: CountDetails = {
     total: 0,
     successful: 0,
     failed: 0,
     rerolled: 0,
     dropped: 0,
     exploded: 0,
+    success: 0,
+    fail: 0,
+    matches: new Map<string, number>(),
   };
 
   rollSet.forEach((roll) => {
@@ -20,6 +23,9 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
     if (roll.rerolled) countDetails.rerolled++;
     if (roll.dropped) countDetails.dropped++;
     if (roll.exploding) countDetails.exploded++;
+    if (roll.success) countDetails.success++;
+    if (roll.fail) countDetails.fail++;
+    if (roll.matchLabel) countDetails.matches.set(roll.matchLabel, (countDetails.matches.get(roll.matchLabel) ?? 0) + 1);
   });
 
   return countDetails;
@@ -29,6 +35,10 @@ export const reduceCountDetails = (counts: CountDetails[]): CountDetails =>
   counts.reduce(
     (acc, cur) => {
       loopCountCheck();
+      cur.matches.forEach((cnt, label) => {
+        loopCountCheck();
+        acc.matches.set(label, (acc.matches.get(label) ?? 0) + cnt);
+      });
       return {
         total: acc.total + cur.total,
         successful: acc.successful + cur.successful,
@@ -36,6 +46,9 @@ export const reduceCountDetails = (counts: CountDetails[]): CountDetails =>
         rerolled: acc.rerolled + cur.rerolled,
         dropped: acc.dropped + cur.dropped,
         exploded: acc.exploded + cur.exploded,
+        success: acc.success + cur.success,
+        fail: acc.fail + cur.fail,
+        matches: acc.matches,
       };
     },
     {
@@ -45,5 +58,8 @@ export const reduceCountDetails = (counts: CountDetails[]): CountDetails =>
       rerolled: 0,
       dropped: 0,
       exploded: 0,
+      success: 0,
+      fail: 0,
+      matches: new Map<string, number>(),
     },
   );

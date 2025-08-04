@@ -33,6 +33,9 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
       rerolled: 0,
       dropped: 0,
       exploded: 0,
+      success: 0,
+      fail: 0,
+      matches: new Map<string, number>(),
     },
     rollDistributions: new Map<string, number[]>(),
   };

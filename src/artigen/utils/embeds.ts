@@ -62,12 +62,12 @@ export const generateCountDetailsEmbed = (counts: CountDetails): ArtigenEmbedNoA
       inline: true,
     },
     {
-      name: 'Successful Rolls:',
+      name: 'Critically Successful Rolls:',
       value: `${counts.successful}`,
       inline: true,
     },
     {
-      name: 'Failed Rolls:',
+      name: 'Critically Failed Rolls:',
       value: `${counts.failed}`,
       inline: true,
     },
@@ -84,6 +84,28 @@ export const generateCountDetailsEmbed = (counts: CountDetails): ArtigenEmbedNoA
     {
       name: 'Exploded Dice:',
       value: `${counts.exploded}`,
+      inline: true,
+    },
+    {
+      name: 'Successful Rolls:',
+      value: `${counts.success}`,
+      inline: true,
+    },
+    {
+      name: 'Failed Rolls:',
+      value: `${counts.fail}`,
+      inline: true,
+    },
+    {
+      name: 'Matched Roll Labels:',
+      value: `${
+        counts.matches
+          .entries()
+          .toArray()
+          .sort()
+          .map(([label, count]) => `${label}: ${count}`)
+          .join(', ')
+      }`,
       inline: true,
     },
   ];

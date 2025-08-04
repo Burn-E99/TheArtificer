@@ -29,6 +29,9 @@ export interface CountDetails {
   rerolled: number;
   dropped: number;
   exploded: number;
+  success: number;
+  fail: number;
+  matches: Map<string, number>;
 }
 
 // RollDistribution is used for storing the raw roll distribution
