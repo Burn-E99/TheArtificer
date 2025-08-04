@@ -16,7 +16,7 @@ export const apiStats = async (): Promise<Response> => {
   const memberCount = cache.guilds
     .array()
     .map((guild) => guild.memberCount)
-    .reduce(basicReducer);
+    .reduce(basicReducer, 0);
 
   const cachedGuilds = await cacheHandlers.size('guilds');
 
