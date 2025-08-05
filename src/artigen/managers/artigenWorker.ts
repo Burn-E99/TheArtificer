@@ -7,7 +7,7 @@ import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
 import { loggingEnabled, loopLoggingEnabled } from 'artigen/utils/logFlag.ts';
 
-(loggingEnabled || loopLoggingEnabled) && initLog('logs/worker', loggingEnabled || loopLoggingEnabled);
+if (loggingEnabled || loopLoggingEnabled) initLog('logs/worker', loggingEnabled || loopLoggingEnabled);
 
 // Extend the BigInt prototype to support JSON.stringify
 interface BigIntX extends BigInt {
@@ -45,6 +45,6 @@ self.onmessage = async (e: MessageEvent<QueuedRoll>) => {
     },
   };
   self.postMessage(returnMsg);
-  loggingEnabled && (await closeLog());
+  if (loggingEnabled || loopLoggingEnabled) await closeLog();
   self.close();
 };
