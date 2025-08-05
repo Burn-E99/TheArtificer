@@ -61,6 +61,7 @@ export const roll = async (
     // Return early if the modifiers were invalid
     if (!modifiers.valid) {
       m.edit(generateRollError('Modifiers invalid:', modifiers.error.name, modifiers.error.message)).catch((e) => utils.commonLoggers.messageEditError('roll.ts:50', m, e));
+      return;
     }
 
     let rollCmd = (hasOwnProperty(msgOrInt, 'token') ? args.join('') : msgOrInt.content).startsWith(`${config.prefix}r`) ? remainingArgs.join('') : `${command}${remainingArgs.join('')}`;
