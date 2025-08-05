@@ -42,8 +42,8 @@ export const toggleInline = async (msgOrInt: DiscordenoMessage | Interaction, ar
   // Light telemetry to see how many times a command is being run
   dbClient.execute(queries.callIncCnt('inline')).catch((e) => utils.commonLoggers.dbError('toggleInline.ts:16', 'call sproc INC_CNT on', e));
 
-  // Local apiArg in lowercase
-  const apiArg = (args[0] || '').toLowerCase();
+  // Local inlineArg in lowercase
+  const inlineArg = (args[0] || '').toLowerCase();
 
   const guildId = BigInt(msgOrInt.guildId ?? '0');
 
@@ -78,7 +78,7 @@ export const toggleInline = async (msgOrInt: DiscordenoMessage | Interaction, ar
 
   if (await hasGuildPermissions(guildId, utils.getAuthorIdFromMessageOrInteraction(msgOrInt), ['ADMINISTRATOR'])) {
     let enable = false;
-    switch (apiArg) {
+    switch (inlineArg) {
       case 'allow':
       case 'enable':
         enable = true;

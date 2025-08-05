@@ -18,10 +18,11 @@ import { roll, rollSC } from 'commands/roll.ts';
 import { rollHelp } from 'commands/rollHelp.ts';
 import { stats, statsSC } from 'commands/stats.ts';
 import { toggleInline, toggleInlineSC } from 'commands/toggleInline.ts';
+import { toggleRepeat, toggleRepeatSC } from 'commands/toggleUnrestrictedRepeat.ts';
 import { version, versionSC } from 'commands/version.ts';
 
 export const announceSlashCommands = () => {
-  upsertSlashCommands([aliasSC, heatmapSC, helpSC, infoSC, privacySC, reportSC, ripSC, rollSC, statsSC, toggleInlineSC, versionSC]);
+  upsertSlashCommands([aliasSC, heatmapSC, helpSC, infoSC, privacySC, reportSC, ripSC, rollSC, statsSC, toggleInlineSC, toggleRepeatSC, versionSC]);
 };
 
 export const commands = {
@@ -43,6 +44,7 @@ export const commands = {
   rollHelp,
   stats,
   toggleInline,
+  toggleRepeat,
   version,
 };
 
@@ -57,5 +59,6 @@ export const slashCommandDetails = {
   rollSC,
   statsSC,
   toggleInlineSC,
+  toggleRepeatSC,
   versionSC,
 };

@@ -4,6 +4,7 @@ import { RollAliasHelpPages } from 'commands/helpLibrary/aliasHelp.ts';
 import { ApiHelpPages } from 'commands/helpLibrary/apiHelp.ts';
 import { HelpContents, HelpPage } from 'commands/helpLibrary/helpLibrary.d.ts';
 import { InlineHelpPages } from 'commands/helpLibrary/inlineHelp.ts';
+import { RepeatHelpPages } from 'commands/helpLibrary/repeatHelp.ts';
 
 import { RootRollHelpPages } from 'commands/helpLibrary/rollHelp/_rootRollHelp.ts';
 
@@ -13,6 +14,7 @@ const dict = new Map<string, HelpPage | HelpContents>([
   ['roll-help', RootRollHelpPages],
   ['alias', RollAliasHelpPages],
   ['inline', InlineHelpPages],
+  ['repeat', RepeatHelpPages],
   [
     'opt-out',
     {

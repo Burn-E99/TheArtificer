@@ -8,7 +8,7 @@ import { commands } from 'commands/_index.ts';
 import { ignoreList, inlineList } from 'db/common.ts';
 import { argSpacesSplitRegex } from 'artigen/utils/escape.ts';
 
-export const messageCreateHandler = (message: DiscordenoMessage) => {
+export const messageCreateHandler = (message: DiscordenoMessage, overrideAuthor?: bigint) => {
   // Ignore all other bots
   if (message.isBot) return;
 
@@ -31,6 +31,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
           .split(argSpacesSplitRegex)
           .filter((x) => x),
         '',
+        overrideAuthor,
       );
     }
     // return as we are done handling this message
@@ -160,11 +161,16 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       // Manage and roll using aliases
       commands.alias(message, argSpaces);
       break;
+    case 'repeat':
+      // [[repeat arg
+      // Enable or Disable unrestricted repeat rolling
+      commands.toggleRepeat(message, args);
+      break;
     case 'roll':
     case 'r':
       // [[roll or [[r
       // Dice rolling commence!
-      commands.roll(message, argSpaces, '');
+      commands.roll(message, argSpaces, '', overrideAuthor);
       break;
     default:
       // Non-standard commands
@@ -175,7 +181,7 @@ export const messageCreateHandler = (message: DiscordenoMessage) => {
       } else if (command && `${command}${args.join('')}`.includes(config.postfix)) {
         // [[roll]]
         // Dice rolling commence!
-        commands.roll(message, argSpaces, `${config.prefix}${command}`);
+        commands.roll(message, argSpaces, `${config.prefix}${command}`, overrideAuthor);
       } else if (command) {
         // [[emoji or [[emoji-alias
         // Check if the unhandled command is an emoji request

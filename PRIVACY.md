@@ -29,6 +29,11 @@ Like all Discord bots, _The Bot_ reads every message that it is allowed to, mean
     * The Inline Roll System only stores the Discord Guild ID upon usage.  Discord Guild IDs are internal IDs generated and provided by Discord.
     * _The Bot_ only uses the stored Discord Guild IDs to determine which Guilds it should do a preliminary scan for Inline Rolls for all messages sent.
     * The Discord Guild IDs are only visible to _The Developer_ thru direct database administration.  This direct database administration is only used when there are issues with _The Bot_'s database.
+  * The Unrestricted Repeat Roll System (in Discord, these commands are known as `/toggle-unrestricted-repeat enable`, `[[repeat enable`, `[[repeat allow`, `/toggle-unrestricted-repeat disable`, `[[repeat block`, `[[repeat disable`, and `[[repeat delete`):
+    * This system is entirely optional, meaning users never need to run these commands under normal usage of _The Bot_.  This system is only intended to be used when a user wants to utilize Unrestricted Repeat Rolls in their Guild.
+    * The Unrestricted Repeat Roll System only stores the Discord Guild ID upon usage.  Discord Guild IDs are internal IDs generated and provided by Discord.
+    * _The Bot_ only uses the stored Discord Guild IDs to determine which Guilds it should allow Unrestricted Repeat Rolls in.
+    * The Discord Guild IDs are only visible to _The Developer_ thru direct database administration.  This direct database administration is only used when there are issues with _The Bot_'s database.
   * The Roll Alias System (in Discord, this system contains all commands starting with `/alias`, `[[rollalias`, `[[ralias`, `[[alias`, `[[rolla`, and `[[ra`, and the subcommands that _The Bot_ will store data from are `add`, `create`, `set`, `update`, `replace`, `copy`, `clone`, and `rename`):
     * This system is entirely optional, meaning users never need to run these commands under normal usage of _The Bot_.  This system is only intended to be used when a user wants to save roll commands for later reuse.
     * The Roll Alias System stores the user provided Alias Name, the user provided Roll String, and in Guild mode, the Discord Guild ID of the Guild the command was run in; and in personal mode, the Discord User ID of the user who ran the command.  The Alias Name is string of up to 200 characters that the user provided to save the Roll String under.  The Roll String is a string of up to 4,000 characters containing roll commands and formatting text the user provided.  Discord Guild IDs and Discord User IDs are internal IDs generated and provided by Discord.
@@ -80,6 +85,11 @@ If you would like to remove your Discord User ID from _The Bot_'s database, simp
 
 ## Inline Roll System Data Deletion
 If you would like to remove your Discord Guild ID from _The Bot_'s database, simply send one of the following commands in the Guild: `/toggle-inline-rolls disable`, `[[inline disable`, `[[inline block`, or `[[inline delete`.  All variants of this delete the Discord Guild ID from _The Bot_'s database.
+
+Additionally, _The Bot_ will automatically delete the Discord Guild ID from _The Bot_'s database when _The Bot_ is removed from your guild.
+
+## Unrestricted Repeat Roll System Data Deletion
+If you would like to remove your Discord Guild ID from _The Bot_'s database, simply send one of the following commands in the Guild: `/toggle-unrestricted-repeat disable`, `[[repeat disable`, `[[repeat block`, or `[[repeat delete`.  All variants of this delete the Discord Guild ID from _The Bot_'s database.
 
 Additionally, _The Bot_ will automatically delete the Discord Guild ID from _The Bot_'s database when _The Bot_ is removed from your guild.
 

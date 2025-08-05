@@ -22,7 +22,19 @@ await dbClient.execute(`DROP TABLE IF EXISTS command_cnt;`);
 await dbClient.execute(`DROP TABLE IF EXISTS ignore_list;`);
 await dbClient.execute(`DROP TABLE IF EXISTS allow_inline;`);
 await dbClient.execute(`DROP TABLE IF EXISTS aliases;`);
+await dbClient.execute(`DROP TABLE IF EXISTS allow_unrestricted_repeat;`);
 console.log('Tables dropped');
+
+// Holds guilds that have explicitly allowed anyone to repeat anyone's rolls
+console.log('Attempting to create table allow_unrestricted_repeat');
+await dbClient.execute(`
+  CREATE TABLE allow_unrestricted_repeat (
+    guildid bigint unsigned NOT NULL,
+    PRIMARY KEY (guildid),
+    UNIQUE KEY allow_unrestricted_repeat_guildid_UNIQUE (guildid)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+`);
+console.log('Table created');
 
 // Holds all aliases that have been created
 console.log('Attempting to create table aliases');

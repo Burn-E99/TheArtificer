@@ -60,6 +60,22 @@ This document uses the default prefix (`[[`) on all commands listed.  If a comma
     * `/toggle-inline-rolls disable`
     * `[[inline block` or `[[inline disable` or `[[inline delete`
       * Blocks inline rolls in the guild.
+* `/toggle-unrestricted-repeat [subcommand]` or `[[repeat [subcommand]`
+  * Controls whether or not unrestricted repeat rolls can be done in a guild, defaults off.  Unrestricted Repeat Rolls are whether or not anyone in a guild can use the `Repeat Roll` button on anyone's roll or only the original roller can use them.  These commands may only be used by the Owner or Admins of your guild.
+  * An inline roll is a roll that does not immediately start with `[[`, such as `test [[d20]]`.
+  * Available subcommands:
+    * `/toggle-unrestricted-repeat help`
+    * `[[repeat help`
+      * Provides a message similar to this subcommand description.
+    * `/toggle-unrestricted-repeat status`
+    * `[[repeat status`
+      * Shows the current status of unrestricted repeat rolls for this guild.
+    * `/toggle-unrestricted-repeat enable`
+    * `[[repeat allow` or `[[repeat enable`
+      * Allows unrestricted repeat rolls in the guild.
+    * `/toggle-unrestricted-repeat disable`
+    * `[[repeat block` or `[[repeat disable` or `[[repeat delete`
+      * Blocks unrestricted repeat rolls in the guild.
 * `/alias [subcommand]` or `[[rollalias [subcommand]` or `[[ralias [subcommand]` or `[[alias [subcommand]` or `[[rolla [subcommand]` or `[[ra [subcommand]`
   * Custom Roll Alias System
   * Allows anyone to store a roll string as a shortcut/alias for later use/reuse.

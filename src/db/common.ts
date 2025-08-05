@@ -21,6 +21,13 @@ dbInlineList.forEach((guildIdObj: GuildIdObj) => {
   inlineList.push(guildIdObj.guildid);
 });
 
+// List of guilds who have allowed unrestricted repeat rolls
+export const repeatList: Array<bigint> = [];
+const dbRepeatList = await dbClient.query('SELECT * FROM allow_unrestricted_repeat');
+dbRepeatList.forEach((guildIdObj: GuildIdObj) => {
+  repeatList.push(guildIdObj.guildid);
+});
+
 export const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 export const queries = {

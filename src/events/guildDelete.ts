@@ -43,6 +43,9 @@ export const guildDeleteHandler = (guild: DiscordenoGuild) => {
     .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:41', 'delete from', e));
   dbClient.execute('DELETE FROM allow_inline WHERE guildid = ?', [guild.id]).catch((e) => utils.commonLoggers.dbError('guildDelete.ts:42', 'delete from', e));
   dbClient
+    .execute('DELETE FROM allow_unrestricted_repeat WHERE guildid = ?', [guild.id])
+    .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:47', 'delete from', e));
+  dbClient
     .execute('DELETE FROM aliases WHERE guildid = ? AND userid = ?', [guild.id, 0n])
-    .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:45', 'delete from', e));
+    .catch((e) => utils.commonLoggers.dbError('guildDelete.ts:50', 'delete from', e));
 };

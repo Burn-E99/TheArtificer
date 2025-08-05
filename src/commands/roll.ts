@@ -27,7 +27,13 @@ export const rollSC: CreateGlobalApplicationCommand = {
   ],
 };
 
-export const roll = async (msgOrInt: DiscordenoMessage | Interaction, args: string[], command: string) => {
+export const roll = async (
+  msgOrInt: DiscordenoMessage | Interaction,
+  args: string[],
+  command: string,
+  overrideAuthor?: bigint,
+  forceOriginalAuthor?: bigint,
+) => {
   // Light telemetry to see how many times a command is being run
   const currDateTime = new Date();
   dbClient.execute(queries.callIncCnt('roll')).catch((e) => utils.commonLoggers.dbError('roll.ts:20', 'call sproc INC_CNT on', e));
@@ -44,7 +50,7 @@ export const roll = async (msgOrInt: DiscordenoMessage | Interaction, args: stri
       originalCommand = `${config.prefix}${originalCommand.trim()}`;
     }
 
-    const m = await utils.sendOrInteract(msgOrInt, 'roll.ts:47', rollingEmbed, true);
+    const m = await utils.sendOrInteract(msgOrInt, 'roll.ts:47', rollingEmbed, true, !overrideAuthor);
     if (!m) {
       throw new Error("My message didn't send!");
     }
@@ -72,7 +78,8 @@ export const roll = async (msgOrInt: DiscordenoMessage | Interaction, args: stri
       ddRoll: true,
       testRoll: false,
       dd: {
-        authorId: utils.getAuthorIdFromMessageOrInteraction(msgOrInt),
+        overrideAuthorId: overrideAuthor ?? 0n,
+        authorId: forceOriginalAuthor ? forceOriginalAuthor : utils.getAuthorIdFromMessageOrInteraction(msgOrInt),
         myResponse: m,
         originalMessage: hasOwnProperty(msgOrInt, 'token') ? m : msgOrInt,
       },

@@ -15,6 +15,8 @@ import {
 } from '@discordeno';
 import { log, LogTypes as LT } from '@Log4Deno';
 
+import config from '~config';
+
 import { Modifiers } from 'artigen/dice/getModifiers.ts';
 
 import { repeatRollCustomId } from 'artigen/managers/handler/workerComplete.ts';
@@ -25,6 +27,8 @@ import { argSpacesSplitRegex, withYVarsDash } from 'artigen/utils/escape.ts';
 import { commands, slashCommandDetails } from 'commands/_index.ts';
 
 import { generateHelpMessage, helpCustomId } from 'commands/helpLibrary/generateHelpMessage.ts';
+
+import { repeatList } from 'db/common.ts';
 
 import { failColor } from 'embeds/colors.ts';
 
@@ -83,9 +87,10 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
       }
 
       if (interaction.data.customId.startsWith(repeatRollCustomId) && interaction.message) {
+        const missingUserId = 'missingUserId';
         const ownerId = interaction.data.customId.split(InteractionValueSeparator)[1] ?? 'missingOwnerId';
-        const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? 'missingUserId';
-        if (ownerId === userInteractingId) {
+        const userInteractingId = interaction.member?.user.id ?? interaction.user?.id ?? missingUserId;
+        if (ownerId === userInteractingId || (userInteractingId !== missingUserId && repeatList.includes(BigInt(interaction.guildId ?? '0')))) {
           const botMsg: DiscordenoMessage = await structures.createDiscordenoMessage(interaction.message);
           if (botMsg && botMsg.messageReference) {
             const rollMsg = await getMessage(BigInt(botMsg.messageReference.channelId ?? '0'), BigInt(botMsg.messageReference.messageId ?? '0')).catch((e) =>
@@ -98,7 +103,11 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
             );
             if (rollMsg && !rollMsg.isBot) {
               ackInteraction(interaction);
-              messageCreateHandler(rollMsg);
+              if (ownerId === userInteractingId) {
+                messageCreateHandler(rollMsg);
+              } else {
+                messageCreateHandler(rollMsg, BigInt(userInteractingId));
+              }
               return;
             }
           }
@@ -120,7 +129,28 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
               }
               rollStr += ` ${Modifiers.YVars} ${yVarVals.join(',')}`;
             }
-            commands.roll(interaction, rollStr.split(argSpacesSplitRegex), '');
+
+            let responseInteraction: Interaction | DiscordenoMessage = interaction;
+            if (botMsg && botMsg.messageReference) {
+              const rollMsg = await getMessage(BigInt(botMsg.messageReference.channelId ?? '0'), BigInt(botMsg.messageReference.messageId ?? '0')).catch((e) =>
+                utils.commonLoggers.messageGetError(
+                  'interactionCreate.ts:92',
+                  botMsg.messageReference?.channelId ?? '0',
+                  botMsg.messageReference?.messageId ?? '0',
+                  e,
+                )
+              );
+              if (rollMsg) {
+                ackInteraction(interaction);
+                responseInteraction = rollMsg;
+              }
+            }
+
+            if (ownerId === userInteractingId) {
+              commands.roll(responseInteraction, rollStr.split(argSpacesSplitRegex), '');
+            } else {
+              commands.roll(responseInteraction, rollStr.split(argSpacesSplitRegex), '', BigInt(userInteractingId), BigInt(ownerId));
+            }
             return;
           }
         }
@@ -133,7 +163,9 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
               {
                 color: failColor,
                 title: 'Not Allowed!',
-                description: 'Only the original user that requested this roll can repeat it.',
+                description: `Only the original user that requested this roll can repeat it.
+
+Do you want to be able to use the \`Repeat Roll\` button on any rolls from anyone?  Ask your Guild Owner or Admins to run \`${config.prefix}repeat enable\`.  More information can be found in the help library under \`Unrestricted Repeat\`.`,
               },
             ],
           },
@@ -218,6 +250,12 @@ export const interactionCreateHandler = async (interaction: Interaction) => {
           const option = (interaction.data.options as ApplicationCommandInteractionDataOptionSubCommand[])?.shift();
           const subCommand = option ? option.name : '';
           commands.toggleInline(interaction, [subCommand]);
+          return;
+        }
+        case slashCommandDetails.toggleRepeatSC.name: {
+          const option = (interaction.data.options as ApplicationCommandInteractionDataOptionSubCommand[])?.shift();
+          const subCommand = option ? option.name : '';
+          commands.toggleRepeat(interaction, [subCommand]);
           return;
         }
         case slashCommandDetails.versionSC.name:

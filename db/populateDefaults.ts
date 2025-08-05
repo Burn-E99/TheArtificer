@@ -25,6 +25,7 @@ const commands = [
   'ping',
   'privacy',
   'rip',
+  'repeat',
   'report',
   'roll',
   'rolldecorators',

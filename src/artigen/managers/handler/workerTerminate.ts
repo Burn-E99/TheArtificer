@@ -28,7 +28,7 @@ export const terminateWorker = async (rollWorker: Worker, rollRequest: QueuedRol
         embeds: [
           (
             await generateRollEmbed(
-              rollRequest.dd.authorId,
+              0n,
               <SolvedRoll> {
                 error: true,
                 errorCode: 'TooComplex',

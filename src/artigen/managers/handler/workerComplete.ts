@@ -29,6 +29,15 @@ import { STATUS_CODE, STATUS_TEXT } from '@std/http/status';
 
 const getUserIdForEmbed = (rollRequest: QueuedRoll): bigint => {
   if (rollRequest.apiRoll) return rollRequest.api.userId;
+  if (rollRequest.ddRoll) {
+    if (rollRequest.dd.overrideAuthorId === 0n) return rollRequest.dd.authorId;
+    return rollRequest.dd.overrideAuthorId;
+  }
+  return 0n;
+};
+
+const getAuthorIdForButton = (rollRequest: QueuedRoll): bigint => {
+  if (rollRequest.apiRoll) return rollRequest.api.userId;
   if (rollRequest.ddRoll) return rollRequest.dd.authorId;
   return 0n;
 };
@@ -189,6 +198,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
         });
       } else {
         newMsg = await rollRequest.dd.myResponse.edit({
+          content: rollRequest.dd.overrideAuthorId === 0n ? '' : `<@${rollRequest.dd.overrideAuthorId}> used the \`Repeat Roll\` button for the referenced message:`,
           embeds: pubEmbeds,
           components: [
             {
@@ -197,7 +207,7 @@ export const onWorkerComplete = async (workerMessage: MessageEvent<SolvedRoll>, 
                 {
                   type: MessageComponentTypes.Button,
                   label: 'Repeat Roll',
-                  customId: `${repeatRollCustomId}${InteractionValueSeparator}${getUserIdForEmbed(rollRequest).toString()}`,
+                  customId: `${repeatRollCustomId}${InteractionValueSeparator}${getAuthorIdForButton(rollRequest).toString()}`,
                   style: ButtonStyles.Secondary,
                   emoji: '🎲',
                 },
@@ -286,7 +296,7 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
         embeds: [
           (
             await generateRollEmbed(
-              rollRequest.dd.authorId,
+              0n,
               <SolvedRoll> {
                 error: true,
                 errorMsg:

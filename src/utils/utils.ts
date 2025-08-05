@@ -22,6 +22,7 @@ const sendOrInteract = async (
   callLocation: string,
   payload: CreateMessage,
   tryGetOriginal = false,
+  mentionUser = true,
 ): Promise<void | DiscordenoMessage> => {
   let newMsg;
   if (hasOwnProperty(msgOrInt, 'token')) {
@@ -32,7 +33,7 @@ const sendOrInteract = async (
     }).catch((e: Error) => messageSendError(callLocation, interaction, e));
     if (tryGetOriginal) newMsg = await getOriginalInteractionResponse(interaction.token);
   } else {
-    newMsg = await msgOrInt.reply(payload).catch((e: Error) => messageSendError(callLocation, msgOrInt, e));
+    newMsg = await msgOrInt.reply(payload, mentionUser).catch((e: Error) => messageSendError(callLocation, msgOrInt, e));
   }
   return newMsg;
 };
