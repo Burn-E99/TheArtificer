@@ -80,7 +80,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
   for (let i = 0; i < rollConf.dieCount; i++) {
     loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Initial rolling ${i} of ${JSON.stringify(rollConf)}`);
     // If loopCount gets too high, stop trying to calculate infinity
-    loopCountCheck();
+    loopCountCheck('executeRoll.ts - handling initial rolling');
 
     // Copy the template to fill out for this iteration
     const rolling = getTemplateRoll();
@@ -104,7 +104,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     for (let i = 0; i < rollSet.length; i++) {
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Handling rerolling and exploding ${JSON.stringify(rollSet[i])}`);
       // If loopCount gets too high, stop trying to calculate infinity
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - handling rerolling and exploding');
 
       // This big boolean statement first checks if reroll is on, if the roll is within the reroll range, and finally if ro is ON, make sure we haven't already rerolled the roll
       if (rollConf.reroll.on && rollConf.reroll.nums.includes(rollSet[i].roll) && (!rollConf.reroll.once || !rollSet[i ? i - 1 : i].rerolled)) {
@@ -117,7 +117,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
         if (modifiers.maxRoll && !minMaxOverride) {
           // If maximizeRoll is on and we've entered the reroll code, dieSize is not allowed, determine the next best option and always return that
           mmMaxLoop: for (let m = rollConf.dieSize - 1; m > 0; m--) {
-            loopCountCheck();
+            loopCountCheck('executeRoll.ts - maximizeRoll');
 
             if (!rollConf.reroll.nums.includes(m)) {
               minMaxOverride = m;
@@ -127,7 +127,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
         } else if (modifiers.minRoll && !minMaxOverride) {
           // If minimizeRoll is on and we've entered the reroll code, 1 is not allowed, determine the next best option and always return that
           mmMinLoop: for (let m = rollConf.dPercent.on ? 1 : 2; m <= rollConf.dieSize; m++) {
-            loopCountCheck();
+            loopCountCheck('executeRoll.ts - minimizeRoll');
 
             if (!rollConf.reroll.nums.includes(m)) {
               minMaxOverride = m;
@@ -181,7 +181,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     for (const penRoll of rollSet) {
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Handling penetrating explosions ${JSON.stringify(penRoll)}`);
       // If loopCount gets too high, stop trying to calculate infinity
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - penetrating explosion');
 
       // If the die was from an explosion, decrement it by one
       if (penRoll.exploding) {
@@ -195,7 +195,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     for (let i = 0; i < rollSet.length; i++) {
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Handling compounding explosions ${JSON.stringify(rollSet[i])}`);
       // If loopCount gets too high, stop trying to calculate infinity
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - compounding explosion');
 
       // Compound the exploding rolls, including the exploding flag and
       if (rollSet[i].exploding) {
@@ -215,8 +215,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     let rerollCount = 0;
     if (rollConf.reroll.on) {
       for (let j = 0; j < rollSet.length; j++) {
-        // If loopCount gets too high, stop trying to calculate infinity
-        loopCountCheck();
+        loopCountCheck('executeRoll.ts - count rerolls');
 
         loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Setting originalIdx on ${JSON.stringify(rollSet[j])}`);
         rollSet[j].origIdx = j;
@@ -265,8 +264,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     // Now its time to drop all dice needed
     let i = 0;
     while (dropCount > 0 && i < rollSet.length) {
-      // If loopCount gets too high, stop trying to calculate infinity
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - dropping/keeping');
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Dropping dice ${dropCount} ${JSON.stringify(rollSet[i])}`);
       // Skip all rolls that were rerolled
@@ -290,7 +288,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
 
     // Drop all dice that are not a part of the max
     for (const ovaRoll of rollSet) {
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - OVA');
 
       loggingEnabled &&
         log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | checking if this roll should be dropped ${ovaRoll.roll} | to keep: ${maxRoll}`);
@@ -311,7 +309,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
     const labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let labelIdx = 0;
     const rollLabels: Array<string> = rollVals.map((count) => {
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - matching');
 
       if (labelIdx >= labels.length) {
         throw new Error(`TooManyLabels_${labels.length}`);
@@ -327,7 +325,7 @@ export const executeRoll = (rollStr: string, modifiers: RollModifiers): Executed
 
     // Apply labels
     for (const roll of rollSet) {
-      loopCountCheck();
+      loopCountCheck('executeRoll.ts - labeling matches');
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | trying to add a label to ${JSON.stringify(roll)}`);
       if (rollLabels[roll.roll - 1]) {

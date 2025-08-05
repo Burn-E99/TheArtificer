@@ -34,7 +34,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
 
   // Evaluate all parenthesis
   while (conf.includes('(')) {
-    loopCountCheck();
+    loopCountCheck('mathSolver.ts - evaluating parens');
 
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Looking for (`);
     // Get first open parenthesis
@@ -75,7 +75,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
   // Start at index 1 as there will never be implicit multiplication before the first element
   loggingEnabled && log(LT.LOG, `Checking for missing implicit multiplication ${JSON.stringify(conf)}`);
   for (let i = 1; i < conf.length; i++) {
-    loopCountCheck();
+    loopCountCheck('mathSolver.ts - checking for implicit multiplication');
 
     const prevConfAsStr = <string> conf[i - 1];
     const curConfAsStr = <string> conf[i];
@@ -94,10 +94,11 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     ['+', '-'],
   ];
   allCurOps.forEach((curOps) => {
+    // No loopCountCheck here since its finite/will always be 3 loops
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
     // Iterate thru all operators/operands in the conf
     for (let i = 0; i < conf.length; i++) {
-      loopCountCheck();
+      loopCountCheck('mathSolver.ts - evaluating roll');
 
       loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
       // Check if the current index is in the active tier of operators

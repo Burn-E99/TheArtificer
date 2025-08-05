@@ -14,7 +14,7 @@ export const getGroupConf = (groupStr: string, rawStr: string): GroupConf => {
 
   let biggest = parseInt(numberMatches.length ? numberMatches[0] : '1');
   for (const num of numberMatches) {
-    loopCountCheck();
+    loopCountCheck('getGroupConf.ts - finding biggest number for die size');
 
     const curNum = parseInt(num);
     loggingEnabled && log(LT.LOG, `Finding biggest number to use as die size, ${curNum} ${biggest}`);
@@ -37,7 +37,7 @@ export const getGroupConf = (groupStr: string, rawStr: string): GroupConf => {
   let maxFail: number | null = null;
 
   while (groupSplit.length) {
-    loopCountCheck();
+    loopCountCheck('getGroupConf.ts - parsing groupConf');
 
     const option = groupSplit.shift() ?? '';
     const value = parseInt(groupSplit.shift() ?? '');

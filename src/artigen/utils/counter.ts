@@ -16,7 +16,7 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
   };
 
   rollSet.forEach((roll) => {
-    loopCountCheck();
+    loopCountCheck('counter.ts - summing RollSet into CountDetails');
     countDetails.total++;
     if (roll.critHit) countDetails.successful++;
     if (roll.critFail) countDetails.failed++;
@@ -34,9 +34,9 @@ export const rollCounter = (rollSet: RollSet[]): CountDetails => {
 export const reduceCountDetails = (counts: CountDetails[]): CountDetails =>
   counts.reduce(
     (acc, cur) => {
-      loopCountCheck();
+      loopCountCheck('counter.ts - merging array of CountDetails down to single CountDetail');
       cur.matches.forEach((cnt, label) => {
-        loopCountCheck();
+        loopCountCheck('counter.ts - merging matches');
         acc.matches.set(label, (acc.matches.get(label) ?? 0) + cnt);
       });
       return {

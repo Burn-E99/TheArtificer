@@ -20,7 +20,7 @@ export const formatRoll = (executedRoll: ExecutedRoll, modifiers: RollModifiers)
   // Loop thru all parts of the roll to document everything that was done to create the total roll
   loggingEnabled && log(LT.LOG, `Formatting roll ${JSON.stringify(executedRoll)}`);
   executedRoll.rollSet.forEach((e) => {
-    loopCountCheck();
+    loopCountCheck('generateFormattedRoll.ts - formatting executed roll');
 
     loggingEnabled && log(LT.LOG, `At ${JSON.stringify(e)}`);
     let preFormat = '';

@@ -30,7 +30,7 @@ export const handleGroup = (
 
   // Nested groups still exist, unwrap them
   while (groupParts.includes('{')) {
-    loopCountCheck();
+    loopCountCheck('groupHandler.ts - handling nested groups');
 
     loggingEnabled && log(LT.LOG, `Handling Nested Groups | Current cmd: ${JSON.stringify(groupParts)}`);
 
@@ -72,7 +72,7 @@ export const handleGroup = (
     const groupResults: ReturnData[] = [];
 
     for (const part of commaParts) {
-      loopCountCheck();
+      loopCountCheck('groupHandler.ts - solving commaParts');
 
       loggingEnabled && log(LT.LOG, `Solving commaPart: ${part}`);
       const [tempData, tempCounts, tempDists] = tokenizeMath(part, modifiers, previousResults, prevGrpReturnData);
@@ -131,7 +131,7 @@ export const handleGroup = (
 
         let i = 0;
         while (dropCount > 0 && i < groupResults.length) {
-          loopCountCheck();
+          loopCountCheck('groupHandler.ts - handling group drop/keep');
 
           loggingEnabled && log(LT.LOG, `Handling group dropping | Dropping ${dropCount}`);
 
@@ -148,7 +148,7 @@ export const handleGroup = (
       let failCnt = 0;
       if (groupConf.success.on || groupConf.fail.on) {
         groupResults.forEach((rd, idx) => {
-          loopCountCheck();
+          loopCountCheck('groupHandler.ts - handling group success/fail');
 
           if (!resultFlags[idx].dropped) {
             if (
@@ -265,7 +265,7 @@ export const handleGroup = (
   const initConf = retData.initConfig.split(internalGrpWrapRegex).filter((x) => x);
   loggingEnabled && log(LT.LOG, `Split retData into initConf ${JSON.stringify(initConf)}`);
   while (initConf.includes(openInternalGrp)) {
-    loopCountCheck();
+    loopCountCheck('groupHandler.ts - handling merging nested groups up');
 
     const openIdx = initConf.indexOf(openInternalGrp);
     const closeIdx = getMatchingInternalGrpIdx(initConf, openIdx);

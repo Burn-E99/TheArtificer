@@ -11,7 +11,7 @@ import { loggingEnabled } from 'artigen/utils/logFlag.ts';
 export const escapeCharacters = (str: string, esc: string): string => {
   // Loop thru each esc char one at a time
   for (const e of esc) {
-    loopCountCheck();
+    loopCountCheck('escape.ts - escaping characters');
 
     loggingEnabled && log(LT.LOG, `Escaping character ${e} | ${str}, ${esc}`);
     // Create a new regex to look for that char that needs replaced and escape it

@@ -1,12 +1,13 @@
 import { closeLog, initLog } from '@Log4Deno';
 
 import { runCmd } from 'artigen/artigen.ts';
+import { SolvedRoll } from 'artigen/artigen.d.ts';
 
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
-import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { loggingEnabled, loopLoggingEnabled } from 'artigen/utils/logFlag.ts';
 
-loggingEnabled && initLog('logs/worker', loggingEnabled);
+(loggingEnabled || loopLoggingEnabled) && initLog('logs/worker', loggingEnabled || loopLoggingEnabled);
 
 // Extend the BigInt prototype to support JSON.stringify
 interface BigIntX extends BigInt {
@@ -23,13 +24,14 @@ self.postMessage('ready');
 // Handle the roll
 self.onmessage = async (e: MessageEvent<QueuedRoll>) => {
   const payload = e.data;
-  const returnMsg = runCmd(payload) || {
+  const returnMsg: SolvedRoll = runCmd(payload) || {
     error: true,
     errorCode: 'EmptyMessage',
     errorMsg: 'Error: Empty message',
     line1: '',
     line2: '',
     line3: '',
+    footer: '',
     counts: {
       total: 0,
       successful: 0,
@@ -37,6 +39,9 @@ self.onmessage = async (e: MessageEvent<QueuedRoll>) => {
       rerolled: 0,
       dropped: 0,
       exploded: 0,
+      success: 0,
+      fail: 0,
+      matches: new Map<string, number>(),
     },
   };
   self.postMessage(returnMsg);

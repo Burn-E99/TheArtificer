@@ -14,7 +14,7 @@ export const addToRange = (tSep: string, range: Array<number>, tNum: number) => 
 
 const internalAddMultipleToRange = (tSep: string, range: Array<number>, start: number, end: number) => {
   for (let i = start; i <= end; i++) {
-    loopCountCheck();
+    loopCountCheck(`rangeAdder.ts - ${tSep} range adder`);
     addToRange(tSep, range, i);
   }
 };

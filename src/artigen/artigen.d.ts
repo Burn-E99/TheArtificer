@@ -23,6 +23,7 @@ export interface SolvedRoll {
   line1: string;
   line2: string;
   line3: string;
+  footer: string;
   counts: CountDetails;
   rollDistributions: RollDistributionMap;
 }

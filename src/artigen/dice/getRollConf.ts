@@ -126,7 +126,7 @@ export const getRollConf = (rollStr: string, customTypes: CustomDiceShapes = new
     const difficulty = parseInt(tempDifficulty.slice(0, afterDifficultyIdx) || '10');
 
     for (let i = difficulty; i <= rollConf.dieSize; i++) {
-      loopCountCheck();
+      loopCountCheck('getRollConf.ts - setting cwod difficulty');
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling cwod ${rollStr} | Parsing difficulty ${i}`);
       rollConf.success.range.push(i);
@@ -216,7 +216,7 @@ export const getRollConf = (rollStr: string, customTypes: CustomDiceShapes = new
 
     // Loop until all remaining args are parsed
     while (remains.length > 0) {
-      loopCountCheck();
+      loopCountCheck('getRollConf.ts - parsing rollConf');
 
       loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | Parsing remains ${remains}`);
       // Find the next number in the remains to be able to cut out the rule name
@@ -232,7 +232,7 @@ export const getRollConf = (rollStr: string, customTypes: CustomDiceShapes = new
       let noNumberAfter = false;
       if (!(Object.values(DiceOptions) as string[]).includes(tempSep)) {
         NumberlessDiceOptions.some((opt) => {
-          loopCountCheck();
+          loopCountCheck('getRollConf.ts - parsing numberlessDiceOptions');
           loggingEnabled && log(LT.LOG, `In NumberlessDiceOptions ${opt} ${tempSep.startsWith(opt) && tempSep !== opt}`);
           if (tempSep.startsWith(opt) && tempSep !== opt) {
             afterSepIdx = opt.length;

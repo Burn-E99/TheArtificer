@@ -32,7 +32,7 @@ export const tokenizeCmd = (
 
   // Wrapped commands still exist, unwrap them
   while (cmd.includes(config.prefix)) {
-    loopCountCheck();
+    loopCountCheck('cmdTokenizer.ts - while cmd includes prefix');
 
     const openIdx = cmd.indexOf(config.prefix);
     const closeIdx = getMatchingPostfixIdx(cmd, openIdx);
@@ -49,7 +49,7 @@ export const tokenizeCmd = (
 
     const simulatedData: ReturnData[] = [];
     for (let i = 0; i < simulatedLoopCount; i++) {
-      loopCountCheck();
+      loopCountCheck('cmdTokenizer.ts - simulate nominal loop');
 
       loggingEnabled && log(LT.LOG, `In simLoop:${i} "${currentCmd}" of ${JSON.stringify(cmd)}`);
 
@@ -78,7 +78,7 @@ export const tokenizeCmd = (
         loggingEnabled && log(LT.LOG, `ConfirmCrit on ${JSON.stringify(currentCmd)}`);
         let done = false;
         while (!done) {
-          loopCountCheck();
+          loopCountCheck('cmdTokenizer.ts - confirming crit');
 
           // Keep running the same roll again until its not successful
           const [ccTempData, ccTempCounts, ccTempDists] = tokenizeCmd(
@@ -194,7 +194,7 @@ export const tokenizeCmd = (
     const tempInitConf = data.initConfig.split(internalGrpWrapRegex).filter((x) => x);
     loggingEnabled && log(LT.LOG, `Split solved math into tempInitConf ${JSON.stringify(tempInitConf)}`);
     while (tempInitConf.includes(openInternalGrp)) {
-      loopCountCheck();
+      loopCountCheck('cmdTokenizer.ts - handling internal group result merging');
 
       const openIdx = tempInitConf.indexOf(openInternalGrp);
       const closeIdx = getMatchingInternalGrpIdx(tempInitConf, openIdx);
@@ -214,7 +214,7 @@ export const tokenizeCmd = (
       .filter((x) => x);
     loggingEnabled && log(LT.LOG, `Split tempInitConfig into initConf ${JSON.stringify(initConf)}`);
     while (initConf.includes(openInternal)) {
-      loopCountCheck();
+      loopCountCheck('cmdTokenizer.ts - handling internal nested roll result merging');
 
       const openIdx = initConf.indexOf(openInternal);
       const closeIdx = getMatchingInternalIdx(initConf, openIdx);

@@ -49,7 +49,7 @@ export const tokenizeMath = (
 
   // Evaluate all rolls into stepSolve format and all numbers into floats
   for (let i = 0; i < mathConf.length; i++) {
-    loopCountCheck();
+    loopCountCheck('mathTokenizer.ts - parsing all tokens into MathConf');
 
     loggingEnabled && log(LT.LOG, `Parsing roll ${JSON.stringify(cmd)} | Evaluating rolls into math-able items ${JSON.stringify(mathConf[i])}`);
 
@@ -272,7 +272,7 @@ export const tokenizeMath = (
 
       let i = 0;
       while (dropCount > 0 && i < allRollSets.length) {
-        loopCountCheck();
+        loopCountCheck('mathTokenizer.ts - handling group dropping');
 
         loggingEnabled && log(LT.LOG, `Handling group dropping | Dropping ${dropCount}, looking at ${JSON.stringify(allRollSets[i])}`);
 
@@ -293,7 +293,7 @@ export const tokenizeMath = (
     // Handle marking new successes/fails
     if (groupConf.success.on || groupConf.fail.on) {
       allRollSets.forEach((rs) => {
-        loopCountCheck();
+        loopCountCheck('mathTokenizer.ts - handling group success/fails');
 
         if (!rs.dropped && !rs.rerolled) {
           if (groupConf.success.on && groupConf.success.range.includes(rs.roll)) {

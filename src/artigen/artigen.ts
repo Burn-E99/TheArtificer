@@ -5,12 +5,12 @@ import { tokenizeCmd } from 'artigen/cmdTokenizer.ts';
 
 import { Modifiers } from 'artigen/dice/getModifiers.ts';
 
-import { loopCountCheck } from 'artigen/managers/loopManager.ts';
+import { getLoopCount, loopCountCheck } from 'artigen/managers/loopManager.ts';
 import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
 import { cmdSplitRegex, escapeCharacters, withYVarsDash } from 'artigen/utils/escape.ts';
-import { loggingEnabled } from 'artigen/utils/logFlag.ts';
+import { loggingEnabled, loopLoggingEnabled } from 'artigen/utils/logFlag.ts';
 import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
 import { reduceRollDistMaps } from 'artigen/utils/rollDist.ts';
 import { compareTotalRolls, compareTotalRollsReverse, sortYVars } from 'artigen/utils/sortFuncs.ts';
@@ -26,6 +26,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     line1: '',
     line2: '',
     line3: '',
+    footer: '',
     counts: {
       total: 0,
       successful: 0,
@@ -120,7 +121,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     const line2Space = rollRequest.modifiers.noSpaces ? '' : ' ';
     // Fill out all of the details and results now
     tempReturnData.forEach((e, i) => {
-      loopCountCheck();
+      loopCountCheck('artigen.ts - tempReturnData');
 
       loggingEnabled && log(LT.LOG, `Parsing roll ${rollRequest.rollCmd} | Making return text ${JSON.stringify(e)}`);
       let preFormat = '';
@@ -177,6 +178,8 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     returnMsg.error = true;
     [returnMsg.errorCode, returnMsg.errorMsg] = translateError(solverError);
   }
+
+  if (loopLoggingEnabled) returnMsg.footer = `Loop Count: ${getLoopCount()}`;
 
   return returnMsg;
 };

@@ -259,13 +259,17 @@ export const generateRollEmbed = (
 
   // Embed desc limit is 4096
   // Discord only formats 200 items per message
-  if (fullDesc.length < 4_000 && formattingCount <= 200) {
+  const fullSize = fullDesc.length + returnDetails.footer.length;
+  if (fullSize < 4_000 && formattingCount <= 200) {
     // Response is valid size
     return {
-      charCount: fullDesc.length,
+      charCount: fullSize,
       embed: {
         color: infoColor2,
         description: fullDesc,
+        footer: {
+          text: returnDetails.footer,
+        },
       },
       hasAttachment: false,
     };

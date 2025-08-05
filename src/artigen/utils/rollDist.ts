@@ -10,7 +10,7 @@ export const createRollDistMap = (rollSet: RollSet[]): RollDistributionMap => {
   const rollDistMap = new Map<string, number[]>();
 
   rollSet.forEach((roll) => {
-    loopCountCheck();
+    loopCountCheck('rollDist.ts - convert RollSet into RollDist');
     const tempArr: number[] = rollDistMap.get(rollDistKey(roll.type, roll.size)) ?? new Array<number>(roll.type === 'fate' ? roll.size + 2 : roll.size).fill(0);
     tempArr[roll.type === 'fate' ? roll.roll + 1 : roll.roll - 1]++;
     rollDistMap.set(rollDistKey(roll.type, roll.size), tempArr);
@@ -22,17 +22,17 @@ export const createRollDistMap = (rollSet: RollSet[]): RollDistributionMap => {
 // Collapses an array of RollDistMaps into a single RollDistMap
 export const reduceRollDistMaps = (rollDistArr: RollDistributionMap[]): RollDistributionMap =>
   rollDistArr.reduce((acc, cur) => {
-    loopCountCheck();
+    loopCountCheck('rollDist.ts - merge array of RollDists into single RollDist');
 
     cur
       .entries()
       .toArray()
       .forEach(([key, value]) => {
-        loopCountCheck();
+        loopCountCheck('rollDist.ts - doing the merge on each item of current');
 
         const tempArr = acc.get(key) ?? new Array<number>(value.length).fill(0);
         for (let i = 0; i < tempArr.length; i++) {
-          loopCountCheck();
+          loopCountCheck('rollDist.ts - doing the merge');
           tempArr[i] += value[i];
         }
 

@@ -12,7 +12,7 @@ export const generateRollVals = (rollConf: RollConf, rollSet: RollSet[], rollStr
 
   // Count up all rolls
   for (const ovaRoll of rollSet) {
-    loopCountCheck();
+    loopCountCheck('rollValCounter.ts - counting roll vals');
 
     loggingEnabled && log(LT.LOG, `${getLoopCount()} Handling ${rollConf.type} ${rollStr} | incrementing rollVals for ${JSON.stringify(ovaRoll)}`);
     if (!ovaRoll.dropped && !ovaRoll.rerolled) {

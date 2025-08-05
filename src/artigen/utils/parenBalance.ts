@@ -22,7 +22,8 @@ const checkBalance = (
 
   // Verify there are equal numbers of opening and closing parenthesis by adding 1 for opening parens and subtracting 1 for closing parens
   for (let i = openIdx; i < conf.length; i++) {
-    countLoops && loopCountCheck();
+    countLoops &&
+      loopCountCheck(`parenBalance.ts - ${getMatching ? 'Looking for matching' : 'Checking'} ${openStr}/${closeStr} ${getMatching ? '' : 'balance '}`);
     loggingEnabled &&
       log(
         LT.LOG,
