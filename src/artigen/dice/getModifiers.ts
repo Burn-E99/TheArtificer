@@ -247,5 +247,11 @@ export const getModifiers = (args: string[]): [RollModifiers, string[]] => {
     modifiers.valid = false;
   }
 
+  if (modifiers.simulatedNominal < 0) {
+    modifiers.error.name = 'NegativeSimNominal';
+    modifiers.error.message = 'Number of iterations for `simulatedNominal` must be at least 1';
+    modifiers.valid = false;
+  }
+
   return [modifiers, args];
 };
