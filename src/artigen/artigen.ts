@@ -106,7 +106,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     }
 
     // List number of iterations on simulated nominals
-    if (rollRequest.modifiers.simulatedNominal) line2 += `Iterations performed per roll: \`${rollRequest.modifiers.simulatedNominal}\`\n`;
+    if (rollRequest.modifiers.simulatedNominal) line2 += `Iterations performed per roll: \`${rollRequest.modifiers.simulatedNominal.toLocaleString()}\`\n`;
 
     // Reduce counts to a single object
     returnMsg.counts = reduceCountDetails(tempCountDetails);
