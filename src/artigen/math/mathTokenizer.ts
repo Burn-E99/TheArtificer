@@ -45,7 +45,7 @@ export const tokenizeMath = (
   loggingEnabled && log(LT.LOG, `Split roll into mathConf ${JSON.stringify(mathConf)}`);
 
   // Verify balanced parens before doing anything
-  assertParenBalance(mathConf);
+  if (mathConf.includes('(') || mathConf.includes(')')) assertParenBalance(mathConf);
 
   // Evaluate all rolls into stepSolve format and all numbers into floats
   for (let i = 0; i < mathConf.length; i++) {
