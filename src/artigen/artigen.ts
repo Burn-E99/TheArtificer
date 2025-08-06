@@ -110,7 +110,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     if (rollRequest.modifiers.simulatedNominal) line2 += `Iterations performed per roll: \`${rollRequest.modifiers.simulatedNominal.toLocaleString()}\`\n`;
 
     // Reduce counts to a single object
-    returnMsg.counts = reduceCountDetails(tempCountDetails);
+    if (rollRequest.modifiers.count) returnMsg.counts = reduceCountDetails(tempCountDetails);
 
     // If a regular nominal and roll looks somewhat complex, alert user simulatedNominal exists
     if (rollRequest.modifiers.nominalRoll && tempReturnData.filter((data) => data.isComplex).length) {
