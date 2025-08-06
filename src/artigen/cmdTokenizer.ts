@@ -49,7 +49,7 @@ export const tokenizeCmd = (
 
     const simulatedData: ReturnData[] = [];
     for (let i = 0; i < simulatedLoopCount; i++) {
-      loopCountCheck('cmdTokenizer.ts - simulate nominal loop');
+      loopCountCheck(`cmdTokenizer.ts - simulate nominal loop #${i}`);
 
       loggingEnabled && log(LT.LOG, `In simLoop:${i} "${currentCmd}" of ${JSON.stringify(cmd)}`);
 
