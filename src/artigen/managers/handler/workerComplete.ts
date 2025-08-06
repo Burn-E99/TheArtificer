@@ -278,7 +278,7 @@ Please click on "<@${botId}> *Click to see attachment*" above this message to se
                   details: returnMsg.line3,
                 },
                 counts: rollRequest.modifiers.count ? returnMsg.counts : null,
-                rollDistributions: returnMsg.rollDistributions.entries().toArray(),
+                rollDistributions: rollRequest.modifiers.rollDist ? returnMsg.rollDistributions.entries().toArray() : null,
               },
             }),
             {

@@ -201,7 +201,7 @@ export const tokenizeMath = (
         const formattedRoll = formatRoll(executedRoll, modifiers);
         mathConf[i] = formattedRoll.solvedStep;
         countDetails.push(formattedRoll.countDetails);
-        rollDists.push(formattedRoll.rollDistributions);
+        if (modifiers.rollDist) rollDists.push(formattedRoll.rollDistributions);
       }
     }
 
@@ -318,7 +318,7 @@ export const tokenizeMath = (
       const formattedRoll = formatRoll(executedRoll, modifiers);
       mathConf[rollGroupIdx] = formattedRoll.solvedStep;
       countDetails.push(formattedRoll.countDetails);
-      rollDists.push(formattedRoll.rollDistributions);
+      if (modifiers.rollDist) rollDists.push(formattedRoll.rollDistributions);
     });
   }
 

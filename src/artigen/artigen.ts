@@ -170,7 +170,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     returnMsg.line3 = line3;
 
     // Reduce rollDist maps into a single map
-    returnMsg.rollDistributions = reduceRollDistMaps(tempRollDists);
+    if (rollRequest.modifiers.rollDist) returnMsg.rollDistributions = reduceRollDistMaps(tempRollDists);
   } catch (e) {
     // Fill in the return block
     const solverError = e as Error;
