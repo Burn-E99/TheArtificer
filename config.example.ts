@@ -1,7 +1,7 @@
 export const config = {
   name: 'The Artificer', // Name of the bot
   maxFileSize: 8_388_290, // Max file size bot can send
-  version: '4.1.1', // Version of the bot
+  version: '4.1.2', // Version of the bot
   token: 'the_bot_token', // Discord API Token for this bot
   localtoken: 'local_testing_token', // Discord API Token for a secondary OPTIONAL testing bot, THIS MUST BE DIFFERENT FROM "token"
   prefix: '[[', // Prefix for all commands
@@ -16,7 +16,7 @@ export const config = {
         guild: 1_000, // Allows guilds to have 1000 aliased rolls for free
       },
     },
-    maxLoops: 1_000_000, // Determines how long the bot will attempt a roll, number of loops before it kills a roll.  Increase this at your own risk.
+    maxLoops: 2_000_000, // Determines how long the bot will attempt a roll, number of loops before it kills a roll.  Increase this at your own risk.
     maxWorkers: 16, // Maximum number of worker threads to spawn at once (Set this to less than the number of threads your CPU has, Artificer will eat it all if too many rolls happen at once)
     workerTimeout: 300_000, // Maximum time before the bot kills a worker thread in ms
     defaultSimulatedNominal: 10_000, // Default number of loops to run for simulating a nominal
