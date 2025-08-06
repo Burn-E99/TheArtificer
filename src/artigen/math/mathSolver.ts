@@ -77,8 +77,8 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
   for (let i = 1; i < conf.length; i++) {
     loopCountCheck('mathSolver.ts - checking for implicit multiplication');
 
-    const prevConfAsStr = <string> conf[i - 1];
-    const curConfAsStr = <string> conf[i];
+    const prevConfAsStr = <string>conf[i - 1];
+    const curConfAsStr = <string>conf[i];
     if (!signs.includes(curConfAsStr) && !signs.includes(prevConfAsStr)) {
       // Both previous and current conf are operators, slip in the "*"
       conf.splice(i, 0, '*');
@@ -98,11 +98,10 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
     // Iterate thru all operators/operands in the conf
     for (let i = 0; i < conf.length; i++) {
-      loopCountCheck('mathSolver.ts - evaluating roll');
-
       loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
       // Check if the current index is in the active tier of operators
       if (curOps.includes(conf[i].toString())) {
+        loopCountCheck('mathSolver.ts - evaluating roll');
         // Grab the operands from before and after the operator
         const operand1 = conf[i - 1];
         const operand2 = conf[i + 1];
@@ -198,7 +197,7 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
     stepSolve.details = conf[0].toString();
   } else {
     // Else fully populate the stepSolve with what was computed
-    const tempConf = <SolvedStep> conf[0];
+    const tempConf = <SolvedStep>conf[0];
     stepSolve.total = tempConf.total;
     stepSolve.details = tempConf.details;
     stepSolve.containsCrit = tempConf.containsCrit;
