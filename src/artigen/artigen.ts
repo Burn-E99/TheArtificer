@@ -10,7 +10,7 @@ import { QueuedRoll } from 'artigen/managers/manager.d.ts';
 
 import { reduceCountDetails } from 'artigen/utils/counter.ts';
 import { cmdSplitRegex, escapeCharacters, withYVarsDash } from 'artigen/utils/escape.ts';
-import { loggingEnabled, loopLoggingEnabled } from 'artigen/utils/logFlag.ts';
+import { loggingEnabled, showLoopCountDebug } from 'artigen/utils/logFlag.ts';
 import { assertPrePostBalance } from 'artigen/utils/parenBalance.ts';
 import { reduceRollDistMaps } from 'artigen/utils/rollDist.ts';
 import { compareTotalRolls, compareTotalRollsReverse, sortYVars } from 'artigen/utils/sortFuncs.ts';
@@ -179,7 +179,7 @@ export const runCmd = (rollRequest: QueuedRoll): SolvedRoll => {
     [returnMsg.errorCode, returnMsg.errorMsg] = translateError(solverError);
   }
 
-  if (loopLoggingEnabled) returnMsg.footer = `Loop Count: ${getLoopCount()}`;
+  if (showLoopCountDebug) returnMsg.footer = `Loop Count: ${getLoopCount()}`;
 
   return returnMsg;
 };

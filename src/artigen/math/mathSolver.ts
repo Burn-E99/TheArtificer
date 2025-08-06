@@ -95,12 +95,13 @@ export const mathSolver = (conf: MathConf[], wrapDetails = false): SolvedStep =>
   ];
   allCurOps.forEach((curOps) => {
     // No loopCountCheck here since its finite/will always be 3 loops
-    loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)}`);
+    loggingEnabled && log(LT.LOG, `Cur Ops ${JSON.stringify(curOps)}`);
     // Iterate thru all operators/operands in the conf
     for (let i = 0; i < conf.length; i++) {
-      loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} | Evaluating ${JSON.stringify(curOps)} | Checking ${JSON.stringify(conf[i])}`);
+      loggingEnabled && log(LT.LOG, `Checking ${JSON.stringify(conf[i])}`);
       // Check if the current index is in the active tier of operators
       if (curOps.includes(conf[i].toString())) {
+        loggingEnabled && log(LT.LOG, `Evaluating roll ${JSON.stringify(conf)} as ${JSON.stringify(conf[i])} is in curOps`);
         loopCountCheck('mathSolver.ts - evaluating roll');
         // Grab the operands from before and after the operator
         const operand1 = conf[i - 1];
